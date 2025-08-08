@@ -1,0 +1,224 @@
+:root {
+
+--ff: "Inter", sans-serif;
+
+--h1: bold 4rem/1em var(--ff);
+
+--h2: bold 1rem/1.4em var(--ff)
+
+--p: 1rem/1.6em var(--ff);
+
+--p2: .875rem/1.4 var(--ff);
+
+/* other variables as shown in the image */
+
+ --grey100: hsl(0%,0%,100%);
+ --grey75: hsl(0%,0%,75%);
+ --grey50: hsl(0%,0%,50%);
+ }
+
+html {
+background-color: rgb(137, 137, 85); /* Set the background color to beige */
+color: orange; 
+font-family: var(--ff); 
+margin: 0; 
+padding: 0; /* Reset default body padding */
+}
+
+  
+*{
+  margin:0;
+  padding:0;
+  box-sizing: border-box; /* Ensures padding and border are included in element's total width and height */
+}
+
+.greet{
+display: flex;
+font-size: 2rem;
+justify-content: center;
+color: black;
+margin-bottom: px;
+}
+
+.greet span {
+color: orange;
+}
+
+.downloadButton{
+padding: 10px 20px;
+border: 1px solid #333;
+border-radius: 5px;
+background-color: white;
+cursor: pointer;
+margin-right: 10px;
+}
+
+.contactInfoButton{
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+background-color: #333;
+color: white;
+cursor: pointer;
+}
+.body{
+  position: absolute;
+  padding: 0; 
+  margin: 0;
+  border: 0;
+  width: 100%; 
+  height: 100%; 
+}
+
+.navigationBar {
+  display: flex;
+  justify-content: space-between; 
+  margin: 0;
+  padding: 0rem 2rem; 
+  flex-wrap: wrap; 
+}
+
+
+.navigationBar div:first-child {
+  font-size: 4rem; /* Sets a large font size for the name/logo */
+  font-weight: bold; /* Makes the name/logo bold */
+}
+
+/*
+ * Sub-Menu (Navigation Links)
+ */
+
+/* Base styles for each list item within the sub-menu */
+.sub-menu li {
+  background-color: transparent; /* Ensures no background color by default */
+  border: none; /* Removes any default borders */
+  padding: 0; /* Removes default padding from list items */
+  width: auto; /* Allows the width to adjust to content */
+  text-align: left; /* Aligns text to the left within the list item */
+  /*
+   * The following properties were commented out in the original code,
+   * suggesting they were experimented with or explicitly removed.
+   * - border-radius: 5px;
+   * - align-items: center;
+   */
+}
+
+/* Styles for the unordered list (<ul>) containing the sub-menu items */
+.sub-menu ul {
+  display: flex; /* Enables Flexbox for horizontal arrangement of list items */
+  gap: 12px; /* Sets a 30px gap between each list item */
+  list-style-type: none; /* Removes default bullet points from list items */
+  padding: 0; /* Removes default padding from the unordered list */
+  margin: 0; /* Removes default margin from the unordered list */
+  /*
+   * The box-shadow was commented out in the original code,
+   * suggesting it was explicitly removed from the ul.
+   */
+}
+
+/* Specific styles applied to individual list items within the sub-menu */
+.sub-menu li {
+  background-color: var(--grey75); /* Sets background color using a CSS variable */
+  border: 1.5px solid;
+  margin: 1rem; /* Adds a 1.5px solid border */
+  padding: 10px; /* Adds 10px padding inside each list item */
+  border-radius: 5px; /* Rounds the corners of the list items */
+  width: 6rem; /* Sets a fixed width of 5rem for the list item */
+  text-align: center; /* Centers the text horizontally within the list item */
+  align-items: center; /* Aligns items vertically in the center (useful if li had flexbox) */
+}
+
+/* Styles for the anchor tags (<a>) inside the sub-menu list items */
+.sub-menu li a {
+  text-decoration: none; /* Removes the default underline from links */
+  color: orange; /* Sets the text color to orange */
+  font-size: 1rem; /* Sets the font size to 1rem */
+  transition: color 0.3s ease; /* Adds a smooth transition effect to color changes over 0.3 seconds */
+}
+
+/* Styles applied when hovering over a sub-menu list item */
+.sub-menu li:hover {
+  /* Corrected box-shadow syntax: horizontal-offset vertical-offset blur-radius spread-radius color */
+  box-shadow: 3px 3px 2px 2px #5a5140; /* Adds a shadow effect on hover */
+}
+
+/*
+ * Section Container & Hero Section
+ */
+
+/* Styles for a generic section container */
+.section-container {
+  display: flex; /* Enables Flexbox for centering child content */
+  justify-content: center; /* Centers child content horizontally */
+  align-items: center; /* Centers child content vertically */
+  padding: 2rem; /* Adds 2rem padding around the container */
+  text-align: center; /* Centers all inline text within the container */
+  /* Sets the background color to beige */
+}
+
+/* Styles for a <section> element within a flex context */
+section {
+ 
+  flex: 1 1 300px;
+}
+p{
+  font-size:1.5rem;
+  margin-bottom: 0.5rem; 
+}
+.icons {
+  display: flex; /* Enables Flexbox for icon arrangement */
+  justify-content: center; /* Centers icons horizontally */
+  gap: 1em; /* Adds 1em gap between icons */
+  margin-top: 1em; /* Adds 1em margin above the icon container */
+}
+
+/* Styles for icon elements (e.g., Font Awesome <i> tags) */
+.icons i {
+  font-size: 2.5rem; /* Sets a large font size for icons */
+  color: #575757; /* Sets the default icon color */
+  transition: color 0.3s ease; /* Adds a smooth transition effect to color changes */
+}
+
+/* Hover effect for general icons */
+.icons i:hover {
+  color: #0077b5; /* Changes color to LinkedIn blue on hover */
+}
+
+/* Specific hover effect for GitHub icon */
+.fa-github:hover {
+  color: #171515 !important; /* Changes color to GitHub's black on hover, !important overrides general .icons i:hover */
+}
+
+/*
+ * Name Styling
+ */
+
+/* General font size for an element with the class 'name' */
+.name {
+  font-size: 3rem; /* Sets a large font size for the name */
+}
+
+
+
+/* Styles for the first paragraph within the hero section (e.g., "Hi, I'm") */
+.heroSection p:first-child {
+  font-size: 1.2rem; /* Sets font size */
+  color: var(--grey50); /* Sets text color using a CSS variable */
+  margin-bottom: 0.5rem; /* Adds margin below the text */
+}
+
+  
+
+.heroSection h1.name { /* Style your name */
+font-size: 3.5rem; /* Slightly larger than your current setting */
+font-weight: bold;
+margin-bottom: 0.5rem;
+color: #333;
+}
+
+.heroSection p:last-child { /* Style the "FullStackDeveloper" text */
+font-size: 1.1rem;
+color: var(--grey75);
+margin-bottom: 1rem;
+
+}
