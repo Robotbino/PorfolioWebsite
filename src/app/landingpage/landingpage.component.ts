@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './landingpage.component.css'
 })
 export class LandingpageComponent {
-
+ backgroundImage = 'assets/gradient.png';
 }

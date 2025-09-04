@@ -10,26 +10,18 @@
 
 --p2: .875rem/1.4 var(--ff);
 
-/* other variables as shown in the image */
-
  --grey100: hsl(0%,0%,100%);
  --grey75: hsl(0%,0%,75%);
  --grey50: hsl(0%,0%,50%);
  }
 
-html {
-background-color: rgb(137, 137, 85); /* Set the background color to beige */
-color: orange; 
-font-family: var(--ff); 
-margin: 0; 
-padding: 0; /* Reset default body padding */
-}
+
 
   
 *{
   margin:0;
   padding:0;
-  box-sizing: border-box; /* Ensures padding and border are included in element's total width and height */
+  box-sizing: border-box;
 }
 
 .greet{
@@ -69,6 +61,24 @@ cursor: pointer;
   width: 100%; 
   height: 100%; 
 }
+:host {
+  /* This targets the component itself */
+  display: block; /* Ensures the component takes up space */
+  width: 100%;
+  min-height: 100vh; /* Makes the component at least the full height of the viewport */
+
+  /* The corrected path to the background image */
+  background-image: url('../../assets/gradient.png');
+
+  /* Your other background properties */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: -5; 
+}
+
+/* KEEP all your other styles (.navigationBar, .heroSection, etc.) as they are */
 
 .navigationBar {
   display: flex;
@@ -90,24 +100,19 @@ cursor: pointer;
 
 /* Base styles for each list item within the sub-menu */
 .sub-menu li {
-  background-color: transparent; /* Ensures no background color by default */
   border: none; /* Removes any default borders */
   padding: 0; /* Removes default padding from list items */
   width: auto; /* Allows the width to adjust to content */
   text-align: left; /* Aligns text to the left within the list item */
-  /*
-   * The following properties were commented out in the original code,
-   * suggesting they were experimented with or explicitly removed.
-   * - border-radius: 5px;
-   * - align-items: center;
-   */
+  
 }
 
 /* Styles for the unordered list (<ul>) containing the sub-menu items */
 .sub-menu ul {
   display: flex; /* Enables Flexbox for horizontal arrangement of list items */
   gap: 12px; /* Sets a 30px gap between each list item */
-  list-style-type: none; /* Removes default bullet points from list items */
+  list-style-type: none; 
+  background-color: white;/* Removes default bullet points from list items */
   padding: 0; /* Removes default padding from the unordered list */
   margin: 0; /* Removes default margin from the unordered list */
   /*
@@ -116,6 +121,12 @@ cursor: pointer;
    */
 }
 
+spline-viewer {
+  position: absolute; /* Fixes it relative to the viewport */
+  top: 18%;
+  left: 25%;
+  z-index: -1; 
+}
 /* Specific styles applied to individual list items within the sub-menu */
 .sub-menu li {
   background-color: var(--grey75); /* Sets background color using a CSS variable */
