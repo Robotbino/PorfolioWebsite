@@ -1,0 +1,101 @@
+<spline-viewer
+  url="https://prod.spline.design/Gb-UtfkGJWGdhptu/scene.splinecode"
+></spline-viewer>
+<div class="navigationBar">
+  <div class="sub-menu">
+    <ul>
+      <li [ngClass]="{'active': visibleSections.has('about')}">
+      <a href="#about" (click)="scrollToSection($event, 'about')">About</a>
+    </li>
+    <li [ngClass]="{'active': visibleSections.has('experience')}">
+      <a href="#experience" (click)="scrollToSection($event, 'experience')">Experience</a>
+    </li>
+    <li [ngClass]="{'active': visibleSections.has('projects')}">
+      <a href="#projects" (click)="scrollToSection($event, 'projects')">Projects</a>
+    </li>
+    <li [ngClass]="{'active': visibleSections.has('contact')}">
+      <a href="#contact" (click)="scrollToSection($event, 'contact')">Contact</a>
+    </li>
+    </ul>
+  </div>
+</div>
+
+<section class="section-container">
+  <div class="heroSection">
+    <div class="greet">Hello<span>, I'm</span></div>
+    <h1 class="name">Bino Hlongwana</h1>
+    <p class="title">FullStackDeveloper</p>
+    <p>BSc Information Technology Student</p>
+    <div class="buttonfooter">
+      <button class="downloadButton">Download CV</button>
+      <button class="contactInfoButton">Contact Info</button>
+    </div>
+    <div class="icons">
+      <i class="fa-brands fa-github"></i>
+      <i class="fa-brands fa-linkedin-in"></i>
+    </div>
+  </div>
+</section>
+
+<div class="content">
+
+  <section id="about">
+   
+    <div>
+       <h2 class="sectionHeader">About Me</h2>
+      <div class="mainCard">
+          <p>I'm a 23-year-old software developer from Pretoria, South Africa, guided by the "less but better" philosophy
+            in creating web experiences that are both elegant and functional. 
+            My passion for exceptional design is complemented by my commitment to building robust, 
+            resilient software systems. As a masterful communicator who bridges technical and business perspectives,
+            I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
+          </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+   
+    <div >
+       <h2 class="sectionHeader">My Experience</h2>
+      <div class="mainCard">
+          <p>I'm a 23-year-old software developer from Pretoria, South Africa, guided by the "less but better" philosophy
+            in creating web experiences that are both elegant and functional. 
+            My passion for exceptional design is complemented by my commitment to building robust, 
+            resilient software systems. As a masterful communicator who bridges technical and business perspectives,
+            I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
+          </p>
+      </div>
+      </div>
+  </section>
+
+  <section id="projects">
+   
+    <div>
+       <h2 class="sectionHeader" >Projects</h2>
+      <div class="mainCard">
+          <p>I'm a 23-year-old software developer from Pretoria, South Africa, guided by the "less but better" philosophy
+            in creating web experiences that are both elegant and functional. 
+            My passion for exceptional design is complemented by my commitment to building robust, 
+            resilient software systems. As a masterful communicator who bridges technical and business perspectives,
+            I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
+          </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+   
+    <div >
+       <h2 class="sectionHeader">Contact Me</h2>
+      <div class="mainCard">
+        <p>I'm a 23-year-old software developer from Pretoria, South Africa, guided by the "less but better" philosophy
+            in creating web experiences that are both elegant and functional. 
+            My passion for exceptional design is complemented by my commitment to building robust, 
+            resilient software systems. As a masterful communicator who bridges technical and business perspectives,
+            I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
+          </p>
+      </div>
+    </div>
+  </section>
+</div>

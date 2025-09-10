@@ -1,0 +1,275 @@
+/* ===== CSS VARIABLES ===== */
+:root {
+  --ff: "Inter", sans-serif;
+  --h1: bold 4rem/1em var(--ff);
+  --h2: bold 1rem/1.4em var(--ff);
+  --p: 1rem/1.6em var(--ff);
+  --p2: .875rem/1.4 var(--ff);
+  --grey100: hsl(0%,0%,100%);
+  --grey75: hsl(0%,0%,75%);
+  --grey50: hsl(0%,0%,50%);
+}
+
+/* ===== GLOBAL RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===== COMPONENT BACKGROUND ===== */
+:host {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  background-image: url('../../assets/gradient.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: -5; 
+}
+
+.body {
+  position: absolute;
+  padding: 0; 
+  margin: 0;
+  border: 0;
+  width: 100%; 
+  height: 100%; 
+}
+
+/* ===== 3D SPLINE VIEWER ===== */
+spline-viewer {
+  position: fixed;
+  top: 18%;
+  left: 25%;
+  z-index: -1; 
+}
+
+/* ===== NAVIGATION BAR ===== */
+.navigationBar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center; 
+  margin: 0;
+  padding: 0rem 2rem; 
+  flex-wrap: wrap; 
+}
+
+.navigationBar div:first-child {
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+/* Navigation Menu Styles */
+.sub-menu ul {
+  display: flex;
+  gap: 12px;
+  list-style-type: none; 
+  background-color: white;
+  padding: 0;
+  margin: 0;
+}
+
+.sub-menu li {
+  background-color: rgba(82, 82, 82, 0.02);
+  border: 1px solid transparent;
+  border-radius: 20px;
+  margin: 0.75rem;
+  width: 8rem;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.sub-menu li:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+  box-shadow: none; 
+}
+
+.sub-menu li.active {
+  background-color: rgba(0, 0, 0, 0.35);
+  transform: scale(1.05);
+}
+
+.sub-menu li a {
+  text-decoration: none;
+  color: orange;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+  display: block;
+  padding: 10px;
+  font-weight: 500;
+}
+
+/* ===== HERO SECTION ===== */
+.section-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.greet {
+  display: flex;
+  font-size: 8em;
+  justify-content: center;
+  color: black;
+  margin-bottom: 0px; /* Fixed the missing value */
+}
+
+.greet span {
+  color: orange;
+}
+
+.name {
+  display: flex;
+  font-size: 8rem; /* Keep your original large size */
+}
+
+.title {
+  display: flex;
+  font-size: 12rem; /* Keep your original large size */
+}
+
+.heroSection h1.name {
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.heroSection p:first-child {
+  font-size: 1.2rem;
+  color: var(--grey50);
+  margin-bottom: 0.5rem;
+}
+
+.heroSection p:last-child {
+  font-size: 5rem;
+  color: var(--grey75);
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem; 
+}
+
+/* Hero Buttons */
+.buttonfooter {
+  display: flex;
+  justify-content: right; /* Keep your original right alignment */
+}
+
+.downloadButton {
+  padding: 10px 20px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.downloadButton:hover {
+  background-color: rgba(100, 100, 100, 0.3);
+  transform: scale(1.05);
+  box-shadow: none; 
+}
+.contactInfoButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}
+
+/* Social Icons */
+.icons {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.icons i {
+  font-size: 2.5rem;
+  color: #575757;
+  transition: color 0.3s ease;
+}
+
+.icons i:hover {
+  color: #0077b5;
+}
+
+.fa-github:hover {
+  color: #171515 !important;
+}
+
+/* ===== CONTENT SECTIONS ===== */
+.content section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
+  /* Initial Animation State */
+  opacity: 0;
+  transform: translateY(50px) scale(0.98); /* Keep your original transform */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.content section.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Section Headers */
+.sectionHeader {
+  display: flex;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  justify-content: center;
+  padding: 2em;
+  flex: 1;
+}
+
+/* Content Cards */
+.mainCard {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+div p {
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  color: #000000;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  text-align: left;
+  margin: 0;
+}
+
+/* Keep your specific about section card styling */
+#about .MainCard {
+  background: rgba(40, 40, 40, 0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 15px;
+  animation: fadeIn 0.6s ease-out forwards;
+}
