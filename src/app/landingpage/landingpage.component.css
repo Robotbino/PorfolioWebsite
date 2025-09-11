@@ -1,80 +1,32 @@
+/* ===== CSS VARIABLES ===== */
 :root {
+  --ff: "Inter", sans-serif;
+  --h1: bold 4rem/1em var(--ff);
+  --h2: bold 1rem/1.4em var(--ff);
+  --p: 1rem/1.6em var(--ff);
+  --p2: .875rem/1.4 var(--ff);
+  --grey100: hsl(0%,0%,100%);
+  --grey75: hsl(0%,0%,75%);
+  --grey50: hsl(0%,0%,50%);
+}
 
---ff: "Inter", sans-serif;
-
---h1: bold 4rem/1em var(--ff);
-
---h2: bold 1rem/1.4em var(--ff)
-
---p: 1rem/1.6em var(--ff);
-
---p2: .875rem/1.4 var(--ff);
-
- --grey100: hsl(0%,0%,100%);
- --grey75: hsl(0%,0%,75%);
- --grey50: hsl(0%,0%,50%);
- }
-
-
-
-  
-*{
-  margin:0;
-  padding:0;
+/* ===== GLOBAL RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
-}
-
-.greet{
-display: flex;
-font-size: 2rem;
-justify-content: center;
-color: black;
-margin-bottom: px;
-}
-
-.greet span {
-color: orange;
-}
-
-.downloadButton{
-padding: 10px 20px;
-border: 1px solid #333;
-border-radius: 5px;
-background-color: white;
-cursor: pointer;
-margin-right: 10px;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-.contactInfoButton{
-padding: 10px 20px;
-border: none;
-border-radius: 5px;
-background-color: #333;
-color: white;
-cursor: pointer;
-}
-.body{
-  position: absolute;
-  padding: 0; 
-  margin: 0;
-  border: 0;
-  width: 100%; 
-  height: 100%; 
-}
+/* ===== COMPONENT BACKGROUND ===== */
 :host {
-  /* This targets the component itself */
-  display: block; /* Ensures the component takes up space */
+  display: block;
   width: 100%;
-  min-height: 100vh; /* Makes the component at least the full height of the viewport */
-
-  /* The corrected path to the background image */
+  min-height: 100vh;
   background-image: url('../../assets/gradient.png');
-
-  /* Your other background properties */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -82,158 +34,242 @@ cursor: pointer;
   z-index: -5; 
 }
 
-/* KEEP all your other styles (.navigationBar, .heroSection, etc.) as they are */
+.body {
+  position: absolute;
+  padding: 0; 
+  margin: 0;
+  border: 0;
+  width: 100%; 
+  height: 100%; 
+}
 
+/* ===== 3D SPLINE VIEWER ===== */
+spline-viewer {
+  position: fixed;
+  top: 18%;
+  left: 25%;
+  z-index: -1; 
+}
+
+/* ===== NAVIGATION BAR ===== */
 .navigationBar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
   display: flex;
-  justify-content: space-between; 
+  justify-content: center; 
   margin: 0;
   padding: 0rem 2rem; 
   flex-wrap: wrap; 
 }
 
-
 .navigationBar div:first-child {
-  font-size: 4rem; /* Sets a large font size for the name/logo */
-  font-weight: bold; /* Makes the name/logo bold */
+  font-size: 4rem;
+  font-weight: bold;
 }
 
-/*
- * Sub-Menu (Navigation Links)
- */
-
-/* Base styles for each list item within the sub-menu */
-.sub-menu li {
-  border: none; /* Removes any default borders */
-  padding: 0; /* Removes default padding from list items */
-  width: auto; /* Allows the width to adjust to content */
-  text-align: left; /* Aligns text to the left within the list item */
-  
-}
-
-/* Styles for the unordered list (<ul>) containing the sub-menu items */
+/* Navigation Menu Styles */
 .sub-menu ul {
-  display: flex; /* Enables Flexbox for horizontal arrangement of list items */
-  gap: 12px; /* Sets a 30px gap between each list item */
+  display: flex;
+  gap: 12px;
   list-style-type: none; 
-  background-color: white;/* Removes default bullet points from list items */
-  padding: 0; /* Removes default padding from the unordered list */
-  margin: 0; /* Removes default margin from the unordered list */
-  /*
-   * The box-shadow was commented out in the original code,
-   * suggesting it was explicitly removed from the ul.
-   */
+  background-color: white;
+  padding: 0;
+  margin: 0;
 }
 
-spline-viewer {
-  position: absolute; /* Fixes it relative to the viewport */
-  top: 18%;
-  left: 25%;
-  z-index: -1; 
-}
-/* Specific styles applied to individual list items within the sub-menu */
 .sub-menu li {
-  background-color: var(--grey75); /* Sets background color using a CSS variable */
-  border: 1.5px solid;
-  margin: 1rem; /* Adds a 1.5px solid border */
-  padding: 10px; /* Adds 10px padding inside each list item */
-  border-radius: 5px; /* Rounds the corners of the list items */
-  width: 6rem; /* Sets a fixed width of 5rem for the list item */
-  text-align: center; /* Centers the text horizontally within the list item */
-  align-items: center; /* Aligns items vertically in the center (useful if li had flexbox) */
+  background-color: rgba(82, 82, 82, 0.02);
+  border: 1px solid transparent;
+  border-radius: 20px;
+  margin: 0.75rem;
+  width: 8rem;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* Styles for the anchor tags (<a>) inside the sub-menu list items */
-.sub-menu li a {
-  text-decoration: none; /* Removes the default underline from links */
-  color: orange; /* Sets the text color to orange */
-  font-size: 1rem; /* Sets the font size to 1rem */
-  transition: color 0.3s ease; /* Adds a smooth transition effect to color changes over 0.3 seconds */
-}
-
-/* Styles applied when hovering over a sub-menu list item */
 .sub-menu li:hover {
-  /* Corrected box-shadow syntax: horizontal-offset vertical-offset blur-radius spread-radius color */
-  box-shadow: 3px 3px 2px 2px #5a5140; /* Adds a shadow effect on hover */
+  background-color: rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+  box-shadow: none; 
 }
 
-/*
- * Section Container & Hero Section
- */
+.sub-menu li.active {
+  background-color: rgba(0, 0, 0, 0.35);
+  transform: scale(1.05);
+}
 
-/* Styles for a generic section container */
+.sub-menu li a {
+  text-decoration: none;
+  color: orange;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+  display: block;
+  padding: 10px;
+  font-weight: 500;
+}
+
+/* ===== HERO SECTION ===== */
 .section-container {
-  display: flex; /* Enables Flexbox for centering child content */
-  justify-content: center; /* Centers child content horizontally */
-  align-items: center; /* Centers child content vertically */
-  padding: 2rem; /* Adds 2rem padding around the container */
-  text-align: center; /* Centers all inline text within the container */
-  /* Sets the background color to beige */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
 }
 
-/* Styles for a <section> element within a flex context */
-section {
- 
-  flex: 1 1 300px;
+.greet {
+  display: flex;
+  font-size: 8em;
+  justify-content: center;
+  color: black;
+  margin-bottom: 0px; /* Fixed the missing value */
 }
-p{
-  font-size:1.5rem;
+
+.greet span {
+  color: orange;
+}
+
+.name {
+  display: flex;
+  font-size: 8rem; /* Keep your original large size */
+}
+
+.title {
+  display: flex;
+  font-size: 12rem; /* Keep your original large size */
+}
+
+.heroSection h1.name {
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.heroSection p:first-child {
+  font-size: 1.2rem;
+  color: var(--grey50);
+  margin-bottom: 0.5rem;
+}
+
+.heroSection p:last-child {
+  font-size: 5rem;
+  color: var(--grey75);
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1.5rem;
   margin-bottom: 0.5rem; 
 }
+
+/* Hero Buttons */
+.buttonfooter {
+  display: flex;
+  justify-content: right; /* Keep your original right alignment */
+}
+
+.downloadButton {
+  padding: 10px 20px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.downloadButton:hover {
+  background-color: rgba(100, 100, 100, 0.3);
+  transform: scale(1.05);
+  box-shadow: none; 
+}
+.contactInfoButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+}
+
+/* Social Icons */
 .icons {
-  display: flex; /* Enables Flexbox for icon arrangement */
-  justify-content: center; /* Centers icons horizontally */
-  gap: 1em; /* Adds 1em gap between icons */
-  margin-top: 1em; /* Adds 1em margin above the icon container */
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 1em;
 }
 
-/* Styles for icon elements (e.g., Font Awesome <i> tags) */
 .icons i {
-  font-size: 2.5rem; /* Sets a large font size for icons */
-  color: #575757; /* Sets the default icon color */
-  transition: color 0.3s ease; /* Adds a smooth transition effect to color changes */
+  font-size: 2.5rem;
+  color: #575757;
+  transition: color 0.3s ease;
 }
 
-/* Hover effect for general icons */
 .icons i:hover {
-  color: #0077b5; /* Changes color to LinkedIn blue on hover */
+  color: #0077b5;
 }
 
-/* Specific hover effect for GitHub icon */
 .fa-github:hover {
-  color: #171515 !important; /* Changes color to GitHub's black on hover, !important overrides general .icons i:hover */
+  color: #171515 !important;
 }
 
-/*
- * Name Styling
- */
-
-/* General font size for an element with the class 'name' */
-.name {
-  font-size: 3rem; /* Sets a large font size for the name */
-}
-
-
-
-/* Styles for the first paragraph within the hero section (e.g., "Hi, I'm") */
-.heroSection p:first-child {
-  font-size: 1.2rem; /* Sets font size */
-  color: var(--grey50); /* Sets text color using a CSS variable */
-  margin-bottom: 0.5rem; /* Adds margin below the text */
-}
-
+/* ===== CONTENT SECTIONS ===== */
+.content section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   
-
-.heroSection h1.name { /* Style your name */
-font-size: 3.5rem; /* Slightly larger than your current setting */
-font-weight: bold;
-margin-bottom: 0.5rem;
-color: #333;
+  /* Initial Animation State */
+  opacity: 0;
+  transform: translateY(50px) scale(0.98); /* Keep your original transform */
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
-.heroSection p:last-child { /* Style the "FullStackDeveloper" text */
-font-size: 1.1rem;
-color: var(--grey75);
-margin-bottom: 1rem;
+.content section.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
 
+/* Section Headers */
+.sectionHeader {
+  display: flex;
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  justify-content: center;
+  padding: 2em;
+  flex: 1;
+}
+
+/* Content Cards */
+.mainCard {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+div p {
+  font-family: 'Atkinson Hyperlegible', sans-serif;
+  color: #000000;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  text-align: left;
+  margin: 0;
+}
+
+/* Keep your specific about section card styling */
+#about .MainCard {
+  background: rgba(40, 40, 40, 0.25);
+  backdrop-filter: blur(12px);
+  border-radius: 15px;
+  animation: fadeIn 0.6s ease-out forwards;
 }
