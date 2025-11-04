@@ -1,101 +1,88 @@
-<spline-viewer
-  url="https://prod.spline.design/Gb-UtfkGJWGdhptu/scene.splinecode"
-></spline-viewer>
-<div class="navigationBar">
+<header class="navigationBar">
   <div class="sub-menu">
-    <ul>
-      <li [ngClass]="{'active': visibleSections.has('about')}">
-      <a href="#about" (click)="scrollToSection($event, 'about')">About</a>
-    </li>
-    <li [ngClass]="{'active': visibleSections.has('experience')}">
-      <a href="#experience" (click)="scrollToSection($event, 'experience')">Experience</a>
-    </li>
-    <li [ngClass]="{'active': visibleSections.has('projects')}">
-      <a href="#projects" (click)="scrollToSection($event, 'projects')">Projects</a>
-    </li>
-    <li [ngClass]="{'active': visibleSections.has('contact')}">
-      <a href="#contact" (click)="scrollToSection($event, 'contact')">Contact</a>
-    </li>
+    <div class="MyPortfolio">
+      My Portfolio
+      </div>
+    <ul class="navItems">
+      <li>
+          <a href="#about" >About</a>
+      </li>
+      <li >
+        <a href="#experience">Experience</a>
+      </li>
+      <li >
+        <a href="#projects" >Projects</a>
+      </li>
+      <li >
+        <a href="#contact" >Contact</a>
+      </li>
     </ul>
   </div>
-</div>
+</header>
 
 <section class="section-container">
   <div class="heroSection">
-    <div class="greet">Hello<span>, I'm</span></div>
+    <div class="greet">Hello<span style="font-weight: 12">, I'm</span></div>
     <h1 class="name">Bino Hlongwana</h1>
-    <p class="title">FullStackDeveloper</p>
-    <p>BSc Information Technology Student</p>
+    <p class="title">Full-Stack Developer</p>
     <div class="buttonfooter">
       <button class="downloadButton">Download CV</button>
       <button class="contactInfoButton">Contact Info</button>
     </div>
     <div class="icons">
       <i class="fa-brands fa-github"></i>
-      <i class="fa-brands fa-linkedin-in"></i>
+      <i class="fa-brands fa-linkedin-in linkedIn"></i>
     </div>
   </div>
 </section>
 
 <div class="content">
-
-  <section id="about">
+  <h3 id="knowMe">Get to know more</h3>
+  <h2 id="subAbout">About me</h2>
+  <section id="about" class="aboutSection">
    
-    <div>
-       <h2 class="sectionHeader">About Me</h2>
+    <div class="aboutMeChild">
       <div class="mainCard">
-          <p>I'm a 23-year-old software developer from Pretoria, South Africa, guided by the "less but better" philosophy
-            in creating web experiences that are both elegant and functional. 
-            My passion for exceptional design is complemented by my commitment to building robust, 
-            resilient software systems. As a masterful communicator who bridges technical and business perspectives,
-            I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
-          </p>
+        <i class="fa-solid fa-lightbulb" style="display:flex; justify-content: center; text-align: center;"></i>
+       <h2 class="sectionHeader">Experience</h2>
+            <p>I'm a 23-year-old software developer from Pretoria, South Africa, guided by the "less but better" philosophy
+              in creating web experiences that are both elegant and functional. 
+              My passion for exceptional design is complemented by my commitment to building robust, 
+              resilient software systems. As a masterful communicator who bridges technical and business perspectives,
+              I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
+            </p>
+        </div>
       </div>
-    </div>
-  </section>
-
-  <section id="experience">
-   
-    <div >
-       <h2 class="sectionHeader">My Experience</h2>
-      <div class="mainCard">
-          <p>I'm a 23-year-old software developer from Pretoria, South Africa, guided by the "less but better" philosophy
-            in creating web experiences that are both elegant and functional. 
-            My passion for exceptional design is complemented by my commitment to building robust, 
-            resilient software systems. As a masterful communicator who bridges technical and business perspectives,
-            I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
-          </p>
-      </div>
-      </div>
+        <div class="aboutMeChild">
+          <div class="mainCard">
+          <i class="fa-solid fa-code" style="display:flex; justify-content: center; text-align: center;"></i>
+          <h2 class="sectionHeader">Education</h2>
+            <p>I'm a 23-year-old software developer from Pretoria, South Africa, guut better" philosophy
+              in creating web experiences that are both elegant and functional. 
+              My passion for exceptional design is complemented by my commitment to building robust, 
+              resilient software systems. As a masterful communicator who bridges technical and business perspectives,
+              I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
+            </p>
+        </div>
+        </div>
   </section>
 
   <section id="projects">
-   
     <div>
-       <h2 class="sectionHeader" >Projects</h2>
-      <div class="mainCard">
-          <p>I'm a 23-year-old software developer from Pretoria, South Africa, guided by the "less but better" philosophy
-            in creating web experiences that are both elegant and functional. 
-            My passion for exceptional design is complemented by my commitment to building robust, 
-            resilient software systems. As a masterful communicator who bridges technical and business perspectives,
-            I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
-          </p>
-      </div>
+       <h2 class="sectionHeader">Projects</h2>
     </div>
+    
   </section>
 
   <section id="contact">
-   
     <div >
-       <h2 class="sectionHeader">Contact Me</h2>
-      <div class="mainCard">
-        <p>I'm a 23-year-old software developer from Pretoria, South Africa, guided by the "less but better" philosophy
-            in creating web experiences that are both elegant and functional. 
-            My passion for exceptional design is complemented by my commitment to building robust, 
-            resilient software systems. As a masterful communicator who bridges technical and business perspectives,
-            I'm actively seeking challenging projects that push boundaries and demand innovative solutions.
-          </p>
-      </div>
+       <h2 class="sectionHeader">Contact Me
+       </h2>
+       <div>
+
+       </div>
     </div>
   </section>
 </div>
+<footer class="footer">
+  <p>© 2024 Bino Hlongwana. All rights reserved.</p>
