@@ -121,20 +121,39 @@ i{
 h2{
   margin:0px
 }
-.mainCard{
-  width: 600px;
-  height: 280px;
-  padding: 1em;
+.aboutMeChild{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap:1em;
+  margin: 0 2em;
 }
 
 .aboutSection{
   display: flex;
-  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   gap:1em;
   width: 1350px;
 }
+p#myself{
+  font-size: 1.2em;
+  line-height: 1.6; 
+  font-weight: 100;
+  margin: 1em 10em;
+  text-align: center;
+
+}
 
 .mainCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 600px;
+  height: 280px;
   margin: 4em 0.2em;
   padding: 1.5em;
   border: 2px solid grey;
@@ -149,16 +168,14 @@ h2{
 }
 
 .sectionHeader {
-  margin: 0.5em 0;
+  text-align: center;
+  margin: 0.2em 0;
   font-size: 1.5em;
 }
 
 .experience-item {
-  margin: 0.5em 0;
-  padding: 0.5em 0;
+  margin: 0.2em 0;
 }
-
-
 
 .experience-duration {
   font-weight: bold;
@@ -187,4 +204,14 @@ h2{
   margin-top:0.2em;
   padding: 10px;
   margin: 10px;
+}
+
+#contactMeContainer{
+  display: flex;
+  width:500px;
+  border: 1px solid grey;
+  border-radius: 24px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
