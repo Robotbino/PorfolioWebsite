@@ -12,7 +12,11 @@
 .navigation-bar.scrolled {
   box-shadow: var(--shadow-sm);
 }
-
+em{
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent);
+}
 .navigation-content {
   display: flex;
   justify-content: space-between;
@@ -75,6 +79,7 @@
 }
 
 .hero-greeting {
+  text-align: start;
   font-size: var(--font-size-6xl);
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-md);
@@ -93,10 +98,12 @@
 }
 
 .hero-title {
+  text-align: start;
   font-size: var(--font-size-xl);
   color: var(--color-text-secondary);
   font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-2xl);
+  margin-left: var(--space-xs);
 }
 
 .hero-actions {

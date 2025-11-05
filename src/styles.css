@@ -15,7 +15,7 @@
   --font-size-3xl: 2.5rem;     /* 40px */
   --font-size-4xl: 3rem;       /* 48px */
   --font-size-5xl: 4rem;       /* 64px */
-  --font-size-6xl: 6rem;       /* 96px */
+  --font-size-6xl: 6.2rem;       /* 96px */
   
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -75,8 +75,8 @@
   /* Layout */
   --max-width-content: 1400px;
   --max-width-text: 65ch;
-  --section-spacing: var(--space-5xl); /* Large vertical spacing */
-  --content-margin-top: 5em; /* Matching original .content margin-top */
+  --section-spacing: var(--space-5xl); 
+  --content-margin-top: 5em; 
 }
 
 /* ============================================
@@ -266,7 +266,7 @@ textarea:not([rows]) {
     --font-size-5xl: 3rem;
     --font-size-4xl: 2.5rem;
     --font-size-3xl: 2rem;
-    --space-5xl: 4rem; /* Scale down the huge gaps on mobile */
+    --space-5xl: 4rem;
     --space-6xl: 3rem;
     --section-spacing: var(--space-3xl);
   }
