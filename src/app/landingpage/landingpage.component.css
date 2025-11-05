@@ -33,7 +33,8 @@ ul.navItems{
 a{
   text-decoration: none;
   color: black;
-  font-weight: bold;
+  font-weight: 500;
+  line-height: 2em;
   font-size: 18px;
 }
 
@@ -165,6 +166,7 @@ p#myself{
   font-size: 2em;
   color: grey;
   margin-bottom: 0.5em;
+  margin:0px 0px 0.5em 0px;
 }
 
 .sectionHeader {
@@ -190,7 +192,7 @@ p#myself{
   font-size: 0.95em;
 }
 
-#knowMe{
+.preHeader{
   display: block;
   font-size: 1em;
   font-weight: 100;
@@ -208,10 +210,368 @@ p#myself{
 
 #contactMeContainer{
   display: flex;
-  width:500px;
+  flex-direction: row;
+  width:600px;
+  gap:2em;
+  margin-top: 5em;
+  margin-bottom: 10em;
+  height: 120px;
+  padding: 0em 4em;
   border: 1px solid grey;
   border-radius: 24px;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+}
+
+
+.contactItem{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;;
+  align-items: center;
+  padding-left: 2px;
+}
+.contactItem>i{
+  margin-top: 12px;
+}
+
+.experienceContainer {
+  display: flex;
+  gap: 2em;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1em;
+}
+
+.experienceCard {
+  flex: 1;
+  margin: 3em 0em;
+  border: 2px solid #ddd;
+  border-radius: 2em;
+  padding: 2em;
+  background-color: #fff;
+}
+
+.cardTitle {
+  text-align: center;
+  font-size: 1.8em;
+  font-weight: 600;
+  margin-bottom: 1.5em;
+  color: #333;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2em 1.5em;
+}
+
+.skillGroup {
+  display: flex;
   flex-direction: column;
+  gap: 0.5em;
+}
+
+.skillHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.checkmark {
+  background-color: #000;
+  color: #fff;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.skillHeader h4 {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.skillList {
+  margin: 0;
+  padding-left: 2em;
+  font-size: 0.95em;
+  color: #666;
+  line-height: 1.6;
+}
+
+.ProjectContainer {
+  display: flex;
+  gap: 2em;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1em;
+}
+
+.projectCard{
+  flex: 1;
+  margin: 3em 0em;
+  border: 2px solid #ddd;
+  border-radius: 2em;
+  padding: 2em;
+  background-color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .experienceContainer {
+    flex-direction: column;
+  }
+  
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sectionHeader {
+    font-size: 2em;
+  }
+}
+
+
+
+/* Projects Section */
+#projects {
+  padding: 4em 2em;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.projectsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 3em;
+  margin-top: 3em;
+}
+
+/* Project Card */
+.projectCard {
+  background: #fff;
+  border-radius: 1.5em;
+  padding: 0;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.projectCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.projectContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  min-height: 400px;
+}
+
+/* Text Content */
+.projectText {
+  padding: 3em;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
+
+.projectTitle {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.projectDescription {
+  font-size: 1.05em;
+  line-height: 1.7;
+  color: #555;
+  margin: 0;
+}
+
+/* Technology Tags */
+.projectTech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75em;
+}
+
+.techTag {
+  display: inline-block;
+  padding: 0.5em 1em;
+  background: #f0f0f0;
+  border-radius: 2em;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #333;
+  transition: background 0.3s ease;
+}
+
+.techTag:hover {
+  background: #e0e0e0;
+}
+
+/* Project Links */
+.projectLinks {
+  display: flex;
+  gap: 1em;
+  margin-top: 0.5em;
+}
+
+.projectBtn {
+  padding: 0.75em 1.75em;
+  background: #1a1a1a;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 2em;
+  font-weight: 600;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+  border: 2px solid #1a1a1a;
+}
+
+.projectBtn:hover {
+  background: #333;
+  transform: scale(1.05);
+}
+
+.projectBtnSecondary {
+  background: transparent;
+  color: #1a1a1a;
+  border: 2px solid #1a1a1a;
+}
+
+.projectBtnSecondary:hover {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* Image Container with Gradient */
+.projectImage {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.projectImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Gradient Overlay - Fades from transparent (left) to white (right) */
+.projectImage::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to left, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.3) 40%,
+    rgba(255, 255, 255, 0.8) 70%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  pointer-events: none;
+}
+
+
+.projectCard:nth-child(even) .projectText {
+  direction: ltr;
+}
+
+.projectCard:nth-child(even) .projectImage::after {
+  background: linear-gradient(to left, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.3) 40%,
+    rgba(255, 255, 255, 0.8) 70%,
+    rgba(255, 255, 255, 1) 100%
+  );
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #projects {
+    padding: 3em 1em;
+  }
+
+  .projectContent {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .projectText {
+    padding: 2em 1.5em;
+    order: 1;
+  }
+
+  .projectImage {
+    order: 2;
+    min-height: 300px;
+  }
+
+  /* Reset gradient for mobile - fade from bottom to top */
+  .projectImage::after {
+    background: linear-gradient(to top, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 1) 100%
+    );
+  }
+
+  /* Remove alternating layout on mobile */
+  .projectCard:nth-child(even) .projectContent {
+    direction: ltr;
+  }
+
+  .projectCard:nth-child(even) .projectImage::after {
+    background: linear-gradient(to top, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 1) 100%
+    );
+  }
+
+  .projectTitle {
+    font-size: 1.6em;
+  }
+
+  .projectDescription {
+    font-size: 1em;
+  }
+
+  .projectLinks {
+    flex-direction: column;
+  }
+
+  .projectBtn {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .projectText {
+    padding: 1.5em 1em;
+  }
+
+  .projectTech {
+    gap: 0.5em;
+  }
+
+  .techTag {
+    font-size: 0.85em;
+    padding: 0.4em 0.8em;
+  }
 }
