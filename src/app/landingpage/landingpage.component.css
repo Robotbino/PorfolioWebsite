@@ -264,6 +264,14 @@
   color: var(--color-text-tertiary);
   margin-bottom: var(--space-lg);
 }
+.card:hover .card-icon.qualification {
+  animation: bulbGlow 1s ease-in-out infinite alternate;
+}
+.card:hover .card-icon.education {
+  animation: educationGlow 1s ease-in-out infinite alternate;
+}
+
+
 
 .card-title {
   font-size: var(--font-size-xl);
@@ -685,5 +693,37 @@
   
   .tech-tag {
     font-size: var(--font-size-xs);
+  }
+}
+
+@keyframes bulbGlow {
+  0% {
+    color: #d4b23a; /* muted golden yellow */
+    text-shadow:
+      0 0 3px #d4b23a,
+      0 0 6px rgba(212, 178, 58, 0.5);
+    filter: brightness(0.95);
+  }
+  100% {
+    color: #e9d47a; /* soft warm tone */
+    text-shadow:
+      0 0 6px #e9d47a,
+      0 0 10px rgba(233, 212, 122, 0.4);
+    filter: brightness(1.05);
+  }
+}
+
+
+
+@keyframes educationGlow {
+  0% {
+    color: #0f80f1;
+    text-shadow: 0 0 5px #0f80f1, 0 0 10px #0f80f1, 0 0 20px #0f80f1;
+    filter: brightness(0.9);
+  }
+  100% {
+    color: #ffffff;
+    text-shadow: 0 0 10px #67c6f9, 0 0 20px #67c6f9, 0 0 40px #67c6f9;
+    filter: brightness(1.2);
   }
 }
