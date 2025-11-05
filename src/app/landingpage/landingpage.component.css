@@ -1,6 +1,3 @@
-/* ============================================
-   NAVIGATION
-   ============================================ */
 
 .navigation-bar {
   position: sticky;
@@ -62,9 +59,6 @@
   width: 100%;
 }
 
-/* ============================================
-   HERO SECTION
-   ============================================ */
 
 .hero {
   min-height: calc(100vh - 80px);
@@ -122,7 +116,7 @@
 }
 
 /* ============================================
-   BUTTON COMPONENT (DRY)
+   BUTTON COMPONENT
    ============================================ */
 
 .btn {
@@ -186,7 +180,7 @@
 }
 
 /* ============================================
-   SECTION HEADER COMPONENT (DRY)
+   SECTION HEADER COMPONENT 
    ============================================ */
 
 .section-header {
@@ -216,9 +210,9 @@
    ABOUT SECTION
    ============================================ */
 
-/* Content wrapper for sections after hero */
+
 .content-wrapper {
-  margin-top: var(--content-margin-top); /* 5em from original */
+  margin-top: var(--content-margin-top); 
 }
 
 .about-cards {
@@ -226,7 +220,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: row;
-  gap: var(--space-md); /* Original was 1em */
+  gap: var(--space-md); 
   margin: 0 var(--space-xl);
   margin-bottom: var(--space-xl);
   max-width: var(--max-width-content);
@@ -234,11 +228,11 @@
 }
 
 .about-text {
-  max-width: var(--max-width-content); /* Use full width like original */
+  max-width: var(--max-width-content); 
   margin-inline: auto;
   font-size: var(--font-size-lg);
-  line-height: 1.6; /* Matching original */
-  font-weight: 100; /* Matching original thin weight */
+  line-height: 1.6; 
+  font-weight: var(); 
   color: var(--color-text-secondary);
   text-align: center;
   margin: var(--space-md) var(--space-6xl); /* Huge horizontal margins like original 10em */
