@@ -1,271 +1,369 @@
-<header class="navigationBar">
-  <div class="sub-menu">
-    <div class="MyPortfolio">
-      My Portfolio
-    </div>
-    <ul class="navItems">
+<!-- ============================================
+     NAVIGATION
+     ============================================ -->
+<header class="navigation-bar" id="header">
+  <nav class="navigation-content" aria-label="Main navigation">
+    <div class="logo">My Portfolio</div>
+    <ul class="nav-items" role="list">
       <li>
-        <a href="#about">About</a>
+        <a href="#about" class="nav-link">About</a>
       </li>
       <li>
-        <a href="#experience">Experience</a>
+        <a href="#experience" class="nav-link">Experience</a>
       </li>
       <li>
-        <a href="#projects">Projects</a>
+        <a href="#projects" class="nav-link">Projects</a>
       </li>
       <li>
-        <a href="#contact">Contact</a>
+        <a href="#contact" class="nav-link">Contact</a>
       </li>
     </ul>
-  </div>
+  </nav>
 </header>
 
-<section class="section-container">
-  <div class="heroSection">
-    <div class="greet">Hello<span style="font-weight: 12">, I'm</span></div>
-    <h1 class="name">Bino Hlongwana</h1>
-    <p class="title">Full-Stack Developer</p>
-    <div class="buttonfooter">
-      <button class="downloadButton">Download CV</button>
-      <button class="contactInfoButton">Contact Info</button>
+<!-- ============================================
+     HERO SECTION
+     ============================================ -->
+<section class="hero" id="hero" aria-labelledby="hero-greeting">
+  <div class="hero-content">
+    <h1 class="hero-greeting" id="hero-greeting">
+      Hello<span class="hero-greeting-light">, I'm</span>
+    </h1>
+    <h2 class="hero-name">Bino Hlongwane</h2>
+    <p class="hero-title">Full-Stack Developer</p>
+    
+    <div class="hero-actions">
+      <button class="btn btn-secondary" aria-label="Download CV">
+        Download CV
+      </button>
+      <button class="btn btn-primary" aria-label="Contact Information">
+        Contact Info
+      </button>
     </div>
-    <div class="icons">
-      <i class="fa-brands fa-github"></i>
-      <i class="fa-brands fa-linkedin-in linkedIn"></i>
+    
+    <div class="hero-socials" role="list" aria-label="Social media links">
+      <a href="https://github.com/Robotbino" 
+         class="social-link" 
+         aria-label="GitHub profile"
+         target="_blank"
+         rel="noopener noreferrer">
+        <i class="fa-brands fa-github" aria-hidden="true"></i>
+      </a>
+      <a href="https://linkedin.com/in/robotbino" 
+         class="social-link linkedin" 
+         aria-label="LinkedIn profile"
+         target="_blank"
+         rel="noopener noreferrer">
+        <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
+      </a>
     </div>
   </div>
 </section>
 
-<div class="content">
-  <h3 class="preHeader">Get to know more</h3>
-  <h2 id="subAbout">About me</h2>
-  <section id="about" class="aboutSection">
-    <div class="aboutMeChild">
-      <div class="mainCard">
-        <i class="fa-solid fa-lightbulb card-icon"></i>
-        <h2 class="sectionHeader">Qualifications</h2>
-        <div class="experience-item">
-          <p class="experience-duration">3+ Years</p>
-          <p class="experience-role">Information Technology Student</p>
+<!-- ============================================
+     MAIN CONTENT WRAPPER
+     ============================================ -->
+<div class="content-wrapper">
+  
+<!-- ============================================
+     ABOUT SECTION
+     ============================================ -->
+<section class="section" id="about" aria-labelledby="about-title">
+  <div class="container">
+    <header class="section-header">
+      <p class="section-pre-title">Get to know more</p>
+      <h2 class="section-title" id="about-title">About Me</h2>
+    </header>
+    
+    <div class="about-cards">
+      <article class="card fade-in">
+        <i class="fa-solid fa-lightbulb card-icon" aria-hidden="true"></i>
+        <h3 class="card-title">Qualifications</h3>
+        <div class="card-content">
+          <div class="card-item">
+            <span class="card-item-title">3+ Years</span>
+            <span class="card-item-text">Information Technology Student</span>
+          </div>
+          <div class="card-item">
+            <span class="card-item-title">1 Year</span>
+            <span class="card-item-text">Software Development</span>
+          </div>
         </div>
-        <div class="experience-item">
-          <p class="experience-duration">1 Year</p>
-          <p class="experience-role">Software Development</p>
+      </article>
+      
+      <article class="card fade-in">
+        <i class="fa-solid fa-code card-icon" aria-hidden="true"></i>
+        <h3 class="card-title">Education</h3>
+        <div class="card-content">
+          <p class="card-item-text">
+            BSc in Information Technology from the North-West University (NWU)
+          </p>
         </div>
-      </div>
-      <div class="mainCard">
-        <i class="fa-solid fa-code  card-icon"></i>
-        <div class="experience-item">
-          <h2 class="sectionHeader">Education</h2>
-          <p>BSc in Information Technology from the North-West University (NWU)</p>
-        </div>
-      </div>
-
+      </article>
     </div>
-    <p id="myself">I am a 22-year-old software developer based in Pretoria, South Africa, committed to the _less but
-      better_ philosophy—where simplicity drives impact and precision fuels design.
-      Passionate about creating intuitive, well-crafted web experiences, I build software that is not only functional
-      but robust, designed to perform under real-world demands. As a masterful communicator, I bridge complexity with
-      clarity, ensuring seamless execution from concept to code. I seek challenges that push boundaries, refine my
-      craft, and drive innovation in every project I undertake.</p>
-  </section>
+    
+    <p class="about-text">
+      I am a 22-year-old software developer based in Pretoria, South Africa, committed to the 
+      <em>less but better</em> philosophy—where simplicity drives impact and precision fuels design. 
+      Passionate about creating intuitive, well-crafted web experiences, I build software that is 
+      not only functional but robust, designed to perform under real-world demands. As a masterful 
+      communicator, I bridge complexity with clarity, ensuring seamless execution from concept to 
+      code. I seek challenges that push boundaries, refine my craft, and drive innovation in every 
+      project I undertake.
+    </p>
+  </div>
+</section>
 
-  <section id="experience">
-    <h3 class="preHeader">Explore My</h3>
-    <h2 class="sectionHeader">Experience</h2>
-    <div class="experienceContainer">
-      <div class="experienceCard">
-        <h3 class="cardTitle">Technologies</h3>
-        <div class="cardGrid">
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Programming Languages</h4>
+<!-- ============================================
+     EXPERIENCE SECTION
+     ============================================ -->
+<section class="section" id="experience" aria-labelledby="experience-title">
+  <div class="container">
+    <header class="section-header">
+      <p class="section-pre-title">Explore My</p>
+      <h2 class="section-title" id="experience-title">Experience</h2>
+    </header>
+    
+    <div class="experience-grid">
+      <!-- Technical Skills Card -->
+      <article class="experience-card">
+        <h3 class="experience-card-title">Technologies</h3>
+        <div class="skills-grid">
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Programming Languages</h4>
             </div>
-            <p class="skillList">Java, Javascript, React, Angular, Data Structures</p>
+            <p class="skill-list">Java, JavaScript, React, Angular, Data Structures</p>
           </div>
-
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Database Management</h4>
+          
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Database Management</h4>
             </div>
-            <p class="skillList">SQL, Oracle, MySQL</p>
+            <p class="skill-list">SQL, Oracle, MySQL</p>
           </div>
-
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Software Development and Web Applications</h4>
+          
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Software Development & Web Applications</h4>
             </div>
-            <p class="skillList">Spring Framework, Java EE, API Development and Testing</p>
+            <p class="skill-list">Spring Framework, Java EE, API Development and Testing</p>
           </div>
-
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Tools and IDE'S</h4>
+          
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Tools and IDEs</h4>
             </div>
-            <p class="skillList">Eclipse, Visual Studio, Github, IntelliJ IDEA</p>
+            <p class="skill-list">Eclipse, Visual Studio, GitHub, IntelliJ IDEA</p>
           </div>
-
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Methodoligies</h4>
+          
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Methodologies</h4>
             </div>
-            <p class="skillList">Agile, Waterfall, Systems Development Life Cycle</p>
+            <p class="skill-list">Agile, Waterfall, Systems Development Life Cycle</p>
           </div>
-
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Other Skills</h4>
+          
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Other Skills</h4>
             </div>
-            <p class="skillList">Data Collection, Data Modelling and Data Visualization</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Non Technical Skills Card -->
-      <div class="experienceCard">
-        <h3 class="cardTitle">Non Technical-Skills</h3>
-        <div class="cardGrid">
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Communication and Collaboration</h4>
-            </div>
-          </div>
-
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Analytical Thinker</h4>
-            </div>
-          </div>
-
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Continous Learning</h4>
-            </div>
-          </div>
-
-          <div class="skillGroup">
-            <div class="skillHeader">
-              <span class="checkmark">✓</span>
-              <h4>Deadline and Results-Driven</h4>
-            </div>
+            <p class="skill-list">Data Collection, Data Modelling and Data Visualization</p>
           </div>
         </div>
-      </div>
+      </article>
+      
+      <!-- Non-Technical Skills Card -->
+      <article class="experience-card">
+        <h3 class="experience-card-title">Non-Technical Skills</h3>
+        <div class="skills-grid">
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Communication and Collaboration</h4>
+            </div>
+          </div>
+          
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Analytical Thinker</h4>
+            </div>
+          </div>
+          
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Continuous Learning</h4>
+            </div>
+          </div>
+          
+          <div class="skill-group">
+            <div class="skill-header">
+              <span class="checkmark" aria-hidden="true">✓</span>
+              <h4 class="skill-title">Deadline and Results-Driven</h4>
+            </div>
+          </div>
+        </div>
+      </article>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="projects">
-    <h3 class="preHeader">Browse My Recent</h3>
-    <h2 class="sectionHeader">Projects</h2>
-
-    <div class="projectsContainer">
-
-      <!-- Project 1: Memory Leak Game -->
-      <div class="projectCard">
-        <div class="projectContent">
-          <div class="projectText">
-            <h3 class="projectTitle">Memory Leak</h3>
-            <p class="projectDescription">
+<!-- ============================================
+     PROJECTS SECTION
+     ============================================ -->
+<section class="section" id="projects" aria-labelledby="projects-title">
+  <div class="container">
+    <header class="section-header">
+      <p class="section-pre-title">Browse My Recent</p>
+      <h2 class="section-title" id="projects-title">Projects</h2>
+    </header>
+    
+    <div class="projects-container">
+      <!-- Project 1: Memory Leak -->
+      <article class="project-card">
+        <div class="project-content">
+          <div class="project-text">
+            <h3 class="project-title">Memory Leak</h3>
+            <p class="project-description">
               An interactive memory card game built with React featuring themed cards,
               score tracking, and attempt limits. Players flip cards to find matching pairs
               while racing against their remaining attempts.
             </p>
-            <div class="projectTech">
-              <span class="techTag">React</span>
-              <span class="techTag">JavaScript</span>
-              <span class="techTag">CSS3</span>
-              <span class="techTag">HTML5</span>
+            <div class="project-tech" role="list" aria-label="Technologies used">
+              <span class="tech-tag">React</span>
+              <span class="tech-tag">JavaScript</span>
+              <span class="tech-tag">CSS3</span>
+              <span class="tech-tag">HTML5</span>
             </div>
-            <div class="projectLinks">
-              <a href="https://github.com/Robotbino/CodePairs.git" class="projectBtn projectBtnSecondary">GitHub</a>
+            <div class="project-links">
+              <a href="https://github.com/Robotbino/CodePairs.git" 
+                 class="btn btn-secondary"
+                 target="_blank"
+                 rel="noopener noreferrer">
+                GitHub
+              </a>
             </div>
           </div>
-          <div class="projectImage">
-            <img src="/assets/CodePairsDemo.png" alt="Memory Leak Game Screenshot">
+          <div class="project-image">
+            <img src="/assets/CodePairsDemo.png" 
+                 alt="Memory Leak game showing card matching interface"
+                 loading="lazy">
           </div>
         </div>
-      </div>
-
+      </article>
+      
       <!-- Project 2: Employee Manager -->
-      <div class="projectCard">
-        <div class="projectContent">
-          <div class="projectText">
-            <h3 class="projectTitle">Employee Manager</h3>
-            <p class="projectDescription">
+      <article class="project-card">
+        <div class="project-content">
+          <div class="project-text">
+            <h3 class="project-title">Employee Manager</h3>
+            <p class="project-description">
               A full-stack employee management system with Spring Boot backend and Angular
               frontend. Features JWT authentication, CRUD operations, and MySQL database
               integration for secure employee data management.
             </p>
-            <div class="projectTech">
-              <span class="techTag">Spring Boot</span>
-              <span class="techTag">Angular</span>
-              <span class="techTag">MySQL</span>
-              <span class="techTag">JWT</span>
+            <div class="project-tech" role="list" aria-label="Technologies used">
+              <span class="tech-tag">Spring Boot</span>
+              <span class="tech-tag">Angular</span>
+              <span class="tech-tag">MySQL</span>
+              <span class="tech-tag">JWT</span>
             </div>
-            <div class="projectLinks">
+            <div class="project-links">
               <a href="https://github.com/Robotbino/EmployeeManager-Application.git"
-                class="projectBtn projectBtnSecondary">GitHub</a>
+                 class="btn btn-secondary"
+                 target="_blank"
+                 rel="noopener noreferrer">
+                GitHub
+              </a>
             </div>
           </div>
-          <div class="projectImage">
-            <img src="/assets/CodePairsDemo.png" alt="Employee Manager Screenshot">
+          <div class="project-image">
+            <img src="/assets/CodePairsDemo.png" 
+                 alt="Employee Manager dashboard interface"
+                 loading="lazy">
           </div>
         </div>
-      </div>
-
+      </article>
+      
       <!-- Project 3: Portfolio Website -->
-      <div class="projectCard">
-        <div class="projectContent">
-          <div class="projectText">
-            <h3 class="projectTitle">Portfolio Website</h3>
-            <p class="projectDescription">
+      <article class="project-card">
+        <div class="project-content">
+          <div class="project-text">
+            <h3 class="project-title">Portfolio Website</h3>
+            <p class="project-description">
               A modern, responsive portfolio website showcasing projects and skills.
               Built with vanilla JavaScript and CSS, featuring smooth animations,
               dark mode support, and optimized performance.
             </p>
-            <div class="projectTech">
-              <span class="techTag">JavaScript</span>
-              <span class="techTag">HTML5</span>
-              <span class="techTag">CSS3</span>
-              <span class="techTag">Responsive Design</span>
+            <div class="project-tech" role="list" aria-label="Technologies used">
+              <span class="tech-tag">JavaScript</span>
+              <span class="tech-tag">HTML5</span>
+              <span class="tech-tag">CSS3</span>
+              <span class="tech-tag">Responsive Design</span>
             </div>
-            <div class="projectLinks">
-
+            <div class="project-links">
               <a href="https://github.com/Robotbino/PorfolioWebsite.git"
-                class="projectBtn projectBtnSecondary">GitHub</a>
+                 class="btn btn-secondary"
+                 target="_blank"
+                 rel="noopener noreferrer">
+                GitHub
+              </a>
             </div>
           </div>
-          <div class="projectImage">
-            <img src="/assets/CodePairsDemo.png" alt="Portfolio Website Screenshot">
+          <div class="project-image">
+            <img src="/assets/CodePairsDemo.png" 
+                 alt="Portfolio website homepage"
+                 loading="lazy">
           </div>
         </div>
-      </div>
-
+      </article>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="contact">
-    <h2 class="sectionHeader">Contact Me</h2>
-    <div id="contactMeContainer">
-      <div class="contactItem">
-        <i class="fa-solid fa-envelope  card-icon"></i>
-        <a>HlongwanaBino&#64;gmail.com</a>
+<!-- ============================================
+     CONTACT SECTION
+     ============================================ -->
+<section class="section" id="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <header class="section-header">
+      <h2 class="section-title" id="contact-title">Contact Me</h2>
+    </header>
+    
+    <div class="contact-container">
+      <div class="contact-item">
+        <i class="fa-solid fa-envelope contact-icon" aria-hidden="true"></i>
+        <a href="HlongwanaBino@gmail.com" class="contact-link">
+         HlongwanaBino&#64;gmail.com
+        </a>
       </div>
-      <div class="contactItem">
-        <i class="fa-brands fa-linkedin card-icon">
-        </i><a>RobotBino</a>
+      <div class="contact-item">
+        <i class="fa-brands fa-linkedin contact-icon" aria-hidden="true"></i>
+        <a href="https://linkedin.com/in/robotbino" 
+           class="contact-link"
+           target="_blank"
+           rel="noopener noreferrer">
+          RobotBino
+        </a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
 </div>
+<!-- End content-wrapper -->
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
 <footer class="footer">
-  <p>© 2024 Bino Hlongwana. All rights reserved.</p>
+  <p>&copy; 2024 Bino Hlongwane. All rights reserved.</p>
+</footer>
