@@ -8,8 +8,16 @@ import { Component } from '@angular/core';
   styleUrl: './landingpage.component.css'
 })
 export class LandingpageComponent {
+  private darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  private darkMode = this.darkModeMediaQuery.matches;
 
-
-
-
+  constructor() {
+    this.darkModeMediaQuery.addEventListener("change", (e) => {
+      if (e.matches) {
+        this.darkMode = true;
+      } else {
+        this.darkMode = false;
+      }
+    });
+  }
 }
