@@ -15,30 +15,23 @@
         <a href="#contact" class="nav-link">Contact</a>
       </li>
     </ul>
-    <button>
-      <svg width="30" height="30">
-  <circle cx="15" cy="15" r="6" fill="currentColor" />
-
-  <line
-    id="ray"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    x1="15"
-    y1="1"
-    x2="15"
-    y2="4"
-  ></line>
-
-  <use href="#ray" transform="rotate(45 15 15)" />
-  <use href="#ray" transform="rotate(90 15 15)" />
-  <use href="#ray" transform="rotate(135 15 15)" />
-  <use href="#ray" transform="rotate(180 15 15)" />
-  <use href="#ray" transform="rotate(225 15 15)" />
-  <use href="#ray" transform="rotate(270 15 15)" />
-  <use href="#ray" transform="rotate(315 15 15)" />
-</svg>
-
+    <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="isDarkModeActive ? 'Switch to light mode' : 'Switch to dark mode'">
+      <!-- Sun icon for light mode -->
+      <svg *ngIf="!isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <!-- Moon icon for dark mode -->
+      <svg *ngIf="isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
     </button>
   </nav>
 </header>
@@ -141,7 +134,7 @@
         <div class="skills-grid">
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Programming Languages</h4>
             </div>
             <p class="skill-list">Java, JavaScript, React, Angular, Data Structures</p>
@@ -149,7 +142,7 @@
           
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Database Management</h4>
             </div>
             <p class="skill-list">SQL, Oracle, MySQL</p>
@@ -157,7 +150,7 @@
           
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Software Development & Web Applications</h4>
             </div>
             <p class="skill-list">Spring Framework, Java EE, API Development and Testing</p>
@@ -165,7 +158,7 @@
           
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Tools and IDEs</h4>
             </div>
             <p class="skill-list">Eclipse, Visual Studio, GitHub, IntelliJ IDEA</p>
@@ -173,7 +166,7 @@
           
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Methodologies</h4>
             </div>
             <p class="skill-list">Agile, Waterfall, Systems Development Life Cycle</p>
@@ -181,7 +174,7 @@
           
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Other Skills</h4>
             </div>
             <p class="skill-list">Data Collection, Data Modelling and Data Visualization</p>
@@ -195,28 +188,28 @@
         <div class="skills-grid">
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Communication and Collaboration</h4>
             </div>
           </div>
           
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Analytical Thinker</h4>
             </div>
           </div>
           
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Continuous Learning</h4>
             </div>
           </div>
           
           <div class="skill-group">
             <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✓</span>
+              <span class="checkmark" aria-hidden="true">✔</span>
               <h4 class="skill-title">Deadline and Results-Driven</h4>
             </div>
           </div>
@@ -294,7 +287,7 @@
             </div>
           </div>
           <div class="project-image">
-            <img src="/assets/CodePairsDemo.png" 
+            <img src="/assets/employeeManager.png" 
                  alt="Employee Manager dashboard interface"
                  loading="lazy">
           </div>
@@ -346,7 +339,7 @@
     <div class="contact-container">
       <div class="contact-item">
         <i class="fa-solid fa-envelope contact-icon" aria-hidden="true"></i>
-        <a href="HlongwanaBino@gmail.com" class="contact-link">
+        <a href="mailto:HlongwanaBino@gmail.com" class="contact-link">
          HlongwanaBino&#64;gmail.com
         </a>
       </div>
@@ -364,6 +357,8 @@
 </section>
 
 </div>
+
+
 
 <footer class="footer">
   <p>&copy; 2025 Bino Hlongwana. All rights reserved.</p>
