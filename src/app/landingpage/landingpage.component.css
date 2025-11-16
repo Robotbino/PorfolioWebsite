@@ -306,7 +306,7 @@ em{
 .card-item-text {
   font-size: var(--font-size-lg);
   color: var(--color-text-tertiary);
-  line-height: var(--line-height-tight);
+  line-height: var(--line-height-tightcla);
 }
 
 /* ============================================
