@@ -235,7 +235,7 @@ em{
 
 .about-text {
   max-width: var(--max-width-content); 
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
   line-height: 1.6; 
   color: var(--color-text-secondary);
   text-align: center;
@@ -299,14 +299,14 @@ em{
 
 .card-item-title {
   font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-xl);
   color: var(--color-text-primary);
 }
 
 .card-item-text {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-lg);
   color: var(--color-text-tertiary);
-  line-height: var(--line-height-normal);
+  line-height: var(--line-height-tight);
 }
 
 /* ============================================
@@ -619,7 +619,7 @@ em{
   }
   
   .about-text {
-    margin: var(--space-md) var(--space-lg); 
+    margin: var(--space-md) var(--space-lg);
   }
   
   .card {
