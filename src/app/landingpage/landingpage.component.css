@@ -398,7 +398,7 @@ em{
 }
 
 .project-card {
-  background-color: var(--color-card-bg);
+  background-color: var(--color-background);
   border-radius: var(--radius-xl);
   overflow: hidden;
   transition: all var(--transition-base);
@@ -479,11 +479,11 @@ em{
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    to left,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.8) 80%,
-    rgba(255, 255, 255, 1) 100%
+    to left,  
+    var(--gradient-overlay-start) 0%,
+    var( --gradient-overlay-mid) 50%,
+    var(--gradient-overlay-strong) 80%,
+    var(--gradient-overlay-full) 100%
   );
   pointer-events: none;
 }
