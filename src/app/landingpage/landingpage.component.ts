@@ -17,15 +17,12 @@ export class LandingpageComponent implements OnInit,OnDestroy {
 
 
   ngOnInit(): void {
-  
-    this.mediaQueryListener = (e: MediaQueryListEvent) => {
+      this.mediaQueryListener = (e: MediaQueryListEvent) => {
       this.isDarkMode = e.matches;
       this.updateTheme();
     };
     
     this.darkModeMediaQuery.addEventListener("change", this.mediaQueryListener);
-    
-    
     this.updateTheme();
     
     const savedTheme = localStorage.getItem('theme');
@@ -57,6 +54,7 @@ export class LandingpageComponent implements OnInit,OnDestroy {
 
  
   public toggleTheme(): void {
+    console.log(this.isDarkMode)
     this.isDarkMode = !this.isDarkMode;
     this.applyManualTheme();
     

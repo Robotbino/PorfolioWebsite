@@ -27,14 +27,14 @@ em{
 }
 
 .logo {
-  font-size: var(--font-size-4xl); /* 3rem / 48px - matching original 4em */
+  font-size: var(--font-size-4xl); 
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
 }
 
 .nav-items {
   display: flex;
-  gap: var(--space-5xl); /* 6.5rem - matching original 6.5em gap */
+  gap: var(--space-5xl); 
   align-items: center;
 }
 
@@ -191,21 +191,21 @@ em{
 
 .section-header {
   text-align: center;
-  margin-bottom: var(--space-xl); /* Reduced from 3xl for tighter spacing */
+  margin-bottom: var(--space-xl); 
 }
 
 .section-pre-title {
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-normal); /* Lighter weight like original */
+  font-weight: var(--font-weight-normal); 
   color: var(--color-text-secondary);
-  margin-bottom: var(--space-xs); /* Minimal gap */
-  text-transform: capitalize; /* Not all caps */
+  margin-bottom: var(--space-xs); 
+  text-transform: capitalize; 
   letter-spacing: normal;
   padding: var(--space-sm);
 }
 
 .section-title {
-  font-size: var(--font-size-3xl); /* 2.5rem matching original */
+  font-size: var(--font-size-3xl); 
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   padding: var(--space-sm);
@@ -239,7 +239,7 @@ em{
   line-height: 1.6; 
   color: var(--color-text-secondary);
   text-align: center;
-  margin: var(--space-md) var(--space-6xl); /* Huge horizontal margins like original 10em */
+  margin: var(--space-md) var(--space-6xl); 
 }
 
 /* ============================================
@@ -250,16 +250,16 @@ em{
   background-color: var(--color-card-bg);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg); /* Original was 1.5em */
+  padding: var(--space-lg); 
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  width: 700px; /* Fixed width from original */
-  height: 280px; /* Fixed height from original */
-  margin: var(--space-3xl) var(--space-xs); /* Original 4em 0.2em */
+  width: 700px; 
+  height: 280px; 
+  margin: var(--space-3xl) var(--space-xs);
 }
 
 
@@ -316,32 +316,32 @@ em{
 .experience-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-  gap: var(--space-xl); /* Original was 2em */
+  gap: var(--space-xl); 
   max-width: var(--max-width-content);
   margin-inline: auto;
-  padding: 0 var(--space-md); /* Original had some padding */
+  padding: 0 var(--space-md); 
 }
 
 .experience-card {
   background-color: var(--color-card-bg);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-xl);
-  padding: var(--space-xl); /* Original was 2em */
-  margin: var(--space-2xl) 0; /* Original was 3em 0em */
+  padding: var(--space-xl); 
+  margin: var(--space-2xl) 0;
 }
 
 .experience-card-title {
   text-align: center;
-  font-size: var(--font-size-2xl); /* 2rem ~ 1.8em original */
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--space-lg); /* Original was 1.5em */
+  margin-bottom: var(--space-lg); 
   color: var(--color-text-primary);
 }
 
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-xl) var(--space-lg); /* Row and column gap */
+  gap: var(--space-xl) var(--space-lg); 
 }
 
 .skill-group {
@@ -391,10 +391,10 @@ em{
 .projects-container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl); /* Keeping moderate gap between projects */
+  gap: var(--space-2xl); 
   max-width: var(--max-width-content);
   margin-inline: auto;
-  margin-top: var(--space-2xl); /* Add some top margin */
+  margin-top: var(--space-2xl); 
 }
 
 .project-card {
@@ -402,7 +402,7 @@ em{
   border-radius: var(--radius-xl);
   overflow: hidden;
   transition: all var(--transition-base);
-  margin: var(--space-2xl) 0; /* Original was 3em 0em */
+  margin: var(--space-2xl) 0; 
 }
 
 .project-card:hover {
@@ -418,14 +418,14 @@ em{
 }
 
 .project-text {
-  padding: var(--space-2xl); /* Original was 3em, but 2xl/48px is close */
+  padding: var(--space-2xl); 
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
 }
 
 .project-title {
-  font-size: var(--font-size-2xl); /* 2rem / 32px - closer to original */
+  font-size: var(--font-size-2xl); 
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
 }
@@ -495,16 +495,16 @@ em{
 
 .contact-container {
   display: flex;
-  gap: var(--space-xl); /* Original was 2em */
+  gap: var(--space-xl); 
   justify-content: space-between;
   align-items: center;
-  width: 600px; /* Fixed width from original */
-  height: 120px; /* Fixed height from original */
+  width: 600px; 
+  height: 120px;
   margin-inline: auto;
-  margin-top: var(--space-4xl); /* Original 5em */
-  margin-bottom: var(--space-6xl); /* Original 10em - huge bottom margin! */
-  padding: 0 var(--space-3xl); /* Original 0 4em */
-  border: 1px solid var(--color-border); /* Original was 1px */
+  margin-top: var(--space-4xl);
+  margin-bottom: var(--space-6xl); 
+  padding: 0 var(--space-3xl); 
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background-color: var(--color-card-bg);
   transition: all var(--transition-base);
@@ -569,7 +569,7 @@ em{
   animation: fadeInUp 0.6s ease-out forwards;
 }
 
-/* Stagger animation delays */
+
 .fade-in:nth-child(1) { animation-delay: 0.1s; }
 .fade-in:nth-child(2) { animation-delay: 0.2s; }
 .fade-in:nth-child(3) { animation-delay: 0.3s; }
@@ -589,7 +589,7 @@ em{
   }
   
   .about-cards {
-    flex-direction: column; /* Only stack on smaller screens */
+    flex-direction: column;
   }
 }
 
@@ -601,7 +601,7 @@ em{
   }
   
   .nav-items {
-    gap: var(--space-lg); /* Reduced on mobile */
+    gap: var(--space-lg); 
   }
   
   .nav-link {
@@ -615,27 +615,27 @@ em{
   
   .about-cards {
     flex-direction: column;
-    margin: 0 var(--space-md); /* Less margin on mobile */
+    margin: 0 var(--space-md);
   }
   
   .about-text {
-    margin: var(--space-md) var(--space-lg); /* Much less margin on mobile */
+    margin: var(--space-md) var(--space-lg); 
   }
   
   .card {
-    width: auto; /* Flexible width on mobile */
-    height: auto; /* Flexible height on mobile */
+    width: auto; 
+    height: auto;
     max-width: 100%;
   }
   
   .contact-container {
-    width: auto; /* Flexible width on mobile */
-    height: auto; /* Flexible height on mobile */
+    width: auto; 
+    height: auto;
     max-width: 100%;
     flex-direction: column;
     text-align: center;
     padding: var(--space-xl);
-    margin-bottom: var(--space-3xl); /* Less bottom margin on mobile */
+    margin-bottom: var(--space-3xl);  
   }
   
   .project-content {
@@ -662,7 +662,7 @@ em{
     );
   }
   
-  /* Reset alternating layout on mobile */
+  
   .project-card:nth-child(even) .project-content {
     direction: ltr;
   }
@@ -702,14 +702,14 @@ em{
 
 @keyframes bulbGlow {
   0% {
-    color: #d4b23a; /* muted golden yellow */
+    color: #d4b23a; 
     text-shadow:
       0 0 3px #d4b23a,
       0 0 6px rgba(212, 178, 58, 0.5);
     filter: brightness(0.95);
   }
   100% {
-    color: #e9d47a; /* soft warm tone */
+    color: #e9d47a; 
     text-shadow:
       0 0 6px #e9d47a,
       0 0 10px rgba(233, 212, 122, 0.4);
