@@ -11,6 +11,7 @@ export class LandingpageComponent implements OnInit,OnDestroy {
 
 
   constructor() {}
+  private link = document.createElement('a');
   private darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   private isDarkMode = this.darkModeMediaQuery.matches;
   private mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
@@ -69,4 +70,11 @@ export class LandingpageComponent implements OnInit,OnDestroy {
   public get isDarkModeActive(): boolean {
     return this.isDarkMode;
   }
+
+  public downloadCV(): void {
+    console.log("Downloading CV...");
+    this.link.href = 'assets/BinoHlongwanaATS-CV.pdf';
+    this.link.download = 'BinoHlongwanaATS-CV.pdf';
+    this.link.click();
+  } 
 }
