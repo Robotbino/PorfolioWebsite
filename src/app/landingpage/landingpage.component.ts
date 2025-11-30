@@ -15,22 +15,33 @@ export class LandingpageComponent implements OnInit,OnDestroy {
   private darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   private isDarkMode = this.darkModeMediaQuery.matches;
   private mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
+  private hasManualOverride = false; // Track if user has manually set a preference
 
 
   ngOnInit(): void {
-      this.mediaQueryListener = (e: MediaQueryListEvent) => {
-      this.isDarkMode = e.matches;
-      this.updateTheme();
-    };
-    
-    this.darkModeMediaQuery.addEventListener("change", this.mediaQueryListener);
-    this.updateTheme();
-    
+    // Check for saved theme preference
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       this.isDarkMode = savedTheme === 'dark';
-      this.applyManualTheme();
+      this.hasManualOverride = true;
+    } else {
+      // Use system preference if no manual override
+      this.isDarkMode = this.darkModeMediaQuery.matches;
     }
+
+    // Apply initial theme
+    this.updateTheme();
+
+    // Listen for system preference changes
+    this.mediaQueryListener = (e: MediaQueryListEvent) => {
+      // Only auto-update if user hasn't manually set a preference
+      if (!this.hasManualOverride) {
+        this.isDarkMode = e.matches;
+        this.updateTheme();
+      }
+    };
+
+    this.darkModeMediaQuery.addEventListener("change", this.mediaQueryListener);
   }
 
   ngOnDestroy(): void {
@@ -48,17 +59,13 @@ export class LandingpageComponent implements OnInit,OnDestroy {
     }
   }
 
-  
-  private applyManualTheme(): void {
-    document.documentElement.classList.toggle('dark-mode', this.isDarkMode);
-  }
-
  
   public toggleTheme(): void {
-    console.log(this.isDarkMode)
     this.isDarkMode = !this.isDarkMode;
-    this.applyManualTheme();
-    
+    this.hasManualOverride = true; // User has manually overridden
+    this.updateTheme();
+
+    // Save the manual preference
     localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 
@@ -77,4 +84,6 @@ export class LandingpageComponent implements OnInit,OnDestroy {
     this.link.download = 'BinoHlongwanaATS-CV.pdf';
     this.link.click();
   } 
+
+
 }

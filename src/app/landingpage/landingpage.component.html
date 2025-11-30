@@ -1,3 +1,4 @@
+<div id="my-wrapper">
 <header class="navigation-bar" id="header">
   <nav class="navigation-content" aria-label="Main navigation">
     <div class="logo">My Portfolio</div>
@@ -15,10 +16,10 @@
         <a href="#contact" class="nav-link">Contact</a>
       </li>
     </ul>
-    <button class="theme-toggle" (click)="toggleTheme()"
+    <button class="theme-toggle" (click)="toggleTheme()" 
       [attr.aria-label]="isDarkModeActive ? 'Switch to light mode' : 'Switch to dark mode'">
       <!-- Sun icon - shown in dark mode, switches to light mode -->
-      <svg *ngIf="isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      <svg class="dark-icon" *ngIf="isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="5"></circle>
         <line x1="12" y1="1" x2="12" y2="3"></line>
@@ -31,7 +32,7 @@
         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
       </svg>
       <!-- Moon icon - shown in light mode, switches to dark mode -->
-      <svg *ngIf="!isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      <svg class="light-icon" *ngIf="!isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
       </svg>
@@ -348,3 +349,4 @@
 <footer class="footer">
   <p>&copy; 2025 Bino Hlongwana. All rights reserved.</p>
 </footer>
+</div>
