@@ -12,7 +12,7 @@ export class LandingpageComponent implements OnInit,OnDestroy {
 
   constructor() {}
   private link = document.createElement('a');
-  private darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  private darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: light)");
   private isDarkMode = this.darkModeMediaQuery.matches;
   private mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
   private hasManualOverride = false; // Track if user has manually set a preference
