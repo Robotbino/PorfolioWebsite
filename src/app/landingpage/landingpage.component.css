@@ -708,18 +708,20 @@ em{
 
 @keyframes bulbGlow {
   0% {
-    color: #d4b23a; 
+    color: #f5a623;
     text-shadow:
-      0 0 3px #d4b23a,
-      0 0 6px rgba(212, 178, 58, 0.5);
-    filter: brightness(0.95);
+      0 0 5px #f5a623,
+      0 0 10px #f5a623,
+      0 0 20px rgba(245, 166, 35, 0.6);
+    filter: brightness(0.9);
   }
   100% {
-    color: #e9d47a; 
+    color: #fff8e1;
     text-shadow:
-      0 0 6px #e9d47a,
-      0 0 10px rgba(233, 212, 122, 0.4);
-    filter: brightness(1.05);
+      0 0 10px #ffe680,
+      0 0 20px #ffe680,
+      0 0 40px rgba(255, 230, 128, 0.5);
+    filter: brightness(1.2);
   }
 }
 
