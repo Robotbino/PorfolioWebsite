@@ -98,7 +98,6 @@ ng build --configuration=production
 
 ### Mobile View
 ![Hero-Mobile](https://github.com/user-attachments/assets/818b612b-0fa6-4939-b5c6-b2e9fc48ba19)
-
 ![About Me-Mobile](https://github.com/user-attachments/assets/215916fc-34fb-4af9-8530-7a872c7ea18e)
 
 
