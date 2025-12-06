@@ -88,7 +88,8 @@ ng build --configuration=production
 
 ### Light Mode
 
-![Hero-Desktop](https://github.com/user-attachments/assets/b0af3480-e51d-4b57-b2f5-e329cc929b0d)
+![LightMode-Hero-Desk](https://github.com/user-attachments/assets/5d6dc589-cb65-42bc-8855-3496c7ead9f3)
+
 
 ### Dark Mode
 ![DarkMode-Hero-Desk](https://github.com/user-attachments/assets/bed26cad-3b8f-4b81-b931-b914c3e93bd0)
