@@ -1,4 +1,4 @@
-# Bino Hlongwana | Developer Portfolio
+# Bino Hlongwana | Portfolio
 
 A modern, responsive portfolio website built with Angular, featuring dark/light theme support, smooth animations, and accessible design principles.
 
@@ -8,11 +8,6 @@ A modern, responsive portfolio website built with Angular, featuring dark/light 
 
 ---
 
-## 🚀 Live Demo
-
-[View Portfolio](https://your-deployed-url.com) <!-- Update with your actual URL -->
-
----
 
 ## ✨ Features
 
@@ -92,13 +87,15 @@ ng build --configuration=production
 <summary>Click to expand</summary>
 
 ### Light Mode
-![Light Mode Screenshot](./screenshots/light-mode.png)
+
+![Hero-Desktop](https://github.com/user-attachments/assets/b0af3480-e51d-4b57-b2f5-e329cc929b0d)
 
 ### Dark Mode
 ![Dark Mode Screenshot](./screenshots/dark-mode.png)
 
 ### Mobile View
-![Mobile Screenshot](./screenshots/mobile-view.png)
+![Hero-Mobile](https://github.com/user-attachments/assets/818b612b-0fa6-4939-b5c6-b2e9fc48ba19)
+
 
 </details>
 
