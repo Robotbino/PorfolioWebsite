@@ -98,7 +98,8 @@ ng build --configuration=production
 
 ### Mobile View
 ![Hero-Mobile](https://github.com/user-attachments/assets/818b612b-0fa6-4939-b5c6-b2e9fc48ba19)
-<img width="322" height="698" alt="Screenshot 2025-12-06 092210" src="https://github.com/user-attachments/assets/a9161bab-0820-4af0-a865-f3f857f6382a" />
+
+![About Me-Mobile](https://github.com/user-attachments/assets/215916fc-34fb-4af9-8530-7a872c7ea18e)
 
 
 </details>
