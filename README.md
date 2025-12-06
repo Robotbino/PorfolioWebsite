@@ -15,7 +15,7 @@ A modern, responsive portfolio website built with Angular, featuring dark/light 
 - **Responsive Design** — Optimized layouts for desktop, tablet, and mobile devices
 - **Smooth Animations** — CSS transitions and fade-in effects for enhanced user experience
 - **Accessible** — Built with semantic HTML, ARIA labels, and keyboard navigation support
-- **CV Download** — One-click download functionality for recruiters
+- **CV Download** — One-click download functionality for you handsome/beautiful recruiters out there *wink wink*
 - **Project Showcase** — Dedicated section highlighting technical projects with tech stack tags
 
 ---
