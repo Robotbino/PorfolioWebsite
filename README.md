@@ -91,7 +91,10 @@ ng build --configuration=production
 ![Hero-Desktop](https://github.com/user-attachments/assets/b0af3480-e51d-4b57-b2f5-e329cc929b0d)
 
 ### Dark Mode
-![Dark Mode Screenshot](./screenshots/dark-mode.png)
+![DarkMode-Hero-Desk](https://github.com/user-attachments/assets/bed26cad-3b8f-4b81-b931-b914c3e93bd0)
+
+<img width="1919" height="1079" alt="DarkMode-AboutMe-Desktop" src="https://github.com/user-attachments/assets/3a2732f8-5e48-4c5f-b24d-ea0e3ac07b19" />
+
 
 ### Mobile View
 ![Hero-Mobile](https://github.com/user-attachments/assets/818b612b-0fa6-4939-b5c6-b2e9fc48ba19)
