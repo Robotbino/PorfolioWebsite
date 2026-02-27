@@ -74,11 +74,6 @@ ng serve
 
 Visit `http://localhost:4200` in your browser.
 
-### Build for Production
-```bash
-ng build --configuration=production
-```
-
 ---
 
 ## 📸 Screenshots
