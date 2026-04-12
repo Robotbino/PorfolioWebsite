@@ -25,22 +25,18 @@ export class LandingpageComponent implements OnInit,OnDestroy {
       this.isDarkMode = savedTheme === 'dark';
       this.hasManualOverride = true;
     } else {
-      // Use system preference if no manual override
       this.isDarkMode = this.darkModeMediaQuery.matches;
     }
 
-    // Apply initial theme
     this.updateTheme();
 
-    // Listen for system preference changes
+   
     this.mediaQueryListener = (e: MediaQueryListEvent) => {
-      // Only auto-update if user hasn't manually set a preference
       if (!this.hasManualOverride) {
         this.isDarkMode = e.matches;
         this.updateTheme();
       }
     };
-
     this.darkModeMediaQuery.addEventListener("change", this.mediaQueryListener);
   }
 
@@ -62,10 +58,10 @@ export class LandingpageComponent implements OnInit,OnDestroy {
  
   public toggleTheme(): void {
     this.isDarkMode = !this.isDarkMode;
-    this.hasManualOverride = true; // User has manually overridden
+    this.hasManualOverride = true; 
     this.updateTheme();
 
-    // Save the manual preference
+  
     localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 
@@ -80,10 +76,21 @@ export class LandingpageComponent implements OnInit,OnDestroy {
 
   public downloadCV(): void {
     console.log("Downloading CV...");
-    this.link.href = 'assets/BinoHlongwanaATS-CV.pdf';
-    this.link.download = 'BinoHlongwanaATS-CV.pdf';
+    this.link.href = 'assets/Bino_FullStack_CV_April2026.pdf';
+    this.link.download = 'Bino_FullStack_CV_April2026.pdf';
     this.link.click();
   } 
 
+  public get portfolioImageSrc(): string {
+  return this.isDarkMode 
+    ? '/assets/portfolio_light_mode.png'  
+    : '/assets/portfolio_dark_mode.png'; 
+}
+
+ public get portfolioImageAlt(): string {
+    return this.isDarkMode 
+      ? 'Portfolio website in light mode'
+      : 'Portfolio website in dark mode';
+  }
 
 }
