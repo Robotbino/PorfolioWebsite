@@ -1,26 +1,22 @@
 <div id="my-wrapper">
+
+<!-- Scroll progress bar -->
+<div class="scroll-progress" aria-hidden="true"></div>
+
 <header class="navigation-bar" id="header">
   <nav class="navigation-content" aria-label="Main navigation">
     <div class="logo">My Portfolio</div>
     <ul class="nav-items" role="list">
-      <li>
-        <a href="#about" class="nav-link">About</a>
-      </li>
-      <li>
-        <a href="#experience" class="nav-link">Experience</a>
-      </li>
-      <li>
-        <a href="#projects" class="nav-link">Projects</a>
-      </li>
-      <li>
-        <a href="#contact" class="nav-link">Contact</a>
-      </li>
+      <li><a href="#about" class="nav-link">About</a></li>
+      <li><a href="#experience" class="nav-link">Experience</a></li>
+      <li><a href="#projects" class="nav-link">Projects</a></li>
+      <li><a href="#contact" class="nav-link">Contact</a></li>
     </ul>
-    <button class="theme-toggle" (click)="toggleTheme()" 
+    <button class="theme-toggle" (click)="toggleTheme()"
       [attr.aria-label]="isDarkModeActive ? 'Switch to light mode' : 'Switch to dark mode'">
-      <!-- Sun icon - shown in dark mode, switches to light mode -->
-      <svg class="dark-icon" *ngIf="isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Sun icon - shown in dark mode -->
+      <svg class="dark-icon" *ngIf="isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="5"></circle>
         <line x1="12" y1="1" x2="12" y2="3"></line>
         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -31,9 +27,9 @@
         <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
       </svg>
-      <!-- Moon icon - shown in light mode, switches to dark mode -->
-      <svg class="light-icon" *ngIf="!isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Moon icon - shown in light mode -->
+      <svg class="light-icon" *ngIf="!isDarkModeActive" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
       </svg>
     </button>
@@ -47,13 +43,16 @@
       Hello<span class="hero-greeting-light">, I'm</span>
     </h1>
     <h2 class="hero-name">Bino Hlongwana</h2>
-    <p class="hero-title">Full-Stack Developer</p>
+
+    <!-- Typewriter title -->
+    <p class="hero-title" aria-label="Full-Stack Developer">
+      {{ displayedTitle }}<span class="typewriter-cursor" [class.cursor-done]="isTypingDone"></span>
+    </p>
 
     <div class="hero-actions">
       <button class="btn btn-secondary" aria-label="Download CV" (click)="downloadCV()">
         Download CV
       </button>
-      
     </div>
 
     <div class="hero-socials" role="list" aria-label="Social media links">
@@ -61,8 +60,8 @@
         rel="noopener noreferrer">
         <i class="fa-brands fa-github" aria-hidden="true"></i>
       </a>
-      <a href="https://www.linkedin.com/in/bino-hlongwana-162226272/" class="social-link linkedin" aria-label="LinkedIn profile"
-        target="_blank" rel="noopener noreferrer">
+      <a href="https://www.linkedin.com/in/bino-hlongwana-162226272/" class="social-link linkedin"
+        aria-label="LinkedIn profile" target="_blank" rel="noopener noreferrer">
         <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
       </a>
     </div>
@@ -71,20 +70,22 @@
 
 
 <div class="content-wrapper">
+
+  <!-- ABOUT -->
   <section class="section" id="about" aria-labelledby="about-title">
-    <div class="container ">
-      <header class="section-header">
+    <div class="container">
+      <header class="section-header reveal">
         <p class="section-pre-title">Get to know more</p>
         <h2 class="section-title" id="about-title">About Me</h2>
       </header>
 
       <div class="about-cards">
-        <article class="card fade-in">
+        <article class="card fade-in reveal reveal-delay-1">
           <i class="fa-solid fa-lightbulb card-icon qualification" aria-hidden="true"></i>
           <h3 class="card-title">Qualifications</h3>
           <div class="card-content">
             <div class="card-item">
-              <span class="card-item-title">3+ Years</span>
+              <span class="card-item-title">3 Years</span>
               <span class="card-item-text">Information Technology Student</span>
             </div>
             <div class="card-item">
@@ -94,7 +95,7 @@
           </div>
         </article>
 
-        <article class="card fade-in">
+        <article class="card fade-in reveal reveal-delay-2">
           <i class="fa-solid fa-code card-icon education" aria-hidden="true"></i>
           <h3 class="card-title">Education</h3>
           <div class="card-content">
@@ -105,28 +106,30 @@
         </article>
       </div>
 
-      <p class="about-text">
+      <p class="about-text reveal">
         I am a 24-year-old software developer based in Pretoria, South Africa, committed to the
         <em style="font-size: x-large;">less but better</em> philosophy, where simplicity drives impact and precision
         fuels design.
         Passionate about creating intuitive, well-crafted web experiences, I build software that is
-        not only functional but robust, designed to perform under real-world demands. I believe that through good communication, 
+        not only functional but robust, designed to perform under real-world demands. I believe that through good
+        communication,
         I bridge complexity with clarity, ensuring seamless execution from concept to
-        code. I seek challenges that push boundaries, refine my craft, and drive innovation in every
+        code. I seek challenges that push boundaries, refine my craft and drive innovation in every
         project I undertake.
       </p>
     </div>
   </section>
 
+  <!-- EXPERIENCE -->
   <section class="section" id="experience" aria-labelledby="experience-title">
     <div class="container">
-      <header class="section-header">
+      <header class="section-header reveal">
         <p class="section-pre-title">Explore My</p>
         <h2 class="section-title" id="experience-title">Experience</h2>
       </header>
 
       <div class="experience-grid">
-        <article class="experience-card">
+        <article class="experience-card reveal reveal-delay-1">
           <h3 class="experience-card-title">Technologies</h3>
           <div class="skills-grid">
             <div class="skill-group">
@@ -136,7 +139,6 @@
               </div>
               <p class="skill-list">Java, JavaScript, React, Angular, Data Structures</p>
             </div>
-
             <div class="skill-group">
               <div class="skill-header">
                 <span class="checkmark" aria-hidden="true">✔</span>
@@ -144,7 +146,6 @@
               </div>
               <p class="skill-list">SQL, Oracle, MySQL</p>
             </div>
-
             <div class="skill-group">
               <div class="skill-header">
                 <span class="checkmark" aria-hidden="true">✔</span>
@@ -152,7 +153,6 @@
               </div>
               <p class="skill-list">Spring Framework, Java EE, API Development and Testing</p>
             </div>
-
             <div class="skill-group">
               <div class="skill-header">
                 <span class="checkmark" aria-hidden="true">✔</span>
@@ -160,7 +160,6 @@
               </div>
               <p class="skill-list">Eclipse, Visual Studio, GitHub, IntelliJ IDEA</p>
             </div>
-
             <div class="skill-group">
               <div class="skill-header">
                 <span class="checkmark" aria-hidden="true">✔</span>
@@ -168,7 +167,6 @@
               </div>
               <p class="skill-list">Agile, Waterfall, Systems Development Life Cycle</p>
             </div>
-
             <div class="skill-group">
               <div class="skill-header">
                 <span class="checkmark" aria-hidden="true">✔</span>
@@ -179,8 +177,7 @@
           </div>
         </article>
 
-
-        <article class="experience-card">
+        <article class="experience-card reveal reveal-delay-2">
           <h3 class="experience-card-title">Non-Technical Skills</h3>
           <div class="skills-grid">
             <div class="skill-group">
@@ -189,21 +186,18 @@
                 <h4 class="skill-title">Communication and Collaboration</h4>
               </div>
             </div>
-
             <div class="skill-group">
               <div class="skill-header">
                 <span class="checkmark" aria-hidden="true">✔</span>
                 <h4 class="skill-title">Analytical Thinker</h4>
               </div>
             </div>
-
             <div class="skill-group">
               <div class="skill-header">
                 <span class="checkmark" aria-hidden="true">✔</span>
                 <h4 class="skill-title">Continuous Learning</h4>
               </div>
             </div>
-
             <div class="skill-group">
               <div class="skill-header">
                 <span class="checkmark" aria-hidden="true">✔</span>
@@ -216,17 +210,17 @@
     </div>
   </section>
 
-
+  <!-- PROJECTS -->
   <section class="section" id="projects" aria-labelledby="projects-title">
     <div class="container">
-      <header class="section-header">
+      <header class="section-header reveal">
         <p class="section-pre-title">Browse My Recent</p>
         <h2 class="section-title" id="projects-title">Projects</h2>
       </header>
 
       <div class="projects-container">
 
-        <article class="project-card">
+        <article class="project-card reveal">
           <div class="project-content">
             <div class="project-text">
               <h3 class="project-title">Memory Leak</h3>
@@ -243,9 +237,7 @@
               </div>
               <div class="project-links">
                 <a href="https://github.com/Robotbino/CodePairs.git" class="btn btn-secondary" target="_blank"
-                  rel="noopener noreferrer">
-                  GitHub
-                </a>
+                  rel="noopener noreferrer">GitHub</a>
               </div>
             </div>
             <div class="project-image">
@@ -255,8 +247,7 @@
           </div>
         </article>
 
-
-        <article class="project-card">
+        <article class="project-card reveal reveal-delay-1">
           <div class="project-content">
             <div class="project-text">
               <h3 class="project-title">Employee Manager</h3>
@@ -273,9 +264,7 @@
               </div>
               <div class="project-links">
                 <a href="https://github.com/Robotbino/EmployeeManager-Application.git" class="btn btn-secondary"
-                  target="_blank" rel="noopener noreferrer">
-                  GitHub
-                </a>
+                  target="_blank" rel="noopener noreferrer">GitHub</a>
               </div>
             </div>
             <div class="project-image">
@@ -284,7 +273,7 @@
           </div>
         </article>
 
-        <article class="project-card">
+        <article class="project-card reveal reveal-delay-2">
           <div class="project-content">
             <div class="project-text">
               <h3 class="project-title">Portfolio Website</h3>
@@ -301,32 +290,27 @@
               </div>
               <div class="project-links">
                 <a href="https://github.com/Robotbino/PorfolioWebsite.git" class="btn btn-secondary" target="_blank"
-                  rel="noopener noreferrer">
-                  GitHub
-                </a>
+                  rel="noopener noreferrer">GitHub</a>
               </div>
             </div>
             <div class="project-image">
-              <img 
-                [src]="portfolioImageSrc" 
-                [alt]="portfolioImageAlt"
-                loading="lazy"
-              >
+              <img [src]="portfolioImageSrc" [alt]="portfolioImageAlt" loading="lazy">
             </div>
           </div>
         </article>
+
       </div>
     </div>
   </section>
 
-
+  <!-- CONTACT -->
   <section class="section" id="contact" aria-labelledby="contact-title">
     <div class="container">
-      <header class="section-header">
+      <header class="section-header reveal">
         <h2 class="section-title" id="contact-title">Contact Me</h2>
       </header>
 
-      <div class="contact-container">
+      <div class="contact-container reveal">
         <div class="contact-item">
           <i class="fa-solid fa-envelope contact-icon" aria-hidden="true"></i>
           <a href="mailto:HlongwanaBino@gmail.com" class="contact-link">
@@ -347,8 +331,8 @@
 </div>
 
 
-
 <footer class="footer">
   <p>&copy; 2025 Bino Hlongwana.</p>
 </footer>
+
 </div>
