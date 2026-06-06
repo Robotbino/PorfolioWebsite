@@ -1,9 +1,9 @@
 <div id="my-wrapper">
 <app-aurora
   class="aurora-bg"
-  [colorStops]="isDarkModeActive ? ['#1E1C1A','#3D312A','#5A3D2B'] : ['#F7F5F2','#E0DCD8','#F2DFD3']"
-  [blend]="0.5"
-  [amplitude]="1.0"
+  [colorStops]="isDarkModeActive ? ['#1E1C1A','#3D312A','#5A3D2B'] : ['#FDFCFB','#F5F2EE','#FAF0E8']"
+  [blend]="isDarkModeActive ? 0.5 : 1.0"
+  [amplitude]="isDarkModeActive ? 1.0 : 0.25"
   [speed]="0.5"
 ></app-aurora>
 <header class="navigation-bar" id="header">
@@ -49,6 +49,7 @@
 
 
 <section class="hero" id="hero" aria-labelledby="hero-greeting">
+  <app-constellation class="constellation-bg"></app-constellation>
   <div class="hero-content">
     <h1 class="hero-greeting" id="hero-greeting">
       Hello<span class="hero-greeting-light">, I'm</span>

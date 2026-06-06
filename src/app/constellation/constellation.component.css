@@ -4,11 +4,11 @@
   display: block;
 
   /* Light theme defaults */
-  --c-star: #15171c;
-  --c-line: rgba(20, 22, 28, 0.16);
-  --c-line-hover: rgba(20, 22, 28, 0.4);
-  --c-glow: rgba(40, 60, 120, 0.5);
-  --c-halo-opacity: 0.85;
+  --c-star: #8a8f9e;
+  --c-line: rgba(100, 108, 130, 0.12);
+  --c-line-hover: rgba(100, 108, 130, 0.28);
+  --c-glow: rgba(80, 100, 180, 0.35);
+  --c-halo-opacity: 0.6;
 }
 
 :host-context(.dark-mode) {

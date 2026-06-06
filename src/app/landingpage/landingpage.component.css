@@ -127,7 +127,7 @@ em{
 .hero-title {
   text-align: start;
   font-size: var(--font-size-xl);
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   font-weight: var(--font-weight-medium);
   margin-bottom: var(--space-2xl);
   margin-left: var(--space-xs);
@@ -264,12 +264,12 @@ em{
 }
 
 .about-text {
-  max-width: var(--max-width-content); 
+  max-width: var(--max-width-content);
   font-size: var(--font-size-xl);
-  line-height: 1.6; 
+  line-height: 1.6;
   color: var(--color-text-secondary);
   text-align: center;
-  margin: var(--space-md) var(--space-6xl); 
+  margin: var(--space-md) var(--space-6xl);
 }
 
 /* ============================================
@@ -280,15 +280,15 @@ em{
   background-color: var(--color-card-bg);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: var(--space-lg); 
+  padding: var(--space-lg);
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  width: 700px; 
-  height: 350px; 
+  width: 700px;
+  height: 350px;
   margin: var(--space-3xl) var(--space-xs);
 }
 
