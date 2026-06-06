@@ -1,0 +1,178 @@
+:host {
+  position: absolute;
+  inset: 0;
+  display: block;
+
+  /* Light theme defaults */
+  --c-star: #15171c;
+  --c-line: rgba(20, 22, 28, 0.16);
+  --c-line-hover: rgba(20, 22, 28, 0.4);
+  --c-glow: rgba(40, 60, 120, 0.5);
+  --c-halo-opacity: 0.85;
+}
+
+:host-context(.dark-mode) {
+  --c-star: #eef1f6;
+  --c-line: rgba(220, 228, 240, 0.16);
+  --c-line-hover: rgba(220, 228, 240, 0.45);
+  --c-glow: rgba(150, 190, 255, 0.65);
+  --c-halo-opacity: 1;
+}
+
+/* ---- Cluster = the expanded, invisible bounding hover zone ---- */
+.cluster {
+  position: absolute;
+  padding: clamp(16px, 2.5vw, 44px);
+  pointer-events: auto;
+}
+
+.cluster--left {
+  top: clamp(60px, 10vh, 130px);
+  left: clamp(0px, 3vw, 80px);
+  width: clamp(240px, 26vw, 400px);
+}
+
+.cluster--right {
+  bottom: clamp(40px, 9vh, 120px);
+  right: clamp(0px, 3vw, 80px);
+  width: clamp(120px, 15vw, 200px);
+}
+
+.constellation {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  pointer-events: none; /* the cluster box owns the hover, not the svg */
+}
+
+/* ---- Connecting lines: draw themselves in, brighten on group hover ---- */
+.links line {
+  fill: none;
+  stroke: var(--c-line);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: draw-line 2.2s ease forwards;
+  transition: stroke 0.4s ease;
+}
+
+.cluster:hover .links line {
+  stroke: var(--c-line-hover);
+}
+
+/* ---- Stars ---- */
+.star {
+  opacity: 0;
+  animation: fade-in 1s ease forwards;
+}
+
+.core {
+  fill: var(--c-star);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.halo {
+  fill: var(--c-glow);
+  opacity: 0;
+  filter: blur(3px);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+/* ---- GROUP HOVER: entering a cluster twinkles every star at once ---- */
+.cluster:hover .core {
+  animation: twinkle-core 1.8s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.12s);
+}
+
+.cluster:hover .halo {
+  animation: twinkle-halo 1.8s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.12s);
+}
+
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes twinkle-core {
+  0%,
+  100% {
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 3px var(--c-glow));
+  }
+  50% {
+    transform: scale(1.75);
+    filter: drop-shadow(0 0 8px var(--c-glow));
+  }
+}
+
+@keyframes twinkle-halo {
+  0%,
+  100% {
+    opacity: calc(var(--c-halo-opacity) * 0.35);
+    transform: scale(1.2);
+  }
+  50% {
+    opacity: var(--c-halo-opacity);
+    transform: scale(1.7);
+  }
+}
+
+/* ---- Responsive framing ---- */
+@media (max-width: 900px) {
+  .cluster--left {
+    width: clamp(180px, 30vw, 240px);
+    top: 40px;
+    left: 0;
+  }
+  .cluster--right {
+    width: clamp(100px, 18vw, 150px);
+    bottom: 24px;
+    right: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  /* Avoid crowding the hero text on small screens. */
+  :host {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .links line {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .star {
+    opacity: 1;
+    animation: none;
+  }
+  .core,
+  .halo {
+    transition: none;
+  }
+  .cluster:hover .core {
+    animation: none;
+    transform: scale(1.5);
+    filter: drop-shadow(0 0 5px var(--c-glow));
+  }
+  .cluster:hover .halo {
+    animation: none;
+    opacity: var(--c-halo-opacity);
+    transform: scale(1.5);
+  }
+}

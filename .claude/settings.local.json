@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\Desktop\\\\Coding Projects\\\\ProfessionalPorfolio\\\\ProfessionalPorfolio\" -Force)",
+      "Bash(Select-Object Name, Mode)"
+    ]
+  }
+}

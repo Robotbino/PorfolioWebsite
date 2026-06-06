@@ -4,11 +4,15 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
+import { AuroraComponent } from './aurora/aurora.component';
+import { ConstellationComponent } from './constellation/constellation.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LandingpageComponent
+    LandingpageComponent,
+    AuroraComponent,
+    ConstellationComponent
   ],
   imports: [
     BrowserModule,

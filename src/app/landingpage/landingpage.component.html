@@ -1,4 +1,11 @@
 <div id="my-wrapper">
+<app-aurora
+  class="aurora-bg"
+  [colorStops]="isDarkModeActive ? ['#1E1C1A','#3D312A','#5A3D2B'] : ['#F7F5F2','#E0DCD8','#F2DFD3']"
+  [blend]="0.5"
+  [amplitude]="1.0"
+  [speed]="0.5"
+></app-aurora>
 <header class="navigation-bar" id="header">
   <nav class="navigation-content" aria-label="Main navigation">
     <div class="logo">My Portfolio</div>

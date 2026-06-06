@@ -1,0 +1,39 @@
+<div
+  class="cluster"
+  *ngFor="let c of constellations"
+  [class.cluster--left]="c.side === 'left'"
+  [class.cluster--right]="c.side === 'right'"
+>
+  <svg
+    class="constellation"
+    [attr.viewBox]="c.viewBox"
+    preserveAspectRatio="xMidYMid meet"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <g class="links">
+      <line
+        *ngFor="let l of c.links; let i = index"
+        #lineEl
+        [attr.x1]="c.stars[l.a].x"
+        [attr.y1]="c.stars[l.a].y"
+        [attr.x2]="c.stars[l.b].x"
+        [attr.y2]="c.stars[l.b].y"
+        [style.animation-delay]="0.3 + i * 0.1 + 's'"
+      />
+    </g>
+
+    <g class="nodes">
+      <g
+        class="star"
+        *ngFor="let s of c.stars; let i = index"
+        #starEl
+        [style.--i]="i"
+        [style.animation-delay]="i * 0.07 + 's'"
+      >
+        <circle class="halo" [attr.cx]="s.x" [attr.cy]="s.y" [attr.r]="s.r * 4" />
+        <circle class="core" [attr.cx]="s.x" [attr.cy]="s.y" [attr.r]="s.r" />
+      </g>
+    </g>
+  </svg>
+</div>
