@@ -57,8 +57,10 @@ export class LandingpageComponent implements OnInit,OnDestroy {
   private updateTheme(): void {
     if (this.isDarkMode) {
       document.documentElement.classList.add('dark-mode');
+      document.documentElement.classList.remove('light-mode');
     } else {
       document.documentElement.classList.remove('dark-mode');
+      document.documentElement.classList.add('light-mode');
     }
   }
 
