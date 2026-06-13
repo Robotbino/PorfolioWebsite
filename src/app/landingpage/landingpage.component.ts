@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy  } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 
 
 @Component({
@@ -12,7 +12,14 @@ export class LandingpageComponent implements OnInit,OnDestroy {
 
   constructor() {}
   private link = document.createElement('a');
-  private darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: light)");
+  public isScrolled = false;
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.isScrolled = window.scrollY > 24;
+  }
+
+  private darkModeMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   private isDarkMode = this.darkModeMediaQuery.matches;
   private mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
   private hasManualOverride = false; // Track if user has manually set a preference
@@ -82,15 +89,15 @@ export class LandingpageComponent implements OnInit,OnDestroy {
   } 
 
   public get portfolioImageSrc(): string {
-  return this.isDarkMode 
-    ? '/assets/portfolio_light_mode.png'  
-    : '/assets/portfolio_dark_mode.png'; 
-}
+    return this.isDarkMode
+      ? '/assets/portfolio_dark_mode.png'
+      : '/assets/portfolio_light_mode.png';
+  }
 
- public get portfolioImageAlt(): string {
-    return this.isDarkMode 
-      ? 'Portfolio website in light mode'
-      : 'Portfolio website in dark mode';
+  public get portfolioImageAlt(): string {
+    return this.isDarkMode
+      ? 'Portfolio website in dark mode'
+      : 'Portfolio website in light mode';
   }
 
 }

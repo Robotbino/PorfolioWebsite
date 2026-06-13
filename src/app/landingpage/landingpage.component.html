@@ -6,7 +6,7 @@
   [amplitude]="isDarkModeActive ? 1.0 : 0.25"
   [speed]="0.5"
 ></app-aurora>
-<header class="navigation-bar" id="header">
+<header class="navigation-bar" id="header" [class.scrolled]="isScrolled">
   <nav class="navigation-content" aria-label="Main navigation">
     <div class="logo">My Portfolio</div>
     <ul class="nav-items" role="list">
@@ -115,7 +115,7 @@
 
       <p class="about-text">
         I am a 24-year-old software developer based in Pretoria, South Africa, committed to the
-        <em style="font-size: x-large;">less but better</em> philosophy, where simplicity drives impact and precision
+        <em class="about-emphasis">less but better</em> philosophy, where simplicity drives impact and precision
         fuels design.
         Passionate about creating intuitive, well-crafted web experiences, I build software that is
         not only functional but robust, designed to perform under real-world demands. I believe that through good communication, 
