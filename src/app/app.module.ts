@@ -6,13 +6,19 @@ import { AppComponent } from './app.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
 import { AuroraComponent } from './aurora/aurora.component';
 import { ConstellationComponent } from './constellation/constellation.component';
+import { WorkComponent } from './pages/work/work.component';
+import { AboutComponent } from './pages/about/about.component';
+import { ContactComponent } from './pages/contact/contact.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LandingpageComponent,
     AuroraComponent,
-    ConstellationComponent
+    ConstellationComponent,
+    WorkComponent,
+    AboutComponent,
+    ContactComponent
   ],
   imports: [
     BrowserModule,
