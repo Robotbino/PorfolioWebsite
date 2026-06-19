@@ -9,6 +9,7 @@ import { ConstellationComponent } from './constellation/constellation.component'
 import { WorkComponent } from './pages/work/work.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { SiteNavComponent } from './layout/site-nav/site-nav.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { ContactComponent } from './pages/contact/contact.component';
     ConstellationComponent,
     WorkComponent,
     AboutComponent,
-    ContactComponent
+    ContactComponent,
+    SiteNavComponent
   ],
   imports: [
     BrowserModule,

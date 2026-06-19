@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { ThemeService } from '../core/theme.service';
 
 @Component({
@@ -9,22 +9,8 @@ import { ThemeService } from '../core/theme.service';
 })
 export class LandingpageComponent {
   private link = document.createElement('a');
-  public isScrolled = false;
 
   constructor(private theme: ThemeService) {}
-
-  @HostListener('window:scroll')
-  onWindowScroll(): void {
-    this.isScrolled = window.scrollY > 24;
-  }
-
-  public toggleTheme(): void {
-    this.theme.toggle();
-  }
-
-  public get isDarkModeActive(): boolean {
-    return this.theme.isDark();
-  }
 
   public downloadCV(): void {
     this.link.href = 'assets/Bino_FullStack_CV_April2026.pdf';
