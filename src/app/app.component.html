@@ -1,1 +1,12 @@
+<!-- Persistent background layer (z-0): mounts once, survives navigation. -->
+<app-aurora
+  class="aurora-bg"
+  [colorStops]="theme.isDark() ? ['#1E1C1A','#3D312A','#5A3D2B'] : ['#FDFCFB','#F5F2EE','#FAF0E8']"
+  [blend]="theme.isDark() ? 0.5 : 1.0"
+  [amplitude]="theme.isDark() ? 1.0 : 0.25"
+  [speed]="0.5"
+></app-aurora>
+<app-constellation class="constellation-bg"></app-constellation>
+
+<!-- Routed content (z-1). -->
 <router-outlet></router-outlet>
