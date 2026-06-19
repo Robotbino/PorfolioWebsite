@@ -1,0 +1,62 @@
+:host {
+  display: block;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+.contact-container {
+  display: flex;
+  gap: var(--space-xl);
+  justify-content: space-between;
+  align-items: center;
+  width: 600px;
+  height: 120px;
+  margin-inline: auto;
+  margin-top: var(--space-4xl);
+  margin-bottom: var(--space-6xl);
+  padding: 0 var(--space-3xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-card-bg);
+  transition: box-shadow var(--transition-base),
+              border-color var(--transition-base);
+}
+
+.contact-container:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-dark);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.contact-icon {
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-tertiary);
+}
+
+.contact-link {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--transition-base);
+}
+
+.contact-link:hover {
+  color: var(--color-accent);
+}
+
+@media (max-width: 768px) {
+  .contact-container {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    flex-direction: column;
+    text-align: center;
+    padding: var(--space-xl);
+    margin-bottom: var(--space-3xl);
+  }
+}
