@@ -8,29 +8,7 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
-
-interface Star {
-  name: string;
-  x: number;
-  y: number;
-  r: number;
-  phx: number; // phase offset for x drift
-  phy: number; // phase offset for y drift
-  amp: number; // drift radius (local viewBox units)
-}
-
-interface Link {
-  a: number;
-  b: number;
-}
-
-interface Constellation {
-  name: string;
-  side: 'left' | 'right';
-  viewBox: string;
-  stars: Star[];
-  links: Link[];
-}
+import { Constellation, Link, Star } from './constellation.model';
 
 @Component({
   selector: 'app-constellation',
