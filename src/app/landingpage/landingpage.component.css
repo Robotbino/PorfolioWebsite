@@ -31,18 +31,16 @@
 .hero-greeting {
   text-align: start;
   font-size: var(--font-size-6xl);
-  font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-md);
   line-height: var(--line-height-tight);
 }
 
 .hero-greeting-light {
-  font-weight: var(--font-weight-normal);
+  font-style: italic;
 }
 
 .hero-name {
   font-size: var(--font-size-5xl);
-  font-weight: var(--font-weight-bold);
   margin-bottom: var(--space-sm);
   letter-spacing: -0.02em;
 }

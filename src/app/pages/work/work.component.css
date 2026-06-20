@@ -29,7 +29,6 @@
 .experience-card-title {
   text-align: center;
   font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-semibold);
   margin-bottom: var(--space-lg);
   color: var(--color-text-primary);
 }
@@ -68,7 +67,6 @@
 
 .skill-title {
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-snug);
   color: var(--color-text-primary);
 }
@@ -123,7 +121,6 @@
 
 .project-title {
   font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
 }
 
