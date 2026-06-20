@@ -198,8 +198,6 @@
 
 html {
   text-size-adjust: none;
-  scroll-behavior: smooth;
-  scroll-padding-top: 20px;
   overflow-x: hidden;
 
   /* Hide scrollbar while maintaining scroll functionality */
@@ -288,8 +286,6 @@ button {
 
 textarea:not([rows]) { min-height: 10em; }
 
-:target { scroll-margin-block: 5ex; }
-
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
@@ -369,7 +365,6 @@ textarea:not([rows]) { min-height: 10em; }
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }
 
