@@ -1,21 +1,18 @@
-<!-- The active destination's constellation. Switches on navigation; the morph
-     between destinations arrives in a later commit. -->
+<!-- A single fixed skeleton (8 stars / 7 links). The Travel service + rAF morph
+     it between destinations on navigation; element positions are set imperatively
+     (see renderAt), so each star group sits at the SVG origin and is translated. -->
 <div class="cluster">
   <svg
     class="constellation"
-    [attr.viewBox]="current().viewBox"
+    viewBox="0 0 300 300"
     preserveAspectRatio="xMidYMid meet"
     aria-hidden="true"
     focusable="false"
   >
     <g class="links">
       <line
-        *ngFor="let l of current().links; let i = index"
+        *ngFor="let l of topology; let i = index"
         #lineEl
-        [attr.x1]="current().stars[l.a].x"
-        [attr.y1]="current().stars[l.a].y"
-        [attr.x2]="current().stars[l.b].x"
-        [attr.y2]="current().stars[l.b].y"
         [style.animation-delay]="0.3 + i * 0.1 + 's'"
       />
     </g>
@@ -23,13 +20,13 @@
     <g class="nodes">
       <g
         class="star"
-        *ngFor="let s of current().stars; let i = index"
+        *ngFor="let i of starIndices"
         #starEl
         [style.--i]="i"
         [style.animation-delay]="i * 0.07 + 's'"
       >
-        <circle class="halo" [attr.cx]="s.x" [attr.cy]="s.y" [attr.r]="s.r * 4" />
-        <circle class="core" [attr.cx]="s.x" [attr.cy]="s.y" [attr.r]="s.r" />
+        <circle class="halo" [attr.r]="radii[i] * 4" />
+        <circle class="core" [attr.r]="radii[i]" />
       </g>
     </g>
   </svg>
