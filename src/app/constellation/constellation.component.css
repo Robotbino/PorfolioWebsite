@@ -3,11 +3,11 @@
   inset: 0;
   display: block;
 
-  /* Light theme defaults */
-  --c-star: #8a8f9e;
-  --c-line: rgba(100, 108, 130, 0.12);
-  --c-glow: rgba(80, 100, 180, 0.35);
-  --c-halo-opacity: 0.6;
+  /* Light theme defaults — dark, high-contrast stars on the warm light sky. */
+  --c-star: #262b36;
+  --c-line: rgba(38, 43, 54, 0.38);
+  --c-glow: rgba(70, 80, 120, 0.28);
+  --c-halo-opacity: 0.5;
 }
 
 :host-context(.dark-mode) {

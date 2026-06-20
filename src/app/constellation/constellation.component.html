@@ -1,6 +1,7 @@
-<!-- A single fixed skeleton (8 stars / 7 links). The Travel service + rAF morph
-     it between destinations on navigation; element positions are set imperatively
-     (see renderAt), so each star group sits at the SVG origin and is translated. -->
+<!-- A fixed 8-star skeleton whose positions morph 1:1 with scroll between real
+     constellations. Each figure keeps its own asterism lines, so two line layers
+     cross-fade (outgoing → incoming) through each transition. Positions, link
+     endpoints and opacities are all set imperatively (see renderAt). -->
 <div class="cluster">
   <svg
     class="constellation"
@@ -10,11 +11,10 @@
     focusable="false"
   >
     <g class="links">
-      <line
-        *ngFor="let l of topology; let i = index"
-        #lineEl
-        [style.animation-delay]="0.3 + i * 0.1 + 's'"
-      />
+      <line *ngFor="let s of linkSlots" #lineFrom [style.animation-delay]="0.3 + s * 0.08 + 's'" />
+    </g>
+    <g class="links">
+      <line *ngFor="let s of linkSlots" #lineTo />
     </g>
 
     <g class="nodes">

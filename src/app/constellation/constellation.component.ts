@@ -5,18 +5,16 @@ import {
   ElementRef,
   NgZone,
   OnDestroy,
-  OnInit,
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { Constellation, Link, Star } from './constellation.model';
 import { interpolateConstellation } from './constellation-morph';
-import { TravelService } from './travel.service';
+import { ScrollStageService } from '../scroll-stage.service';
 
-type RouteKey = 'home' | 'work' | 'about' | 'contact';
+/** The locked spike easing — applied per scroll segment so figures settle at rest. */
+const easeInOutQuart = (t: number): number =>
+  t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
 
 @Component({
   selector: 'app-constellation',
@@ -25,128 +23,163 @@ type RouteKey = 'home' | 'work' | 'about' | 'contact';
   styleUrl: './constellation.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConstellationComponent implements OnInit, AfterViewInit, OnDestroy {
-  // One skeleton shared by every destination so any two morph 1:1 with no link
-  // "pop" (the morph reuses the `from` figure's links). See ADR-0002.
-  // Tree: head(0)→shoulders(1)→waist(2)→hips(3); arms off 1, legs off 3.
-  private static readonly LINKS: readonly Link[] = [
-    { a: 0, b: 1 },
-    { a: 1, b: 2 },
-    { a: 2, b: 3 },
-    { a: 1, b: 4 },
-    { a: 1, b: 5 },
-    { a: 3, b: 6 },
-    { a: 3, b: 7 },
-  ];
+export class ConstellationComponent implements AfterViewInit, OnDestroy {
+  // Every figure has 8 stars so positions morph 1:1, but each keeps its OWN real
+  // asterism lines (counts/patterns differ), which cross-fade through the dim
+  // point of each transition. Supersedes the equal-topology note in ADR-0002.
+  private static readonly STAR_COUNT = 8;
+  private static readonly MAX_LINKS = 8;
 
-  // Per-index drift/size traits, identical across figures so star i keeps its
+  // Per-index drift/size traits, shared across figures so a star keeps its
   // character (and its drift stays continuous) all the way through a morph.
   private static readonly R = [3.3, 2.6, 2.2, 2.5, 2.7, 2.7, 2.6, 2.6];
   private static readonly AMP = [6, 5, 5, 6, 6, 6, 7, 7];
   private static readonly PHX = [0.0, 0.8, 1.6, 2.4, 3.2, 4.0, 4.8, 5.6];
   private static readonly PHY = [1.0, 2.2, 0.4, 1.7, 2.6, 0.9, 1.5, 3.0];
 
-  // One bespoke, equal-count (8-star) constellation per destination. Stars are
-  // listed in index order so the shared LINKS line up. 300×300 viewBox.
-  private readonly byRoute: Record<RouteKey, Constellation> = {
-    // Lodestar — a four-point compass star: the wayfinding origin.
-    home: this.figure('Lodestar', [
-      [150, 42],
-      [150, 150],
-      [150, 180],
-      [150, 206],
-      [52, 150],
-      [248, 150],
-      [106, 256],
-      [194, 256],
-    ]),
-    // The Ascent — a mountain summit with a wide base: craft, things built.
-    work: this.figure('The Ascent', [
-      [150, 48],
-      [150, 120],
-      [150, 168],
-      [150, 206],
-      [92, 156],
-      [208, 156],
-      [50, 252],
-      [250, 252],
-    ]),
-    // The Wanderer — a striding human figure (the lone asymmetric emblem).
-    about: this.figure('The Wanderer', [
-      [146, 52],
-      [150, 116],
-      [150, 165],
-      [152, 196],
-      [90, 80],
-      [210, 150],
-      [112, 254],
-      [196, 242],
-    ]),
-    // The Messenger — a paper-plane dart pointing outward: reaching out.
-    contact: this.figure('The Messenger', [
-      [252, 150],
-      [150, 150],
-      [116, 150],
-      [84, 150],
-      [70, 92],
-      [70, 208],
-      [56, 120],
-      [56, 180],
-    ]),
+  // Four real constellations (8 stars each), in a 300×300 viewBox. Stars are
+  // listed in index order; links are each figure's real connect-the-dots shape.
+  private readonly byRoute = {
+    // Ursa Major / the Big Dipper — the navigator's constellation (Home).
+    home: this.figure(
+      'Ursa Major',
+      [
+        [60, 90], // Dubhe
+        [72, 162], // Merak
+        [142, 168], // Phecda
+        [135, 100], // Megrez
+        [196, 122], // Alioth
+        [245, 150], // Mizar
+        [288, 184], // Alkaid
+        [255, 137], // Alcor
+      ],
+      [
+        { a: 0, b: 1 },
+        { a: 1, b: 2 },
+        { a: 2, b: 3 },
+        { a: 3, b: 0 },
+        { a: 3, b: 4 },
+        { a: 4, b: 5 },
+        { a: 5, b: 6 },
+      ],
+    ),
+    // Orion — the hunter (Work).
+    work: this.figure(
+      'Orion',
+      [
+        [96, 96], // Betelgeuse
+        [176, 84], // Bellatrix
+        [138, 48], // Meissa (head)
+        [120, 166], // Alnitak (belt)
+        [140, 176], // Alnilam (belt)
+        [160, 186], // Mintaka (belt)
+        [110, 250], // Saiph
+        [186, 244], // Rigel
+      ],
+      [
+        { a: 2, b: 0 },
+        { a: 2, b: 1 },
+        { a: 0, b: 3 },
+        { a: 1, b: 5 },
+        { a: 3, b: 4 },
+        { a: 4, b: 5 },
+        { a: 3, b: 6 },
+        { a: 5, b: 7 },
+      ],
+    ),
+    // Leo — the lion (About).
+    about: this.figure(
+      'Leo',
+      [
+        [215, 185], // Regulus
+        [212, 158], // Eta
+        [221, 128], // Algieba
+        [205, 104], // Zeta
+        [180, 90], // Mu
+        [152, 102], // Epsilon
+        [120, 150], // Zosma
+        [58, 176], // Denebola
+      ],
+      [
+        { a: 0, b: 1 },
+        { a: 1, b: 2 },
+        { a: 2, b: 3 },
+        { a: 3, b: 4 },
+        { a: 4, b: 5 },
+        { a: 0, b: 6 },
+        { a: 6, b: 7 },
+        { a: 7, b: 0 },
+      ],
+    ),
+    // Cygnus / the Northern Cross — the swan in flight (Contact).
+    contact: this.figure(
+      'Cygnus',
+      [
+        [150, 55], // Deneb
+        [150, 135], // Sadr
+        [150, 255], // Albireo (beak)
+        [150, 196], // Eta
+        [90, 150], // Gienah
+        [45, 160], // left wing tip
+        [215, 124], // Delta
+        [258, 114], // right wing tip
+      ],
+      [
+        { a: 0, b: 1 },
+        { a: 1, b: 3 },
+        { a: 3, b: 2 },
+        { a: 5, b: 4 },
+        { a: 4, b: 1 },
+        { a: 1, b: 6 },
+        { a: 6, b: 7 },
+      ],
+    ),
   };
 
-  // The rendered skeleton is fixed (count + topology are invariant), so the
-  // template iterates these stable handles and the rAF positions them.
-  readonly topology = ConstellationComponent.LINKS;
-  readonly starIndices = [0, 1, 2, 3, 4, 5, 6, 7];
+  // Destinations in scroll order; the morph runs between adjacent entries and
+  // wraps from the last back to the first (the star map loops endlessly).
+  private readonly order: Constellation[] = [
+    this.byRoute.home,
+    this.byRoute.work,
+    this.byRoute.about,
+    this.byRoute.contact,
+  ];
+
+  // Stable handles for the template; positions/links are set imperatively.
+  readonly starIndices = Array.from({ length: ConstellationComponent.STAR_COUNT }, (_, i) => i);
+  readonly linkSlots = Array.from({ length: ConstellationComponent.MAX_LINKS }, (_, i) => i);
   readonly radii = ConstellationComponent.R;
 
   @ViewChildren('starEl') private starEls!: QueryList<ElementRef<SVGGElement>>;
-  @ViewChildren('lineEl') private lineEls!: QueryList<ElementRef<SVGLineElement>>;
+  @ViewChildren('lineFrom') private lineFromEls!: QueryList<ElementRef<SVGLineElement>>;
+  @ViewChildren('lineTo') private lineToEls!: QueryList<ElementRef<SVGLineElement>>;
 
   private rafId = 0;
   private reduceMotion = false;
-  private viewReady = false;
   private groups: SVGGElement[] = [];
-  private segments: SVGLineElement[] = [];
-  private readonly subs = new Subscription();
+  private fromSegs: SVGLineElement[] = [];
+  private toSegs: SVGLineElement[] = [];
+  // Eased scroll position (inertia) + smoothed scroll speed (the star-settle).
+  private rendered = 0;
+  private smoothedVel = 0;
 
   constructor(
     private zone: NgZone,
-    private router: Router,
-    private travel: TravelService,
+    private stage: ScrollStageService,
   ) {}
-
-  ngOnInit(): void {
-    this.travel.init(this.byRoute[this.routeKey(this.router.url)]);
-    this.subs.add(
-      this.router.events
-        .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-        .subscribe((e) => {
-          this.travel.travelTo(this.byRoute[this.routeKey(e.urlAfterRedirects)]);
-          // With motion, the perpetual rAF picks the trip up; with reduced
-          // motion there is no loop, so paint the instant cut once.
-          if (this.reduceMotion && this.viewReady) {
-            this.renderAt(performance.now());
-          }
-        }),
-    );
-  }
 
   ngAfterViewInit(): void {
     this.groups = this.starEls.map((el) => el.nativeElement);
-    this.segments = this.lineEls.map((el) => el.nativeElement);
+    this.fromSegs = this.lineFromEls.map((el) => el.nativeElement);
+    this.toSegs = this.lineToEls.map((el) => el.nativeElement);
     this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.viewReady = true;
 
-    // Paint the resting figure before the first frame so there is no flash.
+    // Paint once before the first frame so there is no flash, then drive the
+    // morph off scroll position from a single out-of-zone rAF.
     this.renderAt(performance.now());
-
-    if (!this.reduceMotion) {
-      this.zone.runOutsideAngular(() => {
-        this.rafId = requestAnimationFrame(this.tick);
-      });
-    }
+    this.zone.runOutsideAngular(() => {
+      this.rafId = requestAnimationFrame(this.tick);
+    });
   }
 
   private tick = (now: number): void => {
@@ -154,21 +187,52 @@ export class ConstellationComponent implements OnInit, AfterViewInit, OnDestroy 
     this.rafId = requestAnimationFrame(this.tick);
   };
 
-  /** Position every star/line for the morph frame at `now`, plus gentle drift. */
+  /** Position the stars for the scroll-driven morph and cross-fade the lines. */
   private renderAt(now: number): void {
     const groups = this.groups;
     if (groups.length !== this.starIndices.length) {
       return;
     }
 
-    // Advance the trip; when idle this is the resting figure (no allocation).
-    const t = this.travel.easedProgressAt(now);
-    const stars: Star[] =
-      this.travel.phase() === 'travelling'
-        ? interpolateConstellation(this.travel.from, this.travel.to, t).stars
-        : this.travel.to.stars;
+    const count = this.order.length;
+    const target = this.stage.position;
+
+    let transit = 0;
+    if (this.reduceMotion) {
+      this.rendered = ((target % count) + count) % count; // snap, no inertia
+    } else {
+      // Ease the rendered position toward the scroll target along the SHORTEST
+      // path on the looping circle, so the morph glides and the wrap seam stays
+      // continuous (instead of unwinding backwards through every figure).
+      let delta = target - this.rendered;
+      delta -= count * Math.round(delta / count);
+      const step = delta * 0.12;
+      this.rendered = (((this.rendered + step) % count) + count) % count;
+
+      // Scroll speed shrinks the stars + dims the links; they settle at rest.
+      this.smoothedVel += (Math.abs(step) - this.smoothedVel) * 0.2;
+      transit = Math.min(0.75, this.smoothedVel * 6);
+    }
+
+    const base = this.rendered;
+    const idx = Math.floor(base);
+    let from: Constellation;
+    let to: Constellation;
+    let frac: number;
+    if (this.reduceMotion) {
+      from = to = this.order[Math.round(base) % count]; // snap to nearest figure
+      frac = 0;
+    } else {
+      from = this.order[idx];
+      to = this.order[(idx + 1) % count];
+      frac = base - idx;
+    }
+
+    const eased = frac < 1e-4 ? 0 : easeInOutQuart(frac);
+    const stars: Star[] = interpolateConstellation(from, to, eased).stars;
 
     const drift = this.reduceMotion ? 0 : 1;
+    const settle = (1 - 0.18 * transit).toFixed(3);
     const time = now / 1000;
     const speed = 0.5;
     const px = new Array<number>(stars.length);
@@ -180,30 +244,52 @@ export class ConstellationComponent implements OnInit, AfterViewInit, OnDestroy 
       const oy = drift * s.amp * Math.cos(time * speed * 0.8 + s.phy);
       px[i] = s.x + ox;
       py[i] = s.y + oy;
-      groups[i].setAttribute('transform', `translate(${px[i].toFixed(2)},${py[i].toFixed(2)})`);
+      groups[i].setAttribute(
+        'transform',
+        `translate(${px[i].toFixed(2)},${py[i].toFixed(2)}) scale(${settle})`,
+      );
     }
 
-    const links = this.topology;
-    const segs = this.segments;
-    if (segs.length === links.length) {
-      for (let i = 0; i < links.length; i++) {
-        const { a, b } = links[i];
-        const seg = segs[i];
+    // The outgoing figure's lines fade out as the incoming figure's fade in,
+    // so the line pattern can change without a pop. Scroll speed dims both.
+    const dim = 1 - 0.5 * transit;
+    this.drawLinks(this.fromSegs, from.links, px, py, dim * (1 - frac));
+    this.drawLinks(this.toSegs, to.links, px, py, dim * frac);
+  }
+
+  private drawLinks(
+    segs: SVGLineElement[],
+    links: Link[],
+    px: number[],
+    py: number[],
+    opacity: number,
+  ): void {
+    const op = opacity.toFixed(3);
+    for (let s = 0; s < segs.length; s++) {
+      const seg = segs[s];
+      if (s < links.length) {
+        const { a, b } = links[s];
         seg.setAttribute('x1', px[a].toFixed(2));
         seg.setAttribute('y1', py[a].toFixed(2));
         seg.setAttribute('x2', px[b].toFixed(2));
         seg.setAttribute('y2', py[b].toFixed(2));
+        seg.style.opacity = op;
+      } else {
+        seg.style.opacity = '0';
       }
     }
   }
 
   ngOnDestroy(): void {
     cancelAnimationFrame(this.rafId);
-    this.subs.unsubscribe();
   }
 
-  /** Build a constellation from index-ordered coordinates + the shared traits. */
-  private figure(name: string, coords: ReadonlyArray<readonly [number, number]>): Constellation {
+  /** Build a constellation from index-ordered coordinates + its own real links. */
+  private figure(
+    name: string,
+    coords: ReadonlyArray<readonly [number, number]>,
+    links: Link[],
+  ): Constellation {
     const stars: Star[] = coords.map(([x, y], i) => ({
       name: `${name} ${i + 1}`,
       x,
@@ -213,17 +299,6 @@ export class ConstellationComponent implements OnInit, AfterViewInit, OnDestroy 
       phy: ConstellationComponent.PHY[i],
       amp: ConstellationComponent.AMP[i],
     }));
-    return {
-      name,
-      side: 'left',
-      viewBox: '0 0 300 300',
-      stars,
-      links: ConstellationComponent.LINKS as Link[],
-    };
-  }
-
-  private routeKey(url: string): RouteKey {
-    const seg = url.split(/[?#]/)[0].replace(/^\/+/, '').split('/')[0];
-    return seg === 'work' || seg === 'about' || seg === 'contact' ? seg : 'home';
+    return { name, side: 'left', viewBox: '0 0 300 300', stars, links };
   }
 }

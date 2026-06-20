@@ -91,20 +91,6 @@
 }
 
 /* ============================================
-  FOOTER
-  ============================================ */
-
-.footer {
-  text-align: center;
-  padding-block: var(--space-2xl);
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-sm);
-  border-top: 1px solid var(--color-border);
-  margin-top: var(--section-spacing);
-  background-color: var(--color-card-bg);
-}
-
-/* ============================================
   RESPONSIVE
   ============================================ */
 

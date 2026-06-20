@@ -1,4 +1,4 @@
-<!-- Persistent background layer (z-0): mounts once, survives navigation. -->
+<!-- Persistent background layer (z-0): mounts once, morphs with scroll. -->
 <app-aurora
   class="aurora-bg"
   [colorStops]="theme.isDark() ? ['#1E1C1A','#3D312A','#5A3D2B'] : ['#FDFCFB','#F5F2EE','#FAF0E8']"
@@ -8,8 +8,20 @@
 ></app-aurora>
 <app-constellation class="constellation-bg"></app-constellation>
 
-<!-- Persistent navigation (z-100): survives navigation. -->
+<!-- Persistent navigation (z-100): survives scrolling. -->
 <app-site-nav></app-site-nav>
 
-<!-- Routed content (z-1). -->
-<router-outlet></router-outlet>
+<!-- One continuous, looping star-map: each destination is a full-viewport
+     section; scrolling morphs the constellation between them. -->
+<main class="starscroll">
+  <section #dest id="dest-home" class="dest"><app-landingpage></app-landingpage></section>
+  <section #dest id="dest-work" class="dest"><app-work></app-work></section>
+  <section #dest id="dest-about" class="dest"><app-about></app-about></section>
+  <section #dest id="dest-contact" class="dest"><app-contact></app-contact></section>
+
+  <!-- Runway for the Contact→Home morph + the seamless wrap point. -->
+  <div class="loop-runway" aria-hidden="true">
+    <p class="loop-cue">Bino Hlongwana</p>
+    <p class="loop-sub">the map loops &#8635;</p>
+  </div>
+</main>
