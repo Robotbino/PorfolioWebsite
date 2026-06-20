@@ -20,7 +20,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('dest') private dests!: QueryList<ElementRef<HTMLElement>>;
 
   private anchors: number[] = [];
-  private scrollMax = 1;
+  // Scroll offset of the Home-clone's top = one full loop "cycle". Reaching it
+  // means we are exactly one cycle down, where the clone is pixel-identical to
+  // the real Home, so we can reset by subtracting it invisibly.
+  private wrapAt = 0;
   private reduce = false;
   private ro?: ResizeObserver;
   private io?: IntersectionObserver;
@@ -50,18 +53,25 @@ export class AppComponent implements AfterViewInit, OnDestroy {
           entries.forEach((e) => e.target.classList.toggle('is-visible', e.isIntersecting)),
         { threshold: 0.15 },
       );
-      this.dests.forEach((d) => this.io!.observe(d.nativeElement));
+      this.dests.forEach((d) => {
+        // Skip anything pre-revealed (real Home + its clone): both are loop
+        // anchors that must always match, so a fast scroll can't catch them
+        // mid-reveal. Only Work/About/Contact get the scroll-reveal.
+        if (!d.nativeElement.classList.contains('is-visible')) {
+          this.io!.observe(d.nativeElement);
+        }
+      });
       document.body.classList.add('reveal-ready');
     }
   }
 
   @HostListener('window:scroll')
   onScroll(): void {
-    // Seamless wrap: hitting the bottom of the runway teleports back to the top.
-    if (window.scrollY >= this.scrollMax - 1) {
-      window.scrollTo(0, 0);
-      this.stage.position = 0;
-      return;
+    // Seamless wrap: at the clone's top we are one cycle down on pixel-identical
+    // content, so subtract the cycle (keeping any momentum overshoot of N px,
+    // which lands N px into the real Home) instead of snapping to the top.
+    if (this.wrapAt > 0 && window.scrollY >= this.wrapAt) {
+      window.scrollTo(0, window.scrollY - this.wrapAt);
     }
     this.update();
   }
@@ -74,7 +84,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   private measure(): void {
     this.anchors = this.dests.map((d) => d.nativeElement.offsetTop);
-    this.scrollMax = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    // The last #dest is the Home clone; its top is one cycle down.
+    this.wrapAt = this.anchors.length ? this.anchors[this.anchors.length - 1] : 0;
   }
 
   private update(): void {
@@ -91,14 +102,22 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     if (y <= a[0]) {
       return 0;
     }
+    // Morph over a fixed band (~one viewport) right before each boundary, so every
+    // transition lasts the same scroll distance regardless of section height and
+    // each figure RESTS while its section is in view. A plain proportional mapping
+    // stretched the Orion→Leo morph across the whole (now very tall) Work showcase,
+    // so the figure never settled and nav warps through it felt awkward.
+    const band = window.innerHeight * 0.85;
     for (let k = 0; k < last; k++) {
       if (y < a[k + 1]) {
-        return k + (y - a[k]) / Math.max(1, a[k + 1] - a[k]);
+        const seg = Math.min(band, Math.max(1, a[k + 1] - a[k]));
+        const start = a[k + 1] - seg;
+        return y <= start ? k : k + (y - start) / seg;
       }
     }
-    // Final segment runs through the runway, morphing the last figure home.
-    const denom = Math.max(1, this.scrollMax - a[last]);
-    return last + Math.min(1, (y - a[last]) / denom);
+    // At/after the clone's top (= count, which the looping constellation reads as
+    // Home again). The wrap fires here, so this value barely renders.
+    return last;
   }
 
   ngOnDestroy(): void {

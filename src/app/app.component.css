@@ -45,31 +45,8 @@ body.reveal-ready .dest:not(.is-visible) > * {
   filter: blur(10px);
 }
 
-/* The wrap point: an "arrival home" beat over the bare starfield. */
-.loop-runway {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  position: relative;
-  z-index: 1;
-}
-
-.loop-cue {
-  font-family: var(--font-family-display);
-  font-size: var(--font-size-4xl);
-  color: var(--color-text-primary);
-  opacity: 0.55;
-}
-
-.loop-sub {
-  font-size: var(--font-size-xs);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
+/* The seam buffer (a Home clone) reuses .dest styling; it just must never be
+   hidden by the reveal rule, so it ships with .is-visible in the template. */
 
 @media (prefers-reduced-motion: reduce) {
   .dest > * {

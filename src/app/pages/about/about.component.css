@@ -38,13 +38,15 @@
   ============================================ */
 
 .card {
-  background-color: var(--color-card-bg);
-  border: 2px solid var(--color-border);
+  /* Frosted glass surface (ADR-0006). Opaque tint is the fallback; the @supports
+     block below upgrades to a real backdrop blur where available. */
+  background: var(--glass-bg-solid);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
   padding: var(--space-lg);
   transition: transform var(--transition-base),
-              box-shadow var(--transition-base),
-              border-color var(--transition-base);
+              box-shadow var(--transition-base);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -55,10 +57,17 @@
   margin: var(--space-3xl) var(--space-xs);
 }
 
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(14px) saturate(1.25);
+    backdrop-filter: blur(14px) saturate(1.25);
+  }
+}
+
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-border-dark);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--shadow-hover);
 }
 
 .card-icon {
@@ -73,6 +82,16 @@
 
 .card:hover .card-icon.education {
   animation: educationGlow 1s ease-in-out infinite alternate;
+}
+
+/* One-shot glow + pop when the icon reaches viewport centre (the .is-centered
+   class is toggled by AboutComponent's IntersectionObserver; re-arms on exit). */
+.card-icon.qualification.is-centered {
+  animation: igniteBulb 1s var(--ease-out-quart);
+}
+
+.card-icon.education.is-centered {
+  animation: igniteCode 1s var(--ease-out-quart) 0.12s;
 }
 
 .card-title {
@@ -102,7 +121,7 @@
 
 .card-item-text {
   font-size: var(--font-size-lg);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   line-height: var(--line-height-snug);
 }
 
@@ -166,5 +185,53 @@
     color: #ffffff;
     text-shadow: 0 0 10px #67c6f9, 0 0 20px #67c6f9, 0 0 40px #67c6f9;
     filter: brightness(1.2);
+  }
+}
+
+/* One-shot "ignite": a small pop layered with the glow ramping on, then settling
+   back to the resting icon. Transform is GPU-composited; the brief glow is paint. */
+@keyframes igniteBulb {
+  0% {
+    transform: scale(1) rotate(0);
+    color: var(--color-text-tertiary);
+    text-shadow: none;
+  }
+  25% {
+    transform: scale(1.14) rotate(-7deg);
+    color: #f5a623;
+    text-shadow: 0 0 10px #f5a623, 0 0 22px rgba(245, 166, 35, 0.6);
+  }
+  55% {
+    transform: scale(1.03) rotate(4deg);
+    color: #fff8e1;
+    text-shadow: 0 0 14px #ffe680, 0 0 30px rgba(255, 230, 128, 0.5);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    color: var(--color-text-tertiary);
+    text-shadow: none;
+  }
+}
+
+@keyframes igniteCode {
+  0% {
+    transform: scale(1);
+    color: var(--color-text-tertiary);
+    text-shadow: none;
+  }
+  25% {
+    transform: scale(1.14);
+    color: #0f80f1;
+    text-shadow: 0 0 10px #0f80f1, 0 0 22px #0f80f1;
+  }
+  55% {
+    transform: scale(1.03);
+    color: #67c6f9;
+    text-shadow: 0 0 14px #67c6f9, 0 0 30px #67c6f9;
+  }
+  100% {
+    transform: scale(1);
+    color: var(--color-text-tertiary);
+    text-shadow: none;
   }
 }

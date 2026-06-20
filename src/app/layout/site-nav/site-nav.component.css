@@ -5,16 +5,6 @@
   top: 0;
   z-index: 100;
   background-color: transparent;
-  transition: background-color var(--transition-base),
-              box-shadow var(--transition-base),
-              backdrop-filter var(--transition-base);
-}
-
-.navigation-bar.scrolled {
-  background-color: color-mix(in srgb, var(--color-background) 72%, transparent);
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
-  box-shadow: var(--shadow-sm);
 }
 
 .navigation-content {
@@ -25,12 +15,19 @@
   max-width: var(--max-width-content);
   margin-inline: auto;
   padding-inline: var(--space-xl);
+  background-color: transparent;
 }
 
 .logo {
-  font-size: var(--font-size-4xl);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
+  /* Shrinks + mutes while travelling (driven by --nav-mute, set by the rAF). */
+  display: inline-block;
+  transform-origin: left center;
+  transform: scale(calc(1 - 0.38 * var(--nav-mute, 0)));
+  opacity: calc(1 - 0.45 * var(--nav-mute, 0));
+  transition: transform var(--transition-base), opacity var(--transition-base);
 }
 
 .nav-items {
@@ -44,7 +41,19 @@
   font-weight: var(--font-weight-medium);
   position: relative;
   padding-block: var(--space-xs);
-  transition: color var(--transition-base);
+  /* Fades to a faint ghost + lifts slightly while travelling; stays focusable. */
+  opacity: calc(1 - 0.88 * var(--nav-mute, 0));
+  transform: translateY(calc(-6px * var(--nav-mute, 0)));
+  transition: color var(--transition-base),
+              opacity var(--transition-base),
+              transform var(--transition-base);
+}
+
+/* Bring the whole nav back when pointed at or focused, so the labelled nav stays
+   operable for mouse and keyboard even mid-travel (CONTEXT.md Wayfinding). */
+.navigation-bar:hover,
+.navigation-bar:focus-within {
+  --nav-mute: 0;
 }
 
 .nav-link::after {

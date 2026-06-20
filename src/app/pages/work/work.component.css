@@ -183,6 +183,57 @@
 }
 
 /* ============================================
+  PROJECTS — HORIZONTAL SHOWCASE (enhancement)
+  Armed by WorkComponent (`.showcase-on` on the host) only on wide screens with
+  motion allowed. The wrappers below are inert blocks otherwise, so the cards
+  keep the vertical-stack layout above as a fail-open fallback.
+  ============================================ */
+
+:host(.showcase-on) .projects-viewport {
+  /* WorkComponent sets the real height from the horizontal travel (≈1:1 with
+     scroll). This is just a floor for the frame before the first measure. */
+  min-height: 100vh;
+  margin-top: var(--space-2xl);
+}
+
+:host(.showcase-on) .projects-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  /* clip (not hidden): no native scrollport, so focusing an off-frame card link
+     can't jump the layout sideways. Soft edges let cards melt in/out of frame. */
+  overflow: clip;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+}
+
+:host(.showcase-on) .projects-container {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: max-content;
+  max-width: none;
+  gap: var(--space-2xl);
+  margin: 0;
+  padding-inline: 11vw; /* lead-in / lead-out so the first and last card can sit in frame */
+  will-change: transform;
+}
+
+:host(.showcase-on) .project-card {
+  flex: 0 0 78vw;
+  max-width: 1100px;
+  height: min(72vh, 620px);
+  margin: 0;
+}
+
+:host(.showcase-on) .project-content {
+  height: 100%;
+  min-height: 0;
+}
+
+/* ============================================
   RESPONSIVE
   ============================================ */
 

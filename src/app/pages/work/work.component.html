@@ -104,7 +104,14 @@
       <h2 class="section-title" id="projects-title">Projects</h2>
     </header>
 
-    <div class="projects-container">
+    <!-- Horizontal showcase. #projectsViewport supplies the scroll distance, the
+         sticky #projectsStage frames the cards, and WorkComponent translates
+         #projectsTrack on scroll. Without the host's .showcase-on class (no-JS,
+         reduced motion, or narrow screens) these are plain blocks and the cards
+         fall back to the vertical stack. -->
+    <div class="projects-viewport" #projectsViewport>
+      <div class="projects-stage" #projectsStage>
+        <div class="projects-container" #projectsTrack>
 
       <article class="project-card">
         <div class="project-content">
@@ -195,6 +202,8 @@
           </div>
         </div>
       </article>
+        </div>
+      </div>
     </div>
   </div>
 </section>

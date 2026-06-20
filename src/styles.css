@@ -1,3 +1,6 @@
+/* Font Awesome icons (installed as npm package for reliability) */
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
 /* ============================================
    DESIGN SYSTEM - CSS CUSTOM PROPERTIES
    ============================================ */
@@ -178,6 +181,45 @@
 }
 
 /* ============================================
+   GLASS CARD SURFACE (see docs/adr/0006)
+   Light defaults, then dark overrides; manual .light-mode / .dark-mode come last
+   so they win over the OS @media block, matching the colour tokens above.
+   ============================================ */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-solid: rgba(250, 247, 243, 0.94);
+  --glass-border: rgba(20, 16, 12, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.75);
+  --glass-shadow: 0 22px 44px rgba(20, 16, 12, 0.14);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass-bg: rgba(44, 36, 31, 0.62);
+    --glass-bg-solid: rgba(38, 32, 27, 0.97);
+    --glass-border: rgba(255, 255, 255, 0.14);
+    --glass-highlight: rgba(255, 255, 255, 0.18);
+    --glass-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
+  }
+}
+
+.light-mode {
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-solid: rgba(250, 247, 243, 0.94);
+  --glass-border: rgba(20, 16, 12, 0.10);
+  --glass-highlight: rgba(255, 255, 255, 0.75);
+  --glass-shadow: 0 22px 44px rgba(20, 16, 12, 0.14);
+}
+
+.dark-mode {
+  --glass-bg: rgba(44, 36, 31, 0.62);
+  --glass-bg-solid: rgba(38, 32, 27, 0.97);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
+}
+
+/* ============================================
    BASE RESET & DEFAULTS
    ============================================ */
 
@@ -198,7 +240,12 @@
 
 html {
   text-size-adjust: none;
+  /* clip (not hidden) prevents a horizontal scrollbar without making the root a
+     scroll container — `overflow-x: hidden` forces the cross-axis to `auto`,
+     which breaks `position: sticky` (e.g. the Work projects showcase). `hidden`
+     stays first as a fallback for browsers without `overflow: clip`. */
   overflow-x: hidden;
+  overflow-x: clip;
 
   /* Hide scrollbar while maintaining scroll functionality */
   scrollbar-width: none; /* Firefox */
@@ -212,7 +259,9 @@ html::-webkit-scrollbar {
 body {
   margin: 0;
   min-height: 100vh;
+  /* See the html rule above: clip avoids a scroll container that breaks sticky. */
   overflow-x: hidden;
+  overflow-x: clip;
   font-family: var(--font-family);
   font-size: var(--font-size-lg);
   line-height: var(--line-height-normal);

@@ -70,3 +70,50 @@ the existing `Star`/`Link` data format in `constellation.component.ts`.
 **Progressive.** A conventional labeled nav is the baseline and always operable (keyboard,
 screen-reader, reduced-motion). The star-map interaction is revealed as an enhancement for visitors
 who explore. The map is **never the only way** to navigate.
+
+## The loop
+
+> The site is now ONE continuous, downward-looping vertical scroll (the multipage routes are
+> vestigial). See [ADR-0003](adr/0003-looping-scroll-real-constellations.md) for the pivot and
+> [ADR-0004](adr/0004-seamless-loop-clone-wrap.md) for the seamless wrap.
+
+**Cycle**:
+One full pass through the four _Destinations_ (Home → Work → About → Contact). In pixels it is the
+scroll offset of the _Loop clone_'s top; the wrap subtracts exactly one cycle.
+
+**Seam**:
+The wrap point where the bottom of the loop rejoins the top. It is _invisible_: the reset happens on
+a frame where the _Loop clone_ is pixel-identical to the real Home.
+_Avoid_: "teleport" / "snap" (that was the old, visible behaviour we replaced).
+
+**Loop clone**:
+A second, non-interactive copy of the Home section placed after Contact. It gives the Contact→Home
+morph its scroll distance _and_ acts as the seam buffer. It is `inert` + `aria-hidden` (no duplicate
+tab stops or landmarks) and always visible (never caught mid-reveal).
+
+**One-direction**:
+The loop only wraps **downward**; scrolling up is normal native scroll and clamps at Home. Fully
+bidirectional looping was rejected (fights native scroll at the top; jank risk).
+
+## Interaction states & surfaces
+
+**Nav fade**:
+While scrolled away from Home, the Work/About/Contact links fade to a faint ghost (still
+focusable) and the Home (house) icon shrinks and mutes; full nav appears only at the Home
+_Destination_. Driven by loop-aware distance-from-Home (not raw `scrollY`), so it is symmetric
+around the _Seam_ and never pops there. Reveals to full on hover / focus; off under reduced
+motion. See [ADR-0005](adr/0005-loop-aware-nav-muting.md).
+
+**Icon at viewport centre**:
+The instant a card's icon crosses the vertical middle of the viewport — an `IntersectionObserver`
+with `rootMargin: -50% 0 -50% 0`. It triggers the icon glow.
+
+**Icon glow on centre**:
+The one-shot icon animation played each time an icon reaches viewport centre — a small `scale`
+pop with the glow ramping on, then settling back. Replaces the old hover-only infinite glow
+(hover still works). Re-arms on exit, so it recurs each loop. Off under reduced motion.
+
+**Glass card**:
+The frosted content-card surface: a high-opacity warm tint + conservative `backdrop-filter` blur,
+hairline border with a top highlight, and a depth shadow, with an opaque `@supports` fallback.
+Keeps text contrast and performance safe. See [ADR-0006](adr/0006-glass-card-surface.md).
