@@ -65,3 +65,19 @@
   transform: scaleX(1);
   transform-origin: left;
 }
+
+@media (max-width: 768px) {
+  .navigation-content {
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-block: var(--space-md);
+  }
+
+  .nav-items {
+    gap: var(--space-lg);
+  }
+
+  .nav-link {
+    font-size: var(--font-size-sm);
+  }
+}

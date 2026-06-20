@@ -352,6 +352,8 @@ textarea:not([rows]) { min-height: 10em; }
     --font-size-6xl: 2.5rem;
     --section-spacing: var(--space-3xl);
   }
+
+  .btn { width: 100%; }
 }
 
 /* ============================================
