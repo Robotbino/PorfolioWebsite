@@ -1,0 +1,171 @@
+:host {
+  display: block;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+.about-cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: var(--space-md);
+  margin: 0 var(--space-xl);
+  margin-bottom: var(--space-xl);
+  max-width: var(--max-width-content);
+  margin-inline: auto;
+}
+
+.about-text {
+  max-width: var(--max-width-text);
+  margin-inline: auto;
+  margin-block: var(--space-md);
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.about-emphasis {
+  font-style: italic;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent);
+}
+
+/* ============================================
+  CARD COMPONENT
+  ============================================ */
+
+.card {
+  background-color: var(--color-card-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: transform var(--transition-base),
+              box-shadow var(--transition-base),
+              border-color var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 700px;
+  min-height: 350px;
+  margin: var(--space-3xl) var(--space-xs);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-dark);
+}
+
+.card-icon {
+  font-size: var(--font-size-4xl);
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-lg);
+}
+
+.card:hover .card-icon.qualification {
+  animation: bulbGlow 1s ease-in-out infinite alternate;
+}
+
+.card:hover .card-icon.education {
+  animation: educationGlow 1s ease-in-out infinite alternate;
+}
+
+.card-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-md);
+  color: var(--color-text-primary);
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.card-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.card-item-title {
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+}
+
+.card-item-text {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-tertiary);
+  line-height: var(--line-height-snug);
+}
+
+/* ============================================
+  RESPONSIVE
+  ============================================ */
+
+@media (max-width: 968px) {
+  .about-cards {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-cards {
+    flex-direction: column;
+    margin: 0 var(--space-md);
+  }
+
+  .about-text {
+    margin: var(--space-md) var(--space-lg);
+  }
+
+  .card {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+  }
+}
+
+/* ============================================
+  ANIMATIONS
+  ============================================ */
+
+@keyframes bulbGlow {
+  0% {
+    color: #f5a623;
+    text-shadow:
+      0 0 5px #f5a623,
+      0 0 10px #f5a623,
+      0 0 20px rgba(245, 166, 35, 0.6);
+    filter: brightness(0.9);
+  }
+  100% {
+    color: #fff8e1;
+    text-shadow:
+      0 0 10px #ffe680,
+      0 0 20px #ffe680,
+      0 0 40px rgba(255, 230, 128, 0.5);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes educationGlow {
+  0% {
+    color: #0f80f1;
+    text-shadow: 0 0 5px #0f80f1, 0 0 10px #0f80f1, 0 0 20px #0f80f1;
+    filter: brightness(0.9);
+  }
+  100% {
+    color: #ffffff;
+    text-shadow: 0 0 10px #67c6f9, 0 0 20px #67c6f9, 0 0 40px #67c6f9;
+    filter: brightness(1.2);
+  }
+}
