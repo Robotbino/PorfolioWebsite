@@ -1,19 +1,24 @@
 import { Component } from '@angular/core';
+import { ThemeService } from '../../core/theme.service';
 
 @Component({
   selector: 'app-work',
   standalone: false,
-  template: `
-    <section class="section">
-      <div class="container">
-        <header class="section-header">
-          <p class="section-pre-title">Browse My Recent</p>
-          <h2 class="section-title">Work</h2>
-        </header>
-        <p>Coming soon — projects and skills will be carved in here.</p>
-      </div>
-    </section>
-  `,
-  styles: [`:host { display: block; position: relative; z-index: 1; min-height: 100vh; }`],
+  templateUrl: './work.component.html',
+  styleUrl: './work.component.css',
 })
-export class WorkComponent {}
+export class WorkComponent {
+  constructor(private theme: ThemeService) {}
+
+  public get portfolioImageSrc(): string {
+    return this.theme.isDark()
+      ? '/assets/portfolio_dark_mode.png'
+      : '/assets/portfolio_light_mode.png';
+  }
+
+  public get portfolioImageAlt(): string {
+    return this.theme.isDark()
+      ? 'Portfolio website in dark mode'
+      : 'Portfolio website in light mode';
+  }
+}
