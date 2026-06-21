@@ -104,12 +104,15 @@
 
 .hero-name {
   display: block;
-  font-size: var(--font-size-display);
+  font-size: clamp(3rem, 10vw, 9rem);
   line-height: var(--line-height-none);
   letter-spacing: var(--tracking-tighter);
   color: var(--color-text-primary);
   margin: 0;
-  white-space: nowrap; /* keep each name line intact; clamp handles small screens */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 
 .hero-name-first,
@@ -175,9 +178,12 @@
   transition: color var(--transition-base);
 }
 
-.hero-cta:hover,
 .hero-cta:focus-visible {
   color: var(--color-accent-vivid-hover);
+}
+
+.hero-cta:active {
+  transform: scale(0.97);
 }
 
 .hero-cta::after {
@@ -192,20 +198,26 @@
   transition: transform var(--transition-slow);
 }
 
-.hero-cta:hover::after,
-.hero-cta:focus-visible::after {
-  transform: scaleX(0);
-  transform-origin: left;
-}
-
 .hero-cta-arrow {
   display: inline-block;
   transition: transform var(--transition-base);
 }
 
-.hero-cta:hover .hero-cta-arrow,
-.hero-cta:focus-visible .hero-cta-arrow {
-  transform: translateY(0.2rem);
+@media (hover: hover) and (pointer: fine) {
+  .hero-cta:hover {
+    color: var(--color-accent-vivid-hover);
+  }
+
+  .hero-cta:hover::after,
+  .hero-cta:focus-visible::after {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .hero-cta:hover .hero-cta-arrow,
+  .hero-cta:focus-visible .hero-cta-arrow {
+    transform: translateY(0.2rem);
+  }
 }
 
 /* Social links — typographic, not a stock icon row. */
@@ -227,8 +239,8 @@
   transition: color var(--transition-base);
 }
 
-.hero-social:hover {
-  color: var(--color-text-primary);
+.hero-social:active {
+  opacity: 0.7;
 }
 
 .hero-social-arrow {
@@ -236,8 +248,14 @@
   transition: transform var(--transition-base);
 }
 
-.hero-social:hover .hero-social-arrow {
-  transform: translate(0.15rem, -0.15rem);
+@media (hover: hover) and (pointer: fine) {
+  .hero-social:hover {
+    color: var(--color-text-primary);
+  }
+
+  .hero-social:hover .hero-social-arrow {
+    transform: translate(0.15rem, -0.15rem);
+  }
 }
 
 /* ============================================
@@ -269,25 +287,84 @@
 .hero-footer     { animation-delay: 0.38s; }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE — mobile poster hero
+   On narrow viewports the hero becomes a full-bleed editorial poster:
+   meta pins to the top, headline centres, footer anchors to the bottom.
+   The name type scales aggressively (60px at 375px, ~40% larger than
+   desktop-derived sizing) and the Thin/Black weight contrast sharpens.
    ============================================ */
 
 @media (max-width: 768px) {
+  .hero-frame {
+    padding-inline: var(--space-md);
+    justify-content: space-between;
+    padding-block: var(--space-xl) var(--space-2xl);
+    gap: var(--space-lg);
+  }
+
+  .hero-name {
+    font-size: clamp(3rem, 16vw, 4.8rem);
+  }
+
+  .hero-name-first {
+    font-weight: var(--font-weight-thin);
+    letter-spacing: 0.06em;
+  }
+
+  .hero-name-last {
+    margin-top: -0.06em;
+  }
+
+  .hero-headline::before {
+    inset: -24% -36% -20% -20%;
+  }
+
+  .hero-eyebrow {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+  }
+
   .hero-footer {
     align-items: flex-start;
-    gap: var(--space-md) var(--space-lg);
+    gap: var(--space-lg);
+    flex-direction: column;
   }
 
   .hero-actions {
     width: 100%;
-    justify-content: space-between;
+    gap: var(--space-lg);
   }
+
+  .hero-cta {
+    font-size: var(--font-size-lg);
+  }
+
+  .hero-socials {
+    gap: var(--space-xl);
+  }
+
+  @keyframes heroRise {
+    from { opacity: 0.35; transform: translateY(1.5rem); filter: blur(10px); }
+    to   { opacity: 1;    transform: translateY(0);       filter: blur(0); }
+  }
+
+  .hero-eyebrow    { animation-duration: 1s; }
+  .hero-name-first { animation-duration: 1s; animation-delay: 0.1s; }
+  .hero-name-last  { animation-duration: 1s; animation-delay: 0.22s; }
+  .hero-meta       { animation-duration: 1s; animation-delay: 0.34s; }
+  .hero-footer     { animation-duration: 1s; animation-delay: 0.42s; }
 }
 
 @media (max-width: 480px) {
+  .hero-frame {
+    padding-inline: var(--space-sm);
+  }
+
   .hero-meta {
     font-size: 0.6875rem;
     letter-spacing: var(--tracking-wide);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
   }
 
   .hero-actions {

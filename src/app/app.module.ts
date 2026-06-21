@@ -10,6 +10,7 @@ import { WorkComponent } from './pages/work/work.component';
 import { AboutComponent } from './pages/about/about.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { SiteNavComponent } from './layout/site-nav/site-nav.component';
+import { ScrollRevealDirective } from './scroll-reveal.directive';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { SiteNavComponent } from './layout/site-nav/site-nav.component';
     WorkComponent,
     AboutComponent,
     ContactComponent,
-    SiteNavComponent
+    SiteNavComponent,
+    ScrollRevealDirective
   ],
   imports: [
     BrowserModule,

@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  HostListener,
   NgZone,
   OnDestroy,
 } from '@angular/core';
@@ -29,6 +30,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   // Travel fraction (in destination units) over which the nav fully fades.
   private static readonly FADE_RANGE = 0.5;
 
+  menuOpen = false;
   private rafId = 0;
   private lastMute = -1;
 
@@ -68,6 +70,23 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     cancelAnimationFrame(this.rafId);
+  }
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+    document.body.style.overflow = this.menuOpen ? 'hidden' : '';
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.menuOpen) {
+      this.closeMenu();
+    }
   }
 
   scrollToSection(id: string, event: Event): void {

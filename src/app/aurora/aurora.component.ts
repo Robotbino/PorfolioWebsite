@@ -122,6 +122,8 @@ void main() {
 }
 `;
 
+let auroraFallbackId = 0;
+
 @Component({
   selector: 'app-aurora',
   standalone: false,
@@ -146,8 +148,14 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
   private animationId = 0;
   private resizeHandler: (() => void) | null = null;
   private glContext: any = null;
+  private fallbackAnimations: Animation[] = [];
 
   ngAfterViewInit(): void {
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+      this.initCssFallback();
+      return;
+    }
+
     const ctn = this.containerRef.nativeElement;
 
     const renderer = new Renderer({
@@ -216,7 +224,66 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
     resize();
   }
 
+  private initCssFallback(): void {
+    const ctn = this.containerRef.nativeElement;
+    Object.assign(ctn.style, { position: 'relative', overflow: 'hidden' });
+
+    const blobs = [
+      { w: '120%', h: '60%', t: '-30%', l: '-20%', dur: 12000,
+        a: 'translate3d(-5%,-8%,0) scale(1.1)', b: 'translate3d(8%,5%,0) scale(0.95)' },
+      { w: '100%', h: '50%', t: '-25%', l: '0%', dur: 15000,
+        a: 'translate3d(10%,-5%,0) scale(0.9)', b: 'translate3d(-8%,8%,0) scale(1.05)' },
+      { w: '110%', h: '55%', t: '-28%', l: '-10%', dur: 18000,
+        a: 'translate3d(-3%,5%,0) scale(1.05)', b: 'translate3d(5%,-10%,0) scale(1.1)' },
+    ];
+
+    this.colorStops.forEach((hex, i) => {
+      const c = blobs[i];
+      const el = document.createElement('div');
+      Object.assign(el.style, {
+        position: 'absolute', borderRadius: '50%', willChange: 'transform',
+        opacity: '0.6', width: c.w, height: c.h, top: c.t, left: c.l,
+        background: `radial-gradient(ellipse at center, ${hex} 0%, transparent 70%)`,
+      });
+      this.fallbackAnimations.push(
+        el.animate(
+          [{ transform: c.a }, { transform: c.b }],
+          { duration: c.dur, easing: 'ease-in-out', iterations: Infinity, direction: 'alternate', fill: 'both' }
+        )
+      );
+      ctn.appendChild(el);
+    });
+
+    const fId = `aurora-noise-${auroraFallbackId++}`;
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    Object.assign(svg.style, {
+      position: 'absolute', inset: '0', width: '100%', height: '100%',
+      opacity: '0.06', pointerEvents: 'none',
+    });
+    const fl = document.createElementNS(ns, 'filter');
+    fl.setAttribute('id', fId);
+    const turb = document.createElementNS(ns, 'feTurbulence');
+    turb.setAttribute('type', 'fractalNoise');
+    turb.setAttribute('baseFrequency', '0.65');
+    turb.setAttribute('numOctaves', '3');
+    turb.setAttribute('stitchTiles', 'stitch');
+    fl.appendChild(turb);
+    const cm = document.createElementNS(ns, 'feColorMatrix');
+    cm.setAttribute('type', 'saturate');
+    cm.setAttribute('values', '0');
+    fl.appendChild(cm);
+    svg.appendChild(fl);
+    const rect = document.createElementNS(ns, 'rect');
+    rect.setAttribute('width', '100%');
+    rect.setAttribute('height', '100%');
+    rect.setAttribute('filter', `url(#${fId})`);
+    svg.appendChild(rect);
+    ctn.appendChild(svg);
+  }
+
   ngOnDestroy(): void {
+    this.fallbackAnimations.forEach(a => a.cancel());
     cancelAnimationFrame(this.animationId);
     if (this.resizeHandler) {
       window.removeEventListener('resize', this.resizeHandler);
