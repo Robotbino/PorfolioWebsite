@@ -110,7 +110,15 @@ void main() {
 
   vec3 auroraColor = intensity * rampColor;
 
-  fragColor = vec4(auroraColor * auroraAlpha, auroraAlpha);
+  vec3 premultiplied = auroraColor * auroraAlpha;
+
+  // Dithering — adds sub-pixel noise (~1/255) to break up the 8-bit colour
+  // banding that's most visible across the light-mode gradient. Hash of the
+  // pixel coordinate, so it's stable per-pixel and reads as smooth, not grainy.
+  float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+  premultiplied += (dither - 0.5) / 255.0;
+
+  fragColor = vec4(premultiplied, auroraAlpha);
 }
 `;
 

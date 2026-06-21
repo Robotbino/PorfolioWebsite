@@ -1,0 +1,59 @@
+/**
+ * Pure cycle math for the looping star-map scroll. No DOM, no framework, no
+ * `window` — the app shell reads `scrollY` / section `offsetTop` / `innerHeight`
+ * and passes them in; these functions only compute. That keeps the band
+ * heuristic and the seam-wrap arithmetic a unit-test surface
+ * (see scroll-loop.math.spec.ts), mirroring `constellation-morph.ts`.
+ */
+
+/**
+ * Map a scroll offset to continuous destination units (0..cycleLength).
+ *
+ * `anchors` are the section offsets in scroll order; the LAST is the Loop clone,
+ * so `anchors.length - 1 === cycleLength` and this returns that value at/past the
+ * clone (the looping constellation reads it as Home again).
+ *
+ * Each figure RESTS at an integer while its section is in view and only morphs
+ * over a fixed band (~one viewport) right before each boundary, so every Travel
+ * lasts the same scroll distance regardless of section height — without it a tall
+ * section (the Work showcase) would stretch one morph across the whole section
+ * and the figure would never settle.
+ */
+export function positionFor(
+  scrollY: number,
+  anchors: readonly number[],
+  viewportHeight: number,
+): number {
+  if (anchors.length === 0) {
+    return 0;
+  }
+  const last = anchors.length - 1;
+  if (scrollY <= anchors[0]) {
+    return 0;
+  }
+  const band = viewportHeight * 0.85;
+  for (let k = 0; k < last; k++) {
+    if (scrollY < anchors[k + 1]) {
+      const seg = Math.min(band, Math.max(1, anchors[k + 1] - anchors[k]));
+      const start = anchors[k + 1] - seg;
+      return scrollY <= start ? k : k + (scrollY - start) / seg;
+    }
+  }
+  // At/after the clone's top (= cycleLength, read as Home again); the wrap fires
+  // here, so this value barely renders.
+  return last;
+}
+
+/**
+ * The seamless one-direction wrap. At/past the clone's top — one cycle down,
+ * where the clone is pixel-identical to real Home — return the offset the shell
+ * should `scrollTo`: `scrollY - wrapAt`, which preserves any momentum overshoot
+ * (N px past the seam lands N px into the real Home). Below the seam, or before
+ * the shell has measured (`wrapAt <= 0`), return null (no wrap).
+ */
+export function wrapOffset(scrollY: number, wrapAt: number): number | null {
+  if (wrapAt > 0 && scrollY >= wrapAt) {
+    return scrollY - wrapAt;
+  }
+  return null;
+}

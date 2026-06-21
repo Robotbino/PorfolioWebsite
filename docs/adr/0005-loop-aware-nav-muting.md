@@ -20,7 +20,8 @@ real Home. Anything keyed to raw `scrollY` *pops* at the seam and reveals the lo
 
 Drive the nav state from **loop-aware distance-from-Home**, not raw `scrollY`:
 
-- `SiteNavComponent` reads the existing `ScrollStageService.position` (0 = Home, 1 = Work, 2 =
+- `SiteNavComponent` reads the existing `ScrollLoopService.position` (the cycle module — renamed
+  from `ScrollStageService` in [ADR-0007](0007-deepen-cycle-module.md); 0 = Home, 1 = Work, 2 =
   About, 3 = Contact, 4 ≡ Home again) from a single **out-of-zone `requestAnimationFrame`** loop
   (the same pattern the constellation uses), so there is no change-detection thrash.
 - It writes one CSS custom property, `--nav-mute` (0…1) =

@@ -8,7 +8,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { ThemeService } from './core/theme.service';
-import { ScrollStageService } from './scroll-stage.service';
+import { ScrollLoopService } from './scroll-loop.service';
 
 @Component({
   selector: 'app-root',
@@ -19,11 +19,6 @@ import { ScrollStageService } from './scroll-stage.service';
 export class AppComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('dest') private dests!: QueryList<ElementRef<HTMLElement>>;
 
-  private anchors: number[] = [];
-  // Scroll offset of the Home-clone's top = one full loop "cycle". Reaching it
-  // means we are exactly one cycle down, where the clone is pixel-identical to
-  // the real Home, so we can reset by subtracting it invisibly.
-  private wrapAt = 0;
   private reduce = false;
   private ro?: ResizeObserver;
   private io?: IntersectionObserver;
@@ -31,7 +26,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   // Public so the persistent background layer can bind to the theme signal.
   constructor(
     public theme: ThemeService,
-    private stage: ScrollStageService,
+    private loop: ScrollLoopService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -68,10 +63,11 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   @HostListener('window:scroll')
   onScroll(): void {
     // Seamless wrap: at the clone's top we are one cycle down on pixel-identical
-    // content, so subtract the cycle (keeping any momentum overshoot of N px,
-    // which lands N px into the real Home) instead of snapping to the top.
-    if (this.wrapAt > 0 && window.scrollY >= this.wrapAt) {
-      window.scrollTo(0, window.scrollY - this.wrapAt);
+    // content, so the loop hands back the offset to subtract (keeping momentum
+    // overshoot) instead of snapping to the top. null = no wrap due.
+    const adjustment = this.loop.wrapOffset(window.scrollY);
+    if (adjustment !== null) {
+      window.scrollTo(0, adjustment);
     }
     this.update();
   }
@@ -83,41 +79,14 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   }
 
   private measure(): void {
-    this.anchors = this.dests.map((d) => d.nativeElement.offsetTop);
-    // The last #dest is the Home clone; its top is one cycle down.
-    this.wrapAt = this.anchors.length ? this.anchors[this.anchors.length - 1] : 0;
+    // Hand the loop the section offsets (the last #dest is the Home clone); it
+    // derives the cycle length + wrap point. DOM read stays here; math is the
+    // loop's.
+    this.loop.setAnchors(this.dests.map((d) => d.nativeElement.offsetTop));
   }
 
   private update(): void {
-    this.stage.position = this.positionFor(window.scrollY);
-  }
-
-  /** Map a scroll offset to continuous destination units (0..count). */
-  private positionFor(y: number): number {
-    const a = this.anchors;
-    if (a.length === 0) {
-      return 0;
-    }
-    const last = a.length - 1;
-    if (y <= a[0]) {
-      return 0;
-    }
-    // Morph over a fixed band (~one viewport) right before each boundary, so every
-    // transition lasts the same scroll distance regardless of section height and
-    // each figure RESTS while its section is in view. A plain proportional mapping
-    // stretched the Orion→Leo morph across the whole (now very tall) Work showcase,
-    // so the figure never settled and nav warps through it felt awkward.
-    const band = window.innerHeight * 0.85;
-    for (let k = 0; k < last; k++) {
-      if (y < a[k + 1]) {
-        const seg = Math.min(band, Math.max(1, a[k + 1] - a[k]));
-        const start = a[k + 1] - seg;
-        return y <= start ? k : k + (y - start) / seg;
-      }
-    }
-    // At/after the clone's top (= count, which the looping constellation reads as
-    // Home again). The wrap fires here, so this value barely renders.
-    return last;
+    this.loop.update(window.scrollY, window.innerHeight);
   }
 
   ngOnDestroy(): void {

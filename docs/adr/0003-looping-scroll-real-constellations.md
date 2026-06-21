@@ -37,9 +37,10 @@ asterism lines**, which **cross-fade** (outgoing → incoming) through each tran
 
 - `<router-outlet>` is replaced by a scrolling shell; the Angular routes are now vestigial and
   per-destination URL deep-linking is a follow-up.
-- The time-based `TravelService` is removed; the morph is driven by `ScrollStageService.position`
-  (written by the shell on scroll, sampled by the constellation's rAF). `interpolateConstellation`
-  is unchanged and still unit-tested.
+- The time-based `TravelService` is removed; the morph is driven by `ScrollLoopService.position`
+  (the cycle module — renamed/deepened from `ScrollStageService` in
+  [ADR-0007](0007-deepen-cycle-module.md); written by the shell on scroll, sampled by the
+  constellation's rAF). `interpolateConstellation` is unchanged and still unit-tested.
 - The loop seam still teleports content at the very bottom — smoothing that (mask/clone) is a
   follow-up.
 - `CONTEXT.md` and the refactor plan describe the multipage framing and need a later alignment pass.

@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Constellation, Link, Star } from './constellation.model';
 import { interpolateConstellation } from './constellation-morph';
-import { ScrollStageService } from '../scroll-stage.service';
+import { ScrollLoopService } from '../scroll-loop.service';
 
 /** The locked spike easing — applied per scroll segment so figures settle at rest. */
 const easeInOutQuart = (t: number): number =>
@@ -165,7 +165,7 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private zone: NgZone,
-    private stage: ScrollStageService,
+    private loop: ScrollLoopService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -194,8 +194,10 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
-    const count = this.order.length;
-    const target = this.stage.position;
+    // The loop is the single source of the cycle length; fall back to this
+    // figure set's own length before the shell has measured (loop length 0).
+    const count = this.loop.cycleLength || this.order.length;
+    const target = this.loop.position();
 
     let transit = 0;
     if (this.reduceMotion) {
