@@ -24,7 +24,9 @@
   font-size: var(--font-size-lg);
   line-height: var(--line-height-relaxed);
   color: var(--color-text-secondary);
-  text-align: center;
+  /* Left-align long-form copy: centering breaks the return-sweep on a 5+ line
+     paragraph. The 65ch measure already does the editorial framing. */
+  text-align: left;
 }
 
 .about-emphasis {
@@ -125,8 +127,13 @@
   ============================================ */
 
 @media (max-width: 968px) {
+  /* Stacked layout: grid with `1fr` rows equalises the two cards to the taller
+     one's height (Qualifications has two items, Education has one — without
+     this they'd render at different sizes). */
   .about-cards {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: 1fr;
   }
 }
 
@@ -139,25 +146,24 @@
 
 @media (max-width: 768px) {
   .about-cards {
-    flex-direction: column;
     margin: 0;
     gap: var(--space-md);
   }
 
   .about-text {
     margin: var(--space-lg) 0;
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-normal);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-relaxed);
     text-align: left;
   }
 
   .card {
     width: auto;
-    height: auto;
     max-width: 100%;
-    min-height: auto;
     padding: var(--space-lg);
     margin: 0;
+    /* `height: auto` and `min-height: auto` deliberately omitted here so the
+       grid above can stretch both cards to the equalised 1fr row height. */
   }
 
   .card-icon {

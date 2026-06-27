@@ -41,6 +41,11 @@ export class ThemeService {
     this.applyTheme();
   }
 
+  /** Pick the asset path that matches the current theme. */
+  themeAsset(darkPath: string, lightPath: string): string {
+    return this.isDark() ? darkPath : lightPath;
+  }
+
   private applyTheme(): void {
     const root = document.documentElement;
     root.classList.toggle('dark-mode', this.isDark());

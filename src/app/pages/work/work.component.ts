@@ -9,6 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
+import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-data';
 
 @Component({
   selector: 'app-work',
@@ -21,6 +22,9 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   @ViewChild('projectsViewport') private viewportRef?: ElementRef<HTMLElement>;
   @ViewChild('projectsStage') private stageRef?: ElementRef<HTMLElement>;
   @ViewChild('projectsTrack') private trackRef?: ElementRef<HTMLElement>;
+
+  readonly experienceGroups: readonly ExperienceGroup[] = EXPERIENCE_GROUPS;
+  readonly projects: readonly Project[] = PROJECTS;
 
   // Only enabled on wide screens with motion allowed. Below that (or no-JS) the
   // host stays without `.showcase-on` and the cards render as a vertical stack —
@@ -46,6 +50,14 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     private zone: NgZone,
     private host: ElementRef<HTMLElement>,
   ) {}
+
+  projectImg(p: Project): string {
+    return this.theme.themeAsset(p.img.dark, p.img.light);
+  }
+
+  projectAlt(p: Project): string {
+    return this.theme.themeAsset(p.img.alt.dark, p.img.alt.light);
+  }
 
   ngAfterViewInit(): void {
     this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -124,17 +136,5 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     cancelAnimationFrame(this.rafId);
-  }
-
-  public get portfolioImageSrc(): string {
-    return this.theme.isDark()
-      ? '/assets/portfolio_dark_mode.png'
-      : '/assets/portfolio_light_mode.png';
-  }
-
-  public get portfolioImageAlt(): string {
-    return this.theme.isDark()
-      ? 'Portfolio website in dark mode'
-      : 'Portfolio website in light mode';
   }
 }

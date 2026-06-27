@@ -227,7 +227,11 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
   private initCssFallback(): void {
     const ctn = this.containerRef.nativeElement;
     Object.assign(ctn.style, { position: 'relative', overflow: 'hidden' });
+    this.buildFallbackBlobs(ctn);
+    this.buildFallbackNoiseSvg(ctn);
+  }
 
+  private buildFallbackBlobs(ctn: HTMLElement): void {
     const blobs = [
       { w: '120%', h: '60%', t: '-30%', l: '-20%', dur: 12000,
         a: 'translate3d(-5%,-8%,0) scale(1.1)', b: 'translate3d(8%,5%,0) scale(0.95)' },
@@ -253,7 +257,9 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
       );
       ctn.appendChild(el);
     });
+  }
 
+  private buildFallbackNoiseSvg(ctn: HTMLElement): void {
     const fId = `aurora-noise-${auroraFallbackId++}`;
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');

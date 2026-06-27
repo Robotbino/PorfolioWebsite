@@ -1,3 +1,9 @@
+/* === LAYOUT === */
+/* Hero — editorial poster. A centred three-part stack (meta / headline / footer).
+   The shell vertically centres every section, so the hero leans into that: an
+   asymmetric, left-anchored headline with deliberate negative space to the right
+   where the constellation behind it can breathe. */
+
 #my-wrapper {
   position: relative;
   z-index: 1;
@@ -5,14 +11,6 @@
   max-width: 100vw;
   overflow-x: hidden;
 }
-
-/* ============================================
-   HERO — editorial poster
-   A centred three-part stack (meta / headline / footer). The shell vertically
-   centres every section, so the hero leans into that: an asymmetric, left-
-   anchored headline with deliberate negative space to the right where the
-   constellation behind it can breathe.
-   ============================================ */
 
 .hero {
   position: relative;
@@ -163,9 +161,13 @@
   gap: var(--space-lg) var(--space-2xl);
 }
 
-/* Primary action — an editorial text-button, not a pill. */
+/* === CTA + SOCIALS === */
+
+/* Primary action — filled accent pill. Sized and weighted to unambiguously
+   outrank the social links beside it: the hero's one dominant interactive
+   element. Inverts to dark-text-on-accent so the chip reads as a destination,
+   not as ornament. */
 .hero-cta {
-  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
@@ -173,29 +175,26 @@
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
-  color: var(--color-accent-vivid); /* the one striking accent — primary action */
-  padding-block: var(--space-xs);
-  transition: color var(--transition-base);
+  color: var(--color-background);
+  background: var(--color-accent-vivid);
+  border: 2px solid var(--color-accent-vivid);
+  border-radius: var(--radius-full);
+  padding: var(--space-md) var(--space-xl);
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition-base),
+              border-color var(--transition-base),
+              transform var(--transition-base),
+              box-shadow var(--transition-base);
 }
 
 .hero-cta:focus-visible {
-  color: var(--color-accent-vivid-hover);
+  background-color: var(--color-accent-vivid-hover);
+  border-color: var(--color-accent-vivid-hover);
+  outline-offset: 4px;
 }
 
 .hero-cta:active {
   transform: scale(0.97);
-}
-
-.hero-cta::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 1.5px;
-  background: currentColor;
-  transform-origin: right;
-  transition: transform var(--transition-slow);
 }
 
 .hero-cta-arrow {
@@ -205,13 +204,10 @@
 
 @media (hover: hover) and (pointer: fine) {
   .hero-cta:hover {
-    color: var(--color-accent-vivid-hover);
-  }
-
-  .hero-cta:hover::after,
-  .hero-cta:focus-visible::after {
-    transform: scaleX(0);
-    transform-origin: left;
+    background-color: var(--color-accent-vivid-hover);
+    border-color: var(--color-accent-vivid-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
 
   .hero-cta:hover .hero-cta-arrow,
@@ -258,14 +254,12 @@
   }
 }
 
-/* ============================================
-   ENTRANCE — fail-open
-   Every piece RESTS in its final, fully readable state; the keyframe only adds
-   a one-shot rise. The `from` state is already legible (opacity 0.5, faint
-   blur), so if the animation never advances — the documented behaviour under a
-   busy WebGL main thread — the hero is still perfectly readable. Mirrors the
-   global routeEnter philosophy. Reduced-motion collapses it to an instant cut.
-   ============================================ */
+/* === ENTRANCE === */
+/* Fail-open: every piece RESTS in its final, fully readable state; the keyframe
+   only adds a one-shot rise. The `from` state is already legible (opacity 0.5,
+   faint blur), so if the animation never advances — the documented behaviour
+   under a busy WebGL main thread — the hero is still perfectly readable. Mirrors
+   the global routeEnter philosophy. Reduced-motion collapses it to an instant cut. */
 
 @keyframes heroRise {
   from { opacity: 0.5; transform: translateY(0.85rem); filter: blur(6px); }
@@ -286,13 +280,11 @@
 .hero-meta       { animation-delay: 0.30s; }
 .hero-footer     { animation-delay: 0.38s; }
 
-/* ============================================
-   RESPONSIVE — mobile poster hero
-   On narrow viewports the hero becomes a full-bleed editorial poster:
-   meta pins to the top, headline centres, footer anchors to the bottom.
-   The name type scales aggressively (60px at 375px, ~40% larger than
-   desktop-derived sizing) and the Thin/Black weight contrast sharpens.
-   ============================================ */
+/* === RESPONSIVE === */
+/* Mobile poster hero: on narrow viewports the hero becomes a full-bleed editorial
+   poster — meta pins to the top, headline centres, footer anchors to the bottom.
+   The name type scales aggressively (60px at 375px, ~40% larger than desktop-
+   derived sizing) and the Thin/Black weight contrast sharpens. */
 
 @media (max-width: 768px) {
   .hero-frame {
