@@ -4,11 +4,11 @@ import {
   Component,
   ElementRef,
   HostListener,
-  NgZone,
   OnDestroy,
   ViewChild,
 } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
+import { FramePulseService } from '../../core/frame-pulse.service';
 import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-data';
 
 @Component({
@@ -38,16 +38,14 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   private reduce = false;
   private active = false;
 
-  private rafId = 0;
-  private rendered = 0; // eased translateX (px), lerped toward the scroll target
-  // Cached so the per-frame work is one rect read + one transform write; the
-  // expensive layout reads only happen on (re)measure.
+  private unsub: (() => void) | null = null;
+  private rendered = 0;
   private stickRange = 0;
   private maxX = 0;
 
   constructor(
     private theme: ThemeService,
-    private zone: NgZone,
+    private pulse: FramePulseService,
     private host: ElementRef<HTMLElement>,
   ) {}
 
@@ -83,13 +81,11 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     if (enable) {
       host.classList.add('showcase-on');
       this.measure();
-      this.zone.runOutsideAngular(() => {
-        this.rafId = requestAnimationFrame(this.tick);
-      });
+      this.unsub = this.pulse.onTick(this.tick);
     } else {
       host.classList.remove('showcase-on');
-      cancelAnimationFrame(this.rafId);
-      this.rafId = 0;
+      this.unsub?.();
+      this.unsub = null;
       this.rendered = 0;
       if (this.trackRef) {
         this.trackRef.nativeElement.style.transform = '';
@@ -124,17 +120,14 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     const viewport = this.viewportRef?.nativeElement;
     const track = this.trackRef?.nativeElement;
     if (viewport && track && this.stickRange > 0 && this.maxX > 0) {
-      // viewport.top runs from 0 (sweep start) to -stickRange (sweep end).
       const p = Math.min(1, Math.max(0, -viewport.getBoundingClientRect().top / this.stickRange));
       const target = -p * this.maxX;
-      // Same 0.12 inertia as the constellation glide, so the two motions feel kin.
       this.rendered += (target - this.rendered) * 0.12;
       track.style.transform = `translate3d(${this.rendered.toFixed(2)}px,0,0)`;
     }
-    this.rafId = requestAnimationFrame(this.tick);
   };
 
   ngOnDestroy(): void {
-    cancelAnimationFrame(this.rafId);
+    this.unsub?.();
   }
 }
