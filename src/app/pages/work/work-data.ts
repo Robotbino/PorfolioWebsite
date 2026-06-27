@@ -90,9 +90,11 @@ export const PROJECTS: readonly Project[] = [
   {
     title: 'Portfolio Website',
     description:
-      "The site you're viewing — an immersion-first developer portfolio built with " +
-      'Angular. A live WebGL aurora backdrop and generative constellation canvas sit ' +
-      'behind a multipage routed layout, with persistent dark/light theming.',
+      'The site you are viewing — an Angular single-page app built as one continuous ' +
+      'scroll: a cycle through four destinations that loops back on itself with no ' +
+      'visible seam. The star-map and aurora behind the text run on a single shared ' +
+      'frame loop, and the motion math is kept separate from the rendering so each part ' +
+      'stays small and testable. No animation libraries — all hand-built.',
     tech: ['Angular', 'TypeScript', 'WebGL', 'CSS3'],
     href: 'https://github.com/Robotbino/PorfolioWebsite.git',
     img: {

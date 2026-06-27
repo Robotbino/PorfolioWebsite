@@ -73,12 +73,24 @@
   margin-bottom: var(--space-lg);
 }
 
+/* Idle ambiance — the bulb softly breathes and flickers warm, the code icon
+   rocks with a cool blue data-pulse. Both rest at the neutral tertiary colour,
+   so between pulses they read as plain icons. Hover and the centred ignite both
+   override these via the cascade; the global reduced-motion rule stops them. */
+.card-icon.qualification {
+  animation: bulbIdle 5s ease-in-out infinite;
+}
+
+.card-icon.education {
+  animation: codeIdle 4.5s ease-in-out infinite;
+}
+
 .card:hover .card-icon.qualification {
-  animation: bulbGlow 1s ease-in-out infinite alternate;
+  animation: bulbGlow 0.8s ease-in-out infinite alternate;
 }
 
 .card:hover .card-icon.education {
-  animation: educationGlow 1s ease-in-out infinite alternate;
+  animation: educationGlow 0.9s ease-in-out infinite alternate;
 }
 
 /* One-shot glow + pop when the icon reaches viewport centre (the .is-centered
@@ -195,15 +207,17 @@
       0 0 5px #f5a623,
       0 0 10px #f5a623,
       0 0 20px rgba(245, 166, 35, 0.6);
-    filter: brightness(0.9);
+    filter: brightness(0.95);
+    transform: rotate(-5deg) scale(1.06);
   }
   100% {
     color: #fff8e1;
     text-shadow:
       0 0 10px #ffe680,
-      0 0 20px #ffe680,
-      0 0 40px rgba(255, 230, 128, 0.5);
-    filter: brightness(1.2);
+      0 0 22px #ffe680,
+      0 0 44px rgba(255, 230, 128, 0.55);
+    filter: brightness(1.25);
+    transform: rotate(5deg) scale(1.12);
   }
 }
 
@@ -211,13 +225,55 @@
   0% {
     color: #0f80f1;
     text-shadow: 0 0 5px #0f80f1, 0 0 10px #0f80f1, 0 0 20px #0f80f1;
-    filter: brightness(0.9);
+    filter: brightness(0.95);
+    transform: translateX(-3px) scale(1.06);
   }
   100% {
     color: #ffffff;
-    text-shadow: 0 0 10px #67c6f9, 0 0 20px #67c6f9, 0 0 40px #67c6f9;
-    filter: brightness(1.2);
+    text-shadow: 0 0 10px #67c6f9, 0 0 22px #67c6f9, 0 0 44px #67c6f9;
+    filter: brightness(1.25);
+    transform: translateX(3px) scale(1.12);
   }
+}
+
+/* Idle breathe-and-flicker for the bulb: mostly resting tertiary, a quick warm
+   flicker near the start, then a soft float-and-glow peak, back to rest. */
+@keyframes bulbIdle {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    color: var(--color-text-tertiary);
+    text-shadow: none;
+  }
+  18% {
+    color: #f7c873;
+    text-shadow: 0 0 10px rgba(245, 166, 35, 0.4);
+  }
+  23% {
+    color: var(--color-text-tertiary);
+    text-shadow: none;
+  }
+  50% {
+    transform: translateY(-4px) scale(1.05);
+    color: #ffd98a;
+    text-shadow: 0 0 16px rgba(255, 200, 90, 0.5);
+  }
+}
+
+/* Idle data-pulse for the code icon: a gentle rock left-then-right with a cool
+   blue glow cresting in the middle. Rests square (rotate 0) at both ends. */
+@keyframes codeIdle {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    color: var(--color-text-tertiary);
+    text-shadow: none;
+  }
+  25% { transform: translateY(-2px) scale(1.03) rotate(-3deg); }
+  50% {
+    transform: translateY(-3px) scale(1.05) rotate(0deg);
+    color: #7fd1ff;
+    text-shadow: 0 0 14px rgba(103, 198, 249, 0.5);
+  }
+  75% { transform: translateY(-2px) scale(1.03) rotate(3deg); }
 }
 
 /* One-shot "ignite": a small pop layered with the glow ramping on, then settling

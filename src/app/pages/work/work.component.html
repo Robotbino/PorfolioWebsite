@@ -2,6 +2,31 @@
   <div class="container">
     <app-display-heading pre="Explore My" title="Experience" titleId="experience-title"></app-display-heading>
 
+    <!-- Lead role — the SITA work translated to plain engineering facts. Full-width
+         above the two-up skills grid; mirrors the grid's outer constraints. -->
+    <div class="experience-lead">
+      <article class="experience-card experience-role">
+        <h3 class="experience-card-title">SITA &mdash; Java EE case management &amp; workflow platform</h3>
+        <ul class="role-points">
+          <li>
+            Consolidated attachment-handling logic that had been copied across several
+            role-specific beans into one shared structure &mdash; cutting duplication by
+            around 60% and making the subsystem far easier to extend.
+          </li>
+          <li>
+            Tracked down and fixed a recurring class of silent form-submission failures in
+            multi-step JSF workflows &mdash; the kind where a user hits save and nothing
+            happens. It had been a top source of QA-reported defects.
+          </li>
+          <li>
+            Restored correct task routing in the BPMN workflows by tracing assignment logic
+            across process definitions and role configurations, so the right work reached the
+            right people.
+          </li>
+        </ul>
+      </article>
+    </div>
+
     <div class="experience-grid">
       <article class="experience-card">
         <h3 class="experience-card-title">Technologies</h3>

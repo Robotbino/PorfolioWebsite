@@ -129,6 +129,26 @@
   margin-top: -0.04em;
 }
 
+/* ---- Statement ---- */
+/* Value claim + public-sector → consulting pivot. Constrained measure so it keeps
+   clear of the negative space the constellation breathes into on the right. */
+.hero-statement {
+  align-self: start;
+  max-width: 46ch;
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+.hero-statement-lead {
+  display: block;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xs);
+}
+
 /* ---- Footer row ---- */
 .hero-footer {
   display: flex;
@@ -269,6 +289,7 @@
 .hero-eyebrow,
 .hero-name-first,
 .hero-name-last,
+.hero-statement,
 .hero-meta,
 .hero-footer {
   animation: heroRise 0.85s var(--ease-out-expo) both;
@@ -277,6 +298,7 @@
 .hero-eyebrow    { animation-delay: 0.04s; }
 .hero-name-first { animation-delay: 0.12s; }
 .hero-name-last  { animation-delay: 0.20s; }
+.hero-statement  { animation-delay: 0.26s; }
 .hero-meta       { animation-delay: 0.30s; }
 .hero-footer     { animation-delay: 0.38s; }
 
@@ -342,6 +364,7 @@
   .hero-eyebrow    { animation-duration: 1s; }
   .hero-name-first { animation-duration: 1s; animation-delay: 0.1s; }
   .hero-name-last  { animation-duration: 1s; animation-delay: 0.22s; }
+  .hero-statement  { animation-duration: 1s; animation-delay: 0.30s; }
   .hero-meta       { animation-duration: 1s; animation-delay: 0.34s; }
   .hero-footer     { animation-duration: 1s; animation-delay: 0.42s; }
 }
