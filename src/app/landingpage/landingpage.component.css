@@ -74,11 +74,12 @@
 .hero-headline::before {
   content: '';
   position: absolute;
-  inset: -16% -22% -14% -12%;
+  inset: -30% -50% -30% -30%;
   background: radial-gradient(
-    62% 72% at 30% 50%,
-    var(--gradient-overlay-strong),
-    transparent 74%
+    50% 60% at 35% 50%,
+    rgba(var(--scrim-rgb, 255,255,255), 0.15) 0%,
+    rgba(var(--scrim-rgb, 255,255,255), 0.06) 40%,
+    transparent 65%
   );
   z-index: -1;
   pointer-events: none;

@@ -24,9 +24,8 @@
   font-size: var(--font-size-lg);
   line-height: var(--line-height-relaxed);
   color: var(--color-text-secondary);
-  /* Left-align long-form copy: centering breaks the return-sweep on a 5+ line
-     paragraph. The 65ch measure already does the editorial framing. */
-  text-align: left;
+  text-align: justify;
+  text-align-last: center;
 }
 
 .about-emphasis {
@@ -166,7 +165,8 @@
     margin: var(--space-lg) 0;
     font-size: var(--font-size-md);
     line-height: var(--line-height-relaxed);
-    text-align: left;
+    text-align: justify;
+    text-align-last: center;
   }
 
   .card {

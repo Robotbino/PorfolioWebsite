@@ -102,6 +102,7 @@
   --gradient-overlay-mid: rgba(255, 255, 255, 0.3);
   --gradient-overlay-strong: rgba(255, 255, 255, 0.8);
   --gradient-overlay-full: rgba(255, 255, 255, 1);
+  --scrim-rgb: 255,255,255;
 
   /* Spacing Scale */
   --space-xs: 0.25rem;
@@ -171,6 +172,7 @@
     --gradient-overlay-mid: rgba(18, 18, 18, 0.3);
     --gradient-overlay-strong: rgba(18, 18, 18, 0.8);
     --gradient-overlay-full: rgba(18, 18, 18, 1);
+    --scrim-rgb: 18,18,18;
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -203,6 +205,7 @@
   --gradient-overlay-mid: rgba(255, 255, 255, 0.3);
   --gradient-overlay-strong: rgba(255, 255, 255, 0.8);
   --gradient-overlay-full: rgba(255, 255, 255, 1);
+  --scrim-rgb: 255,255,255;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -233,6 +236,7 @@
   --gradient-overlay-mid: rgba(18, 18, 18, 0.3);
   --gradient-overlay-strong: rgba(18, 18, 18, 0.8);
   --gradient-overlay-full: rgba(18, 18, 18, 1);
+  --scrim-rgb: 18,18,18;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
