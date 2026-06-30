@@ -4,11 +4,25 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
+import { AuroraComponent } from './aurora/aurora.component';
+import { ConstellationComponent } from './constellation/constellation.component';
+import { WorkComponent } from './pages/work/work.component';
+import { AboutComponent } from './pages/about/about.component';
+import { ContactComponent } from './pages/contact/contact.component';
+import { SiteNavComponent } from './layout/site-nav/site-nav.component';
+import { ScrollRevealDirective } from './scroll-reveal.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LandingpageComponent
+    LandingpageComponent,
+    AuroraComponent,
+    ConstellationComponent,
+    WorkComponent,
+    AboutComponent,
+    ContactComponent,
+    SiteNavComponent,
+    ScrollRevealDirective
   ],
   imports: [
     BrowserModule,

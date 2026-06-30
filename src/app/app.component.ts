@@ -1,15 +1,96 @@
-import { Component } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  OnDestroy,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
+import { ThemeService } from './core/theme.service';
+import { ScrollLoopService } from './scroll-loop.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   standalone: false,
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
-export class AppComponent {
-  title = 'ProfessionalPorfolio';
- 
-  
- 
+export class AppComponent implements AfterViewInit, OnDestroy {
+  @ViewChildren('dest') private dests!: QueryList<ElementRef<HTMLElement>>;
+
+  private reduce = false;
+  private ro?: ResizeObserver;
+  private io?: IntersectionObserver;
+
+  // Public so the persistent background layer can bind to the theme signal.
+  constructor(
+    public theme: ThemeService,
+    private loop: ScrollLoopService,
+  ) {}
+
+  ngAfterViewInit(): void {
+    this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.measure();
+    this.update();
+
+    // Section heights shift as lazy images load, so re-measure on any reflow.
+    this.ro = new ResizeObserver(() => {
+      this.measure();
+      this.update();
+    });
+    this.ro.observe(document.body);
+
+    // Reveal each destination as it enters (fail-open: only hidden once JS arms it).
+    if (!this.reduce) {
+      this.io = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => e.target.classList.toggle('is-visible', e.isIntersecting)),
+        { threshold: 0.15 },
+      );
+      this.dests.forEach((d) => {
+        // Skip anything pre-revealed (real Home + its clone): both are loop
+        // anchors that must always match, so a fast scroll can't catch them
+        // mid-reveal. Only Work/About/Contact get the scroll-reveal.
+        if (!d.nativeElement.classList.contains('is-visible')) {
+          this.io!.observe(d.nativeElement);
+        }
+      });
+      document.body.classList.add('reveal-ready');
+    }
+  }
+
+  @HostListener('window:scroll')
+  onScroll(): void {
+    // Seamless wrap: at the clone's top we are one cycle down on pixel-identical
+    // content, so the loop hands back the offset to subtract (keeping momentum
+    // overshoot) instead of snapping to the top. null = no wrap due.
+    const adjustment = this.loop.wrapOffset(window.scrollY);
+    if (adjustment !== null) {
+      window.scrollTo(0, adjustment);
+    }
+    this.update();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.measure();
+    this.update();
+  }
+
+  private measure(): void {
+    // Hand the loop the section offsets (the last #dest is the Home clone); it
+    // derives the cycle length + wrap point. DOM read stays here; math is the
+    // loop's.
+    this.loop.setAnchors(this.dests.map((d) => d.nativeElement.offsetTop));
+  }
+
+  private update(): void {
+    this.loop.update(window.scrollY, window.innerHeight);
+  }
+
+  ngOnDestroy(): void {
+    this.ro?.disconnect();
+    this.io?.disconnect();
+  }
 }

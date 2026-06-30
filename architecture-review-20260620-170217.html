@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Architecture — 2026-06-20</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; margin: 2rem; max-width: 900px; color: #333; }
+  h1, h2 { color: #1a1a1a; }
+  .layer { background: #f5f5f5; border-left: 4px solid #666; padding: 1rem; margin: 1rem 0; }
+  .file { font-family: monospace; color: #0066cc; }
+  code { background: #e9ecef; padding: 0.2rem 0.4rem; border-radius: 3px; }
+  .key { font-weight: bold; }
+  ul { margin: 0.5rem 0; }
+  li { margin: 0.3rem 0; }
+</style>
+</head>
+<body>
+
+<h1>Portfolio Architecture — Looping Scroll + Star-Map (2026-06-20)</h1>
+
+<h2>Core Concept</h2>
+<p><strong>ONE continuous downward-looping vertical scroll.</strong> Four full-viewport sections (Home/Work/About/Contact) + a Home clone. Constellation morphs continuously with scroll position. Seamless wrap via clone buffer + momentum-preserving scroll offset reset.</p>
+
+<h2>Three-Layer Stack</h2>
+
+<div class="layer">
+  <strong>z-0: Persistent Background</strong><br>
+  Fixed aurora + constellation. Mounts once, never reloads. Morphs driven by scroll position.
+  <ul>
+    <li><span class="file">app.component.html</span> — <code>&lt;app-aurora&gt;</code> + <code>&lt;app-constellation&gt;</code></li>
+    <li><span class="file">aurora.component.ts</span> — WebGL gradient (ogl)</li>
+    <li><span class="file">constellation.component.ts</span> — 8-star real constellations (Ursa Major/Orion/Leo/Cygnus), scroll-driven morph, rAF drift</li>
+  </ul>
+</div>
+
+<div class="layer">
+  <strong>z-1: Content Scroll</strong><br>
+  Four destination sections (Home/Work/About/Contact) + invisible Home clone at the bottom.
+  <ul>
+    <li><span class="file">app.component.ts</span> — scroll listener, cycle measurement, wrap reset (<code>scrollTo(0, scrollY − wrapAt)</code>)</li>
+    <li><span class="file">landingpage.component.ts</span> — Home hero (CV button, socials)</li>
+    <li><span class="file">work/about/contact.component.ts</span> — destination content, scroll-reveal (fade + blur on enter)</li>
+    <li><span class="file">scroll-stage.service.ts</span> — carries real-time <code>position</code> (0..4) for constellation sampling</li>
+  </ul>
+</div>
+
+<div class="layer">
+  <strong>z-100: Navigation</strong><br>
+  Sticky top nav. Always transparent. Smooth-scrolls to any section.
+  <ul>
+    <li><span class="file">site-nav.component.ts</span> — nav links anchor to <code>#dest-home/work/about/contact</code>, smooth scroll on click</li>
+  </ul>
+</div>
+
+<h2>Key Files to Understand the Loop</h2>
+
+<ul>
+  <li><span class="file">docs/adr/0004-seamless-loop-clone-wrap.md</span> — <span class="key">READ THIS FIRST</span>. Full decision record.</li>
+  <li><span class="file">CONTEXT.md</span> — glossary ("Cycle", "Seam", "Loop clone", "One-direction")</li>
+  <li><span class="file">app.component.ts</span> — <code>measure()</code> sets <code>wrapAt</code>; <code>onScroll()</code> fires reset; <code>positionFor()</code> maps scroll→destination units</li>
+  <li><span class="file">constellation.component.ts</span> — <code>renderAt()</code> (line 191) — reads <code>stage.position</code>, interpolates stars, draws links with cross-fade</li>
+  <li><span class="file">app.component.html</span> — four <code>&lt;section #dest&gt;</code> + invisible clone with <code>inert aria-hidden is-visible</code></li>
+</ul>
+
+<h2>Scroll Position Formula</h2>
+<code>position = (section_index + frac)</code> where <code>frac ∈ [0,1]</code> across each section.<br>
+Wraps: <code>position % 4</code> in the constellation; at scroll-top the morph is at 0 (Home), at bottom it's at 4 ≡ 0 (Home again).
+
+<h2>Visible Tells (Known Residuals)</h2>
+<ul>
+  <li>Native scrollbar thumb snaps top↔bottom each loop (the one unavoidable tell; hiding requires hiding native scrollbar)</li>
+  <li>Mid-morph cross-fade lines can read cluttered (Cygnus→Ursa Major at ~t=0.5) — tuning opportunity in <code>renderAt</code> dim/transit</li>
+</ul>
+
+<h2>Verification Status</h2>
+<p><span class="key">NOT YET VISUALLY CONFIRMED LIVE.</span> Build is clean (npm run build ~7s). Preview headless browser freezes scroll animations, so judgment must happen on user's own <code>ng serve localhost:4200</code>.</p>
+
+<h2>Next Steps</h2>
+<ol>
+  <li>Scroll-test live → confirm seamless (no jump, no fade, no nav flash)</li>
+  <li>Tune mid-morph clutter if needed (cross-fade timing in <code>constellation.component.ts:255–257</code>)</li>
+  <li>Commit when happy</li>
+</ol>
+
+</body>
+</html>

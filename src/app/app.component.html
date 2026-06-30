@@ -1,1 +1,38 @@
-<router-outlet></router-outlet>
+<!-- Persistent background layer (z-0): mounts once, morphs with scroll. -->
+<app-aurora
+  class="aurora-bg"
+  [colorStops]="theme.isDark() ? ['#1E1C1A','#3D312A','#5A3D2B'] : ['#FDFCFB','#F5F2EE','#FAF0E8']"
+  [blend]="theme.isDark() ? 0.5 : 1.0"
+  [amplitude]="theme.isDark() ? 1.0 : 0.25"
+  [speed]="0.5"
+></app-aurora>
+<app-constellation class="constellation-bg"></app-constellation>
+
+<!-- Persistent navigation (z-100): survives scrolling. -->
+<app-site-nav></app-site-nav>
+
+<!-- One continuous, looping star-map: each destination is a full-viewport
+     section; scrolling morphs the constellation between them. -->
+<main class="starscroll">
+  <!-- Home is the loop anchor (entry AND loop target), so it is pre-revealed and
+       never hidden — it must already match the clone at the seam, and an instant
+       hero is better for LCP than animating it in. -->
+  <section #dest id="dest-home" class="dest is-visible"><app-landingpage></app-landingpage></section>
+  <section #dest id="dest-work" class="dest"><app-work></app-work></section>
+  <section #dest id="dest-about" class="dest"><app-about></app-about></section>
+  <section #dest id="dest-contact" class="dest"><app-contact></app-contact></section>
+
+  <!-- Seam buffer: a clone of Home, identical to the real first section, so the
+       Contact→Home morph has room and the wrap (scrollY -= cycle) is invisible.
+       inert + aria-hidden = no duplicate tab stops / landmarks; not a #dest id so
+       the nav never targets it; always visible so a fast scroll can't catch it
+       mid-reveal. See docs/adr/0004-seamless-loop-clone-wrap.md. -->
+  <section
+    #dest
+    class="dest dest-clone is-visible"
+    aria-hidden="true"
+    inert
+  >
+    <app-landingpage></app-landingpage>
+  </section>
+</main>

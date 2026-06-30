@@ -1,0 +1,57 @@
+/* Persistent background layer — see app.component.html. Both sit behind the
+   scrolling content (which establishes its own z-index: 1 stacking context). */
+.aurora-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.constellation-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* The looping star-map: destinations stack above the fixed background. */
+.starscroll {
+  position: relative;
+  z-index: 1;
+}
+
+.dest {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Scroll reveal — armed by JS (`reveal-ready`) so content is visible if JS
+   never runs (fail-open). Each destination resolves as it scrolls into view. */
+.dest > * {
+  transition:
+    opacity 0.9s var(--ease-out-expo),
+    transform 0.9s var(--ease-out-expo),
+    filter 0.9s var(--ease-out-expo);
+}
+
+body.reveal-ready .dest:not(.is-visible) > * {
+  opacity: 0.001;
+  transform: translateY(34px);
+  filter: blur(10px);
+}
+
+/* The seam buffer (a Home clone) reuses .dest styling; it just must never be
+   hidden by the reveal rule, so it ships with .is-visible in the template. */
+
+@media (prefers-reduced-motion: reduce) {
+  .dest > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

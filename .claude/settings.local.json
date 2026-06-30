@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\User\\\\Desktop\\\\Coding Projects\\\\ProfessionalPorfolio\\\\ProfessionalPorfolio\" -Force)",
+      "Bash(Select-Object Name, Mode)",
+      "Bash(npx ng *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "mcp__visualize__read_me",
+      "PowerShell($j = Get-Content \"C:\\\\Users\\\\User\\\\.claude\\\\projects\\\\C--Users-User-Desktop-Coding-Projects-ProfessionalPorfolio-ProfessionalPorfolio\\\\332b32ec-923a-49bb-a80f-5d52826478c8\\\\tool-results\\\\toolu_019UVddSRQRbfAGVCdsK4hKA.json\" -Raw | ConvertFrom-Json; $t = \\($j | ForEach-Object { $_.text }\\) -join \"`n\"; $i = $t.IndexOf\\(\"SVG\"\\); $t.Substring\\($i, 3500\\))",
+      "mcp__visualize__show_widget",
+      "PowerShell($env:TEMP)",
+      "PowerShell(gh auth status)",
+      "PowerShell(\"----- gh auth -----\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(git ls-remote *)"
+    ]
+  }
+}

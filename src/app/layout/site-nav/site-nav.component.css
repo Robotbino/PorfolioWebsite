@@ -1,0 +1,207 @@
+/* Migrated verbatim from landingpage.component.css when the nav was hoisted
+   into the app shell as a persistent component. */
+.navigation-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: transparent;
+  padding-top: env(safe-area-inset-top);
+}
+
+.navigation-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: var(--space-lg);
+  max-width: var(--max-width-content);
+  margin-inline: auto;
+  padding-inline: var(--space-xl);
+  background-color: transparent;
+}
+
+.logo {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  /* Shrinks + mutes while travelling (driven by --nav-mute, set by the rAF). */
+  display: inline-block;
+  transform-origin: left center;
+  transform: scale(calc(1 - 0.38 * var(--nav-mute, 0)));
+  opacity: calc(1 - 0.45 * var(--nav-mute, 0));
+  transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+.nav-items {
+  display: flex;
+  gap: clamp(2rem, 5vw, var(--space-4xl));
+  align-items: center;
+}
+
+.nav-link {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  position: relative;
+  padding-block: var(--space-xs);
+  /* Fades to a faint ghost + lifts slightly while travelling; stays focusable. */
+  opacity: calc(1 - 0.88 * var(--nav-mute, 0));
+  transform: translateY(calc(-6px * var(--nav-mute, 0)));
+  transition: color var(--transition-base),
+              opacity var(--transition-base),
+              transform var(--transition-base);
+}
+
+/* Bring the whole nav back when pointed at or focused, so the labelled nav stays
+   operable for mouse and keyboard even mid-travel (CONTEXT.md Wayfinding). */
+.navigation-bar:hover,
+.navigation-bar:focus-within {
+  --nav-mute: 0;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -0.15rem;
+  left: 0;
+  /* Sits under the letters, not the trailing letter-spacing gap. */
+  width: calc(100% - var(--tracking-wider));
+  height: 1px;
+  background-color: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--transition-base);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ============================================
+   NAV ACTIONS (hamburger + theme toggle group)
+   ============================================ */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.menu-trigger {
+  display: none;
+}
+
+/* ============================================
+   MOBILE OVERLAY
+   ============================================ */
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+  background: rgba(10, 10, 12, 0);
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+  visibility: hidden;
+  transition: background 0.35s ease, backdrop-filter 0.35s ease,
+              -webkit-backdrop-filter 0.35s ease, visibility 0.35s;
+}
+
+.mobile-overlay.open {
+  background: rgba(10, 10, 12, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  visibility: visible;
+}
+
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--space-2xl);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.mobile-link {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: var(--font-weight-semibold);
+  color: #fafafa;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.mobile-link:active {
+  opacity: 0.7;
+}
+
+.mobile-overlay.open .mobile-link {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.mobile-overlay.open .mobile-link:nth-child(1) { transition-delay: 0.05s; }
+.mobile-overlay.open .mobile-link:nth-child(2) { transition-delay: 0.1s; }
+.mobile-overlay.open .mobile-link:nth-child(3) { transition-delay: 0.15s; }
+.mobile-overlay.open .mobile-link:nth-child(4) { transition-delay: 0.2s; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (min-width: 769px) {
+  .mobile-overlay {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .navigation-content {
+    padding-block: var(--space-md);
+  }
+
+  .nav-items {
+    display: none;
+  }
+
+  .menu-trigger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 48px;
+    height: 48px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .menu-bar {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    border-radius: 1px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .menu-trigger.open .menu-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .menu-trigger.open .menu-bar:nth-child(2) {
+    opacity: 0;
+  }
+  .menu-trigger.open .menu-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+}
