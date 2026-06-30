@@ -1,0 +1,52 @@
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--transition-base),
+              transform var(--transition-base);
+}
+
+/* Each toggle swaps the SVG via *ngIf, so the incoming icon re-mounts and this
+   entrance plays every time — a little rotate-and-pop with a touch of overshoot.
+   No fill mode, so the resting transform returns to none and the hover rotate
+   below can take over once the entrance has finished. */
+.theme-toggle svg {
+  display: block;
+  animation: iconSwap 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes iconSwap {
+  from { opacity: 0; transform: rotate(-120deg) scale(0.4); }
+  to   { opacity: 1; transform: rotate(0) scale(1); }
+}
+
+.theme-toggle:active {
+  transform: scale(0.9);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover {
+    background-color: var(--color-tag-bg);
+    transform: scale(1.08);
+  }
+
+  /* Sun spins a touch, moon tips back — tiny, but it rewards the pointer. */
+  .theme-toggle:hover .dark-icon {
+    transform: rotate(40deg);
+    transition: transform var(--transition-base);
+  }
+
+  .theme-toggle:hover .light-icon {
+    transform: rotate(-14deg);
+    transition: transform var(--transition-base);
+  }
+}

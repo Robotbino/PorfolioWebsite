@@ -81,7 +81,9 @@
   --color-text-primary: #1a1a1a;
   --color-text-secondary: #555555;
   --color-text-tertiary: #666666;
-  --color-text-muted: #999999;
+  /* `--color-text-muted` is the dimmest label tier and still needs to pass WCAG
+     AA for small text — 4.5:1 on the background, so eyebrows stay legible. */
+  --color-text-muted: #737373;
   --color-accent: #000000;
   --color-accent-hover: #333333;
   /* Striking warm accent — the one hue allowed to break the monochrome.
@@ -100,6 +102,7 @@
   --gradient-overlay-mid: rgba(255, 255, 255, 0.3);
   --gradient-overlay-strong: rgba(255, 255, 255, 0.8);
   --gradient-overlay-full: rgba(255, 255, 255, 1);
+  --scrim-rgb: 255,255,255;
 
   /* Spacing Scale */
   --space-xs: 0.25rem;
@@ -151,7 +154,7 @@
     --color-text-primary: #e0e0e0;
     --color-text-secondary: #b0b0b0;
     --color-text-tertiary: #999999;
-    --color-text-muted: #757575;
+    --color-text-muted: #909090;
     --color-accent: #ffffff;
     --color-accent-hover: #e0e0e0;
   /* Brighter on dark so the accent pops against the near-black field. */
@@ -169,6 +172,7 @@
     --gradient-overlay-mid: rgba(18, 18, 18, 0.3);
     --gradient-overlay-strong: rgba(18, 18, 18, 0.8);
     --gradient-overlay-full: rgba(18, 18, 18, 1);
+    --scrim-rgb: 18,18,18;
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -183,7 +187,7 @@
   --color-text-primary: #1a1a1a;
   --color-text-secondary: #555555;
   --color-text-tertiary: #666666;
-  --color-text-muted: #999999;
+  --color-text-muted: #737373;
   --color-accent: #000000;
   --color-accent-hover: #333333;
   /* Striking warm accent — the one hue allowed to break the monochrome.
@@ -201,6 +205,7 @@
   --gradient-overlay-mid: rgba(255, 255, 255, 0.3);
   --gradient-overlay-strong: rgba(255, 255, 255, 0.8);
   --gradient-overlay-full: rgba(255, 255, 255, 1);
+  --scrim-rgb: 255,255,255;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -214,7 +219,7 @@
   --color-text-primary: #e0e0e0;
   --color-text-secondary: #b0b0b0;
   --color-text-tertiary: #999999;
-  --color-text-muted: #757575;
+  --color-text-muted: #909090;
   --color-accent: #ffffff;
   --color-accent-hover: #e0e0e0;
   /* Brighter on dark so the accent pops against the near-black field. */
@@ -231,6 +236,7 @@
   --gradient-overlay-mid: rgba(18, 18, 18, 0.3);
   --gradient-overlay-strong: rgba(18, 18, 18, 0.8);
   --gradient-overlay-full: rgba(18, 18, 18, 1);
+  --scrim-rgb: 18,18,18;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -492,53 +498,10 @@ textarea:not([rows]) { min-height: 10em; }
 
 /* ============================================
    SHARED COMPONENTS
-   Promoted from landingpage.component.css during the multipage split so every
-   routed page can use them. Section-specific styles live in each page component.
    ============================================ */
 
-.section-header {
-  text-align: center;
-  margin-bottom: var(--space-2xl);
-}
-
-.section-pre-title {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-sm);
-}
-
-.section-title {
-  font-size: var(--font-size-3xl);
-  color: var(--color-text-primary);
-  padding: var(--space-sm);
-  margin: var(--space-sm);
-}
-
-@media (max-width: 768px) {
-  .section-header {
-    text-align: left;
-    margin-bottom: var(--space-xl);
-    padding-left: var(--space-xs);
-    border-left: 3px solid var(--color-accent-vivid);
-  }
-
-  .section-title {
-    font-size: clamp(2rem, 8vw, 2.8rem);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: var(--tracking-tighter);
-    padding: 0;
-    margin: 0;
-  }
-
-  .section-pre-title {
-    font-size: 0.6875rem;
-    letter-spacing: var(--tracking-wider);
-    margin-bottom: var(--space-xs);
-  }
-}
+/* Section heading rules (.section-header / -pre-title / -title) live in
+   shared/display-heading. Use <app-display-heading> instead of inlining. */
 
 /* Button component */
 .btn {

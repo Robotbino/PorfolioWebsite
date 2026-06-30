@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
+import { FramePulseService } from '../core/frame-pulse.service';
 
 const VERT = `#version 300 es
 in vec2 position;
@@ -145,10 +146,12 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('container', { static: true }) containerRef!: ElementRef<HTMLDivElement>;
 
-  private animationId = 0;
+  private unsub: (() => void) | null = null;
   private resizeHandler: (() => void) | null = null;
   private glContext: any = null;
   private fallbackAnimations: Animation[] = [];
+
+  constructor(private pulse: FramePulseService) {}
 
   ngAfterViewInit(): void {
     if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
@@ -208,9 +211,8 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
     const mesh = new Mesh(gl, { geometry, program });
     ctn.appendChild(gl.canvas);
 
-    const update = (t: number) => {
-      this.animationId = requestAnimationFrame(update);
-      program.uniforms.uTime.value = t * 0.01 * this.speed * 0.1;
+    this.unsub = this.pulse.onTick((now) => {
+      program.uniforms.uTime.value = now * 0.01 * this.speed * 0.1;
       program.uniforms.uAmplitude.value = this.amplitude;
       program.uniforms.uBlend.value = this.blend;
       program.uniforms.uColorStops.value = this.colorStops.map((hex: string) => {
@@ -218,8 +220,7 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
         return [c.r, c.g, c.b];
       });
       renderer.render({ scene: mesh });
-    };
-    this.animationId = requestAnimationFrame(update);
+    });
 
     resize();
   }
@@ -227,7 +228,11 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
   private initCssFallback(): void {
     const ctn = this.containerRef.nativeElement;
     Object.assign(ctn.style, { position: 'relative', overflow: 'hidden' });
+    this.buildFallbackBlobs(ctn);
+    this.buildFallbackNoiseSvg(ctn);
+  }
 
+  private buildFallbackBlobs(ctn: HTMLElement): void {
     const blobs = [
       { w: '120%', h: '60%', t: '-30%', l: '-20%', dur: 12000,
         a: 'translate3d(-5%,-8%,0) scale(1.1)', b: 'translate3d(8%,5%,0) scale(0.95)' },
@@ -253,7 +258,9 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
       );
       ctn.appendChild(el);
     });
+  }
 
+  private buildFallbackNoiseSvg(ctn: HTMLElement): void {
     const fId = `aurora-noise-${auroraFallbackId++}`;
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
@@ -284,7 +291,7 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.fallbackAnimations.forEach(a => a.cancel());
-    cancelAnimationFrame(this.animationId);
+    this.unsub?.();
     if (this.resizeHandler) {
       window.removeEventListener('resize', this.resizeHandler);
     }

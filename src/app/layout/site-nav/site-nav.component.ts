@@ -3,11 +3,11 @@ import {
   Component,
   ElementRef,
   HostListener,
-  NgZone,
   OnDestroy,
 } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
 import { ScrollLoopService } from '../../scroll-loop.service';
+import { FramePulseService } from '../../core/frame-pulse.service';
 
 /**
  * Persistent top navigation. Lives in the app shell so it survives scrolling.
@@ -31,45 +31,36 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   private static readonly FADE_RANGE = 0.5;
 
   menuOpen = false;
-  private rafId = 0;
+  private unsub: (() => void) | null = null;
   private lastMute = -1;
 
   constructor(
     public theme: ThemeService,
     private loop: ScrollLoopService,
     private el: ElementRef<HTMLElement>,
-    private zone: NgZone,
+    private pulse: FramePulseService,
   ) {}
 
   ngAfterViewInit(): void {
-    // Reduced motion keeps the nav fully visible (the fade is an aesthetic
-    // declutter, not essential) — so we simply never arm the rAF.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
-    this.zone.runOutsideAngular(() => {
-      this.rafId = requestAnimationFrame(this.tick);
+    this.unsub = this.pulse.onTick(() => {
+      const count = this.loop.cycleLength;
+      if (count > 0) {
+        const pos = this.loop.position();
+        const distance = Math.min(pos, count - pos);
+        const mute = Math.min(1, distance / SiteNavComponent.FADE_RANGE);
+        if (Math.abs(mute - this.lastMute) > 0.001) {
+          this.lastMute = mute;
+          this.el.nativeElement.style.setProperty('--nav-mute', mute.toFixed(3));
+        }
+      }
     });
   }
 
-  private tick = (): void => {
-    const count = this.loop.cycleLength;
-    // Before the shell has measured (count 0), leave the nav at its last value.
-    if (count > 0) {
-      const pos = this.loop.position();
-      // Distance from Home on the loop (0 at Home on either side of the seam).
-      const distance = Math.min(pos, count - pos);
-      const mute = Math.min(1, distance / SiteNavComponent.FADE_RANGE);
-      if (Math.abs(mute - this.lastMute) > 0.001) {
-        this.lastMute = mute;
-        this.el.nativeElement.style.setProperty('--nav-mute', mute.toFixed(3));
-      }
-    }
-    this.rafId = requestAnimationFrame(this.tick);
-  };
-
   ngOnDestroy(): void {
-    cancelAnimationFrame(this.rafId);
+    this.unsub?.();
   }
 
   toggleMenu(): void {

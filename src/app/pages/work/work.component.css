@@ -5,9 +5,7 @@
   min-height: 100vh;
 }
 
-/* ============================================
-  EXPERIENCE SECTION
-  ============================================ */
+/* === CARD / EXPERIENCE LAYOUT === */
 
 .experience-grid {
   display: grid;
@@ -26,7 +24,7 @@
   box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
   transition: transform var(--transition-base),
               box-shadow var(--transition-base);
-  
+
   /* Layout & Spacing */
   padding: var(--space-xl);
   margin: var(--space-2xl) 0;
@@ -71,6 +69,7 @@
   flex-shrink: 0;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
+  transition: transform var(--transition-base);
 }
 
 .skill-title {
@@ -86,9 +85,68 @@
   line-height: var(--line-height-relaxed);
 }
 
-/* ============================================
-  PROJECTS SECTION
-  ============================================ */
+/* Lead role card — mirrors the grid's outer constraints so its edges align with
+   the two-up skill cards below it. */
+.experience-lead {
+  max-width: var(--max-width-content);
+  margin-inline: auto;
+  padding: 0 var(--space-md);
+}
+
+.role-points {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: var(--max-width-text);
+  margin-inline: auto;
+}
+
+.role-points li {
+  position: relative;
+  padding-left: var(--space-lg);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+  transition: padding-left var(--transition-base), color var(--transition-base);
+}
+
+/* Accent bullet — same hue as the skill checkmarks, set on the cap height. It
+   twinkles faintly, tying the bullets to the constellation motif; the global
+   reduced-motion rule stops the loop. */
+.role-points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  animation: starTwinkle 3.2s ease-in-out infinite;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.role-points li:nth-child(2)::before { animation-delay: 0.7s; }
+.role-points li:nth-child(3)::before { animation-delay: 1.4s; }
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
+/* Hover nudges the text and lights the bullet like a star coming into focus. */
+@media (hover: hover) and (pointer: fine) {
+  .role-points li:hover {
+    padding-left: calc(var(--space-lg) + 6px);
+    color: var(--color-text-primary);
+  }
+
+  .role-points li:hover::before {
+    transform: scale(1.6);
+    box-shadow: 0 0 10px var(--color-accent);
+  }
+}
 
 .projects-container {
   display: flex;
@@ -146,7 +204,9 @@
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
-  transition: background-color var(--transition-fast);
+  transition: background-color var(--transition-fast),
+              transform var(--transition-fast),
+              color var(--transition-fast);
 }
 
 .project-links {
@@ -165,6 +225,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s var(--ease-out-quart);
 }
 
 .project-image::after {
@@ -179,57 +240,6 @@
     var(--gradient-overlay-full) 100%
   );
   pointer-events: none;
-}
-
-/* ============================================
-  PROJECTS — HORIZONTAL SHOWCASE (enhancement)
-  Armed by WorkComponent (`.showcase-on` on the host) only on wide screens with
-  motion allowed. The wrappers below are inert blocks otherwise, so the cards
-  keep the vertical-stack layout above as a fail-open fallback.
-  ============================================ */
-
-:host(.showcase-on) .projects-viewport {
-  /* WorkComponent sets the real height from the horizontal travel (≈1:1 with
-     scroll). This is just a floor for the frame before the first measure. */
-  min-height: 100vh;
-  margin-top: var(--space-2xl);
-}
-
-:host(.showcase-on) .projects-stage {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  /* clip (not hidden): no native scrollport, so focusing an off-frame card link
-     can't jump the layout sideways. Soft edges let cards melt in/out of frame. */
-  overflow: clip;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
-}
-
-:host(.showcase-on) .projects-container {
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  width: max-content;
-  max-width: none;
-  gap: var(--space-2xl);
-  margin: 0;
-  padding-inline: 11vw; /* lead-in / lead-out so the first and last card can sit in frame */
-  will-change: transform;
-}
-
-:host(.showcase-on) .project-card {
-  flex: 0 0 78vw;
-  max-width: 1100px;
-  height: min(72vh, 620px);
-  margin: 0;
-}
-
-:host(.showcase-on) .project-content {
-  height: 100%;
-  min-height: 0;
 }
 
 /* ============================================
@@ -257,8 +267,20 @@
     box-shadow: var(--shadow-lg);
   }
 
+  /* Slow push-in on the card image — depth without a layout shift. */
+  .project-card:hover .project-image img {
+    transform: scale(1.05);
+  }
+
   .tech-tag:hover {
     background-color: var(--color-tag-hover);
+    transform: translateY(-3px) scale(1.05);
+    color: var(--color-accent);
+  }
+
+  /* Skill checkmarks give a playful tilt when their group is hovered. */
+  .skill-group:hover .checkmark {
+    transform: scale(1.15) rotate(-8deg);
   }
 }
 
@@ -350,4 +372,53 @@
   .project-image {
     min-height: 180px;
   }
+}
+
+/* === HORIZONTAL SHOWCASE — driven by WorkComponent rAF === */
+/* Armed by WorkComponent (`.showcase-on` on the host) only on wide screens with
+   motion allowed. The wrappers below are inert blocks otherwise, so the cards
+   keep the vertical-stack layout above as a fail-open fallback. */
+
+:host(.showcase-on) .projects-viewport {
+  /* WorkComponent sets the real height from the horizontal travel (≈1:1 with
+     scroll). This is just a floor for the frame before the first measure. */
+  min-height: 100vh;
+  margin-top: var(--space-2xl);
+}
+
+:host(.showcase-on) .projects-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  /* clip (not hidden): no native scrollport, so focusing an off-frame card link
+     can't jump the layout sideways. Soft edges let cards melt in/out of frame. */
+  overflow: clip;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+}
+
+:host(.showcase-on) .projects-container {
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: max-content;
+  max-width: none;
+  gap: var(--space-2xl);
+  margin: 0;
+  padding-inline: 11vw; /* lead-in / lead-out so the first and last card can sit in frame */
+  will-change: transform;
+}
+
+:host(.showcase-on) .project-card {
+  flex: 0 0 78vw;
+  max-width: 1100px;
+  height: min(72vh, 620px);
+  margin: 0;
+}
+
+:host(.showcase-on) .project-content {
+  height: 100%;
+  min-height: 0;
 }

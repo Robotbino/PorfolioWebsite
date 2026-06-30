@@ -4,11 +4,12 @@ import {
   Component,
   ElementRef,
   HostListener,
-  NgZone,
   OnDestroy,
   ViewChild,
 } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
+import { FramePulseService } from '../../core/frame-pulse.service';
+import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-data';
 
 @Component({
   selector: 'app-work',
@@ -22,6 +23,9 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   @ViewChild('projectsStage') private stageRef?: ElementRef<HTMLElement>;
   @ViewChild('projectsTrack') private trackRef?: ElementRef<HTMLElement>;
 
+  readonly experienceGroups: readonly ExperienceGroup[] = EXPERIENCE_GROUPS;
+  readonly projects: readonly Project[] = PROJECTS;
+
   // Only enabled on wide screens with motion allowed. Below that (or no-JS) the
   // host stays without `.showcase-on` and the cards render as a vertical stack —
   // fail-open, the same philosophy as the app shell's `reveal-ready`.
@@ -34,18 +38,24 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   private reduce = false;
   private active = false;
 
-  private rafId = 0;
-  private rendered = 0; // eased translateX (px), lerped toward the scroll target
-  // Cached so the per-frame work is one rect read + one transform write; the
-  // expensive layout reads only happen on (re)measure.
+  private unsub: (() => void) | null = null;
+  private rendered = 0;
   private stickRange = 0;
   private maxX = 0;
 
   constructor(
     private theme: ThemeService,
-    private zone: NgZone,
+    private pulse: FramePulseService,
     private host: ElementRef<HTMLElement>,
   ) {}
+
+  projectImg(p: Project): string {
+    return this.theme.themeAsset(p.img.dark, p.img.light);
+  }
+
+  projectAlt(p: Project): string {
+    return this.theme.themeAsset(p.img.alt.dark, p.img.alt.light);
+  }
 
   ngAfterViewInit(): void {
     this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -71,13 +81,11 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     if (enable) {
       host.classList.add('showcase-on');
       this.measure();
-      this.zone.runOutsideAngular(() => {
-        this.rafId = requestAnimationFrame(this.tick);
-      });
+      this.unsub = this.pulse.onTick(this.tick);
     } else {
       host.classList.remove('showcase-on');
-      cancelAnimationFrame(this.rafId);
-      this.rafId = 0;
+      this.unsub?.();
+      this.unsub = null;
       this.rendered = 0;
       if (this.trackRef) {
         this.trackRef.nativeElement.style.transform = '';
@@ -112,29 +120,14 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     const viewport = this.viewportRef?.nativeElement;
     const track = this.trackRef?.nativeElement;
     if (viewport && track && this.stickRange > 0 && this.maxX > 0) {
-      // viewport.top runs from 0 (sweep start) to -stickRange (sweep end).
       const p = Math.min(1, Math.max(0, -viewport.getBoundingClientRect().top / this.stickRange));
       const target = -p * this.maxX;
-      // Same 0.12 inertia as the constellation glide, so the two motions feel kin.
       this.rendered += (target - this.rendered) * 0.12;
       track.style.transform = `translate3d(${this.rendered.toFixed(2)}px,0,0)`;
     }
-    this.rafId = requestAnimationFrame(this.tick);
   };
 
   ngOnDestroy(): void {
-    cancelAnimationFrame(this.rafId);
-  }
-
-  public get portfolioImageSrc(): string {
-    return this.theme.isDark()
-      ? '/assets/portfolio_dark_mode.png'
-      : '/assets/portfolio_light_mode.png';
-  }
-
-  public get portfolioImageAlt(): string {
-    return this.theme.isDark()
-      ? 'Portfolio website in dark mode'
-      : 'Portfolio website in light mode';
+    this.unsub?.();
   }
 }

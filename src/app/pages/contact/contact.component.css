@@ -5,6 +5,24 @@
   min-height: 100vh;
 }
 
+.contact-lead {
+  max-width: var(--max-width-text);
+  margin-inline: auto;
+  margin-top: var(--space-xl);
+  text-align: center;
+  font-size: var(--font-size-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+.contact-lead-title {
+  display: block;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-sm);
+}
+
 .contact-container {
   display: flex;
   gap: var(--space-xl);
@@ -32,12 +50,28 @@
 .contact-icon {
   font-size: var(--font-size-2xl);
   color: var(--color-text-tertiary);
+  transition: transform var(--transition-base), color var(--transition-base);
 }
 
 .contact-link {
+  position: relative;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
   transition: color var(--transition-base);
+}
+
+/* Underline draws in from the left on hover. */
+.contact-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--transition-base);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -47,6 +81,17 @@
   }
 
   .contact-link:hover {
+    color: var(--color-accent);
+  }
+
+  .contact-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Icon hops up to meet the pointer. */
+  .contact-item:hover .contact-icon {
+    transform: translateY(-3px) scale(1.1);
     color: var(--color-accent);
   }
 }
