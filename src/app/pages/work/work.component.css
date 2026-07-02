@@ -5,101 +5,102 @@
   min-height: 100vh;
 }
 
-/* === CARD / EXPERIENCE LAYOUT === */
+/* ============================================
+   EXPERIENCE — editorial layout, no cards
+   The old frosted-glass cards blurred out the very constellation the site is
+   built around. Here typography and hairline rules do the framing: a flush-
+   left poster header, an asymmetric role split, and two typographic skill
+   ledgers on a staggered 12-col grid. All surfaces removed so the star map
+   breathes through the negative space.
+   ============================================ */
 
-.experience-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-  gap: var(--space-xl);
-  max-width: var(--max-width-content);
-  margin-inline: auto;
-  padding: 0 var(--space-md);
+/* ---- Poster header (mirrors About; kept per-component under Angular view
+   encapsulation) ---- */
+
+.experience-header {
+  margin-bottom: var(--space-3xl);
 }
 
-.experience-card {
-  /* Frosted glass aesthetic */
-  background: var(--glass-bg-solid);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl); /* Kept your original larger radius, adjust to --radius-lg if needed */
-  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
-  transition: transform var(--transition-base),
-              box-shadow var(--transition-base);
-
-  /* Layout & Spacing */
-  padding: var(--space-xl);
-  margin: var(--space-2xl) 0;
+.experience-kicker {
   display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-.experience-card-title {
-  text-align: center;
-  font-size: var(--font-size-2xl);
-  margin-bottom: var(--space-lg);
-  color: var(--color-text-primary);
-}
-
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--space-xl) var(--space-lg);
-}
-
-.skill-group {
-  display: flex;
-  flex-direction: column;
+  align-items: baseline;
   gap: var(--space-sm);
-}
-
-.skill-header {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
-}
-
-.checkmark {
-  background-color: var(--color-accent);
-  color: var(--color-background);
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  margin-bottom: var(--space-md);
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  transition: transform var(--transition-base);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
-.skill-title {
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-snug);
+/* Destination index (02 = Work in the loop order) — the one vivid hue,
+   echoing the hero's status dot. Decorative, so aria-hidden in the template. */
+.experience-kicker-index {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-vivid);
+}
+
+/* Short hairline continuing the kicker — a quiet Swiss rule. */
+.experience-kicker::after {
+  content: '';
+  align-self: center;
+  width: var(--space-2xl);
+  height: 1px;
+  background: var(--color-border-dark);
+}
+
+.experience-title {
+  font-size: var(--font-size-6xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-none);
+  letter-spacing: var(--tracking-tightest);
+}
+
+/* ---- Lead role — asymmetric editorial split ---- */
+/* Title column left (1–6), accomplishments right (7–13); a single hairline
+   above stands in for the old card edge. */
+
+.role {
+  position: relative;
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--color-border-dark);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+/* Boxless legibility: soft background-coloured radial scrim (hero-headline
+   idiom) fades the star map toward the page colour under the accomplishment
+   copy — no surface, no border, theme-aware via --scrim-rgb. */
+.role::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--space-xl)) calc(-1 * var(--space-2xl));
+  background: radial-gradient(
+    55% 75% at 65% 50%,
+    rgba(var(--scrim-rgb), 0.45) 0%,
+    rgba(var(--scrim-rgb), 0.18) 55%,
+    transparent 80%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+.role-title {
+  grid-column: 1 / 6;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--tracking-tight);
   color: var(--color-text-primary);
-}
-
-.skill-list {
-  margin-left: calc(1.5rem + var(--space-sm));
-  font-size: var(--font-size-sm);
-  color: var(--color-text-tertiary);
-  line-height: var(--line-height-relaxed);
-}
-
-/* Lead role card — mirrors the grid's outer constraints so its edges align with
-   the two-up skill cards below it. */
-.experience-lead {
-  max-width: var(--max-width-content);
-  margin-inline: auto;
-  padding: 0 var(--space-md);
 }
 
 .role-points {
-  list-style: none;
+  grid-column: 7 / 13;
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  max-width: var(--max-width-text);
-  margin-inline: auto;
+  gap: var(--space-lg);
 }
 
 .role-points li {
@@ -111,16 +112,15 @@
   transition: padding-left var(--transition-base), color var(--transition-base);
 }
 
-/* Accent bullet — same hue as the skill checkmarks, set on the cap height. It
-   twinkles faintly, tying the bullets to the constellation motif; the global
-   reduced-motion rule stops the loop. */
+/* Accent bullet set on the cap height. It twinkles faintly, tying the bullets
+   to the constellation motif; the global reduced-motion rule stops the loop. */
 .role-points li::before {
   content: '';
   position: absolute;
   left: 0;
   top: 0.65em;
-  width: 0.5rem;
-  height: 0.5rem;
+  width: var(--space-sm);
+  height: var(--space-sm);
   border-radius: var(--radius-full);
   background: var(--color-accent);
   animation: starTwinkle 3.2s ease-in-out infinite;
@@ -138,7 +138,7 @@
 /* Hover nudges the text and lights the bullet like a star coming into focus. */
 @media (hover: hover) and (pointer: fine) {
   .role-points li:hover {
-    padding-left: calc(var(--space-lg) + 6px);
+    padding-left: calc(var(--space-lg) + var(--space-xs));
     color: var(--color-text-primary);
   }
 
@@ -146,6 +146,130 @@
     transform: scale(1.6);
     box-shadow: 0 0 10px var(--color-accent);
   }
+}
+
+/* ---- Skills index — two typographic ledgers, staggered ---- */
+/* Technologies takes the wide column (1–8); Non-Technical hangs right (9–13)
+   on a dropped baseline. The offset bottoms are deliberate negative space. */
+
+.experience-index {
+  margin-top: var(--space-5xl);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-2xl) var(--space-xl);
+  align-items: start;
+}
+
+.index-tech {
+  grid-column: 1 / 8;
+}
+
+.index-soft {
+  grid-column: 9 / 13;
+  margin-top: var(--space-4xl);
+}
+
+/* Heavier rule under the block label, lighter rules between rows — the
+   classic Swiss table hierarchy, drawn with the border tokens. */
+.index-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border-dark);
+}
+
+.index-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.index-row {
+  display: grid;
+  grid-template-columns: var(--space-2xl) minmax(0, 1fr);
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
+  align-items: baseline;
+  padding-block: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+/* First row sits directly under the label's heavier rule. */
+.index-row:first-child {
+  border-top: none;
+}
+
+.index-num {
+  grid-column: 1;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+  transition: color var(--transition-base);
+}
+
+.index-term {
+  grid-column: 2;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+  /* Normal, not tight: negative tracking is a poster-type technique (see
+     .experience-title); at 20px on multi-word terms like "Software
+     Development & Web Applications" it pinches word-spacing instead. */
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-text-primary);
+}
+
+.index-desc {
+  grid-column: 2;
+  /* Bumped from --font-size-sm: this is copy meant to be read (the
+     comma-separated tech list), not a caption, and it was pairing the
+     smallest size with the weakest text-tertiary colour. */
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-tertiary);
+}
+
+/* Wide screens: the Technologies ledger reads as a true table row —
+   number | term | description on one baseline. */
+@media (min-width: 969px) {
+  .index-tech .index-row {
+    grid-template-columns: var(--space-2xl) minmax(0, 1fr) minmax(0, 1.4fr);
+  }
+
+  .index-tech .index-desc {
+    grid-column: 3;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .index-row:hover {
+    border-top-color: var(--color-border-dark);
+  }
+
+  .index-row:hover .index-num {
+    color: var(--color-accent-vivid);
+  }
+}
+
+/* ---- Reveal cadence ---- */
+/* Existing appScrollReveal machinery; delays stagger blocks that enter
+   together. Reduced-motion collapses via the global rule. */
+
+.role.scroll-reveal {
+  transition-delay: 80ms;
+}
+
+.index-tech.scroll-reveal {
+  transition-delay: 60ms;
+}
+
+.index-soft.scroll-reveal {
+  transition-delay: 160ms;
 }
 
 .projects-container {
@@ -247,21 +371,35 @@
   ============================================ */
 
 @media (max-width: 968px) {
-  .experience-grid {
+  /* Single column: the role split and the staggered ledgers stack; the
+     dropped baselines no longer apply. */
+  .role {
     grid-template-columns: 1fr;
+    gap: var(--space-lg);
   }
 
-  .skills-grid {
+  .role-title,
+  .role-points {
+    grid-column: auto;
+  }
+
+  .experience-index {
+    margin-top: var(--space-3xl);
     grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+
+  .index-tech,
+  .index-soft {
+    grid-column: auto;
+  }
+
+  .index-soft {
+    margin-top: 0;
   }
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .experience-card:hover {
-    transform: translateY(-2px);
-    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--shadow-hover);
-  }
-
   .project-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
@@ -278,22 +416,23 @@
     color: var(--color-accent);
   }
 
-  /* Skill checkmarks give a playful tilt when their group is hovered. */
-  .skill-group:hover .checkmark {
-    transform: scale(1.15) rotate(-8deg);
-  }
 }
 
 @media (max-width: 768px) {
-  .experience-card {
-    padding: var(--space-lg);
-    margin: var(--space-lg) 0;
+  .experience-header {
+    margin-bottom: var(--space-2xl);
   }
 
-  .experience-card-title {
-    font-size: var(--font-size-xl);
-    text-align: left;
-    margin-bottom: var(--space-md);
+  .role {
+    padding-top: var(--space-lg);
+  }
+
+  .role-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .index-term {
+    font-size: var(--font-size-md);
   }
 
   .project-content {
@@ -421,4 +560,146 @@
 :host(.showcase-on) .project-content {
   height: 100%;
   min-height: 0;
+}
+
+/* ---- Constellation scrim ---- */
+/* The star-map is position:fixed and keeps morphing site-wide. Behind the pinned
+   cards it competes with the copy, so dim it locally toward the page colour (same
+   background-scrim idiom as .role::before) — no surface, theme-aware via
+   --scrim-rgb. Sits above the fixed map, below the opaque cards. */
+:host(.showcase-on) .projects-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    62% 68% at 50% 50%,
+    rgba(var(--scrim-rgb), 0.55) 0%,
+    rgba(var(--scrim-rgb), 0.30) 55%,
+    transparent 82%
+  );
+  pointer-events: none;
+}
+
+/* ---- Card elevation + centre focus ---- */
+/* A resting border + shadow so each opaque card reads as a distinct object
+   lifted off the star-map (not floating ambiguously on it), which is also what
+   lets the hover lift below actually pop. --card-focus (1 = centred) is written
+   per frame by WorkComponent; edge cards dim so the centred one is unmistakably
+   the subject. No transition on opacity — it already tracks the eased transform,
+   so it moves smoothly frame to frame. */
+:host(.showcase-on) .project-card {
+  border: 0px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  opacity: calc(0.5 + 0.5 * var(--card-focus, 1));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :host(.showcase-on) .project-card:hover {
+    box-shadow: var(--shadow-hover);
+  }
+}
+
+/* ---- Pinned wayfinding HUD ---- */
+/* Hidden by default so the vertical-stack fallback (no-JS / reduced motion /
+   narrow) stays clean; revealed only when the showcase is armed. */
+.showcase-hud {
+  display: none;
+}
+
+:host(.showcase-on) .showcase-hud {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(var(--space-lg), 5vh, var(--space-3xl));
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  width: min(420px, 60vw);
+  pointer-events: none; /* wayfinding only — never intercept a card click */
+}
+
+.showcase-counter {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+/* The current index takes the one vivid hue, echoing the section kicker. */
+.showcase-counter-current {
+  color: var(--color-accent-vivid);
+}
+
+.showcase-counter-sep {
+  color: var(--color-text-tertiary);
+}
+
+.showcase-rail {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: var(--color-border-dark);
+  border-radius: var(--radius-full);
+}
+
+/* Fill grows with scroll progress; scaleX is cheaper than animating width and
+   composites off the main thread. */
+.showcase-rail-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform: scaleX(var(--showcase-progress, 0));
+  background: var(--color-accent-vivid);
+  border-radius: inherit;
+}
+
+/* One notch per project — a static count marker the fill sweeps past. */
+.showcase-rail-tick {
+  position: absolute;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: var(--radius-full);
+  background: var(--color-background);
+  box-shadow: 0 0 0 1px var(--color-border-dark);
+  transform: translateY(-50%);
+}
+
+.showcase-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  /* Guidance when it's needed, gone the moment the sweep starts. */
+  opacity: clamp(0, calc(1 - var(--showcase-progress, 0) * 10), 1);
+  transition: opacity var(--transition-base);
+}
+
+.showcase-hint-arrow {
+  animation: hintNudge 1.6s var(--ease-out-quart) infinite;
+}
+
+@keyframes hintNudge {
+  0%, 100% { transform: translateX(0); opacity: 0.6; }
+  50%      { transform: translateX(4px); opacity: 1; }
+}
+
+/* Belt-and-braces: the HUD only shows in showcase mode (which is already off
+   under reduced motion), but never loop the arrow if motion is reduced. */
+@media (prefers-reduced-motion: reduce) {
+  .showcase-hint-arrow {
+    animation: none;
+  }
 }

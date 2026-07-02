@@ -1,78 +1,77 @@
 <section class="section" aria-labelledby="experience-title">
   <div class="container">
-    <app-display-heading pre="Explore My" title="Experience" titleId="experience-title"></app-display-heading>
+    <!-- Editorial header — flush-left poster headline (mirrors About). Replaces
+         the shared centred <app-display-heading> for this section only; copy is
+         unchanged. -->
+    <header class="experience-header" appScrollReveal>
+      <p class="experience-kicker">
+        <span class="experience-kicker-index" aria-hidden="true">02</span>
+        <span>Explore My</span>
+      </p>
+      <h2 class="experience-title" id="experience-title">Experience</h2>
+    </header>
 
-    <!-- Lead role — the SITA work translated to plain engineering facts. Full-width
-         above the two-up skills grid; mirrors the grid's outer constraints. -->
-    <div class="experience-lead">
-      <article class="experience-card experience-role">
-        <h3 class="experience-card-title">SITA &mdash; Java EE case management &amp; workflow platform</h3>
-        <ul class="role-points">
-          <li>
-            Consolidated attachment-handling logic that had been copied across several
-            role-specific beans into one shared structure &mdash; cutting duplication by
-            around 60% and making the subsystem far easier to extend.
-          </li>
-          <li>
-            Tracked down and fixed a recurring class of silent form-submission failures in
-            multi-step JSF workflows &mdash; the kind where a user hits save and nothing
-            happens. It had been a top source of QA-reported defects.
-          </li>
-          <li>
-            Restored correct task routing in the BPMN workflows by tracing assignment logic
-            across process definitions and role configurations, so the right work reached the
-            right people.
+    <!-- Lead role — the SITA work as an editorial split: role title anchors the
+         left column, the accomplishments read down the right. A single hairline
+         and the grid do the framing that the old glass card used to. Copy is
+         unchanged. -->
+    <article class="role" appScrollReveal>
+      <h3 class="role-title">SITA &mdash; Java EE case management &amp; workflow platform</h3>
+      <ul class="role-points" role="list">
+        <li>
+          Consolidated attachment-handling logic that had been copied across several
+          role-specific beans into one shared structure &mdash; cutting duplication by
+          around 60% and making the subsystem far easier to extend.
+        </li>
+        <li>
+          Tracked down and fixed a recurring class of silent form-submission failures in
+          multi-step JSF workflows &mdash; the kind where a user hits save and nothing
+          happens. It had been a top source of QA-reported defects.
+        </li>
+        <li>
+          Restored correct task routing in the BPMN workflows by tracing assignment logic
+          across process definitions and role configurations, so the right work reached the
+          right people.
+        </li>
+      </ul>
+    </article>
+
+    <!-- Skills index — the old Technologies / Non-Technical cards flattened into
+         two typographic ledgers on a staggered 12-col grid; the offset bottoms
+         leave negative space for the constellation. Copy is unchanged; the index
+         numerals are decorative wayfinding, hence aria-hidden. -->
+    <div class="experience-index">
+      <article class="index-block index-tech" appScrollReveal>
+        <h3 class="index-label">Technologies</h3>
+        <ul class="index-list" role="list">
+          <li class="index-row" *ngFor="let group of experienceGroups; let i = index">
+            <span class="index-num" aria-hidden="true">0{{ i + 1 }}</span>
+            <h4 class="index-term">{{ group.label }}</h4>
+            <p class="index-desc">{{ group.description }}</p>
           </li>
         </ul>
       </article>
-    </div>
 
-    <div class="experience-grid">
-      <article class="experience-card">
-        <h3 class="experience-card-title">Technologies</h3>
-        <div class="skills-grid">
-          <div class="skill-group" *ngFor="let group of experienceGroups">
-            <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✔</span>
-              <h4 class="skill-title">{{ group.label }}</h4>
-            </div>
-            <p class="skill-list">{{ group.description }}</p>
-          </div>
-        </div>
-      </article>
-
-
-      <article class="experience-card">
-        <h3 class="experience-card-title">Non-Technical Skills</h3>
-        <div class="skills-grid">
-          <div class="skill-group">
-            <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✔</span>
-              <h4 class="skill-title">Communication and Collaboration</h4>
-            </div>
-          </div>
-
-          <div class="skill-group">
-            <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✔</span>
-              <h4 class="skill-title">Analytical Thinker</h4>
-            </div>
-          </div>
-
-          <div class="skill-group">
-            <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✔</span>
-              <h4 class="skill-title">Continuous Learning</h4>
-            </div>
-          </div>
-
-          <div class="skill-group">
-            <div class="skill-header">
-              <span class="checkmark" aria-hidden="true">✔</span>
-              <h4 class="skill-title">Deadline and Results-Driven</h4>
-            </div>
-          </div>
-        </div>
+      <article class="index-block index-soft" appScrollReveal>
+        <h3 class="index-label">Non-Technical Skills</h3>
+        <ul class="index-list" role="list">
+          <li class="index-row">
+            <span class="index-num" aria-hidden="true">01</span>
+            <h4 class="index-term">Communication and Collaboration</h4>
+          </li>
+          <li class="index-row">
+            <span class="index-num" aria-hidden="true">02</span>
+            <h4 class="index-term">Analytical Thinker</h4>
+          </li>
+          <li class="index-row">
+            <span class="index-num" aria-hidden="true">03</span>
+            <h4 class="index-term">Continuous Learning</h4>
+          </li>
+          <li class="index-row">
+            <span class="index-num" aria-hidden="true">04</span>
+            <h4 class="index-term">Deadline and Results-Driven</h4>
+          </li>
+        </ul>
       </article>
     </div>
   </div>
@@ -90,19 +89,22 @@
          fall back to the vertical stack. -->
     <div class="projects-viewport" #projectsViewport>
       <div class="projects-stage" #projectsStage>
-        <div class="projects-container" #projectsTrack>
+        <!-- role="list" gives assistive tech an explicit item count for the
+             gallery; each card stays a self-contained listitem. -->
+        <div class="projects-container" #projectsTrack role="list" aria-label="Recent projects">
 
-      <article class="project-card" *ngFor="let project of projects">
+      <article class="project-card" *ngFor="let project of projects" role="listitem">
         <div class="project-content">
           <div class="project-text">
             <h3 class="project-title">{{ project.title }}</h3>
             <p class="project-description">{{ project.description }}</p>
             <div class="project-tech" role="list" aria-label="Technologies used">
-              <span class="tech-tag" *ngFor="let t of project.tech">{{ t }}</span>
+              <span class="tech-tag" role="listitem" *ngFor="let t of project.tech">{{ t }}</span>
             </div>
             <div class="project-links">
               <a [href]="project.href" class="btn btn-secondary" target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer"
+                [attr.aria-label]="'View ' + project.title + ' on GitHub (opens in a new tab)'">
                 GitHub
               </a>
             </div>
@@ -116,6 +118,31 @@
           </div>
         </div>
       </article>
+        </div>
+
+        <!-- Pinned wayfinding, shown only in showcase mode (see .showcase-hud in
+             CSS). Purely decorative orientation that duplicates the scroll, so the
+             whole cluster is aria-hidden and non-interactive; the accessible path
+             through the projects is the card links themselves, kept in-frame by
+             WorkComponent's focus handler. -->
+        <div class="showcase-hud" aria-hidden="true">
+          <p class="showcase-counter">
+            <span class="showcase-counter-current" #showcaseCurrent>01</span>
+            <span class="showcase-counter-sep">/</span>
+            <span class="showcase-counter-total">0{{ projects.length }}</span>
+          </p>
+          <div class="showcase-rail">
+            <span class="showcase-rail-fill"></span>
+            <span
+              class="showcase-rail-tick"
+              *ngFor="let project of projects; let i = index"
+              [style.left.%]="projects.length > 1 ? (i / (projects.length - 1)) * 100 : 0"
+            ></span>
+          </div>
+          <p class="showcase-hint">
+            Scroll to explore
+            <span class="showcase-hint-arrow">&rarr;</span>
+          </p>
         </div>
       </div>
     </div>
