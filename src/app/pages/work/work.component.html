@@ -80,7 +80,16 @@
 
 <section class="section" aria-labelledby="projects-title">
   <div class="container">
-    <app-display-heading pre="Browse My Recent" title="Projects" titleId="projects-title"></app-display-heading>
+    <!-- Editorial header — flush-left poster headline, matching the Experience
+         header above and About's pattern. Replaces the shared centred
+         <app-display-heading>; no destination-index numeral here since Projects
+         is a subsection of Work, not a separate loop destination. Copy unchanged. -->
+    <header class="projects-header" appScrollReveal>
+      <p class="projects-kicker">
+        <span>Browse My Recent</span>
+      </p>
+      <h2 class="projects-title" id="projects-title">Projects</h2>
+    </header>
 
     <!-- Horizontal showcase. #projectsViewport supplies the scroll distance, the
          sticky #projectsStage frames the cards, and WorkComponent translates

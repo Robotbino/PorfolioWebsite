@@ -14,7 +14,14 @@
       "PowerShell(gh auth status)",
       "PowerShell(\"----- gh auth -----\")",
       "mcp__Claude_Preview__preview_start",
-      "Bash(git ls-remote *)"
+      "Bash(git ls-remote *)",
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\(p.scripts,null,2\\)\\)\")",
+      "Bash(git check-ignore *)",
+      "Bash(git commit *)",
+      "Bash(git commit -m 'feat\\(work\\): refine horizontal projects showcase for legibility' -m 'Layer four recruiter-facing refinements onto the scroll-jacked showcase, all gated on .showcase-on so the vertical-stack fallback is untouched: *)",
+      "Bash(git merge *)",
+      "Bash(git push *)",
+      "Bash(git branch *)"
     ]
   }
 }

@@ -272,6 +272,41 @@
   transition-delay: 160ms;
 }
 
+/* ---- Projects poster header (mirrors Experience/About above; no destination-
+   index numeral since Projects is a Work subsection, not a loop destination) ---- */
+
+.projects-header {
+  margin-bottom: var(--space-2xl);
+}
+
+.projects-kicker {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Short hairline continuing the kicker — a quiet Swiss rule. */
+.projects-kicker::after {
+  content: '';
+  align-self: center;
+  width: var(--space-2xl);
+  height: 1px;
+  background: var(--color-border-dark);
+}
+
+.projects-title {
+  font-size: var(--font-size-6xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-none);
+  letter-spacing: var(--tracking-tightest);
+}
+
 .projects-container {
   display: flex;
   flex-direction: column;
@@ -419,7 +454,8 @@
 }
 
 @media (max-width: 768px) {
-  .experience-header {
+  .experience-header,
+  .projects-header {
     margin-bottom: var(--space-2xl);
   }
 
