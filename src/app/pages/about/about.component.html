@@ -1,42 +1,63 @@
 <section class="section" aria-labelledby="about-title">
   <div class="container">
-    <app-display-heading pre="Get to know more" title="About Me" titleId="about-title"></app-display-heading>
+    <!-- Editorial header — flush-left poster headline so it joins the asymmetric
+         spread below. Replaces the shared centred <app-display-heading> for this
+         section only (Projects/Contact keep it); copy is unchanged. -->
+    <header class="about-header" appScrollReveal>
+      <p class="about-kicker">
+        <span class="about-kicker-index" aria-hidden="true">03</span>
+        <span>Get to know more</span>
+      </p>
+      <!-- The space lives inside the first span: inter-element whitespace is
+           dropped from the accessibility tree, which would make the accessible
+           name "AboutMe". -->
+      <h2 class="about-title" id="about-title"><span class="about-title-soft">About </span><span class="about-title-strong">Me</span></h2>
+    </header>
 
-    <div class="about-cards">
-      <article class="card fade-in">
-        <i class="fa-solid fa-lightbulb card-icon qualification" aria-hidden="true" #cardIcon></i>
-        <h3 class="card-title">Qualifications</h3>
-        <div class="card-content">
-          <div class="card-item">
-            <span class="card-item-title">3 Years</span>
-            <span class="card-item-text">Information Technology Student</span>
+    <div class="about-spread">
+      <!-- Bio leads the spread: one measured column of editorial body copy,
+           lifted off the star map by a boxless radial scrim (hero idiom). -->
+      <p class="about-text" appScrollReveal>
+        I&rsquo;m a Pretoria-based software developer with a strict
+        <em class="about-emphasis">&ldquo;less but better&rdquo;</em> mindset.
+        Whether I&rsquo;m looking at the interface or the codebase, my goal is to cut out the
+        noise and build web experiences that are simple, intuitive, and highly dependable.
+        Beyond the code, I pride myself on clear communication, bridging the gap between
+        complex logic and the final product. I love the challenge of building real-world
+        software, and I&rsquo;m always looking to level up as an engineer.
+      </p>
+
+      <!-- Facts ledger — the old Qualifications/Education cards flattened into a
+           typographic index: hairline rules, micro-labels, poster numerals. The
+           #cardIcon refs keep AboutComponent's centre-crossing observer alive:
+           a numeral straddling the viewport middle gets .is-centered and shifts
+           to the vivid accent — a star coming into focus. -->
+      <div class="about-ledger" appScrollReveal>
+        <div class="ledger-block">
+          <h3 class="ledger-label">Qualifications</h3>
+          <div class="ledger-row">
+            <p class="ledger-figure">
+              <span class="ledger-numeral" #cardIcon>3</span>
+              <span class="ledger-unit">Years</span>
+            </p>
+            <p class="ledger-detail">Information Technology Student</p>
           </div>
-          <div class="card-item">
-            <span class="card-item-title">3+ Years</span>
-            <span class="card-item-text">Software Development</span>
+          <div class="ledger-row">
+            <p class="ledger-figure">
+              <span class="ledger-numeral" #cardIcon>3+</span>
+              <span class="ledger-unit">Years</span>
+            </p>
+            <p class="ledger-detail">Software Development</p>
           </div>
         </div>
-      </article>
 
-      <article class="card fade-in">
-        <i class="fa-solid fa-code card-icon education" aria-hidden="true" #cardIcon></i>
-        <h3 class="card-title">Education</h3>
-        <div class="card-content">
-          <p class="card-item-text">
+        <div class="ledger-block">
+          <h3 class="ledger-label">Education</h3>
+          <p class="ledger-detail ledger-detail-lg">
             BSc in Information Technology from the North-West University (NWU)
           </p>
         </div>
-      </article>
+      </div>
     </div>
-
-    <p class="about-text">
-      I&rsquo;m a Pretoria-based software developer with a strict
-      <em class="about-emphasis">&ldquo;less but better&rdquo;</em> mindset.
-      Whether I&rsquo;m looking at the interface or the codebase, my goal is to cut out the
-      noise and build web experiences that are simple, intuitive, and highly dependable.
-      Beyond the code, I pride myself on clear communication, bridging the gap between
-      complex logic and the final product. I love the challenge of building real-world
-      software, and I&rsquo;m always looking to level up as an engineer.
-    </p>
   </div>
 </section>

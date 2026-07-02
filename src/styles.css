@@ -79,22 +79,32 @@
   /* Light Mode Colors */
   --color-background: #ffffff;
   --color-text-primary: #1a1a1a;
-  --color-text-secondary: #555555;
-  --color-text-tertiary: #666666;
-  /* `--color-text-muted` is the dimmest label tier and still needs to pass WCAG
-     AA for small text — 4.5:1 on the background, so eyebrows stay legible. */
-  --color-text-muted: #737373;
+  /* Warm charcoal ramp (not neutral grey) — ties the text hierarchy to the
+     --color-accent-vivid orange family and the cream aurora stops instead of
+     reading as a colder, bolted-on grey system. Darkened from the original
+     palette because the real backdrop is the aurora's warm highlight
+     (#FAF0E8), not paper-white — contrast against pure white alone
+     understated how thin the margin actually was. */
+  --color-text-secondary: #3d3a36;
+  --color-text-tertiary: #4f4b46;
+  /* `--color-text-muted` is the dimmest label tier and still needs to clear
+     WCAG AA for small text — 4.5:1 — against the aurora's warm highlight, not
+     just white; #5f5a54 holds ~6.1:1 there. */
+  --color-text-muted: #5f5a54;
   --color-accent: #000000;
   --color-accent-hover: #333333;
   /* Striking warm accent — the one hue allowed to break the monochrome.
      Deep orange so it stays legible on the near-white light background. */
   --color-accent-vivid: #d9480f;
   --color-accent-vivid-hover: #b8380a;
-  --color-border: #e0e0e0;
-  --color-border-dark: #d0d0d0;
+  /* Hairline dividers, darkened to actually register against the aurora's
+     cream/tan highlights — the previous #e0e0e0/#d0d0d0 pair sat under 1.5:1
+     there and effectively disappeared. */
+  --color-border: #9a9080;
+  --color-border-dark: #7d7462;
   --color-card-bg: #ffffff;
-  --color-tag-bg: #f5f5f5;
-  --color-tag-hover: #e8e8e8;
+  --color-tag-bg: #e9e4da;
+  --color-tag-hover: #ddd5c7;
   --color-linkedin: #0A66C2;
 
   /* Gradient overlay colors */
@@ -185,20 +195,20 @@
 .light-mode {
   --color-background: #ffffff;
   --color-text-primary: #1a1a1a;
-  --color-text-secondary: #555555;
-  --color-text-tertiary: #666666;
-  --color-text-muted: #737373;
+  --color-text-secondary: #3d3a36;
+  --color-text-tertiary: #4f4b46;
+  --color-text-muted: #5f5a54;
   --color-accent: #000000;
   --color-accent-hover: #333333;
   /* Striking warm accent — the one hue allowed to break the monochrome.
      Deep orange so it stays legible on the near-white light background. */
   --color-accent-vivid: #d9480f;
   --color-accent-vivid-hover: #b8380a;
-  --color-border: #e0e0e0;
-  --color-border-dark: #d0d0d0;
+  --color-border: #9a9080;
+  --color-border-dark: #7d7462;
   --color-card-bg: #ffffff;
-  --color-tag-bg: #f5f5f5;
-  --color-tag-hover: #e8e8e8;
+  --color-tag-bg: #e9e4da;
+  --color-tag-hover: #ddd5c7;
   --color-linkedin: #0A66C2;
 
   --gradient-overlay-start: rgba(255, 255, 255, 0);

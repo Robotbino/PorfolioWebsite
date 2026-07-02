@@ -5,321 +5,251 @@
   min-height: 100vh;
 }
 
-.about-cards {
+/* ============================================
+   EDITORIAL HEADER
+   Flush-left poster headline. The weight-contrast pair mirrors the hero name
+   (extralight "About" against black "Me") — typography does the framing that
+   the old glass cards used to do. Pattern is mirrored in Work's Experience
+   header; kept per-component under Angular view encapsulation.
+   ============================================ */
+
+.about-header {
+  margin-bottom: var(--space-4xl);
+}
+
+.about-kicker {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-  gap: var(--space-md);
-  margin: 0 var(--space-xl);
-  margin-bottom: var(--space-xl);
-  max-width: var(--max-width-content);
-  margin-inline: auto;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
-.about-text {
-  max-width: var(--max-width-text);
-  margin-inline: auto;
-  margin-block: var(--space-md);
-  font-size: var(--font-size-lg);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
-  text-align: justify;
-  text-align-last: center;
+/* Destination index (03 = About in the loop order) — the one vivid hue,
+   echoing the hero's status dot. Decorative, so aria-hidden in the template. */
+.about-kicker-index {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-vivid);
 }
 
-.about-emphasis {
-  font-style: italic;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-accent);
+/* Short hairline continuing the kicker — a quiet Swiss rule. */
+.about-kicker::after {
+  content: '';
+  align-self: center;
+  width: var(--space-2xl);
+  height: 1px;
+  background: var(--color-border-dark);
+}
+
+.about-title {
+  font-size: var(--font-size-6xl);
+  line-height: var(--line-height-none);
+  letter-spacing: var(--tracking-tighter);
+}
+
+.about-title-soft {
+  font-weight: var(--font-weight-extralight);
+}
+
+.about-title-strong {
+  font-weight: var(--font-weight-black);
+  letter-spacing: var(--tracking-tightest);
 }
 
 /* ============================================
-  CARD COMPONENT
-  ============================================ */
+   SPREAD — asymmetric 12-col editorial grid
+   Bio takes the reading column (1–7); the facts ledger hangs right (9–12) on
+   a dropped baseline. Column 8 stays empty and the ragged bottoms differ, so
+   the constellation behind gets real negative space instead of gutters
+   between boxes.
+   ============================================ */
 
-.card {
-  /* Frosted glass surface (ADR-0006). Opaque tint is the fallback; the @supports
-     block below upgrades to a real backdrop blur where available. */
-  background: var(--glass-bg-solid);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
-  padding: var(--space-lg);
-  transition: transform var(--transition-base),
-              box-shadow var(--transition-base);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 700px;
-  min-height: 350px;
-  margin: var(--space-3xl) var(--space-xs);
+.about-spread {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-2xl) var(--space-xl);
+  align-items: start;
 }
 
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .card {
-    background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(14px) saturate(1.25);
-    backdrop-filter: blur(14px) saturate(1.25);
-  }
-}
-
-.card-icon {
-  font-size: var(--font-size-4xl);
-  color: var(--color-text-tertiary);
-  margin-bottom: var(--space-lg);
-}
-
-/* Idle ambiance — the bulb softly breathes and flickers warm, the code icon
-   rocks with a cool blue data-pulse. Both rest at the neutral tertiary colour,
-   so between pulses they read as plain icons. Hover and the centred ignite both
-   override these via the cascade; the global reduced-motion rule stops them. */
-.card-icon.qualification {
-  animation: bulbIdle 5s ease-in-out infinite;
-}
-
-.card-icon.education {
-  animation: codeIdle 4.5s ease-in-out infinite;
-}
-
-.card:hover .card-icon.qualification {
-  animation: bulbGlow 0.8s ease-in-out infinite alternate;
-}
-
-.card:hover .card-icon.education {
-  animation: educationGlow 0.9s ease-in-out infinite alternate;
-}
-
-/* One-shot glow + pop when the icon reaches viewport centre (the .is-centered
-   class is toggled by AboutComponent's IntersectionObserver; re-arms on exit). */
-.card-icon.qualification.is-centered {
-  animation: igniteBulb 1s var(--ease-out-quart);
-}
-
-.card-icon.education.is-centered {
-  animation: igniteCode 1s var(--ease-out-quart) 0.12s;
-}
-
-.card-title {
+.about-text {
+  grid-column: 1 / 8;
+  position: relative;
+  max-width: var(--max-width-text);
   font-size: var(--font-size-xl);
-  margin-bottom: var(--space-md);
+  /* Regular, not light: this is a full paragraph of reading copy, not a short
+     display phrase — light weight reads fine on "About"/hero words but
+     thins out badly across a whole sentence. */
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+}
+
+/* Boxless legibility: soft background-coloured radial scrim (hero-headline
+   idiom) fades the star map toward the page colour under the body copy —
+   no surface, no border, works in both themes via --scrim-rgb. */
+.about-text::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--space-2xl)) calc(-1 * var(--space-3xl));
+  background: radial-gradient(
+    60% 70% at 45% 50%,
+    rgba(var(--scrim-rgb), 0.45) 0%,
+    rgba(var(--scrim-rgb), 0.18) 55%,
+    transparent 80%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* The one serif moment — Instrument Serif italic on the credo, per its
+   accent-only role. Optically small next to the sans, so nudged up. */
+.about-emphasis {
+  font-family: var(--font-family-accent);
+  font-style: italic;
+  font-weight: var(--font-weight-normal);
+  font-size: 1.12em;
+  letter-spacing: var(--tracking-normal);
   color: var(--color-text-primary);
 }
 
-.card-content {
+/* ============================================
+   FACTS LEDGER
+   Qualifications / Education as a typographic index: hairline rules,
+   uppercase micro-labels, thin poster numerals. No surfaces.
+   ============================================ */
+
+.about-ledger {
+  grid-column: 9 / 13;
+  /* Dropped baseline — the ledger starts below the bio's first lines so the
+     column tops don't tie; asymmetry keeps the spread editorial. */
+  margin-top: var(--space-3xl);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
-  width: 100%;
+  gap: var(--space-2xl);
 }
 
-.card-item {
+.ledger-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  border-top: 1px solid var(--color-border-dark);
+  padding-top: var(--space-md);
+}
+
+.ledger-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.ledger-row {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
 }
 
-.card-item-title {
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-xl);
-  color: var(--color-text-primary);
+.ledger-figure {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
 }
 
-.card-item-text {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
+.ledger-numeral {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-thin);
+  line-height: var(--line-height-none);
+  letter-spacing: var(--tracking-tighter);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  transition: color var(--transition-slow);
+}
+
+/* Centre-crossing focus: AboutComponent's IntersectionObserver toggles
+   .is-centered while the numeral straddles the viewport middle — it catches
+   the accent hue like a star coming into focus, then fades back on exit.
+   Reduced-motion users never get the class (observer is skipped); the
+   numeral simply rests at text-primary. */
+.ledger-numeral.is-centered {
+  color: var(--color-accent-vivid);
+}
+
+.ledger-unit {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.ledger-detail {
+  font-size: var(--font-size-base);
   line-height: var(--line-height-snug);
+  color: var(--color-text-secondary);
+}
+
+.ledger-detail-lg {
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
 }
 
 /* ============================================
-  RESPONSIVE
-  ============================================ */
+   REVEAL CADENCE
+   Blocks use the existing appScrollReveal (IntersectionObserver) machinery;
+   the delays below stagger siblings that enter together — bio first, ledger
+   a beat behind. Reduced-motion collapses everything via the global rule.
+   ============================================ */
 
-@media (max-width: 968px) {
-  /* Stacked layout: grid with `1fr` rows equalises the two cards to the taller
-     one's height (Qualifications has two items, Education has one — without
-     this they'd render at different sizes). */
-  .about-cards {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-auto-rows: 1fr;
-  }
+.about-text.scroll-reveal {
+  transition-delay: 80ms;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--shadow-hover);
+.about-ledger.scroll-reveal {
+  transition-delay: 180ms;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 968px) {
+  .about-spread {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+
+  .about-text,
+  .about-ledger {
+    grid-column: auto;
+  }
+
+  /* Single column: the dropped baseline no longer applies; the two ledger
+     blocks sit side by side while there's width for it. */
+  .about-ledger {
+    margin-top: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xl);
   }
 }
 
 @media (max-width: 768px) {
-  .about-cards {
-    margin: 0;
-    gap: var(--space-md);
+  .about-header {
+    margin-bottom: var(--space-2xl);
   }
 
   .about-text {
-    margin: var(--space-lg) 0;
-    font-size: var(--font-size-md);
-    line-height: var(--line-height-relaxed);
-    text-align: justify;
-    text-align-last: center;
-  }
-
-  .card {
-    width: auto;
-    max-width: 100%;
-    padding: var(--space-lg);
-    margin: 0;
-    /* `height: auto` and `min-height: auto` deliberately omitted here so the
-       grid above can stretch both cards to the equalised 1fr row height. */
-  }
-
-  .card-icon {
-    font-size: var(--font-size-3xl);
-    margin-bottom: var(--space-md);
-  }
-
-  .card-title {
     font-size: var(--font-size-lg);
   }
 
-  .card-item-title {
-    font-size: var(--font-size-lg);
-  }
-
-  .card-item-text {
-    font-size: var(--font-size-base);
-  }
-}
-
-/* ============================================
-  ANIMATIONS
-  ============================================ */
-
-@keyframes bulbGlow {
-  0% {
-    color: #f5a623;
-    text-shadow:
-      0 0 5px #f5a623,
-      0 0 10px #f5a623,
-      0 0 20px rgba(245, 166, 35, 0.6);
-    filter: brightness(0.95);
-    transform: rotate(-5deg) scale(1.06);
-  }
-  100% {
-    color: #fff8e1;
-    text-shadow:
-      0 0 10px #ffe680,
-      0 0 22px #ffe680,
-      0 0 44px rgba(255, 230, 128, 0.55);
-    filter: brightness(1.25);
-    transform: rotate(5deg) scale(1.12);
-  }
-}
-
-@keyframes educationGlow {
-  0% {
-    color: #0f80f1;
-    text-shadow: 0 0 5px #0f80f1, 0 0 10px #0f80f1, 0 0 20px #0f80f1;
-    filter: brightness(0.95);
-    transform: translateX(-3px) scale(1.06);
-  }
-  100% {
-    color: #ffffff;
-    text-shadow: 0 0 10px #67c6f9, 0 0 22px #67c6f9, 0 0 44px #67c6f9;
-    filter: brightness(1.25);
-    transform: translateX(3px) scale(1.12);
-  }
-}
-
-/* Idle breathe-and-flicker for the bulb: mostly resting tertiary, a quick warm
-   flicker near the start, then a soft float-and-glow peak, back to rest. */
-@keyframes bulbIdle {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-    color: var(--color-text-tertiary);
-    text-shadow: none;
-  }
-  18% {
-    color: #f7c873;
-    text-shadow: 0 0 10px rgba(245, 166, 35, 0.4);
-  }
-  23% {
-    color: var(--color-text-tertiary);
-    text-shadow: none;
-  }
-  50% {
-    transform: translateY(-4px) scale(1.05);
-    color: #ffd98a;
-    text-shadow: 0 0 16px rgba(255, 200, 90, 0.5);
-  }
-}
-
-/* Idle data-pulse for the code icon: a gentle rock left-then-right with a cool
-   blue glow cresting in the middle. Rests square (rotate 0) at both ends. */
-@keyframes codeIdle {
-  0%, 100% {
-    transform: translateY(0) scale(1) rotate(0deg);
-    color: var(--color-text-tertiary);
-    text-shadow: none;
-  }
-  25% { transform: translateY(-2px) scale(1.03) rotate(-3deg); }
-  50% {
-    transform: translateY(-3px) scale(1.05) rotate(0deg);
-    color: #7fd1ff;
-    text-shadow: 0 0 14px rgba(103, 198, 249, 0.5);
-  }
-  75% { transform: translateY(-2px) scale(1.03) rotate(3deg); }
-}
-
-/* One-shot "ignite": a small pop layered with the glow ramping on, then settling
-   back to the resting icon. Transform is GPU-composited; the brief glow is paint. */
-@keyframes igniteBulb {
-  0% {
-    transform: scale(1) rotate(0);
-    color: var(--color-text-tertiary);
-    text-shadow: none;
-  }
-  25% {
-    transform: scale(1.14) rotate(-7deg);
-    color: #f5a623;
-    text-shadow: 0 0 10px #f5a623, 0 0 22px rgba(245, 166, 35, 0.6);
-  }
-  55% {
-    transform: scale(1.03) rotate(4deg);
-    color: #fff8e1;
-    text-shadow: 0 0 14px #ffe680, 0 0 30px rgba(255, 230, 128, 0.5);
-  }
-  100% {
-    transform: scale(1) rotate(0);
-    color: var(--color-text-tertiary);
-    text-shadow: none;
-  }
-}
-
-@keyframes igniteCode {
-  0% {
-    transform: scale(1);
-    color: var(--color-text-tertiary);
-    text-shadow: none;
-  }
-  25% {
-    transform: scale(1.14);
-    color: #0f80f1;
-    text-shadow: 0 0 10px #0f80f1, 0 0 22px #0f80f1;
-  }
-  55% {
-    transform: scale(1.03);
-    color: #67c6f9;
-    text-shadow: 0 0 14px #67c6f9, 0 0 30px #67c6f9;
-  }
-  100% {
-    transform: scale(1);
-    color: var(--color-text-tertiary);
-    text-shadow: none;
+  .about-ledger {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
   }
 }
