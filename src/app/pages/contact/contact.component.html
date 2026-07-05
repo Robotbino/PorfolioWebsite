@@ -1,27 +1,58 @@
 <section class="section" aria-labelledby="contact-title">
   <div class="container">
-    <app-display-heading pre="Get in touch" title="Contact Me" titleId="contact-title"></app-display-heading>
+    <!-- Editorial header — flush-left poster headline, mirroring About/Work.
+         Replaces the shared centred <app-display-heading> so Contact joins the
+         same editorial language; 04 is Contact's place in the loop order
+         (Home 01, Work 02, About 03). The weight-contrast pair echoes About's
+         "About Me". Copy is unchanged. -->
+    <header class="contact-header" appScrollReveal>
+      <p class="contact-kicker">
+        <span class="contact-kicker-index" aria-hidden="true">04</span>
+        <span>Get in touch</span>
+      </p>
+      <!-- The space lives inside the first span so the accessible name reads
+           "Contact Me", not "ContactMe" (inter-element whitespace is dropped). -->
+      <h2 class="contact-title" id="contact-title"><span class="contact-title-soft">Contact </span><span class="contact-title-strong">Me</span></h2>
+    </header>
 
-    <p class="contact-lead">
-      <span class="contact-lead-title">Let&rsquo;s build something.</span>
-      I&rsquo;m open to mid-level full-stack roles, consulting especially. Email is the
-      fastest way to reach me.
-    </p>
+    <div class="contact-spread">
+      <!-- Lead — a measured editorial column, lifted off the star map by the
+           same boxless radial scrim used on About/Work. Copy unchanged. -->
+      <p class="contact-lead" appScrollReveal>
+        <span class="contact-lead-title">Let&rsquo;s build something.</span>
+        I&rsquo;m open to mid-level full-stack roles, consulting especially. Email is the
+        fastest way to reach me.
+      </p>
 
-    <div class="contact-container">
-      <div class="contact-item">
-        <i class="fa-solid fa-envelope contact-icon" aria-hidden="true"></i>
-        <a href="mailto:HlongwanaBino@gmail.com" class="contact-link">
-          HlongwanaBino&#64;gmail.com
-        </a>
-      </div>
-      <div class="contact-item">
-        <i class="fa-brands fa-linkedin contact-icon" aria-hidden="true"></i>
-        <a href="https://www.linkedin.com/in/bino-hlongwana-162226272/" class="contact-link" target="_blank"
-          rel="noopener noreferrer">
-          RobotBino
-        </a>
-      </div>
+      <!-- Channels ledger — the old link row flattened into a typographic index:
+           hairline rules, uppercase micro-labels, index numerals. Each icon is a
+           star that comes into focus on hover — it lifts, glows, the value
+           underlines in, and the arrow slides out. -->
+      <ul class="contact-channels" role="list" appScrollReveal>
+        <li class="channel">
+          <a class="channel-link" href="mailto:HlongwanaBino@gmail.com">
+            <span class="channel-index" aria-hidden="true">01</span>
+            <i class="fa-solid fa-envelope channel-icon" aria-hidden="true"></i>
+            <span class="channel-meta">
+              <span class="channel-label">Email</span>
+              <span class="channel-value">HlongwanaBino&#64;gmail.com</span>
+            </span>
+            <span class="channel-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li class="channel">
+          <a class="channel-link" href="https://www.linkedin.com/in/bino-hlongwana-162226272/" target="_blank"
+            rel="noopener noreferrer">
+            <span class="channel-index" aria-hidden="true">02</span>
+            <i class="fa-brands fa-linkedin channel-icon" aria-hidden="true"></i>
+            <span class="channel-meta">
+              <span class="channel-label">LinkedIn</span>
+              <span class="channel-value">RobotBino</span>
+            </span>
+            <span class="channel-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
 </section>

@@ -38,14 +38,27 @@
           <div class="ledger-row">
             <p class="ledger-figure">
               <span class="ledger-numeral" #cardIcon>3</span>
-              <span class="ledger-unit">Years</span>
+              <!-- The old glowing lightbulb, brought back small: it sits above the
+                   "Years" unit and glows warm to draw the eye. Decorative, so
+                   aria-hidden; the continuous pulse stops under reduced motion via
+                   the global rule. -->
+              <span class="ledger-meta">
+                <i class="fa-solid fa-lightbulb ledger-icon ledger-icon-bulb" aria-hidden="true"></i>
+                <span class="ledger-unit">Years</span>
+              </span>
             </p>
             <p class="ledger-detail">Information Technology Student</p>
           </div>
           <div class="ledger-row">
             <p class="ledger-figure">
               <span class="ledger-numeral" #cardIcon>3+</span>
-              <span class="ledger-unit">Years</span>
+              <!-- The old glowing </> code glyph, brought back small above "Years"
+                   and glowing cool. Same reduced-motion + aria-hidden treatment as
+                   the bulb above. -->
+              <span class="ledger-meta">
+                <i class="fa-solid fa-code ledger-icon ledger-icon-code" aria-hidden="true"></i>
+                <span class="ledger-unit">Years</span>
+              </span>
             </p>
             <p class="ledger-detail">Software Development</p>
           </div>

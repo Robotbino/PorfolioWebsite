@@ -156,8 +156,19 @@
 
 .ledger-figure {
   display: flex;
-  align-items: baseline;
+  /* flex-end (not baseline) so the poster numeral's foot lines up with the
+     "Years" label while the restored glow icon stacks above it. */
+  align-items: flex-end;
   gap: var(--space-sm);
+}
+
+/* Small stacked cluster to the right of the numeral: the restored glow icon
+   sits directly on top of the "Years" unit. */
+.ledger-meta {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
 }
 
 .ledger-numeral {
@@ -178,6 +189,90 @@
    numeral simply rests at text-primary. */
 .ledger-numeral.is-centered {
   color: var(--color-accent-vivid);
+}
+
+/* ---- Restored glow icons ----
+   The site's earlier iteration had a glowing lightbulb (Qualifications) and a
+   glowing </> glyph (Education). They were dropped in the editorial rebuild;
+   here they return at a smaller scale, perched above each "Years" unit. Each
+   keeps its signature hue — warm amber for the bulb, cool blue for the code —
+   and breathes with a slow glow loop so the eye is drawn to them. The pulse is
+   stopped for reduced-motion users by the global rule, which pins the animation
+   to its final (brightest) frame, so the icons still glow, just statically. */
+.ledger-icon {
+  font-size: var(--font-size-lg);
+  line-height: 1;
+  transition:
+    transform var(--transition-base),
+    text-shadow var(--transition-slow),
+    filter var(--transition-slow);
+}
+
+.ledger-icon-bulb {
+  color: #f5a623;
+  text-shadow:
+    0 0 4px rgba(245, 166, 35, 0.55),
+    0 0 12px rgba(245, 166, 35, 0.3);
+  animation: bulbGlow 3s ease-in-out infinite alternate;
+}
+
+.ledger-icon-code {
+  color: #3d9bf5;
+  text-shadow:
+    0 0 4px rgba(61, 155, 245, 0.55),
+    0 0 12px rgba(61, 155, 245, 0.3);
+  animation: codeGlow 3s ease-in-out infinite alternate;
+  /* Offset so the two icons don't pulse in lockstep. */
+  animation-delay: 0.9s;
+}
+
+/* When the neighbouring numeral crosses the viewport middle (the same observer
+   that lights the numeral), the icon flares to its brightest and lifts a touch
+   — the two read as one "star coming into focus" beat. */
+.ledger-numeral.is-centered ~ .ledger-meta .ledger-icon {
+  transform: translateY(-2px) scale(1.12);
+}
+
+.ledger-numeral.is-centered ~ .ledger-meta .ledger-icon-bulb {
+  text-shadow:
+    0 0 8px rgba(255, 215, 128, 0.75),
+    0 0 20px rgba(245, 166, 35, 0.5);
+}
+
+.ledger-numeral.is-centered ~ .ledger-meta .ledger-icon-code {
+  text-shadow:
+    0 0 8px rgba(103, 198, 249, 0.75),
+    0 0 20px rgba(61, 155, 245, 0.5);
+}
+
+@keyframes bulbGlow {
+  0% {
+    text-shadow:
+      0 0 3px rgba(245, 166, 35, 0.45),
+      0 0 9px rgba(245, 166, 35, 0.22);
+    filter: brightness(0.95);
+  }
+  100% {
+    text-shadow:
+      0 0 6px rgba(255, 215, 128, 0.7),
+      0 0 16px rgba(245, 166, 35, 0.4);
+    filter: brightness(1.12);
+  }
+}
+
+@keyframes codeGlow {
+  0% {
+    text-shadow:
+      0 0 3px rgba(61, 155, 245, 0.45),
+      0 0 9px rgba(61, 155, 245, 0.22);
+    filter: brightness(0.95);
+  }
+  100% {
+    text-shadow:
+      0 0 6px rgba(103, 198, 249, 0.7),
+      0 0 16px rgba(61, 155, 245, 0.4);
+    filter: brightness(1.12);
+  }
 }
 
 .ledger-unit {
