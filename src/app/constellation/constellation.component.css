@@ -3,7 +3,7 @@
   inset: 0;
   display: block;
 
-  /* Light theme defaults — dark, high-contrast stars on the warm light sky. */
+
   --c-star: #262b36;
   --c-line: rgba(38, 43, 54, 0.38);
   --c-glow: rgba(70, 80, 120, 0.28);
@@ -17,14 +17,14 @@
   --c-halo-opacity: 1;
 }
 
-/* ---- One centered destination figure, sitting behind the routed content ---- */
+
 .cluster {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: clamp(280px, 42vw, 520px);
-  pointer-events: none; /* never intercept clicks on the content above */
+  pointer-events: none; 
 }
 
 .constellation {
@@ -34,7 +34,7 @@
   overflow: visible;
 }
 
-/* ---- Connecting lines: draw themselves in on entry ---- */
+
 .links line {
   fill: none;
   stroke: var(--c-line);
@@ -45,7 +45,7 @@
   animation: draw-line 2.2s ease forwards;
 }
 
-/* ---- Stars: warm core + a faint persistent halo glow ---- */
+
 .star {
   opacity: 0;
   animation: fade-in 1s ease forwards;
@@ -73,7 +73,7 @@
   }
 }
 
-/* ---- Responsive framing ---- */
+
 @media (max-width: 900px) {
   .cluster {
     width: clamp(220px, 56vw, 360px);
@@ -81,7 +81,7 @@
 }
 
 @media (max-width: 600px) {
-  /* Avoid crowding the hero text on small screens. */
+  
   :host {
     display: none;
   }

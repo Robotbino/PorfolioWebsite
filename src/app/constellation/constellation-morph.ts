@@ -7,7 +7,7 @@ export interface Segment {
   y2: number;
 }
 
-/** A single frame of a constellation morph: interpolated stars plus the link endpoints derived from them. */
+
 export interface MorphFrame {
   stars: Star[];
   segments: Segment[];
@@ -15,17 +15,7 @@ export interface MorphFrame {
 
 const lerp = (from: number, to: number, t: number): number => from + (to - from) * t;
 
-/**
- * Interpolate one constellation into another at progress `t` (0 = `from`, 1 = `to`).
- *
- * Pure — no DOM, no framework, no time. The caller owns easing and timing and
- * passes an already-shaped `t`; this stays linear so progress 0 / 0.5 / 1 yields
- * the start / exact midpoint / end.
- *
- * Invariants of the star-map concept: the two constellations have the same number
- * of stars (enforced — a mismatch throws) and share link topology, so links are
- * taken from `from` and their endpoints recomputed from the interpolated positions.
- */
+
 export function interpolateConstellation(
   from: Constellation,
   to: Constellation,

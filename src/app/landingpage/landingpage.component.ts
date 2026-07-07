@@ -13,8 +13,8 @@ export class LandingpageComponent {
   // ── CV Download ──────────────────────────────────────────────
 
   public downloadCV(): void {
-    this.link.href = 'assets/Bino_FullStack_CV_April2026.pdf';
-    this.link.download = 'Bino_FullStack_CV_April2026.pdf';
+    this.link.href = 'assets/Bino_Hlongwana_CV_2026.pdf';
+    this.link.download = 'Bino_Hlongwana_CV_2026.pdf';
     this.link.click();
   }
 }
