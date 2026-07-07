@@ -2,8 +2,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  /* 44px — minimum comfortable touch target; transparent at rest, so the
+     extra hit area is invisible on desktop. */
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   border: none;
   background: transparent;

@@ -74,6 +74,7 @@
 }
 
 .nav-link:hover::after,
+.nav-link:active::after,
 .nav-link.active::after {
   transform: scaleX(1);
   transform-origin: left;
@@ -114,6 +115,9 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   visibility: visible;
+  /* Defense in depth alongside the JS scroll lock (see component TS). */
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .mobile-nav {
@@ -165,6 +169,16 @@
 @media (max-width: 768px) {
   .navigation-content {
     padding-block: var(--space-md);
+    /* Match the page content's mobile gutter so logo/hamburger line up. */
+    padding-inline: var(--space-md);
+  }
+
+  /* ≥44px touch target; inline-flex keeps the text visually unchanged. */
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .nav-items {

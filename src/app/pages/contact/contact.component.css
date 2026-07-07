@@ -3,6 +3,7 @@
   position: relative;
   z-index: 1;
   min-height: 100vh;
+  min-height: 100svh;
 
   /* Overshoot ("back out") curve — the transform springs past its target and
      settles back, giving the icons a tactile bounce the standard eases can't.
@@ -286,8 +287,22 @@
   transform: scale(0.94);
 }
 
+.channel-link:active .channel-icon::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
 .channel-link:active .channel-value {
   color: var(--color-accent-vivid);
+}
+
+/* Any hover-less device (phones AND touch tablets wider than 768px): the
+   arrow can never be revealed by hover, so it stays visible. */
+@media (hover: none) {
+  .channel-arrow {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ============================================

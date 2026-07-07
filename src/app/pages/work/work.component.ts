@@ -37,7 +37,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   // eased transform to settle the first/last card cleanly at the pin's ends.
   private static readonly SCROLL_FACTOR = 1.2;
 
-  private readonly mqWide = window.matchMedia('(min-width: 769px)');
+  private readonly mqWide = window.matchMedia('(min-width: 900px)');
   private reduce = false;
   private active = false;
 

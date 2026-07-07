@@ -61,17 +61,42 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.unsub?.();
+    this.setScrollLock(false);
   }
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
-    document.body.style.overflow = this.menuOpen ? 'hidden' : '';
+    this.setScrollLock(this.menuOpen);
   }
 
   closeMenu(): void {
     this.menuOpen = false;
-    document.body.style.overflow = '';
+    this.setScrollLock(false);
   }
+
+  /**
+   * Scroll lock while the mobile menu is open. Two constraints shape it:
+   * - `html` carries `overflow-x: clip` (see styles.css), which stops body →
+   *   viewport overflow propagation — so `body { overflow: hidden }` never
+   *   reaches the viewport. The lock must sit on the root element.
+   * - The `position: fixed` body technique would zero `scrollY`, which the
+   *   scroll loop and the constellation morph driver read continuously; root
+   *   `overflow-y: hidden` keeps the offset and fires no scroll event.
+   * iOS ignores root overflow for touch panning, hence the non-passive
+   * touchmove block — safe because the overlay has no scrollable content.
+   */
+  private setScrollLock(lock: boolean): void {
+    document.documentElement.style.overflowY = lock ? 'hidden' : '';
+    if (lock) {
+      document.addEventListener('touchmove', this.blockTouchScroll, { passive: false });
+    } else {
+      document.removeEventListener('touchmove', this.blockTouchScroll);
+    }
+  }
+
+  private blockTouchScroll = (e: TouchEvent): void => {
+    e.preventDefault();
+  };
 
   @HostListener('document:keydown.escape')
   onEscape(): void {

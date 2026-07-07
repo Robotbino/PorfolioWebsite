@@ -248,6 +248,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35em;
+  /* ≥44px touch target with zero visual shift: pad out, pull back. Inline
+     padding stays small so adjacent hit areas don't overlap across the gap. */
+  padding: var(--space-md) var(--space-sm);
+  margin: calc(-1 * var(--space-md)) calc(-1 * var(--space-sm));
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-wide);

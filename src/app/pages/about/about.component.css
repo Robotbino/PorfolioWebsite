@@ -3,6 +3,7 @@
   position: relative;
   z-index: 1;
   min-height: 100vh;
+  min-height: 100svh;
 }
 
 /* ============================================
@@ -209,7 +210,7 @@
 }
 
 .ledger-icon-bulb {
-  color: #f5a623;
+  color: var(--color-glow-bulb);
   text-shadow:
     0 0 4px rgba(245, 166, 35, 0.55),
     0 0 12px rgba(245, 166, 35, 0.3);
@@ -217,7 +218,7 @@
 }
 
 .ledger-icon-code {
-  color: #3d9bf5;
+  color: var(--color-glow-code);
   text-shadow:
     0 0 4px rgba(61, 155, 245, 0.55),
     0 0 12px rgba(61, 155, 245, 0.3);

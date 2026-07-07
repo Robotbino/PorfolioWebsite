@@ -3,6 +3,7 @@
   position: relative;
   z-index: 1;
   min-height: 100vh;
+  min-height: 100svh;
 }
 
 /* ============================================
@@ -556,8 +557,11 @@
 
 :host(.showcase-on) .projects-viewport {
   /* WorkComponent sets the real height from the horizontal travel (≈1:1 with
-     scroll). This is just a floor for the frame before the first measure. */
+     scroll). This is just a floor for the frame before the first measure.
+     svh (vh line = fallback): stays constant while mobile browser chrome
+     collapses, so the JS-measured pin geometry never jitters mid-scroll. */
   min-height: 100vh;
+  min-height: 100svh;
   margin-top: var(--space-2xl);
 }
 
@@ -565,6 +569,7 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100svh;
   display: flex;
   align-items: center;
   /* clip (not hidden): no native scrollport, so focusing an off-frame card link
@@ -590,6 +595,7 @@
   flex: 0 0 78vw;
   max-width: 1100px;
   height: min(72vh, 620px);
+  height: min(72svh, 620px);
   margin: 0;
 }
 

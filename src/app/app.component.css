@@ -5,7 +5,10 @@
   top: 0;
   left: 0;
   width: 100%;
+  /* lvh (vh line = fallback): a fixed backdrop must cover the LARGEST viewport
+     state so no background band flashes while mobile browser chrome collapses. */
   height: 100vh;
+  height: 100lvh;
   z-index: 0;
   pointer-events: none;
 }
@@ -24,7 +27,10 @@
 }
 
 .dest {
+  /* svh (vh line = fallback): sections size to the SMALL viewport so the hero
+     CTA isn't pushed below the fold while mobile browser chrome is showing. */
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;

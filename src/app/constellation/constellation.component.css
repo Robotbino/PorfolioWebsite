@@ -81,9 +81,15 @@
 }
 
 @media (max-width: 600px) {
-  
-  :host {
-    display: none;
+  /* Phones: keep the star-map identity, but shrink and dim it toward the
+     upper right, clear of the hero copy. Right edge tops out at 86vw
+     (62vw + half of 48vw, given the base translate(-50%,-50%)), so it can
+     never cause horizontal overflow. */
+  .cluster {
+    top: 38%;
+    left: 62%;
+    width: clamp(150px, 48vw, 220px);
+    opacity: 0.55;
   }
 }
 
