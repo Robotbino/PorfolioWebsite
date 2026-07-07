@@ -1,22 +1,17 @@
 <section class="section" aria-labelledby="about-title">
   <div class="container">
-    <!-- Editorial header — flush-left poster headline so it joins the asymmetric
-         spread below. Replaces the shared centred <app-display-heading> for this
-         section only (Projects/Contact keep it); copy is unchanged. -->
+    
     <header class="about-header" appScrollReveal>
       <p class="about-kicker">
         <span class="about-kicker-index" aria-hidden="true">03</span>
         <span>Get to know more</span>
       </p>
-      <!-- The space lives inside the first span: inter-element whitespace is
-           dropped from the accessibility tree, which would make the accessible
-           name "AboutMe". -->
+     
       <h2 class="about-title" id="about-title"><span class="about-title-soft">About </span><span class="about-title-strong">Me</span></h2>
     </header>
 
     <div class="about-spread">
-      <!-- Bio leads the spread: one measured column of editorial body copy,
-           lifted off the star map by a boxless radial scrim (hero idiom). -->
+      
       <p class="about-text" appScrollReveal>
         I&rsquo;m a Pretoria-based software developer with a strict
         <em class="about-emphasis">&ldquo;less but better&rdquo;</em> mindset.
@@ -27,21 +22,14 @@
         software, and I&rsquo;m always looking to level up as an engineer.
       </p>
 
-      <!-- Facts ledger — the old Qualifications/Education cards flattened into a
-           typographic index: hairline rules, micro-labels, poster numerals. The
-           #cardIcon refs keep AboutComponent's centre-crossing observer alive:
-           a numeral straddling the viewport middle gets .is-centered and shifts
-           to the vivid accent — a star coming into focus. -->
+      
       <div class="about-ledger" appScrollReveal>
         <div class="ledger-block">
           <h3 class="ledger-label">Qualifications</h3>
           <div class="ledger-row">
             <p class="ledger-figure">
               <span class="ledger-numeral" #cardIcon>3</span>
-              <!-- The old glowing lightbulb, brought back small: it sits above the
-                   "Years" unit and glows warm to draw the eye. Decorative, so
-                   aria-hidden; the continuous pulse stops under reduced motion via
-                   the global rule. -->
+              
               <span class="ledger-meta">
                 <i class="fa-solid fa-lightbulb ledger-icon ledger-icon-bulb" aria-hidden="true"></i>
                 <span class="ledger-unit">Years</span>
@@ -52,9 +40,7 @@
           <div class="ledger-row">
             <p class="ledger-figure">
               <span class="ledger-numeral" #cardIcon>3+</span>
-              <!-- The old glowing </> code glyph, brought back small above "Years"
-                   and glowing cool. Same reduced-motion + aria-hidden treatment as
-                   the bulb above. -->
+              
               <span class="ledger-meta">
                 <i class="fa-solid fa-code ledger-icon ledger-icon-code" aria-hidden="true"></i>
                 <span class="ledger-unit">Years</span>
