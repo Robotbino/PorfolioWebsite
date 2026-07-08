@@ -91,9 +91,8 @@ export const PROJECTS: readonly Project[] = [
     title: 'Portfolio Website',
     description:
       'The site you are viewing — an Angular single-page app built as one continuous ' +
-      'scroll: a cycle through four destinations that loops back on itself'+
-      'The star-map and aurora behind the text run on a single shared ' +
-      'frame loop, with the constellation morphing between three different shapes as you scroll.', 
+      'scroll that loops through four destinations. A shared frame loop drives the ' +
+      'star-map and aurora, morphing the constellation between three shapes as you scroll.',
     tech: ['Angular', 'TypeScript', 'WebGL', 'CSS3'],
     href: 'https://github.com/Robotbino/PorfolioWebsite.git',
     img: {

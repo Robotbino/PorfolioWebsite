@@ -604,6 +604,28 @@
   min-height: 0;
 }
 
+/* The card height is fixed in showcase mode, so a longer description can push the
+   text column past the card and get clipped by .project-card's overflow:hidden
+   (the button was the casualty). Constrain the column to the card height and let
+   it scroll internally as a safety net, and trim the vertical rhythm so normal
+   copy simply fits without scrolling. */
+:host(.showcase-on) .project-text {
+  height: 100%;
+  min-height: 0;
+  justify-content: center;
+  gap: var(--space-md);
+  /* Trimmed block padding (was --space-2xl top+bottom) and tightened the copy's
+     rhythm so the longest description still fits inside the fixed card height.
+     overflow-y:auto is the last-resort net; in practice the content now sits
+     fully in-frame without scrolling. */
+  padding-block: var(--space-sm);
+  overflow-y: auto;
+}
+
+:host(.showcase-on) .project-description {
+  line-height: var(--line-height-normal);
+}
+
 /* ---- Constellation scrim ---- */
 /* The star-map is position:fixed and keeps morphing site-wide. Behind the pinned
    cards it competes with the copy, so dim it locally toward the page colour (same
