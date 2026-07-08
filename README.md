@@ -1,51 +1,62 @@
 # Bino Hlongwana | Portfolio
 
-A modern, responsive portfolio website built with Angular, featuring dark/light theme support, smooth animations, and accessible design principles.
+A portfolio built as one continuous scrolling journey — four destinations (Home, Work, About, Contact) connected by a morphing star map and a WebGL aurora, looping seamlessly back to the start.
 
-![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular_19-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![WebGL](https://img.shields.io/badge/WebGL-990000?style=for-the-badge&logo=webgl&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
 ---
 
-
 ## ✨ Features
 
-- **Theme Toggle** — Switch between dark and light modes with system preference detection and localStorage persistence
-- **Responsive Design** — Optimized layouts for desktop, tablet, and mobile devices
-- **Smooth Animations** — CSS transitions and fade-in effects for enhanced user experience
-- **Accessible** — Built with semantic HTML, ARIA labels, and keyboard navigation support
-- **CV Download** — One-click download functionality for you handsome/beautiful recruiters out there *wink wink* ;)
-- **Project Showcase** — Dedicated section highlighting technical projects with tech stack tags
+- **Looping Scroll** — The page scrolls through all four sections and wraps invisibly back to the top via a cloned seam, so the journey never ends
+- **Morphing Star Map** — An SVG constellation interpolates between figures as you scroll, acting as wayfinding for where you are in the loop
+- **WebGL Aurora** — A GLSL simplex-noise shader (via [OGL](https://github.com/oframe/ogl)) renders a living aurora behind every section
+- **Single Frame Loop** — One shared `requestAnimationFrame` pulse runs outside Angular's zone and drives every animation, keeping change detection off the hot path
+- **Theme Toggle** — Dark/light mode with system preference detection, `localStorage` persistence, and a signals-based `ThemeService` the whole app reacts to
+- **Accessible** — Semantic HTML, ARIA labels, keyboard navigation, and full `prefers-reduced-motion` support (the morph and aurora settle down when asked)
+- **Responsive** — Optimized layouts for desktop, tablet, and mobile
+- **CV Download** — One click, straight to your downloads folder — recruiters, this one's for you ;)
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Category       | Technologies                          |
-|----------------|---------------------------------------|
-| Framework      | Angular 17+                           |
-| Language       | TypeScript                            |
-| Styling        | CSS3 (Custom Properties, Flexbox, Grid) |
-| Icons          | Font Awesome                          |
-| Architecture   | Component-based, NgModule             |
+| Category       | Technologies                                      |
+|----------------|---------------------------------------------------|
+| Framework      | Angular 19 (NgModules + Signals)                  |
+| Language       | TypeScript 5.6                                    |
+| Graphics       | OGL (WebGL2 shader), SVG morphing                 |
+| Styling        | CSS3 (Custom Properties, Flexbox, Grid)           |
+| Icons          | Font Awesome                                      |
+| Testing        | Jasmine + Karma                                   |
+
+---
+
+## 🏗️ How It Works
+
+The scroll loop is the spine of the site. `ScrollLoopService` owns the reader's **cycle position** (0 = Home, 1 = Work, … wrapping at the seam) with the arithmetic extracted into pure, unit-tested functions in `scroll-loop.math.ts`. The app shell feeds it raw scroll offsets; everything else — the constellation morph, the loop-aware nav muting — reads the position signal from a shared frame pulse without ever triggering change detection at 60fps.
+
+Every significant design decision is recorded as an ADR in [docs/adr](docs/adr) — from the initial immersion-first concept to the seamless clone-wrap and the glass-card surface treatment.
 
 ---
 
 ## 📁 Project Structure
 ```
-src/
-├── app/
-│   ├── landingpage/
-│   │   ├── landingpage.component.ts    # Theme logic, CV download
-│   │   ├── landingpage.component.html  # Portfolio sections
-│   │   └── landingpage.component.css   # Responsive styles
-│   ├── app-routing.module.ts           # Route configuration
-│   ├── app.module.ts                   # Root module
-│   └── app.component.ts                # Root component
-└── assets/
-    ├── BinoHlongwanaATS-CV.pdf         # Downloadable CV
-    └── [project-images]                # Project screenshots
+src/app/
+├── aurora/                    # WebGL aurora background (OGL + GLSL shader)
+├── constellation/             # Morphing star map (figures, morph driver, interpolation)
+├── core/                      # FramePulseService (shared rAF), ThemeService
+├── landingpage/               # Home / hero section + CV download
+├── layout/site-nav/           # Navigation with loop-aware muting
+├── pages/                     # work, about, contact
+├── shared/                    # display-heading, theme-toggle
+├── scroll-loop.service.ts     # Scroll cycle state + seam wrap
+├── scroll-loop.math.ts        # Pure scroll math (unit-tested)
+└── scroll-reveal.directive.ts # Fade-in-on-scroll behavior
+docs/adr/                      # Architecture Decision Records
 ```
 
 ---
@@ -54,7 +65,7 @@ src/
 
 ### Prerequisites
 
-- Node.js (v18+)
+- Node.js (v18.19+)
 - Angular CLI (`npm install -g @angular/cli`)
 
 ### Installation
@@ -69,10 +80,16 @@ cd PorfolioWebsite
 npm install
 
 # Start development server
-ng serve
+npm start
 ```
 
 Visit `http://localhost:4200` in your browser.
+
+### Tests
+```bash
+npm test
+```
+The scroll math, constellation morph, and frame pulse each have their own spec files.
 
 ---
 
@@ -81,42 +98,13 @@ Visit `http://localhost:4200` in your browser.
 <details>
 <summary>Click to expand</summary>
 
-### Light Mode
-
-![LightMode-Hero-Desk](https://github.com/user-attachments/assets/5d6dc589-cb65-42bc-8855-3496c7ead9f3)
-
-
 ### Dark Mode
-![DarkMode-Hero-Desk](https://github.com/user-attachments/assets/bed26cad-3b8f-4b81-b931-b914c3e93bd0)
+![Portfolio in dark mode](src/assets/portfolio_dark_mode.png)
 
-<img width="1919" height="1079" alt="DarkMode-AboutMe-Desktop" src="https://github.com/user-attachments/assets/3a2732f8-5e48-4c5f-b24d-ea0e3ac07b19" />
-
-
-### Mobile View
-![Hero-Mobile](https://github.com/user-attachments/assets/818b612b-0fa6-4939-b5c6-b2e9fc48ba19)
-![About Me-Mobile](https://github.com/user-attachments/assets/215916fc-34fb-4af9-8530-7a872c7ea18e)
-
+### Light Mode
+![Portfolio in light mode](src/assets/portfolio_light_mode.png)
 
 </details>
-
----
-
-## 🎯 Key Implementation Highlights
-
-**Theme System**
-- Detects system color scheme preference via `matchMedia`
-- Persists user selection in `localStorage`
-- Applies theme using CSS custom properties on `:root`
-
-**Accessibility**
-- Semantic HTML5 elements (`<header>`, `<section>`, `<article>`, `<footer>`)
-- ARIA labels for interactive elements and icon-only buttons
-- Proper heading hierarchy for screen readers
-
-**Performance**
-- Lazy-loaded images with `loading="lazy"`
-- Minimal dependencies for fast load times
-- Component cleanup with `OnDestroy` lifecycle hook
 
 ---
 
