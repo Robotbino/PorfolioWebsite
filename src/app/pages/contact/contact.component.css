@@ -34,7 +34,7 @@
   color: var(--color-text-muted);
 }
 
-/* Destination index (04 = Contact in the loop order) — the one vivid hue,
+/* Destination index (05 = Contact in the loop order) — the one vivid hue,
    echoing the hero's status dot. Decorative, so aria-hidden in the template. */
 .contact-kicker-index {
   font-variant-numeric: tabular-nums;

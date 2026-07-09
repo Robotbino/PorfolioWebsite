@@ -45,6 +45,15 @@ describe('positionFor', () => {
   it('returns 0 when there are no anchors (pre-measure)', () => {
     expect(positionFor(1234, [], vh)).toBe(0);
   });
+
+  it('handles a five-destination cycle (Certifications between About and Contact)', () => {
+    // Home, Work, About, Certifications, Contact, clone — cycleLength 5.
+    const five = [0, 1000, 2000, 3000, 4000, 5000];
+    expect(positionFor(3100, five, vh)).toBe(3); // rests at Certifications
+    expect(positionFor(3660, five, vh)).toBeCloseTo(3.5, 5); // mid-band 3->4
+    expect(positionFor(5000, five, vh)).toBe(5); // clone top = cycleLength
+    expect(wrapOffset(5025, 5000)).toBe(25); // seam wrap preserves overshoot
+  });
 });
 
 describe('wrapOffset', () => {

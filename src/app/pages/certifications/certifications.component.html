@@ -1,0 +1,29 @@
+<section class="section" aria-labelledby="certifications-title">
+  <div class="container">
+    <!-- Editorial header — flush-left poster headline, mirroring Experience and
+         About. The kicker index is the destination's position in the loop. -->
+    <header class="certs-header" appScrollReveal>
+      <p class="certs-kicker">
+        <span class="certs-kicker-index" aria-hidden="true">04</span>
+        <span>A Record of My</span>
+      </p>
+      <h2 class="certs-title" id="certifications-title">Certifications</h2>
+    </header>
+
+    <!-- Typographic ledger (the Experience index idiom): numeral, title, quiet
+         issuer, verify link. The numerals are decorative wayfinding, hence
+         aria-hidden; each link names its certificate for assistive tech. -->
+    <ul class="certs-list" role="list" appScrollReveal>
+      <li class="certs-row" *ngFor="let cert of certifications; let i = index">
+        <span class="certs-num" aria-hidden="true">0{{ i + 1 }}</span>
+        <h3 class="certs-name">{{ cert.title }}</h3>
+        <p class="certs-issuer">{{ cert.issuer }}</p>
+        <a class="certs-verify" [href]="cert.href" target="_blank"
+          rel="noopener noreferrer"
+          [attr.aria-label]="'Verify ' + cert.title + ' certificate (opens in new tab)'">
+          Verify <span class="certs-verify-arrow" aria-hidden="true">&#8599;</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>

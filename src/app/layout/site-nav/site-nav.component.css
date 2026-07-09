@@ -156,6 +156,7 @@
 .mobile-overlay.open .mobile-link:nth-child(3) { transition-delay: 0.15s; }
 .mobile-overlay.open .mobile-link:nth-child(4) { transition-delay: 0.2s; }
 .mobile-overlay.open .mobile-link:nth-child(5) { transition-delay: 0.25s; }
+.mobile-overlay.open .mobile-link:nth-child(6) { transition-delay: 0.3s; }
 
 /* ============================================
    RESPONSIVE

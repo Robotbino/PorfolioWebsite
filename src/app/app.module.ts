@@ -1,7 +1,7 @@
 // shared/: stateless reusable building blocks (theme toggle, display heading)
 // core/: app-wide services (theme)
 // layout/: persistent shell pieces (site nav)
-// pages/: routed page components (work, about, contact)
+// pages/: routed page components (work, about, certifications, contact)
 // constellation/: SVG star-map renderer + figure data
 // aurora/: WebGL backdrop + CSS fallback
 // landingpage/: hero / home page
@@ -15,6 +15,7 @@ import { AuroraComponent } from './aurora/aurora.component';
 import { ConstellationComponent } from './constellation/constellation.component';
 import { WorkComponent } from './pages/work/work.component';
 import { AboutComponent } from './pages/about/about.component';
+import { CertificationsComponent } from './pages/certifications/certifications.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { SiteNavComponent } from './layout/site-nav/site-nav.component';
 import { ScrollRevealDirective } from './scroll-reveal.directive';
@@ -29,6 +30,7 @@ import { DisplayHeadingComponent } from './shared/display-heading/display-headin
     ConstellationComponent,
     WorkComponent,
     AboutComponent,
+    CertificationsComponent,
     ContactComponent,
     SiteNavComponent,
     ScrollRevealDirective,

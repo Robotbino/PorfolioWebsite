@@ -1,7 +1,7 @@
 import { Constellation, Link, Star } from './constellation.model';
 
 /**
- * The fixed star/link data for the four route constellations and the per-index
+ * The fixed star/link data for the five route constellations and the per-index
  * drift traits they all share. Lives in its own file so the component file is
  * about *driving* the morph, not enumerating asterisms.
  *
@@ -38,7 +38,7 @@ export function figure(
   return { name, side: 'left', viewBox: '0 0 300 300', stars, links };
 }
 
-// Four real constellations (8 stars each), in a 300×300 viewBox. Stars are
+// Five real constellations (8 stars each), in a 300×300 viewBox. Stars are
 // listed in index order; links are each figure's real connect-the-dots shape.
 export const byRoute = {
   // Ursa Major / the Big Dipper — the navigator's constellation (Home).
@@ -112,6 +112,30 @@ export const byRoute = {
       { a: 7, b: 0 },
     ],
   ),
+  // Corona Borealis / the Northern Crown — the laurel of achievement
+  // (Certifications). The seven-star arc opens upward; faint π floats free
+  // above the western tip, unlinked like Alcor in Ursa Major.
+  certifications: figure(
+    'Corona Borealis',
+    [
+      [98, 190], // Alphecca (Gemma)
+      [60, 146], // Nusakan
+      [58, 92], // Theta
+      [84, 52], // Pi (faint, unlinked)
+      [150, 205], // Gamma
+      [200, 192], // Delta
+      [234, 152], // Epsilon
+      [242, 98], // Iota
+    ],
+    [
+      { a: 2, b: 1 },
+      { a: 1, b: 0 },
+      { a: 0, b: 4 },
+      { a: 4, b: 5 },
+      { a: 5, b: 6 },
+      { a: 6, b: 7 },
+    ],
+  ),
   // Cygnus / the Northern Cross — the swan in flight (Contact).
   contact: figure(
     'Cygnus',
@@ -139,4 +163,10 @@ export const byRoute = {
 
 // Destinations in scroll order; the morph runs between adjacent entries and
 // wraps from the last back to the first (the star map loops endlessly).
-export const order: Constellation[] = [byRoute.home, byRoute.work, byRoute.about, byRoute.contact];
+export const order: Constellation[] = [
+  byRoute.home,
+  byRoute.work,
+  byRoute.about,
+  byRoute.certifications,
+  byRoute.contact,
+];

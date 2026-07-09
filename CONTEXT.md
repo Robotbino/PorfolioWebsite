@@ -78,7 +78,7 @@ who explore. The map is **never the only way** to navigate.
 > [ADR-0004](adr/0004-seamless-loop-clone-wrap.md) for the seamless wrap.
 
 **Cycle**:
-One full pass through the four _Destinations_ (Home → Work → About → Contact). In pixels it is the
+One full pass through the five _Destinations_ (Home → Work → About → Certifications → Contact). In pixels it is the
 scroll offset of the _Loop clone_'s top; the wrap subtracts exactly one cycle.
 
 **Seam**:

@@ -1,0 +1,173 @@
+:host {
+  display: block;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+/* ============================================
+   CERTIFICATIONS — typographic ledger, no cards
+   The Swiss-table idiom from Work's skills index: hairline rules and the grid
+   do the framing so the constellation breathes through the negative space.
+   ============================================ */
+
+/* ---- Poster header (mirrors Experience/About; kept per-component under
+   Angular view encapsulation) ---- */
+
+.certs-header {
+  margin-bottom: var(--space-3xl);
+}
+
+.certs-kicker {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Destination index (04 = Certifications in the loop order) — the one vivid
+   hue, echoing the hero's status dot. Decorative, so aria-hidden in the
+   template. */
+.certs-kicker-index {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-vivid);
+}
+
+/* Short hairline continuing the kicker — a quiet Swiss rule. */
+.certs-kicker::after {
+  content: '';
+  align-self: center;
+  width: var(--space-2xl);
+  height: 1px;
+  background: var(--color-border-dark);
+}
+
+.certs-title {
+  font-size: var(--font-size-6xl);
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-none);
+  letter-spacing: var(--tracking-tightest);
+}
+
+/* ---- Ledger rows ---- */
+
+.certs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.certs-row {
+  display: grid;
+  grid-template-columns: var(--space-2xl) minmax(0, 1fr) auto;
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
+  align-items: baseline;
+  padding-block: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+/* No block label above this ledger, so the first row carries the heavier
+   opening rule itself (the Swiss table hierarchy from Work's index). */
+.certs-row:first-child {
+  border-top-color: var(--color-border-dark);
+}
+
+.certs-num {
+  grid-column: 1;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+  transition: color var(--transition-base);
+}
+
+.certs-name {
+  grid-column: 2;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-text-primary);
+}
+
+.certs-issuer {
+  grid-column: 2;
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-tertiary);
+}
+
+/* Quiet verify link — kicker-scale type; the underline idiom belongs to the
+   nav, so here only colour and the arrow's nudge answer the pointer. */
+.certs-verify {
+  grid-column: 3;
+  justify-self: end;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition: color var(--transition-base);
+}
+
+.certs-verify-arrow {
+  display: inline-block;
+  transition: transform var(--transition-base);
+}
+
+/* Wide screens: a true table row — numeral | title | issuer | verify on one
+   baseline (the Work index's wide-row treatment). */
+@media (min-width: 969px) {
+  .certs-row {
+    grid-template-columns: var(--space-2xl) minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  }
+
+  .certs-issuer {
+    grid-column: 3;
+  }
+
+  .certs-verify {
+    grid-column: 4;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .certs-row:hover {
+    border-top-color: var(--color-border-dark);
+  }
+
+  .certs-row:hover .certs-num {
+    color: var(--color-accent-vivid);
+  }
+
+  .certs-verify:hover {
+    color: var(--color-accent);
+  }
+
+  .certs-verify:hover .certs-verify-arrow {
+    transform: translate(2px, -2px);
+  }
+}
+
+/* ---- Reveal cadence (existing appScrollReveal machinery) ---- */
+
+.certs-list.scroll-reveal {
+  transition-delay: 80ms;
+}
+
+@media (max-width: 768px) {
+  .certs-header {
+    margin-bottom: var(--space-2xl);
+  }
+}
