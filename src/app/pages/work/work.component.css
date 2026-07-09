@@ -374,6 +374,18 @@
   gap: var(--space-md);
 }
 
+/* .btn is already inline-flex + nowrap, so the gap and em-sized icon keep the
+   label's optical centre without shifting the button's metrics. */
+.project-links .btn {
+  gap: var(--space-sm);
+}
+
+.btn-icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
+}
+
 .project-image {
   position: relative;
   height: 100%;
