@@ -7,6 +7,9 @@
         <a href="#dest-work" (click)="scrollToSection('dest-work', $event)" class="nav-link">Experience</a>
       </li>
       <li>
+        <a href="#projects" (click)="scrollToSection('projects', $event)" class="nav-link">Projects</a>
+      </li>
+      <li>
         <a href="#dest-about" (click)="scrollToSection('dest-about', $event)" class="nav-link">About</a>
       </li>
       <li>
@@ -35,6 +38,7 @@
   <nav class="mobile-nav" aria-label="Mobile navigation" (click)="$event.stopPropagation()">
     <a href="#dest-home" (click)="scrollToSection('dest-home', $event); closeMenu()" class="mobile-link">Home</a>
     <a href="#dest-work" (click)="scrollToSection('dest-work', $event); closeMenu()" class="mobile-link">Experience</a>
+    <a href="#projects" (click)="scrollToSection('projects', $event); closeMenu()" class="mobile-link">Projects</a>
     <a href="#dest-about" (click)="scrollToSection('dest-about', $event); closeMenu()" class="mobile-link">About</a>
     <a href="#dest-contact" (click)="scrollToSection('dest-contact', $event); closeMenu()" class="mobile-link">Contact</a>
   </nav>
