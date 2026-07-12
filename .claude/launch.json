@@ -7,6 +7,13 @@
       "runtimeArgs": ["start", "--", "--port", "4388"],
       "port": 4388,
       "autoPort": false
+    },
+    {
+      "name": "portfolio-alt",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--", "--port", "4389"],
+      "port": 4389,
+      "autoPort": false
     }
   ]
 }
