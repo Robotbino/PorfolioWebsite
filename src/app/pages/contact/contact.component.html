@@ -18,24 +18,54 @@
     <div class="contact-spread">
       <!-- Lead — a measured editorial column, lifted off the star map by the
            same boxless radial scrim used on About/Work. Copy unchanged. -->
-      <p class="contact-lead" appScrollReveal>
-        <span class="contact-lead-title">Let&rsquo;s build something.</span>
-        I&rsquo;m open to mid-level full-stack roles, consulting especially. Email is the
-        fastest way to reach me.
-      </p>
+      <div class="contact-lead" appScrollReveal>
+        <!-- Availability signal — the hero's accent dot idiom, reused where it
+             actually belongs (a contact section). Reinforces the lead copy. -->
+        <p class="contact-status">
+          <span class="contact-status-dot" aria-hidden="true"></span>
+          Open to new roles
+        </p>
+        <p class="contact-lead-body">
+          <span class="contact-lead-title">Let&rsquo;s build something.</span>
+          I&rsquo;m open to mid-level full-stack roles, consulting especially. Email is the
+          fastest way to reach me.
+        </p>
+      </div>
 
       <!-- Channels ledger — the old link row flattened into a typographic index:
            hairline rules, uppercase micro-labels, index numerals. Each icon is a
            star that comes into focus on hover — it lifts, glows, the value
            underlines in, and the arrow slides out. -->
       <ul class="contact-channels" role="list" appScrollReveal>
+        <!-- Email is the primary channel: full-row mailto link plus a one-tap
+             copy affordance (surfaceless, so it stays in the ledger idiom). -->
         <li class="channel">
-          <a class="channel-link" href="mailto:HlongwanaBino@gmail.com">
-            <span class="channel-index" aria-hidden="true">01</span>
-            <i class="fa-solid fa-envelope channel-icon" aria-hidden="true"></i>
+          <div class="channel-row">
+            <a class="channel-link" href="mailto:HlongwanaBino@gmail.com">
+              <span class="channel-index" aria-hidden="true">01</span>
+              <i class="fa-solid fa-envelope channel-icon" aria-hidden="true"></i>
+              <span class="channel-meta">
+                <span class="channel-label">Email</span>
+                <span class="channel-value">HlongwanaBino&#64;gmail.com</span>
+              </span>
+            </a>
+            <button class="channel-copy" type="button"
+                    [class.is-copied]="copied"
+                    (click)="copyEmail('HlongwanaBino@gmail.com')"
+                    [attr.aria-label]="copied ? 'Email address copied to clipboard' : 'Copy email address'">
+              <i class="channel-copy-icon fa-solid" [class.fa-copy]="!copied" [class.fa-check]="copied" aria-hidden="true"></i>
+              <span class="channel-copy-text">{{ copied ? 'Copied' : 'Copy' }}</span>
+            </button>
+          </div>
+        </li>
+        <li class="channel">
+          <a class="channel-link" href="https://github.com/Robotbino" target="_blank"
+            rel="noopener noreferrer">
+            <span class="channel-index" aria-hidden="true">02</span>
+            <i class="fa-brands fa-github channel-icon" aria-hidden="true"></i>
             <span class="channel-meta">
-              <span class="channel-label">Email</span>
-              <span class="channel-value">HlongwanaBino&#64;gmail.com</span>
+              <span class="channel-label">GitHub</span>
+              <span class="channel-value">Robotbino</span>
             </span>
             <span class="channel-arrow" aria-hidden="true">&rarr;</span>
           </a>
@@ -43,7 +73,7 @@
         <li class="channel">
           <a class="channel-link" href="https://www.linkedin.com/in/bino-hlongwana-162226272/" target="_blank"
             rel="noopener noreferrer">
-            <span class="channel-index" aria-hidden="true">02</span>
+            <span class="channel-index" aria-hidden="true">03</span>
             <i class="fa-brands fa-linkedin channel-icon" aria-hidden="true"></i>
             <span class="channel-meta">
               <span class="channel-label">LinkedIn</span>

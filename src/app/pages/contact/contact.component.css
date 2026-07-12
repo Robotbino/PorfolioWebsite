@@ -83,10 +83,35 @@
   grid-column: 1 / 7;
   position: relative;
   max-width: var(--max-width-text);
+}
+
+.contact-lead-body {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-normal);
   line-height: var(--line-height-relaxed);
   color: var(--color-text-secondary);
+}
+
+/* Availability status — the hero's accent-dot idiom (dot + uppercase micro-
+   label), placed where an "open to work" signal actually belongs. Static, like
+   the hero's dot, so it reads as a marker rather than a flashing alert. */
+.contact-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.contact-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-vivid);
 }
 
 /* Boxless legibility: soft background-coloured radial scrim (hero-headline
@@ -132,6 +157,18 @@
 
 .channel {
   border-top: 1px solid var(--color-border-dark);
+}
+
+/* Email row only: the link shares the row with a trailing copy button. */
+.channel-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.channel-row .channel-link {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .channel-link {
@@ -234,6 +271,56 @@
     transform var(--transition-base),
     opacity var(--transition-base),
     color var(--transition-base);
+}
+
+/* Keep the email address from crowding the copy button on narrow columns. */
+.channel-meta {
+  min-width: 0;
+}
+
+.channel-value {
+  max-width: 100%;
+}
+
+/* Surfaceless copy button — no border/background, so it stays in the ledger
+   idiom; the label reads "Copy", swapping to "Copied" with a check on success. */
+.channel-copy {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--transition-base);
+}
+
+.channel-copy-icon {
+  font-size: var(--font-size-sm);
+}
+
+.channel-copy.is-copied {
+  color: var(--color-accent-vivid);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .channel-copy:hover {
+    color: var(--color-accent-vivid);
+  }
+}
+
+.channel-copy:focus-visible {
+  outline: 2px solid var(--color-accent-vivid);
+  outline-offset: 3px;
 }
 
 /* ---- Micro-interactions (pointer devices) ---- */
@@ -343,5 +430,19 @@
   .channel-arrow {
     opacity: 1;
     transform: none;
+  }
+
+  /* Tight columns: drop to an icon-only copy button (aria-label carries the
+     accessible name); the long email address keeps the row's width. */
+  .channel-copy-text {
+    display: none;
+  }
+
+  .channel-copy {
+    padding: var(--space-sm);
+  }
+
+  .channel-copy-icon {
+    font-size: var(--font-size-md);
   }
 }
