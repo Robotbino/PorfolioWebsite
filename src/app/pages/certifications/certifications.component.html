@@ -11,19 +11,118 @@
     </header>
 
     <!-- Typographic ledger (the Experience index idiom): numeral, title, quiet
-         issuer, verify link. The numerals are decorative wayfinding, hence
-         aria-hidden; each link names its certificate for assistive tech. -->
-    <ul class="certs-list" role="list" appScrollReveal>
-      <li class="certs-row" *ngFor="let cert of certifications; let i = index">
-        <span class="certs-num" aria-hidden="true">0{{ i + 1 }}</span>
-        <h3 class="certs-name">{{ cert.title }}</h3>
-        <p class="certs-issuer">{{ cert.issuer }}</p>
-        <a class="certs-verify" [href]="cert.href" target="_blank"
+         issuer, verify link. Each row's title cluster is a button that opens
+         the certificate in the spotlight (and, on a fine pointer, tethers the
+         floating preview to the cursor); the Verify link stays a sibling so the
+         two actions never nest. The numerals are decorative wayfinding, hence
+         aria-hidden. -->
+    <ul
+      class="certs-list"
+      role="list"
+      #certList
+      (mouseleave)="onListLeave()"
+      (focusout)="onListFocusOut($event)"
+      (keydown.escape)="onListLeave()"
+    >
+      <li class="certs-row" *ngFor="let cert of certifications; let i = index" appScrollReveal>
+        <button
+          type="button"
+          class="certs-trigger"
+          aria-haspopup="dialog"
+          [attr.aria-label]="'View ' + cert.title + ' certificate'"
+          (mouseenter)="onRowEnter(i)"
+          (focus)="onRowFocus(i, $event)"
+          (click)="openSpotlight(i, $event)"
+        >
+          <span class="certs-num" aria-hidden="true">0{{ i + 1 }}</span>
+          <span class="certs-name">{{ cert.title }}</span>
+          <span class="certs-issuer">{{ cert.issuer }}</span>
+          <span class="certs-view-hint" aria-hidden="true">
+            View <span class="certs-view-arrow">&#8599;</span>
+          </span>
+          <!-- Touch affordance: compact thumbnail chip (the cursor preview is
+               fine-pointer only). Decorative — the button labels the row and the
+               spotlight image carries the full alt. display:none on hover
+               devices, so it is never fetched there. -->
+          <img class="certs-thumb" [src]="cert.img" alt="" loading="lazy" decoding="async" />
+        </button>
+
+        <a
+          class="certs-verify"
+          [href]="cert.href"
+          target="_blank"
           rel="noopener noreferrer"
-          [attr.aria-label]="'Verify ' + cert.title + ' certificate (opens in new tab)'">
+          [attr.aria-label]="'Verify ' + cert.title + ' certificate (opens in new tab)'"
+        >
           Verify <span class="certs-verify-arrow" aria-hidden="true">&#8599;</span>
         </a>
       </li>
     </ul>
+  </div>
+
+  <!-- Cursor-tethered preview. Fixed, pointer-events:none, aria-hidden: purely
+       decorative (the rows hold the real content). Transform-only shutter:
+       .certs-preview translates with the cursor, -tilt rotates with velocity,
+       mask/unmask counter-scale for the reveal. The img stack mounts once the
+       section is armed, warming the cache before the first hover. -->
+  <div class="certs-preview" #preview aria-hidden="true">
+    <div class="certs-preview-tilt" #tilt>
+      <div class="certs-preview-mask" #mask>
+        <div class="certs-preview-unmask" #unmask>
+          <ng-container *ngIf="armed()">
+            <img
+              *ngFor="let cert of certifications; let i = index"
+              class="certs-preview-img"
+              [class.is-active]="i === activeIndex()"
+              [src]="cert.img"
+              alt=""
+              decoding="async"
+            />
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spotlight: the full-size certificate a row opens. Lives in the DOM
+       permanently (visibility-gated) and is filled/animated imperatively, so
+       the FLIP morph from the cursor preview never waits on change detection.
+       Two focusable controls (Verify, Close) are trapped by the component. -->
+  <div
+    class="certs-spotlight"
+    #spotlight
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    (keydown)="onSpotlightKeydown($event)"
+  >
+    <div class="certs-spotlight-scrim" (click)="closeSpotlight()"></div>
+    <figure class="certs-spotlight-panel">
+      <div class="certs-spotlight-frame" #spotFrame>
+        <img class="certs-spotlight-img" #spotImg alt="" />
+      </div>
+      <figcaption class="certs-spotlight-caption">
+        <span class="certs-spotlight-title" #spotTitle></span>
+        <span class="certs-spotlight-meta" #spotMeta></span>
+        <a
+          class="certs-spotlight-verify"
+          #spotVerify
+          href=""
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Verify certificate <span class="certs-verify-arrow" aria-hidden="true">&#8599;</span>
+        </a>
+      </figcaption>
+    </figure>
+    <button
+      type="button"
+      class="certs-spotlight-close"
+      #spotClose
+      aria-label="Close certificate view"
+      (click)="closeSpotlight()"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 </section>

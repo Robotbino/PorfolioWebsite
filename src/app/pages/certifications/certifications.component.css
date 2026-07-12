@@ -10,6 +10,9 @@
    CERTIFICATIONS — typographic ledger, no cards
    The Swiss-table idiom from Work's skills index: hairline rules and the grid
    do the framing so the constellation breathes through the negative space.
+   Each row's title cluster is a button that opens the certificate spotlight
+   (and tethers a cursor preview on a fine pointer); the Verify link sits
+   beside it as a second, separate action.
    ============================================ */
 
 /* ---- Poster header (mirrors Experience/About; kept per-component under
@@ -65,18 +68,34 @@
 
 .certs-row {
   display: grid;
-  grid-template-columns: var(--space-2xl) minmax(0, 1fr) auto;
-  column-gap: var(--space-md);
-  row-gap: var(--space-xs);
-  align-items: baseline;
-  padding-block: var(--space-lg);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-lg);
   border-top: 1px solid var(--color-border);
+  /* Opacity for the sibling-dim; transform listed too so this rule (which under
+     emulated encapsulation outranks the global .scroll-reveal) keeps the entry
+     slide instead of snapping it. Timings match styles.css .scroll-reveal. */
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
 }
 
 /* No block label above this ledger, so the first row carries the heavier
    opening rule itself (the Swiss table hierarchy from Work's index). */
 .certs-row:first-child {
   border-top-color: var(--color-border-dark);
+}
+
+/* The row's main action. The global button reset gives it a bare background;
+   the grid recreates the numeral | name | issuer table inside it so the whole
+   cluster is one large, obvious hit target. */
+.certs-trigger {
+  display: grid;
+  grid-template-columns: var(--space-2xl) minmax(0, 1fr);
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
+  align-items: baseline;
+  width: 100%;
+  padding-block: var(--space-lg);
+  text-align: left;
 }
 
 .certs-num {
@@ -96,6 +115,8 @@
   line-height: var(--line-height-snug);
   letter-spacing: var(--tracking-normal);
   color: var(--color-text-primary);
+  /* Nudges toward the cursor preview on hover/focus — transform only. */
+  transition: transform var(--transition-slow), color var(--transition-base);
 }
 
 .certs-issuer {
@@ -105,10 +126,31 @@
   color: var(--color-text-tertiary);
 }
 
+/* "View" affordance inside the trigger — hidden until hover/focus reveals it.
+   Opacity/transform only. */
+.certs-view-hint {
+  grid-column: 2;
+  justify-self: start;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+.certs-view-arrow {
+  color: var(--color-accent-vivid);
+}
+
 /* Quiet verify link — kicker-scale type; the underline idiom belongs to the
    nav, so here only colour and the arrow's nudge answer the pointer. */
 .certs-verify {
-  grid-column: 3;
   justify-self: end;
   display: inline-flex;
   align-items: baseline;
@@ -126,29 +168,60 @@
   transition: transform var(--transition-base);
 }
 
-/* Wide screens: a true table row — numeral | title | issuer | verify on one
-   baseline (the Work index's wide-row treatment). */
+/* Touch thumbnail chip — the tap affordance where there's no cursor preview.
+   Off by default (and never fetched on hover devices); the touch media query
+   turns it on. */
+.certs-thumb {
+  display: none;
+}
+
+/* Wide screens: a true table row — numeral | title | issuer | view-hint inside
+   the trigger, verify hanging at the far right (the Work index's wide-row
+   treatment). */
 @media (min-width: 969px) {
-  .certs-row {
+  .certs-trigger {
     grid-template-columns: var(--space-2xl) minmax(0, 1.4fr) minmax(0, 1fr) auto;
+    align-items: baseline;
   }
 
   .certs-issuer {
     grid-column: 3;
   }
 
-  .certs-verify {
+  .certs-view-hint {
     grid-column: 4;
+    justify-self: end;
   }
 }
 
+/* ---- Hover / focus choreography (fine pointer) ---- */
+
 @media (hover: hover) and (pointer: fine) {
+  /* Sibling dim: the hovered row holds, the rest recede — the list reads as an
+     index being scanned. Opacity only. */
+  .certs-list:hover .certs-row {
+    opacity: 0.4;
+  }
+
+  .certs-list:hover .certs-row:hover {
+    opacity: 1;
+  }
+
   .certs-row:hover {
     border-top-color: var(--color-border-dark);
   }
 
-  .certs-row:hover .certs-num {
+  .certs-trigger:hover .certs-num {
     color: var(--color-accent-vivid);
+  }
+
+  .certs-trigger:hover .certs-name {
+    transform: translateX(0.5rem);
+  }
+
+  .certs-trigger:hover .certs-view-hint {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .certs-verify:hover {
@@ -160,14 +233,306 @@
   }
 }
 
-/* ---- Reveal cadence (existing appScrollReveal machinery) ---- */
+/* ---- Keyboard parity — same choreography via :focus-visible, outside the
+   hover query so keyboards on touch devices get it too. ---- */
 
-.certs-list.scroll-reveal {
-  transition-delay: 80ms;
+.certs-list:has(.certs-trigger:focus-visible) .certs-row {
+  opacity: 0.4;
 }
 
-@media (max-width: 768px) {
+.certs-list .certs-row:has(.certs-trigger:focus-visible) {
+  opacity: 1;
+}
+
+.certs-trigger:focus-visible .certs-num {
+  color: var(--color-accent-vivid);
+}
+
+.certs-trigger:focus-visible .certs-name {
+  transform: translateX(0.5rem);
+}
+
+.certs-trigger:focus-visible .certs-view-hint {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ---- Reveal cadence (existing appScrollReveal machinery, per row) ---- */
+
+.certs-row.scroll-reveal:nth-child(1) { transition-delay: 60ms; }
+.certs-row.scroll-reveal:nth-child(2) { transition-delay: 130ms; }
+.certs-row.scroll-reveal:nth-child(3) { transition-delay: 200ms; }
+.certs-row.scroll-reveal:nth-child(4) { transition-delay: 270ms; }
+.certs-row.scroll-reveal:nth-child(5) { transition-delay: 340ms; }
+
+/* ============================================
+   CURSOR-TETHERED PREVIEW
+   Fixed element positioned purely by transform (top/left never animate).
+   Layers: .certs-preview = tether translate + opacity, -tilt = velocity rotate
+   + settle scale, -mask/-unmask = counter-scaled shutter. will-change is gated
+   behind .is-on so the idle (closed) preview holds no GPU layer.
+   ============================================ */
+
+.certs-preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90; /* over content, under the persistent nav (100) */
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.certs-preview.is-on {
+  visibility: visible;
+  will-change: transform, opacity;
+}
+
+.certs-preview.is-on .certs-preview-tilt,
+.certs-preview.is-on .certs-preview-mask,
+.certs-preview.is-on .certs-preview-unmask {
+  will-change: transform;
+}
+
+.certs-preview-tilt {
+  width: min(30rem, 36vw);
+  aspect-ratio: 3 / 2;
+  transform: translate(-50%, -50%);
+}
+
+.certs-preview-mask {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.certs-preview-unmask {
+  position: absolute;
+  inset: 0;
+}
+
+.certs-preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  /* Short crossfade: the row-switch beat is carried by the shutter blink, not
+     the fade, so the swap lands inside the blink's reopen. */
+  transition: opacity 150ms var(--ease-out-quart);
+}
+
+.certs-preview-img.is-active {
+  opacity: 1;
+}
+
+/* ============================================
+   SPOTLIGHT
+   The full-size certificate a row opens. Scrim + FLIP'd frame + ledger caption
+   with a Verify link. Entry: the frame is placed on the cursor preview's rect
+   by the component and transitions back to identity (transform/opacity only);
+   reduced motion collapses everything to a cut via the global rule.
+   ============================================ */
+
+.certs-spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 150; /* above the persistent nav — it's a modal */
+  display: grid;
+  place-items: center;
+  padding: var(--space-xl);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.certs-spotlight.is-open,
+.certs-spotlight.is-closing {
+  visibility: visible;
+}
+
+.certs-spotlight.is-open {
+  pointer-events: auto;
+}
+
+.certs-spotlight-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(var(--scrim-rgb), 0.86);
+  opacity: 0;
+  transition: opacity 320ms var(--ease-out-quart);
+}
+
+.certs-spotlight.is-open .certs-spotlight-scrim {
+  opacity: 1;
+}
+
+.certs-spotlight-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin: 0;
+}
+
+/* Fixed 3/2 stage (like the preview) so the FLIP destination is measurable
+   before the image loads; the certificate letterboxes inside invisibly. The
+   height term keeps tall viewports from pushing the caption off-screen. */
+.certs-spotlight-frame {
+  position: relative;
+  width: min(56rem, 90vw, calc((100svh - 16rem) * 1.5));
+  aspect-ratio: 3 / 2;
+  transition: transform 480ms var(--ease-out-expo), opacity 320ms var(--ease-out-quart);
+}
+
+.certs-spotlight.is-open .certs-spotlight-frame {
+  will-change: transform, opacity;
+}
+
+.certs-spotlight-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.certs-spotlight-caption {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 280ms var(--ease-out-quart), transform 280ms var(--ease-out-quart);
+}
+
+/* Caption lands a beat after the frame settles. */
+.certs-spotlight.is-open .certs-spotlight-caption {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 140ms;
+}
+
+.certs-spotlight-title {
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+}
+
+.certs-spotlight-meta {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.certs-spotlight-verify {
+  align-self: start;
+  margin-top: var(--space-xs);
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-accent-vivid);
+  transition: color var(--transition-base);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .certs-spotlight-verify:hover {
+    color: var(--color-accent-vivid-hover);
+  }
+
+  .certs-spotlight-verify:hover .certs-verify-arrow {
+    transform: translate(2px, -2px);
+  }
+}
+
+.certs-spotlight-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size-xl);
+  line-height: 1;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-full);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 240ms var(--ease-out-quart), transform 240ms var(--ease-out-quart);
+}
+
+.certs-spotlight.is-open .certs-spotlight-close {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .certs-spotlight-close:hover {
+    color: var(--color-accent-vivid);
+    border-color: var(--color-border);
+  }
+}
+
+/* ============================================
+   TOUCH / REDUCED-MOTION FALLBACKS
+   ============================================ */
+
+/* No cursor tether under reduced motion — the spotlight still opens (its
+   transitions collapse to a cut via the global reduced-motion rule). */
+@media (prefers-reduced-motion: reduce) {
+  .certs-preview {
+    display: none;
+  }
+}
+
+/* Below the wide table, the "View" hint has no room; the cursor preview (fine
+   pointer) or the thumb chip (touch) carries the affordance instead. */
+@media (max-width: 968px) {
   .certs-header {
     margin-bottom: var(--space-2xl);
+  }
+
+  .certs-view-hint {
+    display: none;
+  }
+}
+
+/* Touch: swap the cursor preview for a thumbnail chip in each row; tapping the
+   row still opens the spotlight. Placed after the wide-table rules so it wins
+   on touch tablets too. */
+@media (hover: none) {
+  .certs-preview {
+    display: none;
+  }
+
+  .certs-trigger {
+    grid-template-columns: var(--space-2xl) minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .certs-name,
+  .certs-issuer {
+    grid-column: 2;
+  }
+
+  .certs-thumb {
+    display: block;
+    grid-column: 3;
+    grid-row: 1 / -1;
+    align-self: center;
+    width: 4.5rem;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
   }
 }
