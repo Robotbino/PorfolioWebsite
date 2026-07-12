@@ -80,6 +80,20 @@
   transform-origin: left;
 }
 
+/* Premium sibling-dim: hovering one nav link fades the rest back so the
+   pointed-at one leads. Coexists with the --nav-mute travel-fade — hovering the
+   bar sets --nav-mute:0, so the inline opacity calc resolves to 1 before this
+   override applies, and `opacity` is already in .nav-link's transition list. */
+@media (hover: hover) and (pointer: fine) {
+  .nav-items:hover .nav-link {
+    opacity: 0.5;
+  }
+
+  .nav-items:hover .nav-link:hover {
+    opacity: 1;
+  }
+}
+
 /* ============================================
    NAV ACTIONS (hamburger + theme toggle group)
    ============================================ */

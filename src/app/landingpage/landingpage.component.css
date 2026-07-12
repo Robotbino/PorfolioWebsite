@@ -91,7 +91,10 @@
   letter-spacing: var(--tracking-tight);
   line-height: 1;
   color: var(--color-text-secondary);
-  margin-bottom: clamp(0.25rem, 1vw, 0.9rem);
+  line-height: 1.1;
+  /* Tightened so the eyebrow hugs the name — the three headline nodes read as
+     one grouped cluster rather than three loosely stacked lines. */
+  margin-bottom: clamp(0.15rem, 0.6vw, 0.5rem);
   margin-left: 0.08em;
 }
 
@@ -126,8 +129,11 @@
 
 .hero-name-last {
   font-weight: var(--font-weight-black);       /* 900 — the anchor */
-  letter-spacing: var(--tracking-tightest);
-  margin-top: -0.04em;
+  /* Calculated tight tracking: heavy and intentional at 900, but legible — the
+     previous --tracking-tightest (-0.05em) crowded the glyphs into each other. */
+  letter-spacing: -0.03em;
+  /* Nests the surname up under "Bino" so the headline stacks as one block. */
+  margin-top: -0.06em;
 }
 
 /* ---- Statement ---- */
@@ -137,9 +143,24 @@
   align-self: start;
   max-width: 46ch;
   font-size: var(--font-size-md);
-  line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
+  line-height: 1.6;
+  /* Slight-opacity body colour drops it a tier below the bold lead + headings
+     for clearer hierarchy. Theme-scoped below; this default matches light mode
+     so it's correct even before ThemeService applies a class. */
+  color: rgba(26, 26, 26, 0.72);
 }
+
+/* Theme flip. The theme class sits on <html> (outside this component), so a
+   plain `.dark-mode .hero-statement` descendant selector is broken by Angular's
+   emulated encapsulation (it scopes BOTH compounds, and <html> has no scope
+   attribute). `:host-context()` is the encapsulation-safe way to react to an
+   ancestor class. The @media rule covers the OS default before a class lands. */
+@media (prefers-color-scheme: dark) {
+  .hero-statement { color: rgba(255, 255, 255, 0.7); }
+}
+
+:host-context(.light-mode) .hero-statement { color: rgba(26, 26, 26, 0.72); }
+:host-context(.dark-mode) .hero-statement { color: rgba(255, 255, 255, 0.7); }
 
 .hero-statement-lead {
   display: block;
@@ -155,7 +176,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  align-items: flex-end;
+  /* Center the role label, CTA pill and socials on one vertically-aligned row. */
+  align-items: center;
   gap: var(--space-md) var(--space-xl);
 }
 
@@ -227,8 +249,10 @@
   .hero-cta:hover {
     background-color: var(--color-accent-vivid-hover);
     border-color: var(--color-accent-vivid-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    /* Lift + slight scale, with an accent-tinted glow that tracks the theme via
+       color-mix (the accent brightens on dark, deepens on light). */
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--color-accent-vivid) 45%, transparent);
   }
 
   .hero-cta:hover .hero-cta-arrow,
@@ -257,7 +281,7 @@
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--color-text-tertiary);
-  transition: color var(--transition-base);
+  transition: color var(--transition-base), opacity var(--transition-base);
 }
 
 .hero-social:active {
@@ -276,6 +300,16 @@
 
   .hero-social:hover .hero-social-arrow {
     transform: translate(0.15rem, -0.15rem);
+  }
+
+  /* Premium sibling-dim: hovering one link fades the rest back so the pointed-at
+     one leads. */
+  .hero-socials:hover .hero-social {
+    opacity: 0.5;
+  }
+
+  .hero-socials:hover .hero-social:hover {
+    opacity: 1;
   }
 }
 
