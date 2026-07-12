@@ -20,6 +20,7 @@
 }
 
 .logo {
+  font-family: var(--font-family-display);
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.02em;
@@ -29,6 +30,10 @@
   transform: scale(calc(1 - 0.38 * var(--nav-mute, 0)));
   opacity: calc(1 - 0.45 * var(--nav-mute, 0));
   transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+.logo-dot {
+  color: var(--color-accent-vivid);
 }
 
 .nav-items {
@@ -128,6 +133,11 @@
   background: rgba(10, 10, 12, 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  /* No `visibility` in this (open-state) transition list: it must flip
+     instantly on open so focus can move into the menu the same frame. The
+     base rule keeps visibility 0.35s so closing still waits for the fade. */
+  transition: background 0.35s ease, backdrop-filter 0.35s ease,
+              -webkit-backdrop-filter 0.35s ease;
   visibility: visible;
   /* Defense in depth alongside the JS scroll lock (see component TS). */
   overscroll-behavior: contain;
@@ -145,7 +155,7 @@
 }
 
 .mobile-link {
-  font-family: var(--font-display);
+  font-family: var(--font-family-display);
   font-size: clamp(2rem, 8vw, 3.5rem);
   font-weight: var(--font-weight-semibold);
   color: #fafafa;
@@ -163,6 +173,12 @@
 .mobile-overlay.open .mobile-link {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* The overlay is always near-black regardless of theme, so the active tint is
+   the dark-theme vivid accent rather than the theme-flipping variable. */
+.mobile-link.active {
+  color: #ff8c42;
 }
 
 .mobile-overlay.open .mobile-link:nth-child(1) { transition-delay: 0.05s; }
