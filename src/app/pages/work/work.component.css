@@ -358,6 +358,9 @@
 }
 
 .tech-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
   padding: var(--space-sm) var(--space-md);
   background-color: var(--color-tag-bg);
   border-radius: var(--radius-full);
@@ -367,6 +370,17 @@
   transition: background-color var(--transition-fast),
               transform var(--transition-fast),
               color var(--transition-fast);
+}
+
+/* Greyscale by design: a muted mark that stays neutral across every card's
+   stack regardless of the tag's own hover recolor, so the icons read as one
+   consistent set rather than a row of brand colours. */
+.tech-tag-icon {
+  flex-shrink: 0;
+  font-size: 0.95em;
+  line-height: 1;
+  color: var(--color-text-secondary);
+  filter: grayscale(1);
 }
 
 .project-links {

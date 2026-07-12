@@ -58,6 +58,28 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     private host: ElementRef<HTMLElement>,
   ) {}
 
+  // Maps a tech-stack label to a Font Awesome class pair (the project's existing
+  // icon library, loaded globally in styles.css). Brand marks where one exists;
+  // a representative solid glyph otherwise (Spring's leaf, MySQL's database, a
+  // key for JWT tokens, a cube for WebGL's 3D). The pills render these greyscale.
+  private static readonly TECH_ICONS: Readonly<Record<string, string>> = {
+    Angular: 'fa-brands fa-angular',
+    React: 'fa-brands fa-react',
+    JavaScript: 'fa-brands fa-js',
+    CSS3: 'fa-brands fa-css3-alt',
+    HTML5: 'fa-brands fa-html5',
+    TypeScript: 'fa-brands fa-typescript',
+    'Spring Boot': 'fa-solid fa-leaf',
+    MySQL: 'fa-solid fa-database',
+    JWT: 'fa-solid fa-key',
+    WebGL: 'fa-solid fa-cube',
+  };
+
+  /** Font Awesome class pair for a tech label; a generic code glyph if unmapped. */
+  techIcon(name: string): string {
+    return WorkComponent.TECH_ICONS[name] ?? 'fa-solid fa-code';
+  }
+
   projectImg(p: Project): string {
     return this.theme.themeAsset(p.img.dark, p.img.light);
   }

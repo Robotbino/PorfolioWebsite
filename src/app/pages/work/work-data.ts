@@ -22,6 +22,8 @@ export interface Project {
   readonly description: string;
   readonly tech: readonly string[];
   readonly href: string;
+  /** Live deployment, when one exists. Renders a second "Live Demo" link. */
+  readonly demoHref?: string;
   readonly img: ProjectImage;
 }
 
@@ -61,6 +63,7 @@ export const PROJECTS: readonly Project[] = [
       'while racing against their remaining attempts.',
     tech: ['Angular', 'JavaScript', 'CSS3', 'HTML5'],
     href: 'https://github.com/Robotbino/CodePairs.git',
+    demoHref: 'https://codepairsgame.netlify.app/',
     img: {
       dark: '/assets/CodePairsDemo1.png',
       light: '/assets/CodePairsDemo1.png',
@@ -84,6 +87,23 @@ export const PROJECTS: readonly Project[] = [
       alt: {
         dark: 'Employee Manager dashboard interface',
         light: 'Employee Manager dashboard interface',
+      },
+    },
+  },
+  {
+    title: 'Game Store',
+    description:
+      'A full-stack game storefront with a React 19 + TypeScript frontend and a Spring Boot ' +
+      'REST API. Features JWT authentication, a live-search shop with game detail pages, a ' +
+      'personal library, and a separate admin portal with full CRUD backed by MySQL.',
+    tech: ['React', 'TypeScript', 'Spring Boot', 'MySQL'],
+    href: 'https://github.com/Robotbino/gameStore.git',
+    img: {
+      dark: '/assets/gameStore.png',
+      light: '/assets/gameStore.png',
+      alt: {
+        dark: 'Game Store storefront showing a featured game hero and the available games grid',
+        light: 'Game Store storefront showing a featured game hero and the available games grid',
       },
     },
   },
