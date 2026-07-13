@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
+import { smoothingK } from '../../motion.math';
 import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-data';
 
 @Component({
@@ -175,7 +176,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     // Frame-rate-independent exponential smoothing: keeps the calm ≈0.12/60fps
     // feel identical at 60Hz or 120Hz, so the sweep never reads faster or
     // "slippery" on high-refresh displays.
-    const k = dt > 0 ? 1 - Math.pow(1 - 0.12, dt / (1000 / 60)) : 0.12;
+    const k = smoothingK(dt, 0.12);
     this.rendered += (target - this.rendered) * k;
     track.style.transform = `translate3d(${this.rendered.toFixed(2)}px,0,0)`;
 
