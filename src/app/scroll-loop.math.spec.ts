@@ -1,4 +1,4 @@
-import { positionFor, wrapOffset } from './scroll-loop.math';
+import { activeIndexFor, positionFor, wrapOffset } from './scroll-loop.math';
 
 describe('positionFor', () => {
   // Home, Work, About, Contact, Home-clone with even 1000px gaps. With vh 800
@@ -53,6 +53,42 @@ describe('positionFor', () => {
     expect(positionFor(3660, five, vh)).toBeCloseTo(3.5, 5); // mid-band 3->4
     expect(positionFor(5000, five, vh)).toBe(5); // clone top = cycleLength
     expect(wrapOffset(5025, 5000)).toBe(25); // seam wrap preserves overshoot
+  });
+});
+
+describe('activeIndexFor', () => {
+  // The real app: five destinations, cycleLength 5.
+  const N = 5;
+
+  it('rests on each destination at its integer position', () => {
+    expect(activeIndexFor(0, N)).toBe(0);
+    expect(activeIndexFor(1, N)).toBe(1);
+    expect(activeIndexFor(2, N)).toBe(2);
+    expect(activeIndexFor(3, N)).toBe(3);
+    expect(activeIndexFor(4, N)).toBe(4);
+  });
+
+  it('holds the current destination through the first half of a morph band', () => {
+    expect(activeIndexFor(1.49, N)).toBe(1);
+  });
+
+  it('flips to the next destination at the band midpoint', () => {
+    expect(activeIndexFor(1.5, N)).toBe(2);
+    expect(activeIndexFor(1.51, N)).toBe(2);
+  });
+
+  it('reads the clone (position === cycleLength) as Home again', () => {
+    expect(activeIndexFor(5, N)).toBe(0);
+  });
+
+  it('wraps toward Home once past the midpoint of the Contact->clone band', () => {
+    expect(activeIndexFor(4.49, N)).toBe(4); // still Contact
+    expect(activeIndexFor(4.5, N)).toBe(0); // rounds to the clone = Home
+  });
+
+  it('returns 0 before the shell has measured (cycleLength <= 0)', () => {
+    expect(activeIndexFor(2.3, 0)).toBe(0);
+    expect(activeIndexFor(2.3, -1)).toBe(0);
   });
 });
 

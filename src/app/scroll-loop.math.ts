@@ -45,6 +45,24 @@ export function positionFor(
 }
 
 /**
+ * The active destination index for a continuous `position` (0..cycleLength):
+ * the nearest resting destination, wrapping at the seam.
+ *
+ * Destinations rest at integers 0..cycleLength−1; `position === cycleLength` is
+ * the Loop clone, which reads as destination 0 (Home) again — so the rounded
+ * value is taken modulo `cycleLength`. Rounding means the active index flips at
+ * the midpoint of each morph band (k+0.5), which lands within ~0.08vh of the old
+ * nav midpoint-probe crossing (see ADR-0007). Returns 0 before the shell has
+ * measured (`cycleLength <= 0`), matching the pre-measure fallback elsewhere.
+ */
+export function activeIndexFor(position: number, cycleLength: number): number {
+  if (cycleLength <= 0) {
+    return 0;
+  }
+  return Math.round(position) % cycleLength;
+}
+
+/**
  * The seamless one-direction wrap. At/past the clone's top — one cycle down,
  * where the clone is pixel-identical to real Home — return the offset the shell
  * should `scrollTo`: `scrollY - wrapAt`, which preserves any momentum overshoot
