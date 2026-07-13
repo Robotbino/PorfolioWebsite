@@ -2,8 +2,10 @@ import {
   Component,
   ElementRef,
   Input,
+  OnChanges,
   OnDestroy,
   AfterViewInit,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
@@ -138,7 +140,7 @@ let auroraFallbackId = 0;
     `,
   ],
 })
-export class AuroraComponent implements AfterViewInit, OnDestroy {
+export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() colorStops: [string, string, string] = ['#3A29FF', '#FF94B4', '#FF3232'];
   @Input() speed = 1.0;
   @Input() blend = 0.5;
@@ -150,8 +152,32 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
   private resizeHandler: (() => void) | null = null;
   private glContext: any = null;
   private fallbackAnimations: Animation[] = [];
+  private program: any = null;
+  // Colour stops converted to GPU vec3s, recomputed only when the `colorStops`
+  // input changes (a theme flip) — never per frame.
+  private colorStopsVec: number[][] = [];
 
   constructor(private pulse: FramePulseService) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['colorStops']) {
+      this.colorStopsVec = this.toColorVec(this.colorStops);
+    }
+    // Once the program exists, a later input change (theme flip) pushes straight
+    // to the uniforms; before init, ngAfterViewInit seeds them.
+    if (this.program) {
+      this.program.uniforms.uColorStops.value = this.colorStopsVec;
+      this.program.uniforms.uAmplitude.value = this.amplitude;
+      this.program.uniforms.uBlend.value = this.blend;
+    }
+  }
+
+  private toColorVec(stops: [string, string, string]): number[][] {
+    return stops.map((hex) => {
+      const c = new Color(hex);
+      return [c.r, c.g, c.b];
+    });
+  }
 
   ngAfterViewInit(): void {
     if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
@@ -173,14 +199,12 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     gl.canvas.style.backgroundColor = 'transparent';
 
-    let program: any;
-
     const resize = () => {
       const width = ctn.offsetWidth;
       const height = ctn.offsetHeight;
       renderer.setSize(width, height);
-      if (program) {
-        program.uniforms.uResolution.value = [width, height];
+      if (this.program) {
+        this.program.uniforms.uResolution.value = [width, height];
       }
     };
     this.resizeHandler = resize;
@@ -191,34 +215,31 @@ export class AuroraComponent implements AfterViewInit, OnDestroy {
       delete (geometry as any).attributes.uv;
     }
 
-    const colorStopsArray = this.colorStops.map((hex: string) => {
-      const c = new Color(hex);
-      return [c.r, c.g, c.b];
-    });
+    // Seeded by ngOnChanges (fires before AfterViewInit for the bound input);
+    // fall back for the no-binding case so the array is never empty.
+    if (this.colorStopsVec.length === 0) {
+      this.colorStopsVec = this.toColorVec(this.colorStops);
+    }
 
-    program = new Program(gl, {
+    this.program = new Program(gl, {
       vertex: VERT,
       fragment: FRAG,
       uniforms: {
         uTime: { value: 0 },
         uAmplitude: { value: this.amplitude },
-        uColorStops: { value: colorStopsArray },
+        uColorStops: { value: this.colorStopsVec },
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uBlend: { value: this.blend },
       },
     });
 
-    const mesh = new Mesh(gl, { geometry, program });
+    const mesh = new Mesh(gl, { geometry, program: this.program });
     ctn.appendChild(gl.canvas);
 
+    // Only time advances per frame now; palette/amplitude/blend are pushed by
+    // ngOnChanges on a theme flip, so there is no per-frame Color allocation.
     this.unsub = this.pulse.onTick((now) => {
-      program.uniforms.uTime.value = now * 0.01 * this.speed * 0.1;
-      program.uniforms.uAmplitude.value = this.amplitude;
-      program.uniforms.uBlend.value = this.blend;
-      program.uniforms.uColorStops.value = this.colorStops.map((hex: string) => {
-        const c = new Color(hex);
-        return [c.r, c.g, c.b];
-      });
+      this.program.uniforms.uTime.value = now * 0.01 * this.speed * 0.1;
       renderer.render({ scene: mesh });
     });
 
