@@ -583,50 +583,6 @@ textarea:not([rows]) { min-height: 10em; }
   }
 }
 
-/* Scroll/entry reveal (used by hero and about cards) */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  opacity: 0;
-  animation: fadeInUp 0.6s ease-out forwards;
-}
-
-.fade-in:nth-child(1) { animation-delay: 0.1s; }
-.fade-in:nth-child(2) { animation-delay: 0.2s; }
-.fade-in:nth-child(3) { animation-delay: 0.3s; }
-.fade-in:nth-child(4) { animation-delay: 0.4s; }
-
-/* ============================================
-   ROUTE TRANSITION (placeholder)
-   A quiet opacity/blur fade as each route's component mounts over the
-   persistent background. `router-outlet + *` is the activated component
-   (Angular inserts it as the outlet's next sibling), so this applies to
-   every route without naming them. The reduced-motion rule collapses it to
-   an instant cut. Replaced by the star-map Travel morph in Phase C.
-
-   Fail-open by design: the fade starts from a visible opacity (not 0), so
-   if the animation never advances (e.g. a starved main thread under the
-   WebGL load) content is still readable rather than stuck invisible.
-   ============================================ */
-
-@keyframes routeEnter {
-  from { opacity: 0.6; filter: blur(6px); }
-  to   { opacity: 1; filter: blur(0); }
-}
-
-router-outlet + * {
-  animation: routeEnter 350ms var(--ease-out-quart) both;
-}
-
 /* ============================================
    SCROLL REVEAL (IntersectionObserver-driven)
    Elements with [appScrollReveal] start hidden and slide up when they
