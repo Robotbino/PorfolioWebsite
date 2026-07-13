@@ -52,7 +52,7 @@ _Destination_; navigating between them is _Travel_ across the star map; the cons
 morph / camera move IS the page transition.
 
 **Destination**:
-A route presented as a place in the star map — Home, Work, About, Contact. Each owns a
+A route presented as a place in the star map — Home, Work, About, Certifications, Contact. Each owns a
 constellation.
 _Avoid_: "section" (that was the single-page framing)
 
@@ -98,7 +98,7 @@ bidirectional looping was rejected (fights native scroll at the top; jank risk).
 ## Interaction states & surfaces
 
 **Nav fade**:
-While scrolled away from Home, the Work/About/Contact links fade to a faint ghost (still
+While scrolled away from Home, the Work/About/Certifications/Contact links fade to a faint ghost (still
 focusable) and the Home (house) icon shrinks and mutes; full nav appears only at the Home
 _Destination_. Driven by loop-aware distance-from-Home (not raw `scrollY`), so it is symmetric
 around the _Seam_ and never pops there. Reveals to full on hover / focus; off under reduced

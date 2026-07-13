@@ -1,6 +1,6 @@
 # Bino Hlongwana | Portfolio
 
-A portfolio built as one continuous scrolling journey — four destinations (Home, Work, About, Contact) connected by a morphing star map and a WebGL aurora, looping seamlessly back to the start.
+A portfolio built as one continuous scrolling journey — five destinations (Home, Work, About, Certifications, Contact) connected by a morphing star map and a WebGL aurora, looping seamlessly back to the start.
 
 ![Angular](https://img.shields.io/badge/Angular_19-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
@@ -11,7 +11,7 @@ A portfolio built as one continuous scrolling journey — four destinations (Hom
 
 ## ✨ Features
 
-- **Looping Scroll** — The page scrolls through all four sections and wraps invisibly back to the top via a cloned seam, so the journey never ends
+- **Looping Scroll** — The page scrolls through all five sections and wraps invisibly back to the top via a cloned seam, so the journey never ends
 - **Morphing Star Map** — An SVG constellation interpolates between figures as you scroll, acting as wayfinding for where you are in the loop
 - **WebGL Aurora** — A GLSL simplex-noise shader (via [OGL](https://github.com/oframe/ogl)) renders a living aurora behind every section
 - **Single Frame Loop** — One shared `requestAnimationFrame` pulse runs outside Angular's zone and drives every animation, keeping change detection off the hot path
