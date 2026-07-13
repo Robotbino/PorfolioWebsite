@@ -1,3 +1,4 @@
+import { DESTINATIONS } from '../destinations';
 import { Constellation, Link, Star } from './constellation.model';
 
 /**
@@ -162,11 +163,7 @@ export const byRoute = {
 };
 
 // Destinations in scroll order; the morph runs between adjacent entries and
-// wraps from the last back to the first (the star map loops endlessly).
-export const order: Constellation[] = [
-  byRoute.home,
-  byRoute.work,
-  byRoute.about,
-  byRoute.certifications,
-  byRoute.contact,
-];
+// wraps from the last back to the first (the star map loops endlessly). Derived
+// from the destinations registry so this order can never drift from the shell
+// sections and nav links — the registry is the one source (see destinations.ts).
+export const order: Constellation[] = DESTINATIONS.map((d) => byRoute[d.figure]);
