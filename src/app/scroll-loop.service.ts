@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
-import { positionFor, wrapOffset as computeWrapOffset } from './scroll-loop.math';
+import { computed, Injectable, signal } from '@angular/core';
+import { activeIndexFor, positionFor, wrapOffset as computeWrapOffset } from './scroll-loop.math';
+import { DESTINATIONS } from './destinations';
 
 /**
  * Owns the looping star-map's **Cycle**: the reader's continuous scroll position
@@ -21,6 +22,20 @@ export class ScrollLoopService {
   private readonly _position = signal(0);
   /** Continuous scroll position in destination units (0..cycleLength). Hot path. */
   readonly position = this._position.asReadonly();
+
+  /**
+   * The id of the destination currently in view (e.g. 'dest-work') — the ONE
+   * "where am I" answer, derived from `position` + the destinations registry:
+   * the nearest resting destination, wrapping so the Loop clone reads as Home.
+   * The nav reads this instead of running its own probe/geometry.
+   *
+   * Unlike `position` this is safe to bind: as a `computed` it only notifies
+   * consumers when the id actually changes (~once per destination), not every
+   * frame — the rounding collapses a whole section of positions to one id.
+   */
+  readonly activeDestination = computed(
+    () => DESTINATIONS[activeIndexFor(this._position(), this.cycleLength)]?.id ?? DESTINATIONS[0].id,
+  );
 
   /** Real destinations (Home, Work, About, Contact) = measured sections − the clone. */
   cycleLength = 0;
