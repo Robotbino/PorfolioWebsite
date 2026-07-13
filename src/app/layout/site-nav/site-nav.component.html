@@ -3,21 +3,20 @@
     <a class="logo" href="#dest-home" (click)="scrollToSection('dest-home', $event)"
        aria-label="Bino Hlongwana — home">Bino<span class="logo-dot" aria-hidden="true">.</span></a>
     <ul class="nav-items" role="list">
-      <li>
-        <a href="#dest-work" (click)="scrollToSection('dest-work', $event)" class="nav-link">Experience</a>
-      </li>
-      <li>
-        <a href="#projects" (click)="scrollToSection('projects', $event)" class="nav-link">Projects</a>
-      </li>
-      <li>
-        <a href="#dest-about" (click)="scrollToSection('dest-about', $event)" class="nav-link">About</a>
-      </li>
-      <li>
-        <a href="#dest-certifications" (click)="scrollToSection('dest-certifications', $event)" class="nav-link">Certifications</a>
-      </li>
-      <li>
-        <a href="#dest-contact" (click)="scrollToSection('dest-contact', $event)" class="nav-link">Contact</a>
-      </li>
+      @for (d of destinations; track d.id) {
+        <!-- Desktop omits Home: the logo is the Home link. -->
+        @if (d.id !== 'dest-home') {
+          <li>
+            <a [href]="'#' + d.id" (click)="scrollToSection(d.id, $event)" class="nav-link">{{ d.label }}</a>
+          </li>
+        }
+        <!-- Projects is a sub-anchor inside Work, not a destination — kept explicit, right after Experience. -->
+        @if (d.id === 'dest-work') {
+          <li>
+            <a href="#projects" (click)="scrollToSection('projects', $event)" class="nav-link">Projects</a>
+          </li>
+        }
+      }
     </ul>
     <div class="nav-actions">
       <button class="menu-trigger" #menuTrigger [class.open]="menuOpen"
@@ -39,11 +38,12 @@
      [attr.aria-hidden]="!menuOpen"
      (click)="closeMenu()">
   <nav class="mobile-nav" aria-label="Mobile navigation" (click)="$event.stopPropagation()">
-    <a href="#dest-home" (click)="scrollToSection('dest-home', $event); closeMenu()" class="mobile-link">Home</a>
-    <a href="#dest-work" (click)="scrollToSection('dest-work', $event); closeMenu()" class="mobile-link">Experience</a>
-    <a href="#projects" (click)="scrollToSection('projects', $event); closeMenu()" class="mobile-link">Projects</a>
-    <a href="#dest-about" (click)="scrollToSection('dest-about', $event); closeMenu()" class="mobile-link">About</a>
-    <a href="#dest-certifications" (click)="scrollToSection('dest-certifications', $event); closeMenu()" class="mobile-link">Certifications</a>
-    <a href="#dest-contact" (click)="scrollToSection('dest-contact', $event); closeMenu()" class="mobile-link">Contact</a>
+    @for (d of destinations; track d.id) {
+      <a [href]="'#' + d.id" (click)="scrollToSection(d.id, $event); closeMenu()" class="mobile-link">{{ d.label }}</a>
+      <!-- Projects sub-anchor inside Work, kept explicit right after Experience. -->
+      @if (d.id === 'dest-work') {
+        <a href="#projects" (click)="scrollToSection('projects', $event); closeMenu()" class="mobile-link">Projects</a>
+      }
+    }
   </nav>
 </div>

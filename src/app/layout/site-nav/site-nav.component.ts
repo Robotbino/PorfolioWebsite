@@ -9,6 +9,7 @@ import {
 import { ThemeService } from '../../core/theme.service';
 import { ScrollLoopService } from '../../scroll-loop.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
+import { DESTINATIONS } from '../../destinations';
 
 /**
  * Persistent top navigation. Lives in the app shell so it survives scrolling.
@@ -34,6 +35,11 @@ import { FramePulseService } from '../../core/frame-pulse.service';
 export class SiteNavComponent implements AfterViewInit, OnDestroy {
   // Travel fraction (in destination units) over which the nav fully fades.
   private static readonly FADE_RANGE = 0.5;
+
+  // The real destinations, from the one registry. Both nav lists render these;
+  // the `#projects` sub-anchor and the desktop logo-as-Home stay hand-written
+  // exceptions in the template (they aren't destinations). See destinations.ts.
+  readonly destinations = DESTINATIONS;
 
   menuOpen = false;
 
