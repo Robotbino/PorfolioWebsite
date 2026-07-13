@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Architecture Review — Star-Map Portfolio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  body { background:#14120F; color:#EDE6DC; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .serif { font-family: "Instrument Serif", Georgia, serif; }
+  .panel { background:#1B1814; border:1px solid #2E2822; border-radius:14px; }
+  .chip  { border:1px solid #3A322A; border-radius:999px; padding:2px 10px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; }
+  .filelist code { display:block; font-size:12px; color:#C9BCA9; padding:1px 0; }
+  pre.mermaid { display:flex; justify-content:center; background:#161310; border:1px solid #2A241D; border-radius:10px; padding:10px 6px; margin:0; overflow-x:auto; }
+  pre.mermaid svg { max-width:100%; height:auto; }
+  /* ---- mass diagram shapes: top bar = interface width, block = implementation mass ---- */
+  .mass { display:flex; align-items:flex-end; gap:22px; flex-wrap:wrap; }
+  .mod  { display:flex; flex-direction:column; align-items:center; width:118px; }
+  .mod .iface { height:9px; border-radius:3px 3px 0 0; }
+  .mod .impl  { width:74px; border-radius:0 0 6px 6px; }
+  .mod.deep .iface { background:#7FB57F; }  .mod.deep .impl { background:#2A3626; border:1px solid #4A6244; border-top:none; }
+  .mod.mid  .iface { background:#D9B98A; }  .mod.mid  .impl { background:#332B20; border:1px solid #5A4A38; border-top:none; }
+  .mod.shallow .iface { background:#C97B6B; } .mod.shallow .impl { background:#3A2420; border:1px solid #6B4038; border-top:none; }
+  .mod .name { margin-top:8px; font-size:11px; text-align:center; color:#EDE6DC; line-height:1.3; }
+  .mod .stat { font-size:10px; color:#8F8272; text-align:center; }
+  .winlist li { font-size:13px; padding:2px 0 2px 18px; position:relative; }
+  .winlist li::before { content:"◆"; position:absolute; left:2px; top:3px; font-size:9px; color:#E8A75D; }
+</style>
+</head>
+<body class="antialiased">
+<div class="max-w-6xl mx-auto px-6 py-12">
+
+  <!-- ============ HEADER ============ -->
+  <header class="mb-10">
+    <p class="text-[11px] tracking-[0.25em] uppercase text-[#8F8272] mb-3">Architecture Review · 2026-07-13 · C:\Users\User\Desktop\Coding Projects\ProfessionalPorfolio\ProfessionalPorfolio</p>
+    <h1 class="serif italic text-5xl md:text-6xl text-[#F5EFE6] leading-tight">The Star-Map Portfolio,<br/>weighed module by module</h1>
+    <p class="mt-5 max-w-3xl text-[#B4A794] text-[15px] leading-relaxed">
+      Angular 19, one NgModule, one looping scroll page. A correction to the brief up front:
+      <strong class="text-[#EDE6DC]">there is no 2D-canvas star-field.</strong> The only pixel renderer is the
+      <span class="text-[#E8A75D]">OGL/WebGL aurora backdrop</span>; the "stars" are an <span class="text-[#E8A75D]">SVG constellation</span>
+      mutated per frame. The deep-module pattern you asked for already exists in embryo — <code class="text-xs text-[#C9BCA9]">FramePulseService</code>,
+      <code class="text-xs text-[#C9BCA9]">ScrollLoopService</code> + pure <code class="text-xs text-[#C9BCA9]">*.math.ts</code>, all unit-tested.
+      The entropy lives in what surrounds them: duplicated cross-cutting decisions, three parallel notions of "current section",
+      and tuning data smeared across templates, TS and CSS.
+    </p>
+    <div class="flex flex-wrap gap-2 mt-6">
+      <span class="chip text-[#7FB57F]">deep = small interface, big implementation</span>
+      <span class="chip text-[#C97B6B]">shallow = interface ≈ implementation</span>
+      <span class="chip text-[#D9B98A]">seam = where behaviour can be swapped</span>
+      <span class="chip text-[#B4A794]">deletion test = delete it; does complexity vanish?</span>
+    </div>
+  </header>
+
+  <!-- ============ SYSTEM MAP ============ -->
+  <section class="mb-12">
+    <h2 class="serif italic text-3xl text-[#F5EFE6] mb-1">1 · System map — the seams as they stand</h2>
+    <p class="text-[#8F8272] text-sm mb-4">Solid = clean interface crossing. Dashed = leak: DOM back-channels, template-authored render data, two writers on one property.</p>
+    <div class="panel p-4">
+<pre class="mermaid">
+flowchart LR
+  subgraph SHELL["App shell"]
+    APP["AppComponent&lt;br/&gt;owns all scroll/offset DOM I/O"]
+    TPL["app.component.html&lt;br/&gt;5 sections + Home clone"]
+  end
+  subgraph CORE["Deep core — tested"]
+    SLS["ScrollLoopService&lt;br/&gt;position · cycleLength · wrapOffset"]
+    FPS["FramePulseService&lt;br/&gt;one rAF, out of zone"]
+  end
+  subgraph VIS["Visual systems"]
+    AUR["Aurora — WebGL/OGL"]
+    CON["Constellation — SVG morph"]
+    NAV["SiteNav — mute + active link"]
+    WRK["Work — sticky showcase"]
+    CRT["Certifications — cursor + FLIP"]
+  end
+  DOC["documentElement"]
+  APP -->|"setAnchors · update · wrapOffset"| SLS
+  CON -->|"position()"| SLS
+  NAV -->|"position()"| SLS
+  FPS -->|"tick"| AUR
+  FPS -->|"tick"| CON
+  FPS -->|"tick"| NAV
+  FPS -->|"tick"| WRK
+  FPS -->|"tick"| CRT
+  TPL -.->|"raw hex palette via @Input"| AUR
+  NAV -.->|"querySelector('.dest-clone'), getElementById"| TPL
+  NAV -.->|"overflowY lock"| DOC
+  CRT -.->|"overflowY lock (2nd writer)"| DOC
+  classDef leak stroke:#C97B6B,color:#EDE6DC
+  class DOC leak
+</pre>
+    </div>
+  </section>
+
+  <!-- ============ MASS DIAGRAM ============ -->
+  <section class="mb-14">
+    <h2 class="serif italic text-3xl text-[#F5EFE6] mb-1">2 · Mass diagram — interface width vs implementation depth</h2>
+    <p class="text-[#8F8272] text-sm mb-6">Top bar = what a caller must know (methods, inputs, DOM conventions, invariants). Block = implementation mass (~lines). <span class="text-[#7FB57F]">Deep: narrow over tall.</span> <span class="text-[#C97B6B]">Shallow: wide over thin.</span></p>
+    <div class="panel p-6">
+      <div class="mass">
+        <div class="mod deep"><div class="iface" style="width:26px"></div><div class="impl" style="height:52px"></div><div class="name">ScrollLoop svc + math</div><div class="stat">5 members · ~107 ln · spec ✓</div></div>
+        <div class="mod deep"><div class="iface" style="width:14px"></div><div class="impl" style="height:24px"></div><div class="name">FramePulse</div><div class="stat">1 method · 47 ln · spec ✓</div></div>
+        <div class="mod deep"><div class="iface" style="width:18px"></div><div class="impl" style="height:48px"></div><div class="name">MorphDriver + morph</div><div class="stat">2 exports · ~104 ln · spec ✓</div></div>
+        <div class="mod deep"><div class="iface" style="width:28px"></div><div class="impl" style="height:34px"></div><div class="name">certifications.math</div><div class="stat">5 fns · 71 ln · spec ✓</div></div>
+        <div class="mod deep"><div class="iface" style="width:24px"></div><div class="impl" style="height:118px"></div><div class="name">Aurora</div><div class="stat">4 inputs · 304 ln · GLSL hidden</div></div>
+        <div class="mod mid"><div class="iface" style="width:52px"></div><div class="impl" style="height:98px"></div><div class="name">Work</div><div class="stat">5 pub + template contract · 250 ln</div></div>
+        <div class="mod mid"><div class="iface" style="width:66px"></div><div class="impl" style="height:88px"></div><div class="name">SiteNav</div><div class="stat">6 pub + section-id + clone conventions · 220 ln</div></div>
+        <div class="mod mid"><div class="iface" style="width:74px"></div><div class="impl" style="height:160px"></div><div class="name">Certifications</div><div class="stat">8 methods · 2 signals · 11 ViewChild · 409 ln</div></div>
+        <div class="mod shallow"><div class="iface" style="width:56px"></div><div class="impl" style="height:10px"></div><div class="name">ThemeToggle</div><div class="stat">wraps theme.toggle() · 22 ln</div></div>
+        <div class="mod shallow"><div class="iface" style="width:52px"></div><div class="impl" style="height:9px"></div><div class="name">Landingpage</div><div class="stat">downloadCV() only · 20 ln</div></div>
+        <div class="mod shallow"><div class="iface" style="width:64px"></div><div class="impl" style="height:9px"></div><div class="name">AppRoutingModule</div><div class="stat">4 routes · renders nothing · 20 ln</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CARDS ============ -->
+  <section class="mb-14">
+    <h2 class="serif italic text-3xl text-[#F5EFE6] mb-1">3 · Refactoring candidates</h2>
+    <p class="text-[#8F8272] text-sm mb-6">Ranked by leverage. C2 + C3 are natural companions — together they form "the Cycle seam".</p>
+    <div class="space-y-8">
+
+      <!-- C1 -->
+      <article class="panel p-6" id="c1">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C1</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Delete the vestigial route layer &amp; dead weight</h3>
+          <span class="chip text-[#7FB57F]">leverage · high</span><span class="chip text-[#B4A794]">effort · S</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-[#8F8272] mb-1">Files involved</p>
+            <div class="filelist mb-4"><code>src/app/app-routing.module.ts</code><code>src/app/app.module.ts (import + CUSTOM_ELEMENTS_SCHEMA)</code><code>src/index.html:27 (spline-viewer script)</code><code>src/styles.css (router-outlet rule, unused .fade-in)</code></div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Problem:</strong> The routing module and Spline loader are shallow modules that fail the Deletion Test — four routes with no <code class="text-xs">router-outlet</code> anywhere, a web-component script with no element in any template.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Solution:</strong> Delete them outright; complexity vanishes instead of moving, and the module graph shrinks to what actually renders. (<code class="text-xs">rxjs</code> stays — Angular peer dependency.)</p>
+            <ul class="winlist"><li>Complexity vanishes, not migrates</li><li>Unpkg request gone; faster boot</li><li>CUSTOM_ELEMENTS_SCHEMA blanket removed</li><li>Docs drift shrinks too</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — false seams</p>
+<pre class="mermaid">
+flowchart LR
+  AM["AppModule"] --> ARM["AppRoutingModule&lt;br/&gt;4 routes"]
+  ARM -.-> OUT["router-outlet?&lt;br/&gt;exists nowhere"]
+  IDX["index.html"] --> SPL["spline-viewer.js"]
+  SPL -.-> EL["spline-viewer element?&lt;br/&gt;used nowhere"]
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  classDef ghost fill:#1B1814,stroke:#5A4A38,color:#8F8272,stroke-dasharray:4
+  class ARM,SPL bad
+  class OUT,EL ghost
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — deletion test passed</p>
+<pre class="mermaid">
+flowchart LR
+  AM["AppModule"] --> R["Only what renders"]
+  GONE["route layer · spline · dead CSS&lt;br/&gt;deleted — nothing reappeared"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  classDef ghost fill:#1B1814,stroke:#5A4A38,color:#8F8272,stroke-dasharray:4
+  class R good
+  class GONE ghost
+</pre></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C2 -->
+      <article class="panel p-6" id="c2">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C2</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Destination registry — one source of truth for the cycle</h3>
+          <span class="chip text-[#7FB57F]">leverage · high</span><span class="chip text-[#B4A794]">effort · M</span><span class="chip text-[#D9B98A]">pairs with C3</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-[#8F8272] mb-1">Files involved</p>
+            <div class="filelist mb-4"><code>src/app/app.component.html (section ids)</code><code>src/app/layout/site-nav/site-nav.component.html (desktop + mobile lists)</code><code>src/app/constellation/constellation.figures.ts (order)</code></div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Problem:</strong> The Destination list — ids, labels, order — is one concept maintained as three hand-synchronized copies, so adding a section is shotgun surgery with silent-drift risk.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Solution:</strong> Extract a <code class="text-xs">destinations.ts</code> data module (id, label, figure) whose interface the shell, both nav lists, and the constellation order all consume.</p>
+            <ul class="winlist"><li>Add a section: one edit</li><li>Ids can never drift</li><li>Nav lists derive, not duplicate</li><li>Locality for the cycle concept</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — three parallel lists</p>
+<pre class="mermaid">
+flowchart LR
+  A["app.component.html&lt;br/&gt;dest-home … dest-contact"]
+  B["site-nav.html&lt;br/&gt;desktop list + mobile list"]
+  C["constellation.figures.ts&lt;br/&gt;order[]"]
+  A -.->|"must match by hand"| B
+  B -.->|"must match by hand"| C
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class A,B,C bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — one interface, three consumers</p>
+<pre class="mermaid">
+flowchart LR
+  D["destinations.ts&lt;br/&gt;id · label · figure"]
+  D --> S["shell sections"]
+  D --> N["nav links ×2"]
+  D --> F["figure order"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class D good
+</pre></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C3 -->
+      <article class="panel p-6" id="c3">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C3</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">One "where am I" — deepen ScrollLoopService</h3>
+          <span class="chip text-[#7FB57F]">leverage · high</span><span class="chip text-[#B4A794]">effort · M</span><span class="chip text-[#D9B98A]">pairs with C2</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-[#8F8272] mb-1">Files involved</p>
+            <div class="filelist mb-4"><code>src/app/scroll-loop.service.ts · scroll-loop.math.ts</code><code>src/app/layout/site-nav/site-nav.component.ts (updateActiveLink, measureTargets, collectLinks, own ResizeObserver)</code><code>src/app/app.component.ts</code></div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Problem:</strong> Three modules answer "which destination is current" with three different algorithms and private geometry caches — locality is broken and the answers can disagree near the seam.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Solution:</strong> Deepen <code class="text-xs">ScrollLoopService</code>'s interface with <code class="text-xs">activeDestination</code> (derived from position + the registry) so the nav becomes an adapter consuming it and deletes its parallel probe, targets cache, and body ResizeObserver.</p>
+            <ul class="winlist"><li>One algorithm, one truth</li><li>Nav sheds ~60 DOM lines</li><li>Seam-aware wrap for free</li><li>Interface is the test surface</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — three answers</p>
+<pre class="mermaid">
+flowchart LR
+  P1["ScrollLoop position&lt;br/&gt;0.85·vh band"]
+  P2["SiteNav probe&lt;br/&gt;mid-viewport + own cache + RO"]
+  P3["Shell reveal IO&lt;br/&gt;threshold 0.15"]
+  DOM["scrollY · offsets"]
+  DOM --> P1
+  DOM --> P2
+  DOM --> P3
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class P1,P2,P3 bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — one deep module</p>
+<pre class="mermaid">
+flowchart LR
+  SLS["ScrollLoopService&lt;br/&gt;position · activeDestination"]
+  SLS --> NAV["nav active link"]
+  SLS --> CON["constellation morph"]
+  SLS --> MUTE["nav mute"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class SLS good
+</pre></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C4 -->
+      <article class="panel p-6" id="c4">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C4</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Motion-capability seam + hidden-tab pause</h3>
+          <span class="chip text-[#7FB57F]">leverage · high</span><span class="chip text-[#B4A794]">effort · M</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-[#8F8272] mb-1">Files involved</p>
+            <div class="filelist mb-4"><code>7 TS files re-reading matchMedia('prefers-reduced-motion')</code><code>app, site-nav, about, constellation, work, certifications</code><code>src/app/core/frame-pulse.service.ts (no visibilitychange)</code><code>aurora / certifications / work — 3 different pointer tests</code></div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Problem:</strong> Every visual system privately re-implements the "may I animate" decision (reduced-motion ×7, pointer capability ×3), and nothing pauses the WebGL frame loop in hidden tabs.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Solution:</strong> One <code class="text-xs">MotionSettings</code> module (reducedMotion / finePointer signals) becomes the interface every renderer consumes, while <code class="text-xs">FramePulseService</code> hides <code class="text-xs">visibilitychange</code> inside its implementation.</p>
+            <ul class="winlist"><li>7 matchMedia reads → 1</li><li>rAF stops when tab hidden</li><li>Live preference changes propagate</li><li>Renderers stay dumb adapters</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — each asks the browser</p>
+<pre class="mermaid">
+flowchart LR
+  MM["matchMedia"]
+  A["app"] --> MM
+  B["nav"] --> MM
+  C["about"] --> MM
+  D["constellation"] --> MM
+  E["work"] --> MM
+  F["certs"] --> MM
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class A,B,C,D,E,F bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — one seam, paused when hidden</p>
+<pre class="mermaid">
+flowchart LR
+  MS["MotionSettings&lt;br/&gt;reducedMotion · finePointer"]
+  FP["FramePulse&lt;br/&gt;+ visibility pause"]
+  MS --> R["all renderers"]
+  FP --> R
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class MS,FP good
+</pre></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C5 -->
+      <article class="panel p-6" id="c5">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C5</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Ref-counted scroll lock — one owner for overflowY</h3>
+          <span class="chip text-[#D9B98A]">leverage · medium</span><span class="chip text-[#B4A794]">effort · S</span><span class="chip text-[#C97B6B]">latent bug</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-[#8F8272] mb-1">Files involved</p>
+            <div class="filelist mb-4"><code>src/app/layout/site-nav/site-nav.component.ts:117 (setScrollLock)</code><code>src/app/pages/certifications/certifications.component.ts (openSpotlight / closeSpotlight)</code></div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Problem:</strong> Two copy-pasted implementations of the root <code class="text-xs">overflowY</code> lock share one DOM property with no owner, so whichever releases second clobbers the other's lock (spotlight open + menu toggled).</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Solution:</strong> A <code class="text-xs">ScrollLockService</code> with acquire()/release() ref-counting owns the property and the iOS touchmove workaround; both callers become adapters of one interface.</p>
+            <ul class="winlist"><li>Clobbering bug becomes impossible</li><li>Rationale comment lives once</li><li>iOS workaround written once</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — two writers, no owner</p>
+<pre class="mermaid">
+flowchart LR
+  NAV["SiteNav lock"] -->|"overflowY = hidden / ''"| DOC["documentElement"]
+  CRT["Certs spotlight lock"] -->|"overflowY = hidden / ''"| DOC
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class NAV,CRT bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — one owner, counted</p>
+<pre class="mermaid">
+flowchart LR
+  NAV["SiteNav"] -->|"acquire / release"| LOCK["ScrollLockService&lt;br/&gt;refcount ≥ 1 ⇒ locked"]
+  CRT["Certifications"] -->|"acquire / release"| LOCK
+  LOCK --> DOC["documentElement"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class LOCK good
+</pre></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C6 -->
+      <article class="panel p-6" id="c6">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C6</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Aurora palette behind the theme seam</h3>
+          <span class="chip text-[#D9B98A]">leverage · medium</span><span class="chip text-[#B4A794]">effort · S</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-[#8F8272] mb-1">Files involved</p>
+            <div class="filelist mb-4"><code>src/app/app.component.html:2-8 (raw hex triples + tuning)</code><code>src/app/aurora/aurora.component.ts (new Color() per frame)</code><code>src/app/core/theme.service.ts</code></div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Problem:</strong> The WebGL renderer's most important input — its palette — is authored as raw hex in the shell template, outside the token system, and re-converted with <code class="text-xs">new Color()</code> on every frame.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Solution:</strong> Move the theme→palette mapping behind a theme-owned aurora-palette module (the aurora keeps its already-clean @Input seam) and memoize conversion to once per theme flip.</p>
+            <ul class="winlist"><li>Shell stops knowing GLSL inputs</li><li>Palette joins the token system</li><li>Per-frame allocations → zero</li><li>Theme tuning in one file</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — template authors render data</p>
+<pre class="mermaid">
+flowchart LR
+  TPL["shell template&lt;br/&gt;'#1E1C1A' '#3D312A' '#5A3D2B'"] -->|"@Input"| AUR["Aurora"]
+  AUR -->|"new Color(hex) every frame"| GPU["GPU"]
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class TPL bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — theme owns the mapping</p>
+<pre class="mermaid">
+flowchart LR
+  THM["ThemeService"] --> PAL["aurora-palette.ts&lt;br/&gt;isDark → stops·blend·amplitude"]
+  PAL -->|"@Input (unchanged seam)"| AUR["Aurora&lt;br/&gt;memoized Color"]
+  AUR --> GPU["GPU"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class PAL good
+</pre></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C7 -->
+      <article class="panel p-6" id="c7">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C7</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Theme decision &amp; tokens — write once</h3>
+          <span class="chip text-[#D9B98A]">leverage · medium</span><span class="chip text-[#B4A794]">effort · M</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-[#8F8272] mb-1">Files involved</p>
+            <div class="filelist mb-4"><code>src/index.html:13-24 (pre-paint inline script)</code><code>src/app/core/theme.service.ts (same rule again)</code><code>src/styles.css (color tokens ×3 blocks, glass ×4)</code></div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Problem:</strong> The dark-or-light decision is implemented twice (inline FOUC guard vs ThemeService) and the token palette three-to-four times, so any palette change fans out across multiple blocks plus a script.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Solution:</strong> Keep the FOUC guard but make it a dumb adapter of one decision rule, and collapse the duplicated token blocks (CSS <code class="text-xs">light-dark()</code> or a single tokens layer keyed off one class).</p>
+            <ul class="winlist"><li>Palette change = one block</li><li>Decision logic single-sourced</li><li>FOUC guard stays intact</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — 2 decisions, 3–4 palettes</p>
+<pre class="mermaid">
+flowchart LR
+  S1["inline script rule"] --> H["html.dark-mode"]
+  S2["ThemeService rule"] --> H
+  H --> T1["tokens @media"]
+  H --> T2["tokens .light-mode"]
+  H --> T3["tokens .dark-mode"]
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class S1,S2,T1,T2,T3 bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — one rule, one palette</p>
+<pre class="mermaid">
+flowchart LR
+  R["one decision rule"] --> H["html class"]
+  H --> T["one token block&lt;br/&gt;light-dark()"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class R,T good
+</pre></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C8 -->
+      <article class="panel p-6" id="c8">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C8</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Shared motion math — dedupe the smoothing formula</h3>
+          <span class="chip text-[#D9B98A]">leverage · medium</span><span class="chip text-[#B4A794]">effort · S</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-[#8F8272] mb-1">Files involved</p>
+            <div class="filelist mb-4"><code>src/app/pages/work/work.component.ts:178 (inline copy)</code><code>src/app/pages/certifications/certifications.math.ts:13 (tested export)</code><code>src/app/constellation/morph-driver.ts (own constants)</code></div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Problem:</strong> The frame-rate-independent smoothing <code class="text-xs">1−(1−base)^(dt/16.7)</code> exists as a copy-paste implementation in Work and a spec-covered export in certifications.math — same math, two modules, one test.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Solution:</strong> Promote it (plus the shared easings) into a pure <code class="text-xs">motion.math.ts</code> module so every rAF system leans on one tested implementation.</p>
+            <ul class="winlist"><li>One formula, one spec</li><li>Work's tick gains tested math</li><li>Future systems import, not re-derive</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — twin formulas</p>
+<pre class="mermaid">
+flowchart LR
+  W["work.component.ts&lt;br/&gt;inline, untested"]
+  CM["certifications.math.ts&lt;br/&gt;smoothingK, spec ✓"]
+  W -.->|"same math, copied"| CM
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class W bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — one pure module</p>
+<pre class="mermaid">
+flowchart LR
+  MM["motion.math.ts&lt;br/&gt;smoothingK · easings · spec ✓"]
+  MM --> W["work tick"]
+  MM --> C["certs tick"]
+  MM --> M["morph driver"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class MM good
+</pre></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- C9 -->
+      <article class="panel p-6" id="c9">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C9</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">One in-viewport seam — four IntersectionObservers</h3>
+          <span class="chip text-[#B4A794]">leverage · lower</span><span class="chip text-[#B4A794]">effort · M</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-[11px] uppercase tracking-widest text-[#8F8272] mb-1">Files involved</p>
+            <div class="filelist mb-4"><code>src/app/app.component.ts:46-60 (section reveal)</code><code>src/app/scroll-reveal.directive.ts (block reveal)</code><code>src/app/pages/about/about.component.ts (midline glow)</code><code>src/app/pages/certifications/certifications.component.ts:96 (arming)</code></div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Problem:</strong> "Element entered the viewport" is re-implemented four times with different thresholds and lifecycles — a shallow pattern copied instead of a deep module shared.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Solution:</strong> One configurable in-view module (threshold, rootMargin, once) behind which all four become adapters, with the reveal CSS keying off a single class contract.</p>
+            <ul class="winlist"><li>4 observers → 1 module</li><li>Options replace copies</li><li>Reveal semantics documented once</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — four private observers</p>
+<pre class="mermaid">
+flowchart LR
+  IO1["shell IO 0.15"]
+  IO2["directive IO 0.15"]
+  IO3["about IO −50% midline"]
+  IO4["certs IO +50% arm"]
+  V["viewport"]
+  V --> IO1
+  V --> IO2
+  V --> IO3
+  V --> IO4
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class IO1,IO2,IO3,IO4 bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — one module, four adapters</p>
+<pre class="mermaid">
+flowchart LR
+  IV["in-view module&lt;br/&gt;threshold · rootMargin · once"]
+  IV --> A["section reveal"]
+  IV --> B["block reveal"]
+  IV --> C["about glow"]
+  IV --> D["certs arming"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class IV good
+</pre></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ ALREADY DEEP ============ -->
+  <section class="mb-12">
+    <h2 class="serif italic text-3xl text-[#F5EFE6] mb-4">4 · Already deep — extend, don't touch</h2>
+    <div class="panel p-6 border-[#4A6244]" style="border-color:#3D5237">
+      <div class="grid md:grid-cols-2 gap-x-10 gap-y-3 text-sm">
+        <div><strong class="text-[#7FB57F]">ScrollLoopService + scroll-loop.math</strong> — the Cycle behind a 5-member interface; DOM I/O stays in the shell, math is pure and spec'd. This is the house pattern (ADR-0007); C3 extends it rather than replacing it.</div>
+        <div><strong class="text-[#7FB57F]">FramePulseService</strong> — one rAF, out of zone, ref-counted, one-method interface. Every renderer already adapts to it; C4 deepens it with visibility handling.</div>
+        <div><strong class="text-[#7FB57F]">MorphDriver + constellation-morph + figures</strong> — morph physics and interpolation as pure, spec-covered modules; the component is a thin SVG adapter.</div>
+        <div><strong class="text-[#7FB57F]">certifications.math</strong> — tilt, mask, FLIP arithmetic extracted and tested; the 409-line component is heavy, but its math already sits behind a seam.</div>
+        <div><strong class="text-[#7FB57F]">Aurora's @Input seam</strong> — the only true pixel renderer has the cleanest interface in the app (4 inputs hiding 300 lines + GLSL). C6 fixes what feeds it, not the module.</div>
+        <div><strong class="text-[#D9B98A]">Doc drift note</strong> — README / CONTEXT / ADR-0007 still describe a 4-destination cycle; the code runs 5 (Certifications). Fold a docs-true-up into whichever candidate lands first.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="text-center py-10 border-t border-[#2E2822]">
+    <p class="serif italic text-2xl text-[#F5EFE6] mb-2">Which of these architectural changes would you like to explore?</p>
+    <p class="text-[#8F8272] text-sm">Answer with card ids (e.g. "C2 + C3"). Next: the grilling loop, then a roadmap of tiny always-green commits.</p>
+  </footer>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    securityLevel: 'loose',
+    theme: 'base',
+    themeVariables: {
+      darkMode: true,
+      background: '#161310',
+      primaryColor: '#2A241D',
+      primaryTextColor: '#EDE6DC',
+      primaryBorderColor: '#5A4A38',
+      lineColor: '#8A7A66',
+      secondaryColor: '#241F19',
+      tertiaryColor: '#1B1814',
+      clusterBkg: '#1B1814',
+      clusterBorder: '#3A322A',
+      edgeLabelBackground: '#14120F',
+      fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+      fontSize: '12.5px'
+    },
+    flowchart: { curve: 'basis', htmlLabels: true, padding: 8 }
+  });
+</script>
+</body>
+</html>
