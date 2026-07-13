@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { resolveTheme } from './theme.decision';
+import { auroraPalette as auroraPaletteFor } from './aurora-palette';
 
 const STORAGE_KEY = 'theme';
 
@@ -15,6 +16,13 @@ export class ThemeService {
 
   /** True when dark mode is active. Read in templates as `theme.isDark()`. */
   readonly isDark = signal<boolean>(false);
+
+  /**
+   * Aurora backdrop tuning for the current theme. Memoized so the aurora's
+   * @Inputs change only on a theme flip, not every change-detection cycle —
+   * this is what lets the raw hex + GLSL tuning leave the shell template.
+   */
+  readonly auroraPalette = computed(() => auroraPaletteFor(this.isDark()));
 
   constructor() {
     const saved = localStorage.getItem(STORAGE_KEY);
