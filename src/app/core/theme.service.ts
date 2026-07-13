@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { resolveTheme } from './theme.decision';
 
 const STORAGE_KEY = 'theme';
 
@@ -17,12 +18,8 @@ export class ThemeService {
 
   constructor() {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === 'dark' || saved === 'light') {
-      this.isDark.set(saved === 'dark');
-      this.hasManualOverride = true;
-    } else {
-      this.isDark.set(this.mediaQuery.matches);
-    }
+    this.hasManualOverride = saved === 'dark' || saved === 'light';
+    this.isDark.set(resolveTheme(saved, this.mediaQuery.matches) === 'dark');
     this.applyTheme();
 
     // Follow the OS preference only while the user hasn't made a manual choice.
