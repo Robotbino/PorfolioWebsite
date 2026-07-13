@@ -76,47 +76,43 @@
   /* Persistent nav height — the hero subtracts this to fill exactly one viewport. */
   --nav-height: 6rem;
 
-  /* Light Mode Colors */
-  --color-background: #ffffff;
-  --color-text-primary: #1a1a1a;
-  /* Warm charcoal ramp (not neutral grey) — ties the text hierarchy to the
-     --color-accent-vivid orange family and the cream aurora stops instead of
-     reading as a colder, bolted-on grey system. Darkened from the original
-     palette because the real backdrop is the aurora's warm highlight
-     (#FAF0E8), not paper-white — contrast against pure white alone
-     understated how thin the margin actually was. */
-  --color-text-secondary: #3d3a36;
-  --color-text-tertiary: #4f4b46;
-  /* `--color-text-muted` is the dimmest label tier and still needs to clear
-     WCAG AA for small text — 4.5:1 — against the aurora's warm highlight, not
-     just white; #5f5a54 holds ~6.1:1 there. */
-  --color-text-muted: #5f5a54;
-  --color-accent: #000000;
-  --color-accent-hover: #333333;
-  /* Striking warm accent — the one hue allowed to break the monochrome.
-     Deep orange so it stays legible on the near-white light background. */
-  --color-accent-vivid: #d9480f;
-  --color-accent-vivid-hover: #b8380a;
-  /* Hairline dividers, darkened to actually register against the aurora's
-     cream/tan highlights — the previous #e0e0e0/#d0d0d0 pair sat under 1.5:1
-     there and effectively disappeared. */
-  --color-border: #9a9080;
-  --color-border-dark: #7d7462;
-  --color-card-bg: #ffffff;
-  --color-tag-bg: #e9e4da;
-  --color-tag-hover: #ddd5c7;
-  --color-linkedin: #0A66C2;
-  /* About ledger glow glyphs — darkened on light so the glyphs register
-     against the warm near-white field; the amber/blue originals on dark. */
-  --color-glow-bulb: #b45309;
-  --color-glow-code: #1d6fd1;
+  /* Theme colours, each declared ONCE as light-dark(<light>, <dark>).
+     `color-scheme` (set on :root below, forced by .light-mode / .dark-mode)
+     picks the side — so these follow the OS with no class, and the manual
+     toggle with one class. See docs/adr and the theme.decision seam. */
+  color-scheme: light dark;
+  --color-background: light-dark(#ffffff, #121212);
+  --color-text-primary: light-dark(#1a1a1a, #e0e0e0);
+  /* Light: a warm charcoal ramp (not neutral grey), darkened to hold contrast
+     against the aurora's warm highlight (#FAF0E8), not paper-white. */
+  --color-text-secondary: light-dark(#3d3a36, #b0b0b0);
+  --color-text-tertiary: light-dark(#4f4b46, #999999);
+  /* Dimmest label tier; the light value holds ~6.1:1 on the warm highlight. */
+  --color-text-muted: light-dark(#5f5a54, #909090);
+  --color-accent: light-dark(#000000, #ffffff);
+  --color-accent-hover: light-dark(#333333, #e0e0e0);
+  /* The one hue allowed to break the monochrome: deep orange on light so it
+     stays legible on near-white; brighter on dark to pop off near-black. */
+  --color-accent-vivid: light-dark(#d9480f, #ff8c42);
+  --color-accent-vivid-hover: light-dark(#b8380a, #ffa363);
+  /* Hairline dividers, dark enough to register against the aurora's highlights. */
+  --color-border: light-dark(#9a9080, #333333);
+  --color-border-dark: light-dark(#7d7462, #444444);
+  --color-card-bg: light-dark(#ffffff, #1e1e1e);
+  --color-tag-bg: light-dark(#e9e4da, #2a2a2a);
+  --color-tag-hover: light-dark(#ddd5c7, #333333);
+  --color-linkedin: light-dark(#0A66C2, #2D8FF7);
+  /* About ledger glow glyphs — darkened on light to register on the warm field. */
+  --color-glow-bulb: light-dark(#b45309, #f5a623);
+  --color-glow-code: light-dark(#1d6fd1, #3d9bf5);
 
-  /* Gradient overlay colors */
-  --gradient-overlay-start: rgba(255, 255, 255, 0);
-  --gradient-overlay-mid: rgba(255, 255, 255, 0.3);
-  --gradient-overlay-strong: rgba(255, 255, 255, 0.8);
-  --gradient-overlay-full: rgba(255, 255, 255, 1);
-  --scrim-rgb: 255,255,255;
+  /* Gradient overlay + scrim track the background. scrim-rgb is a raw triple
+     used inside rgba(), so it can't be light-dark() — .dark-mode flips it. */
+  --gradient-overlay-start: light-dark(rgba(255, 255, 255, 0), rgba(18, 18, 18, 0));
+  --gradient-overlay-mid: light-dark(rgba(255, 255, 255, 0.3), rgba(18, 18, 18, 0.3));
+  --gradient-overlay-strong: light-dark(rgba(255, 255, 255, 0.8), rgba(18, 18, 18, 0.8));
+  --gradient-overlay-full: light-dark(rgba(255, 255, 255, 1), rgba(18, 18, 18, 1));
+  --scrim-rgb: 255, 255, 255;
 
   /* Spacing Scale */
   --space-xs: 0.25rem;
@@ -137,11 +133,11 @@
   --radius-xl: 2rem;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
-  --shadow-hover: 0 12px 35px rgba(0, 0, 0, 0.15);
+  /* Shadows — deeper on dark; only the alpha differs, via light-dark(). */
+  --shadow-sm: 0 1px 3px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.2));
+  --shadow-md: 0 4px 12px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+  --shadow-lg: 0 10px 30px light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.4));
+  --shadow-hover: 0 12px 35px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.5));
 
   /* Easing curves */
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
@@ -160,108 +156,19 @@
 }
 
 /* ============================================
-   DARK MODE
+   THEME OVERRIDE — the colour tokens above follow `color-scheme` via
+   light-dark(), so the manual classes only need to FLIP the scheme (plus the
+   one non-colour token, --scrim-rgb, that can't be light-dark()). With no
+   class, :root's `color-scheme: light dark` follows the OS; the pre-paint guard
+   and ThemeService add .dark-mode / .light-mode to force a choice.
    ============================================ */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #121212;
-    --color-text-primary: #e0e0e0;
-    --color-text-secondary: #b0b0b0;
-    --color-text-tertiary: #999999;
-    --color-text-muted: #909090;
-    --color-accent: #ffffff;
-    --color-accent-hover: #e0e0e0;
-  /* Brighter on dark so the accent pops against the near-black field. */
-  --color-accent-vivid: #ff8c42;
-  --color-accent-vivid-hover: #ffa363;
-    --color-border: #333333;
-    --color-border-dark: #444444;
-    --color-card-bg: #1e1e1e;
-    --color-tag-bg: #2a2a2a;
-    --color-tag-hover: #333333;
-    --color-linkedin: #2D8FF7;
-    --color-glow-bulb: #f5a623;
-    --color-glow-code: #3d9bf5;
-
-    /* Gradient overlay colors */
-    --gradient-overlay-start: rgba(18, 18, 18, 0);
-    --gradient-overlay-mid: rgba(18, 18, 18, 0.3);
-    --gradient-overlay-strong: rgba(18, 18, 18, 0.8);
-    --gradient-overlay-full: rgba(18, 18, 18, 1);
-    --scrim-rgb: 18,18,18;
-
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
-    --shadow-hover: 0 12px 35px rgba(0, 0, 0, 0.5);
-  }
-}
-
-/* Manual light mode override (when OS prefers dark but user toggles to light) */
 .light-mode {
-  --color-background: #ffffff;
-  --color-text-primary: #1a1a1a;
-  --color-text-secondary: #3d3a36;
-  --color-text-tertiary: #4f4b46;
-  --color-text-muted: #5f5a54;
-  --color-accent: #000000;
-  --color-accent-hover: #333333;
-  /* Striking warm accent — the one hue allowed to break the monochrome.
-     Deep orange so it stays legible on the near-white light background. */
-  --color-accent-vivid: #d9480f;
-  --color-accent-vivid-hover: #b8380a;
-  --color-border: #9a9080;
-  --color-border-dark: #7d7462;
-  --color-card-bg: #ffffff;
-  --color-tag-bg: #e9e4da;
-  --color-tag-hover: #ddd5c7;
-  --color-linkedin: #0A66C2;
-  --color-glow-bulb: #b45309;
-  --color-glow-code: #1d6fd1;
-
-  --gradient-overlay-start: rgba(255, 255, 255, 0);
-  --gradient-overlay-mid: rgba(255, 255, 255, 0.3);
-  --gradient-overlay-strong: rgba(255, 255, 255, 0.8);
-  --gradient-overlay-full: rgba(255, 255, 255, 1);
-  --scrim-rgb: 255,255,255;
-
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
-  --shadow-hover: 0 12px 35px rgba(0, 0, 0, 0.15);
+  color-scheme: light;
 }
 
-/* Manual dark mode toggle */
 .dark-mode {
-  --color-background: #121212;
-  --color-text-primary: #e0e0e0;
-  --color-text-secondary: #b0b0b0;
-  --color-text-tertiary: #999999;
-  --color-text-muted: #909090;
-  --color-accent: #ffffff;
-  --color-accent-hover: #e0e0e0;
-  /* Brighter on dark so the accent pops against the near-black field. */
-  --color-accent-vivid: #ff8c42;
-  --color-accent-vivid-hover: #ffa363;
-  --color-border: #333333;
-  --color-border-dark: #444444;
-  --color-card-bg: #1e1e1e;
-  --color-tag-bg: #2a2a2a;
-  --color-tag-hover: #333333;
-  --color-linkedin: #2D8FF7;
-  --color-glow-bulb: #f5a623;
-  --color-glow-code: #3d9bf5;
-
-  --gradient-overlay-start: rgba(18, 18, 18, 0);
-  --gradient-overlay-mid: rgba(18, 18, 18, 0.3);
-  --gradient-overlay-strong: rgba(18, 18, 18, 0.8);
-  --gradient-overlay-full: rgba(18, 18, 18, 1);
-  --scrim-rgb: 18,18,18;
-
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
-  --shadow-hover: 0 12px 35px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+  --scrim-rgb: 18, 18, 18;
 }
 
 /* ============================================
