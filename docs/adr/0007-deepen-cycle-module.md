@@ -55,3 +55,29 @@ Promote it to the deep **Cycle module**, `ScrollLoopService` (`scroll-loop.servi
   files. It earns its keep.
 - A pre-measure window exists where `cycleLength` is `0`; the nav skips muting and the constellation
   falls back to its own figure count, so nothing divides by zero.
+
+## Addendum (2026-07-13) — `activeDestination` joins the interface
+
+The Cycle answered "how far along am I" (`position`) but not "which destination is that". Three
+modules computed the latter independently — the nav ran its own midpoint probe over a cached list
+of section tops (with a body `ResizeObserver` and a separate clone check), on top of the loop's
+`position` and the shell's reveal observer. So "where am I" had three answers that could disagree
+near the seam (candidate **C3**).
+
+- **Interface widened by one derived member:** `activeDestination` — a `computed` over `position`
+  and the destinations registry (see `destinations.ts`, candidate **C2**). It returns the id of the
+  nearest resting destination, wrapping so the Loop clone reads as Home. The rounding lives in the
+  pure `activeIndexFor(position, cycleLength)` in `scroll-loop.math.ts`, unit-tested like `positionFor`.
+- **The nav is now an adapter:** it reads `activeDestination()` in the pulse tick and toggles
+  `.active` / `aria-current`, and **deletes** its probe, its `targets`/`targetEls` tops cache,
+  `measureTargets()`, the body `ResizeObserver`, and the `cloneEl`/`cloneTop` seam check (~60 lines).
+  Because `activeDestination` only changes value ~once per destination, it is safe to bind (unlike
+  `position`, which must stay out of templates).
+- **Timing note:** rounding flips the highlight at the morph-band midpoint, ~0.42vh before a
+  boundary vs the old probe's ~0.5vh — a sub-`0.1vh` shift, visually identical.
+- **Scope kept tight:** the `#projects` sub-anchor (a position *inside* Work, which the loop does
+  not model) stays a local nav concern — one dedicated `IntersectionObserver`, not taught to the
+  loop. The shell's section-reveal observer is left alone; unifying the in-view observers is a
+  separate candidate (**C9**).
+- **Deletion test:** removing `activeDestination` would scatter the "which destination" logic back
+  into the nav as bespoke geometry. It earns its keep.
