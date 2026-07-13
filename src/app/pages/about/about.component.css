@@ -7,6 +7,23 @@
 }
 
 /* ============================================
+   FULL-VIEWPORT POSTER
+   About is one destination of the loop, so it composes as a single poster:
+   the content centres vertically in the viewport instead of hugging the top,
+   and the global section padding relaxes to a viewport-relative clamp so the
+   whole composition (header + spread) fits a laptop screen without clipping
+   the ledger's Education block.
+   ============================================ */
+
+.section {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-block: clamp(var(--space-2xl), 8vh, var(--space-5xl));
+}
+
+/* ============================================
    EDITORIAL HEADER
    Flush-left poster headline. The weight-contrast pair mirrors the hero name
    (extralight "About" against black "Me") — typography does the framing that
@@ -126,8 +143,10 @@
 .about-ledger {
   grid-column: 9 / 13;
   /* Dropped baseline — the ledger starts below the bio's first lines so the
-     column tops don't tie; asymmetry keeps the spread editorial. */
-  margin-top: var(--space-3xl);
+     column tops don't tie; asymmetry keeps the spread editorial. One step
+     shallower than the original 3xl so the full poster clears a laptop
+     viewport. */
+  margin-top: var(--space-2xl);
   display: flex;
   flex-direction: column;
   gap: var(--space-2xl);
