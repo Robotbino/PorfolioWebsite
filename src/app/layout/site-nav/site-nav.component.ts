@@ -22,9 +22,10 @@ import { DESTINATIONS } from '../../destinations';
  *   `--nav-mute` (0..1) custom property the CSS interpolates off. Loop-aware
  *   (distance-from-Home, not raw scrollY) so the nav is back to full before the
  *   loop seam and never pops there. See docs/adr/0005-loop-aware-nav-muting.md.
- * - Active destination: whichever section sits under the viewport midpoint gets
- *   its link underlined (`.active`) and marked `aria-current`. Inside the Home
- *   clone past the seam it reads as Home, matching the wrap.
+ * - Active destination: the link for `ScrollLoopService.activeDestination()` is
+ *   underlined (`.active`) and marked `aria-current`. The nav is a pure reader
+ *   of that one signal — it keeps no section geometry of its own; the loop
+ *   already handles the seam (inside the Home clone it reads as Home).
  */
 @Component({
   selector: 'app-site-nav',
@@ -49,15 +50,10 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   private lastMute = -1;
   private reduce = false;
 
-  // Sections the nav links point at (id → absolute top), plus every link per id
-  // so desktop, mobile and the logo all reflect the same active destination.
-  private targetEls: { id: string; el: HTMLElement }[] = [];
-  private targets: { id: string; top: number }[] = [];
+  // Every in-page link grouped by the destination id it targets, so desktop,
+  // mobile and the logo all light up together for the active destination.
   private linksByTarget = new Map<string, HTMLAnchorElement[]>();
-  private cloneEl: HTMLElement | null = null;
-  private cloneTop = Infinity;
   private activeId = '';
-  private ro?: ResizeObserver;
 
   constructor(
     public theme: ThemeService,
@@ -69,11 +65,6 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.collectLinks();
-    this.measureTargets();
-    // Section heights shift as lazy images load, so re-measure on any reflow
-    // (same trigger the app shell uses for the loop anchors).
-    this.ro = new ResizeObserver(() => this.measureTargets());
-    this.ro.observe(document.body);
 
     this.unsub = this.pulse.onTick(() => {
       this.updateActiveLink();
@@ -85,7 +76,6 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.unsub?.();
-    this.ro?.disconnect();
     this.setScrollLock(false);
   }
 
@@ -150,7 +140,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   }
 
-  /** Group every in-page link (logo, desktop, mobile) by the section it targets. */
+  /** Group every in-page link (logo, desktop, mobile) by the destination id it targets. */
   private collectLinks(): void {
     const links = Array.from(
       this.el.nativeElement.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'),
@@ -164,51 +154,29 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
         this.linksByTarget.set(id, [link]);
       }
     }
-    this.targetEls = [...this.linksByTarget.keys()]
-      .map((id) => ({ id, el: document.getElementById(id) as HTMLElement }))
-      .filter((t) => t.el !== null);
-    this.cloneEl = document.querySelector<HTMLElement>('.dest-clone');
   }
 
-  /** Rect-based (not offsetTop) so nested anchors like #projects measure true. */
-  private measureTargets(): void {
-    const scrollY = window.scrollY;
-    this.targets = this.targetEls
-      .map(({ id, el }) => ({ id, top: el.getBoundingClientRect().top + scrollY }))
-      .sort((a, b) => a.top - b.top);
-    this.cloneTop = this.cloneEl
-      ? this.cloneEl.getBoundingClientRect().top + scrollY
-      : Infinity;
-  }
-
+  /**
+   * Reflect the loop's single active-destination answer onto the links. Reading
+   * the computed here (out of zone, like `position()`) schedules no change
+   * detection, and it only changes value ~once per destination, so the class
+   * writes are rare. Replaces the old midpoint probe + section-tops cache +
+   * ResizeObserver + clone check — the loop owns "where am I" now.
+   */
   private updateActiveLink(): void {
-    if (this.targets.length === 0) {
+    const active = this.loop.activeDestination();
+    if (active === this.activeId) {
       return;
     }
-    const probe = window.scrollY + window.innerHeight * 0.5;
-    let active = this.targets[0].id;
-    if (probe >= this.cloneTop) {
-      // Past the seam buffer's top we are visually on Home again.
-      active = 'dest-home';
-    } else {
-      for (const t of this.targets) {
-        if (t.top > probe) {
-          break;
-        }
-        active = t.id;
-      }
-    }
-    if (active !== this.activeId) {
-      this.linksByTarget.get(this.activeId)?.forEach((a) => {
-        a.classList.remove('active');
-        a.removeAttribute('aria-current');
-      });
-      this.linksByTarget.get(active)?.forEach((a) => {
-        a.classList.add('active');
-        a.setAttribute('aria-current', 'true');
-      });
-      this.activeId = active;
-    }
+    this.linksByTarget.get(this.activeId)?.forEach((a) => {
+      a.classList.remove('active');
+      a.removeAttribute('aria-current');
+    });
+    this.linksByTarget.get(active)?.forEach((a) => {
+      a.classList.add('active');
+      a.setAttribute('aria-current', 'true');
+    });
+    this.activeId = active;
   }
 
   private updateMute(): void {
