@@ -10,12 +10,12 @@ import {
 } from '@angular/core';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
+import { smoothingK } from '../../motion.math';
 import { CERTIFICATIONS, Certification } from './certifications-data';
 import {
   easeOutCubic,
   flipTransform,
   maskScales,
-  smoothingK,
   tiltFromVelocity,
 } from './certifications.math';
 

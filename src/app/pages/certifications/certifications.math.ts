@@ -5,19 +5,6 @@
  */
 
 /**
- * Frame-rate-independent exponential smoothing factor: the fraction of the
- * remaining distance to close this frame. `base` is the per-frame fraction at
- * a 60Hz reference, so the feel is identical at 60Hz and 120Hz (same formula
- * as the Work showcase sweep).
- */
-export function smoothingK(dt: number, base: number): number {
-  if (dt <= 0) {
-    return base;
-  }
-  return 1 - Math.pow(1 - base, dt / (1000 / 60));
-}
-
-/**
  * Map smoothed horizontal cursor velocity (px/ms) to a tilt in degrees,
  * clamped so a violent fling never flips the preview into a spin.
  */
