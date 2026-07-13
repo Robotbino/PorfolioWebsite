@@ -25,7 +25,10 @@ import { DESTINATIONS } from '../../destinations';
  * - Active destination: the link for `ScrollLoopService.activeDestination()` is
  *   underlined (`.active`) and marked `aria-current`. The nav is a pure reader
  *   of that one signal — it keeps no section geometry of its own; the loop
- *   already handles the seam (inside the Home clone it reads as Home).
+ *   already handles the seam (inside the Home clone it reads as Home). The one
+ *   exception is the `#projects` sub-anchor inside Work: a single
+ *   IntersectionObserver flags when it passes the viewport middle, and it then
+ *   takes the highlight from Work (it is not a destination the loop knows about).
  */
 @Component({
   selector: 'app-site-nav',
@@ -55,6 +58,12 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   private linksByTarget = new Map<string, HTMLAnchorElement[]>();
   private activeId = '';
 
+  // Projects is a sub-anchor inside Work (not a destination the loop tracks). A
+  // single observer flags when its section sits under the viewport middle; the
+  // tick then gives it the highlight in place of Work. Folds into C9 later.
+  private projectsInView = false;
+  private projectsObserver?: IntersectionObserver;
+
   constructor(
     public theme: ThemeService,
     private loop: ScrollLoopService,
@@ -65,6 +74,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.collectLinks();
+    this.observeProjects();
 
     this.unsub = this.pulse.onTick(() => {
       this.updateActiveLink();
@@ -76,6 +86,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.unsub?.();
+    this.projectsObserver?.disconnect();
     this.setScrollLock(false);
   }
 
@@ -157,6 +168,25 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
+   * Watch the one sub-anchor the loop can't see. Root shrunk to a line at the
+   * viewport middle (`-50%` top and bottom) means `#projects` "intersects"
+   * exactly while its section sits under the midpoint — the same line the old
+   * probe used. The callback just flips a flag; the pulse tick applies it, so
+   * the two never fight.
+   */
+  private observeProjects(): void {
+    const projects = document.getElementById('projects');
+    if (!projects) {
+      return;
+    }
+    this.projectsObserver = new IntersectionObserver(
+      ([entry]) => (this.projectsInView = entry.isIntersecting),
+      { rootMargin: '-50% 0px -50% 0px', threshold: 0 },
+    );
+    this.projectsObserver.observe(projects);
+  }
+
+  /**
    * Reflect the loop's single active-destination answer onto the links. Reading
    * the computed here (out of zone, like `position()`) schedules no change
    * detection, and it only changes value ~once per destination, so the class
@@ -164,7 +194,12 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
    * ResizeObserver + clone check — the loop owns "where am I" now.
    */
   private updateActiveLink(): void {
-    const active = this.loop.activeDestination();
+    let active = this.loop.activeDestination();
+    // Projects lives inside Work: while its section is under the viewport middle
+    // it takes the highlight from Work. The loop leaving Work ends this for free.
+    if (this.projectsInView && active === 'dest-work') {
+      active = 'projects';
+    }
     if (active === this.activeId) {
       return;
     }
