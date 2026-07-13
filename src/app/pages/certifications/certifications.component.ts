@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { FramePulseService } from '../../core/frame-pulse.service';
+import { ScrollLockService } from '../../core/scroll-lock.service';
 import { CERTIFICATIONS, Certification } from './certifications-data';
 import {
   easeOutCubic,
@@ -80,10 +81,14 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
   private lastTrigger: HTMLElement | null = null;
   private suppressNextFocus = false;
 
+  // Held while the spotlight is open; releasing it lets the shared lock go.
+  private spotlockRelease: (() => void) | null = null;
+
   constructor(
     private zone: NgZone,
     private pulse: FramePulseService,
     private host: ElementRef<HTMLElement>,
+    private scrollLock: ScrollLockService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -199,10 +204,8 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
 
     root.classList.add('is-open');
     root.setAttribute('aria-hidden', 'false');
-    // Root overflowY (not `overflow`) so html's `overflow-x: clip` — which the
-    // Work showcase's sticky pin depends on — survives, and the scroll loop's
-    // scrollY is untouched. Matches SiteNavComponent's menu lock.
-    document.documentElement.style.overflowY = 'hidden';
+    // Acquire the shared scroll lock; release it when closing.
+    this.spotlockRelease = this.scrollLock.acquire();
     this.zone.runOutsideAngular(() => {
       document.addEventListener('keydown', this.onSpotlightDocKeydown);
     });
@@ -248,7 +251,8 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
       frame.style.opacity = '0';
     }
     document.removeEventListener('keydown', this.onSpotlightDocKeydown);
-    document.documentElement.style.overflowY = '';
+    this.spotlockRelease?.();
+    this.spotlockRelease = null;
 
     // Let the exit fade finish before hiding, then clear the inline styles so
     // the next open starts clean.
@@ -401,9 +405,8 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     if (this.spotTimer !== null) {
       clearTimeout(this.spotTimer);
     }
-    // If destroyed with the spotlight open, give the page its scroll back.
-    if (this.spotlightRef?.nativeElement.classList.contains('is-open')) {
-      document.documentElement.style.overflowY = '';
-    }
+    // If destroyed with the spotlight open, release its hold on the scroll lock.
+    this.spotlockRelease?.();
+    this.spotlockRelease = null;
   }
 }
