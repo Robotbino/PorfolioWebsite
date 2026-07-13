@@ -7,7 +7,6 @@
 // landingpage/: hero / home page
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AppComponent } from './app.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
 import { AuroraComponent } from './aurora/aurora.component';
@@ -40,9 +39,6 @@ import { DisplayHeadingComponent } from './shared/display-heading/display-headin
     BrowserModule
   ],
   providers: [],
-  bootstrap: [AppComponent],
-  schemas: [
-     CUSTOM_ELEMENTS_SCHEMA
-  ]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
