@@ -9,6 +9,7 @@ import {
 import { ThemeService } from '../../core/theme.service';
 import { ScrollLoopService } from '../../scroll-loop.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
+import { ScrollLockService } from '../../core/scroll-lock.service';
 import { DESTINATIONS } from '../../destinations';
 
 /**
@@ -64,11 +65,15 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   private projectsInView = false;
   private projectsObserver?: IntersectionObserver;
 
+  // Held while the mobile menu is open; releasing it lets the shared lock go.
+  private menuLockRelease: (() => void) | null = null;
+
   constructor(
     public theme: ThemeService,
     private loop: ScrollLoopService,
     private el: ElementRef<HTMLElement>,
     private pulse: FramePulseService,
+    private scrollLock: ScrollLockService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -87,17 +92,19 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsub?.();
     this.projectsObserver?.disconnect();
-    this.setScrollLock(false);
+    this.releaseMenuLock();
   }
 
   toggleMenu(): void {
     this.menuOpen = !this.menuOpen;
-    this.setScrollLock(this.menuOpen);
     if (this.menuOpen) {
+      this.menuLockRelease = this.scrollLock.acquire();
       // Next frame, once the overlay's `visibility` has flipped, move focus in.
       requestAnimationFrame(() => {
         this.el.nativeElement.querySelector<HTMLElement>('.mobile-link')?.focus();
       });
+    } else {
+      this.releaseMenuLock();
     }
   }
 
@@ -106,33 +113,15 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
       return;
     }
     this.menuOpen = false;
-    this.setScrollLock(false);
+    this.releaseMenuLock();
     this.menuTrigger?.nativeElement.focus();
   }
 
-  /**
-   * Scroll lock while the mobile menu is open. Two constraints shape it:
-   * - `html` carries `overflow-x: clip` (see styles.css), which stops body →
-   *   viewport overflow propagation — so `body { overflow: hidden }` never
-   *   reaches the viewport. The lock must sit on the root element.
-   * - The `position: fixed` body technique would zero `scrollY`, which the
-   *   scroll loop and the constellation morph driver read continuously; root
-   *   `overflow-y: hidden` keeps the offset and fires no scroll event.
-   * iOS ignores root overflow for touch panning, hence the non-passive
-   * touchmove block — safe because the overlay has no scrollable content.
-   */
-  private setScrollLock(lock: boolean): void {
-    document.documentElement.style.overflowY = lock ? 'hidden' : '';
-    if (lock) {
-      document.addEventListener('touchmove', this.blockTouchScroll, { passive: false });
-    } else {
-      document.removeEventListener('touchmove', this.blockTouchScroll);
-    }
+  /** Release this component's hold on the shared scroll lock, if it has one. */
+  private releaseMenuLock(): void {
+    this.menuLockRelease?.();
+    this.menuLockRelease = null;
   }
-
-  private blockTouchScroll = (e: TouchEvent): void => {
-    e.preventDefault();
-  };
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
