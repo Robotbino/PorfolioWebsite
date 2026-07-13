@@ -173,41 +173,15 @@
 
 /* ============================================
    GLASS CARD SURFACE (see docs/adr/0006)
-   Light defaults, then dark overrides; manual .light-mode / .dark-mode come last
-   so they win over the OS @media block, matching the colour tokens above.
+   Each token declared once as light-dark(); follows `color-scheme` like the
+   colour tokens above, so the manual classes need no glass overrides.
    ============================================ */
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-bg-solid: rgba(250, 247, 243, 0.94);
-  --glass-border: rgba(20, 16, 12, 0.10);
-  --glass-highlight: rgba(255, 255, 255, 0.75);
-  --glass-shadow: 0 22px 44px rgba(20, 16, 12, 0.14);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --glass-bg: rgba(44, 36, 31, 0.62);
-    --glass-bg-solid: rgba(38, 32, 27, 0.97);
-    --glass-border: rgba(255, 255, 255, 0.14);
-    --glass-highlight: rgba(255, 255, 255, 0.18);
-    --glass-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
-  }
-}
-
-.light-mode {
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-bg-solid: rgba(250, 247, 243, 0.94);
-  --glass-border: rgba(20, 16, 12, 0.10);
-  --glass-highlight: rgba(255, 255, 255, 0.75);
-  --glass-shadow: 0 22px 44px rgba(20, 16, 12, 0.14);
-}
-
-.dark-mode {
-  --glass-bg: rgba(44, 36, 31, 0.62);
-  --glass-bg-solid: rgba(38, 32, 27, 0.97);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --glass-highlight: rgba(255, 255, 255, 0.18);
-  --glass-shadow: 0 22px 44px rgba(0, 0, 0, 0.45);
+  --glass-bg: light-dark(rgba(255, 255, 255, 0.55), rgba(44, 36, 31, 0.62));
+  --glass-bg-solid: light-dark(rgba(250, 247, 243, 0.94), rgba(38, 32, 27, 0.97));
+  --glass-border: light-dark(rgba(20, 16, 12, 0.10), rgba(255, 255, 255, 0.14));
+  --glass-highlight: light-dark(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.18));
+  --glass-shadow: 0 22px 44px light-dark(rgba(20, 16, 12, 0.14), rgba(0, 0, 0, 0.45));
 }
 
 /* ============================================
