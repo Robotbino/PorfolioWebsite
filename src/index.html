@@ -11,15 +11,18 @@
    <!-- Instrument Serif italic is the lone editorial accent; Nohemi (body + display) is self-hosted. -->
    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
    <script>
-     // Apply theme immediately to prevent flash of wrong theme
+     // Pre-paint theme guard: set the theme class before first paint so the
+     // right palette is painted with no flash. Hand-written mirror of
+     // resolveTheme() in src/app/core/theme.decision.ts — this runs before
+     // Angular loads, so it can't import; keep the two in sync. Set the class in
+     // BOTH directions: a dark-OS visitor who chose light needs `.light-mode`
+     // pre-paint to override the `@media (prefers-color-scheme: dark)` tokens,
+     // otherwise they flash dark until Angular boots.
      (function() {
-       const savedTheme = localStorage.getItem('theme');
+       const saved = localStorage.getItem('theme');
        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-       const shouldUseDark = savedTheme ? savedTheme === 'dark' : prefersDark;
-
-       if (shouldUseDark) {
-         document.documentElement.classList.add('dark-mode');
-       }
+       const dark = saved === 'dark' || saved === 'light' ? saved === 'dark' : prefersDark;
+       document.documentElement.classList.add(dark ? 'dark-mode' : 'light-mode');
      })();
    </script>
   </head>
