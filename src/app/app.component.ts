@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { ThemeService } from './core/theme.service';
 import { MotionSettingsService } from './core/motion-settings.service';
+import { InViewportService } from './core/in-viewport.service';
 import { ScrollLoopService } from './scroll-loop.service';
 
 @Component({
@@ -22,13 +23,14 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   private reduce = false;
   private ro?: ResizeObserver;
-  private io?: IntersectionObserver;
+  private revealReleases: (() => void)[] = [];
 
   // Public so the persistent background layer can bind to the theme signal.
   constructor(
     public theme: ThemeService,
     private loop: ScrollLoopService,
     private motion: MotionSettingsService,
+    private inView: InViewportService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -45,17 +47,17 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
     // Reveal each destination as it enters (fail-open: only hidden once JS arms it).
     if (!this.reduce) {
-      this.io = new IntersectionObserver(
-        (entries) =>
-          entries.forEach((e) => e.target.classList.toggle('is-visible', e.isIntersecting)),
-        { threshold: 0.15 },
-      );
       this.dests.forEach((d) => {
         // Skip anything pre-revealed (real Home + its clone): both are loop
         // anchors that must always match, so a fast scroll can't catch them
         // mid-reveal. Only Work/About/Contact get the scroll-reveal.
-        if (!d.nativeElement.classList.contains('is-visible')) {
-          this.io!.observe(d.nativeElement);
+        const el = d.nativeElement;
+        if (!el.classList.contains('is-visible')) {
+          this.revealReleases.push(
+            this.inView.observe(el, { threshold: 0.15 }, (visible) =>
+              el.classList.toggle('is-visible', visible),
+            ),
+          );
         }
       });
       document.body.classList.add('reveal-ready');
@@ -93,6 +95,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.ro?.disconnect();
-    this.io?.disconnect();
+    this.revealReleases.forEach((release) => release());
   }
 }
