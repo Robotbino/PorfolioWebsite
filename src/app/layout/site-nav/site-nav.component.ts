@@ -10,6 +10,7 @@ import { ThemeService } from '../../core/theme.service';
 import { ScrollLoopService } from '../../scroll-loop.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
+import { InViewportService } from '../../core/in-viewport.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
 import { DESTINATIONS } from '../../destinations';
 
@@ -60,11 +61,11 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   private linksByTarget = new Map<string, HTMLAnchorElement[]>();
   private activeId = '';
 
-  // Projects is a sub-anchor inside Work (not a destination the loop tracks). A
-  // single observer flags when its section sits under the viewport middle; the
-  // tick then gives it the highlight in place of Work. Folds into C9 later.
+  // Projects is a sub-anchor inside Work (not a destination the loop tracks).
+  // The InViewport seam flags when its section sits under the viewport middle;
+  // the tick then gives it the highlight in place of Work.
   private projectsInView = false;
-  private projectsObserver?: IntersectionObserver;
+  private projectsRelease?: () => void;
 
   // Held while the mobile menu is open; releasing it lets the shared lock go.
   private menuLockRelease: (() => void) | null = null;
@@ -76,6 +77,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     private pulse: FramePulseService,
     private scrollLock: ScrollLockService,
     private motion: MotionSettingsService,
+    private inView: InViewportService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -93,7 +95,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.unsub?.();
-    this.projectsObserver?.disconnect();
+    this.projectsRelease?.();
     this.releaseMenuLock();
   }
 
@@ -170,11 +172,11 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     if (!projects) {
       return;
     }
-    this.projectsObserver = new IntersectionObserver(
-      ([entry]) => (this.projectsInView = entry.isIntersecting),
+    this.projectsRelease = this.inView.observe(
+      projects,
       { rootMargin: '-50% 0px -50% 0px', threshold: 0 },
+      (visible) => (this.projectsInView = visible),
     );
-    this.projectsObserver.observe(projects);
   }
 
   /**
