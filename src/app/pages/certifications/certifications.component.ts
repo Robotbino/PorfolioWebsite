@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
+import { InViewportService } from '../../core/in-viewport.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
 import { smoothingK } from '../../motion.math';
 import { CERTIFICATIONS, Certification } from './certifications-data';
@@ -64,7 +65,7 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
   readonly activeIndex = signal(-1);
 
   private enabled = false;
-  private io?: IntersectionObserver;
+  private armRelease?: () => void;
   private unsub: (() => void) | null = null;
 
   // Cursor tether state — targets set by events, rendered values by the tick.
@@ -91,6 +92,7 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     private host: ElementRef<HTMLElement>,
     private scrollLock: ScrollLockService,
     private motion: MotionSettingsService,
+    private inView: InViewportService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -100,16 +102,17 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
 
     // Arm (one-shot) when the section is within half a viewport: the preview
     // images start fetching before the first possible hover, not at page load.
-    this.io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
+    this.armRelease = this.inView.observe(
+      this.host.nativeElement,
+      { rootMargin: '50% 0px' },
+      (visible) => {
+        if (visible) {
+          // The seam runs outside Angular; re-enter to write the signal.
           this.zone.run(() => this.armed.set(true));
-          this.io?.disconnect();
+          this.armRelease?.(); // one-shot
         }
       },
-      { rootMargin: '50% 0px' },
     );
-    this.io.observe(this.host.nativeElement);
 
     if (this.enabled) {
       // Coordinates only — the tick does every style write.
@@ -401,7 +404,7 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.unsub?.();
-    this.io?.disconnect();
+    this.armRelease?.();
     this.host.nativeElement.removeEventListener('pointermove', this.onPointerMove);
     document.removeEventListener('keydown', this.onSpotlightDocKeydown);
     if (this.spotTimer !== null) {
