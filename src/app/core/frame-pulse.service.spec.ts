@@ -36,6 +36,16 @@ describe('FramePulseService', () => {
     pending.forEach(cb => cb(now));
   }
 
+  function setHidden(hidden: boolean): void {
+    Object.defineProperty(document, 'hidden', { value: hidden, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  }
+
+  afterEach(() => {
+    // Leave `document.hidden` back at its real value for other specs.
+    Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+  });
+
   it('calls subscribers on each frame', () => {
     const spy = jasmine.createSpy('tick');
     service.onTick(spy);
@@ -87,5 +97,41 @@ describe('FramePulseService', () => {
     (window.requestAnimationFrame as jasmine.Spy).calls.reset();
     service.onTick(() => {});
     expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
+  });
+
+  it('parks the loop while the tab is hidden', () => {
+    service.onTick(() => {});
+    (window.requestAnimationFrame as jasmine.Spy).calls.reset();
+    setHidden(true);
+    expect(window.cancelAnimationFrame).toHaveBeenCalled();
+    expect(window.requestAnimationFrame).not.toHaveBeenCalled();
+  });
+
+  it('re-arms the loop when the tab becomes visible again', () => {
+    service.onTick(() => {});
+    setHidden(true);
+    (window.requestAnimationFrame as jasmine.Spy).calls.reset();
+    setHidden(false);
+    expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
+  });
+
+  it('hands the first tick back a dt of 0 (no spike from the hidden gap)', () => {
+    const calls: [number, number][] = [];
+    service.onTick((now, dt) => calls.push([now, dt]));
+    fireFrame(1000);
+    fireFrame(1016); // dt 16 while visible
+    setHidden(true);
+    setHidden(false);
+    fireFrame(50000); // long gap, but the clock was reset on resume
+    expect(calls[calls.length - 1]).toEqual([50000, 0]);
+  });
+
+  it('does not re-arm on visibility when there are no subscribers', () => {
+    const unsub = service.onTick(() => {});
+    unsub();
+    (window.requestAnimationFrame as jasmine.Spy).calls.reset();
+    setHidden(true);
+    setHidden(false);
+    expect(window.requestAnimationFrame).not.toHaveBeenCalled();
   });
 });
