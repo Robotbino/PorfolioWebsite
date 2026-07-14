@@ -2,12 +2,12 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  NgZone,
   OnDestroy,
   QueryList,
   ViewChildren,
 } from '@angular/core';
 import { MotionSettingsService } from '../../core/motion-settings.service';
+import { InViewportService } from '../../core/in-viewport.service';
 
 @Component({
   selector: 'app-about',
@@ -17,11 +17,11 @@ import { MotionSettingsService } from '../../core/motion-settings.service';
 })
 export class AboutComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('cardIcon') private icons!: QueryList<ElementRef<HTMLElement>>;
-  private io?: IntersectionObserver;
+  private releases: (() => void)[] = [];
 
   constructor(
-    private zone: NgZone,
     private motion: MotionSettingsService,
+    private inView: InViewportService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -31,20 +31,19 @@ export class AboutComponent implements AfterViewInit, OnDestroy {
     }
     // Fire when an icon crosses the viewport's vertical middle: the negative
     // top/bottom margins collapse the observer root to a 1px line at centre.
-    // Toggling the class (not (un)observing) re-arms the one-shot each crossing.
-    // Run outside Angular so the per-crossing class toggle never trips change
-    // detection.
-    this.zone.runOutsideAngular(() => {
-      this.io = new IntersectionObserver(
-        (entries) =>
-          entries.forEach((e) => e.target.classList.toggle('is-centered', e.isIntersecting)),
-        { rootMargin: '-50% 0px -50% 0px', threshold: 0 },
+    // Toggling the class (not (un)observing) re-arms it on each crossing. The
+    // seam runs the callback outside Angular, so the toggle never trips CD.
+    this.icons.forEach((i) => {
+      const el = i.nativeElement;
+      this.releases.push(
+        this.inView.observe(el, { rootMargin: '-50% 0px -50% 0px', threshold: 0 }, (visible) =>
+          el.classList.toggle('is-centered', visible),
+        ),
       );
-      this.icons.forEach((i) => this.io!.observe(i.nativeElement));
     });
   }
 
   ngOnDestroy(): void {
-    this.io?.disconnect();
+    this.releases.forEach((release) => release());
   }
 }
