@@ -153,6 +153,9 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   private resizeHandler: (() => void) | null = null;
   private glContext: any = null;
   private fallbackAnimations: Animation[] = [];
+  // The mobile CSS-fallback blob elements, kept so a theme flip can recolour
+  // them — the fallback has no WebGL uniforms to push new stops to.
+  private fallbackBlobs: HTMLElement[] = [];
   private program: any = null;
   // Colour stops converted to GPU vec3s, recomputed only when the `colorStops`
   // input changes (a theme flip) — never per frame.
@@ -166,6 +169,10 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['colorStops']) {
       this.colorStopsVec = this.toColorVec(this.colorStops);
+      // The mobile CSS fallback has no uniforms — recolour its blobs so a theme
+      // flip doesn't strand it on the previous palette (brown aurora in light,
+      // white aurora in dark). No-op until the fallback is built.
+      this.recolorFallbackBlobs();
     }
     // Once the program exists, a later input change (theme flip) pushes straight
     // to the uniforms; before init, ngAfterViewInit seeds them.
@@ -273,7 +280,7 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
       Object.assign(el.style, {
         position: 'absolute', borderRadius: '50%', willChange: 'transform',
         opacity: '0.6', width: c.w, height: c.h, top: c.t, left: c.l,
-        background: `radial-gradient(ellipse at center, ${hex} 0%, transparent 70%)`,
+        background: this.blobGradient(hex),
       });
       this.fallbackAnimations.push(
         el.animate(
@@ -281,7 +288,20 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
           { duration: c.dur, easing: 'ease-in-out', iterations: Infinity, direction: 'alternate', fill: 'both' }
         )
       );
+      this.fallbackBlobs.push(el);
       ctn.appendChild(el);
+    });
+  }
+
+  /** The radial-gradient fill for a fallback blob, in build and on recolour. */
+  private blobGradient(hex: string): string {
+    return `radial-gradient(ellipse at center, ${hex} 0%, transparent 70%)`;
+  }
+
+  /** Repaint the fallback blobs to the current palette on a theme flip. */
+  private recolorFallbackBlobs(): void {
+    this.fallbackBlobs.forEach((el, i) => {
+      el.style.background = this.blobGradient(this.colorStops[i]);
     });
   }
 
