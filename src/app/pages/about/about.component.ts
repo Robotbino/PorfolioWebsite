@@ -7,6 +7,7 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
+import { MotionSettingsService } from '../../core/motion-settings.service';
 
 @Component({
   selector: 'app-about',
@@ -18,11 +19,14 @@ export class AboutComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('cardIcon') private icons!: QueryList<ElementRef<HTMLElement>>;
   private io?: IntersectionObserver;
 
-  constructor(private zone: NgZone) {}
+  constructor(
+    private zone: NgZone,
+    private motion: MotionSettingsService,
+  ) {}
 
   ngAfterViewInit(): void {
     // The glow is a non-essential flourish, so reduced-motion users skip it.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (this.motion.reducedMotion()) {
       return;
     }
     // Fire when an icon crosses the viewport's vertical middle: the negative
