@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
+import { MotionSettingsService } from '../../core/motion-settings.service';
 import { smoothingK } from '../../motion.math';
 import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-data';
 
@@ -57,6 +58,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     private theme: ThemeService,
     private pulse: FramePulseService,
     private host: ElementRef<HTMLElement>,
+    private motion: MotionSettingsService,
   ) {}
 
   // Maps a tech-stack label to a Font Awesome class pair (the project's existing
@@ -90,7 +92,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.reduce = this.motion.reducedMotion();
     this.applyMode();
   }
 
