@@ -13,6 +13,7 @@ import { MAX_LINKS, R, STAR_COUNT, order } from './constellation.figures';
 import { MorphDriver } from './morph-driver';
 import { ScrollLoopService } from '../scroll-loop.service';
 import { FramePulseService } from '../core/frame-pulse.service';
+import { MotionSettingsService } from '../core/motion-settings.service';
 
 @Component({
   selector: 'app-constellation',
@@ -45,13 +46,14 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
   constructor(
     private loop: ScrollLoopService,
     private pulse: FramePulseService,
+    private motion: MotionSettingsService,
   ) {}
 
   ngAfterViewInit(): void {
     this.groups = this.starEls.map((el) => el.nativeElement);
     this.fromSegs = this.lineFromEls.map((el) => el.nativeElement);
     this.toSegs = this.lineToEls.map((el) => el.nativeElement);
-    this.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.reduceMotion = this.motion.reducedMotion();
 
     this.renderAt(performance.now());
     this.unsub = this.pulse.onTick((now) => this.renderAt(now));
