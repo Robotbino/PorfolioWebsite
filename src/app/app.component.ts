@@ -8,6 +8,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { ThemeService } from './core/theme.service';
+import { MotionSettingsService } from './core/motion-settings.service';
 import { ScrollLoopService } from './scroll-loop.service';
 
 @Component({
@@ -27,10 +28,11 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   constructor(
     public theme: ThemeService,
     private loop: ScrollLoopService,
+    private motion: MotionSettingsService,
   ) {}
 
   ngAfterViewInit(): void {
-    this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.reduce = this.motion.reducedMotion();
     this.measure();
     this.update();
 
