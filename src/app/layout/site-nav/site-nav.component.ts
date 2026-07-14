@@ -9,6 +9,7 @@ import {
 import { ThemeService } from '../../core/theme.service';
 import { ScrollLoopService } from '../../scroll-loop.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
+import { MotionSettingsService } from '../../core/motion-settings.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
 import { DESTINATIONS } from '../../destinations';
 
@@ -74,10 +75,11 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     private el: ElementRef<HTMLElement>,
     private pulse: FramePulseService,
     private scrollLock: ScrollLockService,
+    private motion: MotionSettingsService,
   ) {}
 
   ngAfterViewInit(): void {
-    this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.reduce = this.motion.reducedMotion();
     this.collectLinks();
     this.observeProjects();
 
@@ -136,7 +138,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
       return;
     }
     event.preventDefault();
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduce = this.motion.reducedMotion();
     el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   }
 
