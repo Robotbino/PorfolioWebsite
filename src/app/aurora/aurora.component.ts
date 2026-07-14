@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { FramePulseService } from '../core/frame-pulse.service';
+import { MotionSettingsService } from '../core/motion-settings.service';
 
 const VERT = `#version 300 es
 in vec2 position;
@@ -157,7 +158,10 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   // input changes (a theme flip) — never per frame.
   private colorStopsVec: number[][] = [];
 
-  constructor(private pulse: FramePulseService) {}
+  constructor(
+    private pulse: FramePulseService,
+    private motion: MotionSettingsService,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['colorStops']) {
@@ -180,7 +184,7 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+    if (this.motion.coarsePointer()) {
       this.initCssFallback();
       return;
     }
