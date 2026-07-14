@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Architecture Review — Star-Map Portfolio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  body { background:#14120F; color:#EDE6DC; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .serif { font-family: "Instrument Serif", Georgia, serif; }
+  .panel { background:#1B1814; border:1px solid #2E2822; border-radius:14px; }
+  .chip  { border:1px solid #3A322A; border-radius:999px; padding:2px 10px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; }
+  .filelist code { display:block; font-size:12px; color:#C9BCA9; padding:1px 0; }
+  pre.mermaid { display:flex; justify-content:center; background:#161310; border:1px solid #2A241D; border-radius:10px; padding:10px 6px; margin:0; overflow-x:auto; }
+  pre.mermaid svg { max-width:100%; height:auto; }
+  /* ---- mass diagram shapes: top bar = interface width, block = implementation mass ---- */
+  .mass { display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap; }
+  .mod  { display:flex; flex-direction:column; align-items:center; width:112px; }
+  .mod .iface { height:9px; border-radius:3px 3px 0 0; }
+  .mod .impl  { width:70px; border-radius:0 0 6px 6px; }
+  .mod.deep .iface { background:#7FB57F; }  .mod.deep .impl { background:#2A3626; border:1px solid #4A6244; border-top:none; }
+  .mod.mid  .iface { background:#D9B98A; }  .mod.mid  .impl { background:#332B20; border:1px solid #5A4A38; border-top:none; }
+  .mod.shallow .iface { background:#C97B6B; } .mod.shallow .impl { background:#3A2420; border:1px solid #6B4038; border-top:none; }
+  .mod.new .impl { box-shadow:0 0 0 2px #E8A75D66, 0 0 14px #E8A75D33; }
+  .mod .name { margin-top:8px; font-size:11px; text-align:center; color:#EDE6DC; line-height:1.3; }
+  .mod .stat { font-size:10px; color:#8F8272; text-align:center; }
+  .mod .tag  { font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:#E8A75D; margin-top:2px; }
+  .winlist li { font-size:13px; padding:2px 0 2px 18px; position:relative; }
+  .winlist li::before { content:"◆"; position:absolute; left:2px; top:3px; font-size:9px; color:#E8A75D; }
+  .done-rail { border-left:4px solid #7FB57F; }
+  .prog-rail { border-left:4px solid #D9B98A; }
+  .todo-rail { border-left:4px solid #5A4A38; }
+  .badge-done { background:#22301F; color:#9FCF92; border-color:#3D5237; }
+  .badge-todo { background:#241F19; color:#B4A794; border-color:#3A322A; }
+  .commitline { font-size:11px; color:#8F8272; font-family: ui-monospace, monospace; }
+  .commitline b { color:#C9BCA9; font-weight:600; }
+  a { color:#E8A75D; }
+</style>
+</head>
+<body class="antialiased">
+<div class="max-w-6xl mx-auto px-6 py-12">
+
+  <!-- ============ HEADER ============ -->
+  <header class="mb-10">
+    <p class="text-[11px] tracking-[0.25em] uppercase text-[#8F8272] mb-3">Architecture Review &amp; Progress Log · <span class="text-[#7FB57F]">completed 2026-07-14</span> · one Angular 19 looping-scroll page</p>
+    <h1 class="serif italic text-5xl md:text-6xl text-[#F5EFE6] leading-tight">The Star-Map Portfolio,<br/>weighed module by module</h1>
+    <p class="mt-5 max-w-3xl text-[#B4A794] text-[15px] leading-relaxed">
+      A deep-module re-architecture, executed as tiny always-green commits — <strong class="text-[#7FB57F]">now complete</strong>. The
+      deep-module pattern that already existed in embryo — <code class="text-xs text-[#C9BCA9]">FramePulseService</code>,
+      <code class="text-xs text-[#C9BCA9]">ScrollLoopService</code> + pure <code class="text-xs text-[#C9BCA9]">*.math.ts</code> — has been
+      extended across the whole app: one destination registry, one "where am I" answer, one scroll-lock owner, one smoothing formula,
+      one theme decision, one "may I animate" answer, one in-viewport owner, and a lighter module graph with the dead route era removed
+      down to its last dependency. The only pixel renderer remains the <span class="text-[#E8A75D]">OGL/WebGL aurora</span>; the "stars"
+      are an <span class="text-[#E8A75D]">SVG constellation</span> mutated per frame.
+    </p>
+    <div class="flex flex-wrap gap-2 mt-6">
+      <span class="chip text-[#7FB57F]">deep = small interface, big implementation</span>
+      <span class="chip text-[#C97B6B]">shallow = interface ≈ implementation</span>
+      <span class="chip text-[#D9B98A]">seam = where behaviour can be swapped</span>
+      <span class="chip text-[#B4A794]">deletion test = delete it; does complexity vanish?</span>
+    </div>
+  </header>
+
+  <!-- ============ PROGRESS BAND ============ -->
+  <section class="mb-14">
+    <div class="panel p-6" style="border-color:#3D5237">
+      <div class="flex flex-wrap items-baseline justify-between gap-3 mb-4">
+        <h2 class="serif italic text-2xl text-[#F5EFE6]">Progress — all 9 candidates shipped · review complete</h2>
+        <p class="commitline">41 commits + 2 housekeeping · HEAD <b>eb8fba1</b> · <b>89/89</b> tests · pushed to origin/main</p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+        <div class="rounded-lg p-3 done-rail bg-[#161310]"><span class="chip badge-done mr-2">✓ C2</span> Destination registry <span class="commitline">· 4 commits</span></div>
+        <div class="rounded-lg p-3 done-rail bg-[#161310]"><span class="chip badge-done mr-2">✓ C3</span> One "where am I" <span class="commitline">· 5 commits</span></div>
+        <div class="rounded-lg p-3 done-rail bg-[#161310]"><span class="chip badge-done mr-2">✓ C1</span> Delete dead weight <span class="commitline">· 3 commits + dep</span></div>
+        <div class="rounded-lg p-3 done-rail bg-[#161310]"><span class="chip badge-done mr-2">✓ C5</span> Ref-counted scroll lock <span class="commitline">· 3 commits</span></div>
+        <div class="rounded-lg p-3 done-rail bg-[#161310]"><span class="chip badge-done mr-2">✓ C8</span> Shared motion math <span class="commitline">· 3 commits</span></div>
+        <div class="rounded-lg p-3 done-rail bg-[#161310]"><span class="chip badge-done mr-2">✓ C7</span> Theme tokens once <span class="commitline">· 4 commits</span></div>
+        <div class="rounded-lg p-3 done-rail bg-[#161310]"><span class="chip badge-done mr-2">✓ C6</span> Aurora palette / theme seam <span class="commitline">· 3 commits</span></div>
+        <div class="rounded-lg p-3 done-rail bg-[#161310]"><span class="chip badge-done mr-2">✓ C4</span> Motion seam + hidden-tab pause <span class="commitline">· 9 commits</span></div>
+        <div class="rounded-lg p-3 done-rail bg-[#161310]"><span class="chip badge-done mr-2">✓ C9</span> One in-viewport seam <span class="commitline">· 6 commits</span></div>
+      </div>
+      <p class="text-[#8F8272] text-xs mt-4">Every commit left the app compiling and visually working; tests were run under Edge between each, and deletion-test candidates were confirmed with a production AOT build. The only open item is a final real-browser glance at the motion behaviours (morph, active-link, scroll lock, sweep, reveals, reduced-motion/touch gating, tab-return smoothness) — the headless preview freezes rAF and IntersectionObserver, so those were proven structurally and by spec, not by watching.</p>
+    </div>
+  </section>
+
+  <!-- ============ SYSTEM MAP ============ -->
+  <section class="mb-12">
+    <h2 class="serif italic text-3xl text-[#F5EFE6] mb-1">1 · System map — the seams today</h2>
+    <p class="text-[#8F8272] text-sm mb-4">Solid = clean interface crossing. No dashed edges remain — every flagged leak is closed. Green nodes are deep modules extended or added during the review.</p>
+    <div class="panel p-4">
+<pre class="mermaid">
+flowchart LR
+  subgraph SHELL["App shell"]
+    APP["AppComponent&lt;br/&gt;scroll/offset DOM I/O"]
+    TPL["app.component.html&lt;br/&gt;5 sections + Home clone"]
+  end
+  subgraph DATA["Single sources"]
+    REG["destinations.ts&lt;br/&gt;id · label · figure"]
+  end
+  subgraph CORE["Deep core — tested"]
+    SLS["ScrollLoopService&lt;br/&gt;position · activeDestination · wrap"]
+    FPS["FramePulseService&lt;br/&gt;one rAF, out of zone,&lt;br/&gt;pauses hidden + dt reset"]
+    LOCK["ScrollLockService&lt;br/&gt;ref-counted overflowY owner"]
+    MM["motion.math&lt;br/&gt;smoothingK"]
+    MOT["MotionSettingsService&lt;br/&gt;reducedMotion · fine/coarse pointer"]
+    IV["InViewportService&lt;br/&gt;observe → release, shared by config"]
+  end
+  subgraph VIS["Visual systems"]
+    AUR["Aurora — WebGL/OGL"]
+    CON["Constellation — SVG morph"]
+    NAV["SiteNav — reader + mute"]
+    WRK["Work — sticky showcase"]
+    CRT["Certifications — cursor + FLIP"]
+  end
+  DOC["documentElement"]
+  APP -->|"setAnchors · update · wrapOffset"| SLS
+  REG -->|"order"| CON
+  REG -->|"links"| NAV
+  REG -->|"index → id"| SLS
+  CON -->|"position()"| SLS
+  NAV -->|"activeDestination() · position()"| SLS
+  FPS -->|"tick"| AUR
+  FPS -->|"tick"| CON
+  FPS -->|"tick"| NAV
+  FPS -->|"tick"| WRK
+  FPS -->|"tick"| CRT
+  WRK -->|"smoothingK"| MM
+  CRT -->|"smoothingK"| MM
+  NAV -->|"acquire / release"| LOCK
+  CRT -->|"acquire / release"| LOCK
+  LOCK -->|"single owner"| DOC
+  MOT -->|"may I animate?"| VIS
+  MOT -->|"reveal gate"| APP
+  IV -->|"in view? (5 adapters)"| VIS
+  IV -->|"reveals"| APP
+  THM["ThemeService&lt;br/&gt;auroraPalette · resolveTheme"] -->|"@Input (memoized)"| AUR
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class REG,SLS,LOCK,MM,THM,MOT,IV,FPS good
+</pre>
+    </div>
+    <div class="panel p-4 mt-3" style="border-color:#3D5237">
+      <p class="text-[11px] uppercase tracking-widest text-[#7FB57F] mb-2">All originally-flagged leaks now closed</p>
+      <ul class="winlist grid md:grid-cols-2 gap-x-8">
+        <li><span class="text-[#C97B6B]">Two writers on <code class="text-xs">documentElement.overflowY</code></span> (nav + spotlight, no owner) → now one ref-counted <code class="text-xs">ScrollLockService</code>. <span class="text-[#7FB57F]">Closed by C5.</span></li>
+        <li><span class="text-[#C97B6B]">Nav <code class="text-xs">querySelector('.dest-clone')</code> + <code class="text-xs">getElementById</code> probe</span> → nav now reads <code class="text-xs">activeDestination()</code>. <span class="text-[#7FB57F]">Closed by C3.</span></li>
+        <li><span class="text-[#C97B6B]">Three parallel "current section" answers</span> → one <code class="text-xs">activeDestination</code> on the loop. <span class="text-[#7FB57F]">Closed by C3.</span></li>
+        <li><span class="text-[#C97B6B]">Destination list in three hand-synced copies</span> → one <code class="text-xs">destinations.ts</code> registry. <span class="text-[#7FB57F]">Closed by C2.</span></li>
+        <li><span class="text-[#C97B6B]">Smoothing formula copy-pasted, one copy untested</span> → one tested <code class="text-xs">motion.math.smoothingK</code>. <span class="text-[#7FB57F]">Closed by C8.</span></li>
+        <li><span class="text-[#C97B6B]">Vestigial route layer + Spline loader</span> → deleted; module graph shrank to what renders. <span class="text-[#7FB57F]">Closed by C1.</span></li>
+        <li><span class="text-[#C97B6B]">Theme decision written twice, tokens ×3–4</span> → one <code class="text-xs">resolveTheme()</code>, tokens via <code class="text-xs">light-dark()</code>. <span class="text-[#7FB57F]">Closed by C7.</span></li>
+        <li><span class="text-[#C97B6B]">Shell template authored raw hex + <code class="text-xs">new Color()</code>/frame</span> → theme-owned, memoized. <span class="text-[#7FB57F]">Closed by C6.</span></li>
+        <li><span class="text-[#C97B6B]">"May I animate" reimplemented privately (reduced-motion ×7, pointer ×2) and frozen at init</span> → one live <code class="text-xs">MotionSettingsService</code>, plus the frame pulse's tab-return dt spike fixed. <span class="text-[#7FB57F]">Closed by C4.</span></li>
+        <li><span class="text-[#C97B6B]">"In the viewport?" answered by five private IntersectionObservers with an inconsistent zone story</span> → one <code class="text-xs">InViewportService</code> sharing observers by config. <span class="text-[#7FB57F]">Closed by C9.</span></li>
+      </ul>
+      <p class="text-[#8F8272] text-xs mt-3">Nothing remains open on this map — the candidate list is exhausted. Housekeeping also landed: <code class="text-xs">@angular/router</code> dropped from package.json (C1's deferred follow-up, deletion-verified) and both review snapshots committed.</p>
+    </div>
+  </section>
+
+  <!-- ============ MASS DIAGRAM ============ -->
+  <section class="mb-14">
+    <h2 class="serif italic text-3xl text-[#F5EFE6] mb-1">2 · Mass diagram — interface width vs implementation depth</h2>
+    <p class="text-[#8F8272] text-sm mb-6">Top bar = what a caller must know. Block = implementation mass (~lines). <span class="text-[#7FB57F]">Deep: narrow over tall.</span> <span class="text-[#C97B6B]">Shallow: wide over thin.</span> <span class="text-[#E8A75D]">Glowing blocks joined or slimmed this session.</span></p>
+    <div class="panel p-6">
+      <div class="mass">
+        <div class="mod deep new"><div class="iface" style="width:28px"></div><div class="impl" style="height:60px"></div><div class="name">ScrollLoop svc + math</div><div class="stat">6 members · ~135 ln · spec ✓</div><div class="tag">+ activeDestination</div></div>
+        <div class="mod deep new"><div class="iface" style="width:14px"></div><div class="impl" style="height:38px"></div><div class="name">FramePulse</div><div class="stat">1 method · ~90 ln · spec ✓</div><div class="tag">deepened · C4</div></div>
+        <div class="mod deep new"><div class="iface" style="width:16px"></div><div class="impl" style="height:26px"></div><div class="name">MotionSettings</div><div class="stat">3 signals · ~45 ln · spec ✓</div><div class="tag">new · C4</div></div>
+        <div class="mod deep new"><div class="iface" style="width:14px"></div><div class="impl" style="height:34px"></div><div class="name">InViewportService</div><div class="stat">observe() → release · ~70 ln · spec ✓</div><div class="tag">new · C9</div></div>
+        <div class="mod deep"><div class="iface" style="width:18px"></div><div class="impl" style="height:48px"></div><div class="name">MorphDriver + morph</div><div class="stat">2 exports · ~104 ln · spec ✓</div></div>
+        <div class="mod deep"><div class="iface" style="width:22px"></div><div class="impl" style="height:30px"></div><div class="name">certifications.math</div><div class="stat">4 fns · ~55 ln · spec ✓</div></div>
+        <div class="mod deep new"><div class="iface" style="width:12px"></div><div class="impl" style="height:14px"></div><div class="name">motion.math</div><div class="stat">1 fn · 18 ln · spec ✓</div><div class="tag">new · C8</div></div>
+        <div class="mod deep new"><div class="iface" style="width:14px"></div><div class="impl" style="height:30px"></div><div class="name">ScrollLockService</div><div class="stat">acquire() → handle · 55 ln · spec ✓</div><div class="tag">new · C5</div></div>
+        <div class="mod deep new"><div class="iface" style="width:16px"></div><div class="impl" style="height:22px"></div><div class="name">destinations</div><div class="stat">registry · ~40 ln · spec ✓</div><div class="tag">new · C2</div></div>
+        <div class="mod deep"><div class="iface" style="width:24px"></div><div class="impl" style="height:118px"></div><div class="name">Aurora</div><div class="stat">4 inputs · 304 ln · GLSL hidden</div></div>
+        <div class="mod mid"><div class="iface" style="width:50px"></div><div class="impl" style="height:98px"></div><div class="name">Work</div><div class="stat">5 pub + template · ~250 ln</div></div>
+        <div class="mod mid new"><div class="iface" style="width:40px"></div><div class="impl" style="height:80px"></div><div class="name">SiteNav</div><div class="stat">reader · ~165 ln (−60)</div><div class="tag">slimmed · C3/C5</div></div>
+        <div class="mod mid"><div class="iface" style="width:70px"></div><div class="impl" style="height:150px"></div><div class="name">Certifications</div><div class="stat">8 methods · 11 ViewChild · ~400 ln</div></div>
+        <div class="mod shallow"><div class="iface" style="width:56px"></div><div class="impl" style="height:10px"></div><div class="name">ThemeToggle</div><div class="stat">wraps theme.toggle() · 22 ln</div></div>
+        <div class="mod shallow"><div class="iface" style="width:52px"></div><div class="impl" style="height:9px"></div><div class="name">Landingpage</div><div class="stat">downloadCV() only · 20 ln</div></div>
+      </div>
+      <p class="text-[#8F8272] text-xs mt-6"><strong class="text-[#C97B6B]">AppRoutingModule</strong> (4 routes, rendered nothing, ~20 ln) — <strong class="text-[#7FB57F]">deleted in C1</strong> (and <code class="text-xs">@angular/router</code> finally dropped from package.json), so it no longer appears. <strong class="text-[#7FB57F]">Five</strong> narrow-interfaced deep modules joined the core across the review — destinations, ScrollLock, motion.math, MotionSettings, InViewport — and FramePulse deepened behind its unchanged one-method interface (hidden-tab pause + dt reset). SiteNav shed ~60 lines of DOM geometry and its raw observer; About shed its own NgZone; every component-side observer became an adapter.</p>
+    </div>
+  </section>
+
+  <!-- ============ SHIPPED ============ -->
+  <section class="mb-14">
+    <h2 class="serif italic text-3xl text-[#F5EFE6] mb-1">3 · Shipped — the first seven</h2>
+    <p class="text-[#8F8272] text-sm mb-6">Each card: the seam as it was → as it is now. C2 + C3 were the companion "Cycle seam". The final two (C4, C9) follow in section 4.</p>
+    <div class="space-y-8">
+
+      <!-- C2 -->
+      <article class="panel p-6 done-rail" id="c2">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C2</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Destination registry — one source of truth for the cycle</h3>
+          <span class="chip badge-done">✓ shipped · 4 commits</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Was:</strong> the destination list — ids, labels, order — lived as three hand-synchronised copies (shell sections, both nav lists, constellation order), so adding a section was shotgun surgery with silent-drift risk.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Now:</strong> <code class="text-xs">destinations.ts</code> is the one data module (<code class="text-xs">id · label · figure</code>). The constellation <code class="text-xs">order</code> and both nav lists derive from it; a <code class="text-xs">destinations.spec</code> guards drift; the 4→5 doc count is fixed. The shell template stays hand-authored (each section is a distinct component); <code class="text-xs">#projects</code> and the logo-as-Home stay explicit exceptions.</p>
+            <ul class="winlist"><li>Add a section: one edit</li><li>Ids can never drift (spec-guarded)</li><li>Nav lists + figure order derive, not duplicate</li></ul>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">One interface, three consumers</p>
+<pre class="mermaid">
+flowchart LR
+  D["destinations.ts&lt;br/&gt;id · label · figure"]
+  D --> S["shell section ids (asserted)"]
+  D --> N["nav links ×2"]
+  D --> F["constellation order"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class D good
+</pre>
+            <p class="commitline mt-2"><b>e07b4ff</b> registry+spec · <b>2289c12</b> order derives · <b>f02f552</b> nav derives · <b>613ccd5</b> docs 4→5</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- C3 -->
+      <article class="panel p-6 done-rail" id="c3">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C3</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">One "where am I" — deepen ScrollLoopService</h3>
+          <span class="chip badge-done">✓ shipped · 5 commits</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Was:</strong> three modules answered "which destination is current" three ways — the loop's <code class="text-xs">position</code>, the nav's own midpoint probe (with a section-tops cache + body <code class="text-xs">ResizeObserver</code> + clone check), and the shell reveal observer. They could disagree near the seam.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Now:</strong> <code class="text-xs">activeDestination</code> is a computed on the loop (nearest resting destination via pure <code class="text-xs">activeIndexFor</code> + the registry, wrapping the clone to Home). The nav is a <strong>pure reader</strong> and deleted ~60 lines of geometry. The lone <code class="text-xs">#projects</code> sub-anchor kept a small dedicated IntersectionObserver. ADR-0007 records it.</p>
+            <ul class="winlist"><li>One algorithm, one truth</li><li>Nav sheds ~60 DOM lines + its ResizeObserver</li><li>Seam handled by the loop for free</li></ul>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">Before → after</p>
+<pre class="mermaid">
+flowchart LR
+  subgraph B["before"]
+    P1["loop position"]
+    P2["nav probe + cache + RO"]
+    P3["shell reveal IO"]
+  end
+  subgraph A["after"]
+    SLS["ScrollLoopService&lt;br/&gt;position · activeDestination"]
+    SLS --> NAV["nav active link (reader)"]
+    SLS --> CON["constellation morph"]
+    SLS --> MUTE["nav mute"]
+  end
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class P1,P2,P3 bad
+  class SLS good
+</pre>
+            <p class="commitline mt-2"><b>f4c2e3d</b> activeIndexFor · <b>1e80dee</b> activeDestination · <b>ab94b79</b> nav reads it · <b>5540256</b> #projects IO · <b>e426162</b> ADR</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- C1 -->
+      <article class="panel p-6 done-rail" id="c1">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C1</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Delete the vestigial route layer &amp; dead weight</h3>
+          <span class="chip badge-done">✓ shipped · 3 commits</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Was:</strong> a routing module with four routes and <strong>no <code class="text-xs">router-outlet</code> anywhere</strong>, a Spline <code class="text-xs">&lt;script&gt;</code> with no <code class="text-xs">&lt;spline-viewer&gt;</code> element, a <code class="text-xs">CUSTOM_ELEMENTS_SCHEMA</code> blanket, and route-era CSS (<code class="text-xs">.fade-in</code>, <code class="text-xs">router-outlet + *</code>).</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Now:</strong> all deleted — the deletion test passed (complexity vanished, nothing reappeared), verified with a production AOT build (removing the schema re-enabled unknown-element checking; the build stayed clean). Route components stay (used in the shell). The deferred <code class="text-xs">@angular/router</code> dep removal landed 2026-07-14 (<b class="commitline">d5ceec6</b>): nothing in <code class="text-xs">src</code> imports it, npm pruned one package, and the production build stayed clean.</p>
+            <ul class="winlist"><li>Module graph shrinks to what renders</li><li>One fewer unpkg request at boot</li><li>Unknown-element checking restored</li></ul>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">Deletion test passed</p>
+<pre class="mermaid">
+flowchart LR
+  AM["AppModule"] --> R["only what renders"]
+  GONE["route layer · Spline · schema · dead CSS&lt;br/&gt;deleted — nothing reappeared"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  classDef ghost fill:#1B1814,stroke:#5A4A38,color:#8F8272,stroke-dasharray:4
+  class R good
+  class GONE ghost
+</pre>
+            <p class="commitline mt-2"><b>7c8d445</b> route layer · <b>36db869</b> Spline + schema · <b>67bd4cc</b> dead CSS · <b>d5ceec6</b> router dep dropped</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- C5 -->
+      <article class="panel p-6 done-rail" id="c5">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C5</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Ref-counted scroll lock — one owner for overflowY</h3>
+          <span class="chip badge-done">✓ shipped · 3 commits</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Was:</strong> two copy-pasted implementations of the root <code class="text-xs">overflowY</code> lock (mobile menu + spotlight) shared one DOM property with no owner, so whoever released first clobbered the other. The spotlight also lacked the iOS touchmove workaround.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Now:</strong> <code class="text-xs">ScrollLockService</code> owns the property. <code class="text-xs">acquire()</code> ref-counts and returns an idempotent release handle; the lock engages on the first acquire and releases only when the last holder lets go. Both callers are adapters; the iOS workaround is written once.</p>
+            <ul class="winlist"><li>Clobber bug impossible</li><li>iOS touchmove workaround written once (spotlight gains it)</li><li>Idempotent handle — double-release / destroy-then-close safe</li></ul>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">One owner, counted</p>
+<pre class="mermaid">
+flowchart LR
+  NAV["SiteNav"] -->|"acquire / release"| LOCK["ScrollLockService&lt;br/&gt;refcount ≥ 1 ⇒ locked"]
+  CRT["Certifications"] -->|"acquire / release"| LOCK
+  LOCK --> DOC["documentElement"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class LOCK good
+</pre>
+            <p class="commitline mt-2"><b>b5c46d4</b> service+spec · <b>9488e3c</b> SiteNav adopts · <b>151c7bd</b> Certs adopts</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- C8 -->
+      <article class="panel p-6 done-rail" id="c8">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C8</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Shared motion math — dedupe the smoothing formula</h3>
+          <span class="chip badge-done">✓ shipped · 3 commits</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Was:</strong> the frame-rate-independent smoothing <code class="text-xs">1−(1−base)^(dt/16.7)</code> existed as a tested export in <code class="text-xs">certifications.math</code> and an <em>untested</em> inline copy in <code class="text-xs">work.component.ts</code>.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Now:</strong> one pure <code class="text-xs">motion.math.ts</code> holds <code class="text-xs">smoothingK</code>; Work and Certifications both import it. Kept tight — the easings (single consumers) and the morph-driver's frame-rate-<em>dependent</em> lerps were left alone, since moving/converting them would be relocation or a behaviour change, not dedup.</p>
+            <ul class="winlist"><li>One formula, one spec</li><li>Work's tick gains tested math</li><li>Scope disciplined by the deletion test</li></ul>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">One pure module, two consumers</p>
+<pre class="mermaid">
+flowchart LR
+  MM["motion.math&lt;br/&gt;smoothingK · spec ✓"]
+  MM --> W["work sweep"]
+  MM --> C["certs preview"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class MM good
+</pre>
+            <p class="commitline mt-2"><b>1816974</b> motion.math+spec · <b>28b74d4</b> Work adopts · <b>b990e66</b> Certs adopts</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- C7 -->
+      <article class="panel p-6 done-rail" id="c7">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C7</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Theme decision &amp; tokens — write once</h3>
+          <span class="chip badge-done">✓ shipped · 4 commits</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Was:</strong> the dark-or-light decision was implemented twice (inline FOUC guard vs <code class="text-xs">ThemeService</code>) and the token palette three-to-four times, so any palette change fanned out across blocks plus a script. The FOUC guard also only ever added <code class="text-xs">.dark-mode</code> — a latent flash bug for dark-OS users who'd chosen light.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Now:</strong> pure <code class="text-xs">resolveTheme()</code> is the one decision rule; the FOUC guard hand-mirrors it pre-paint and now sets <em>both</em> classes (fixing the flash). Colour and glass tokens each collapsed from 3-4 duplicated blocks into one <code class="text-xs">light-dark()</code> block — ~200 lines removed. <code class="text-xs">--scrim-rgb</code> (a raw triple) keeps one <code class="text-xs">.dark-mode</code> override since it can't be <code class="text-xs">light-dark()</code>.</p>
+            <ul class="winlist"><li>Palette change = one block</li><li>Decision logic single-sourced + spec'd</li><li>Fixed a real dark-OS/light-choice flash bug</li></ul>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">One rule, one palette</p>
+<pre class="mermaid">
+flowchart LR
+  R["resolveTheme()&lt;br/&gt;pure + spec'd"] --> H["html class&lt;br/&gt;(FOUC guard mirrors it)"]
+  H --> T["one token block&lt;br/&gt;light-dark()"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class R,T good
+</pre>
+            <p class="commitline mt-2"><b>83b0b57</b> resolveTheme+spec · <b>33a0cf4</b> FOUC guard both classes · <b>a11a187</b> colour tokens → light-dark() · <b>3f67fe9</b> glass tokens → light-dark()</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- C6 -->
+      <article class="panel p-6 done-rail" id="c6">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C6</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Aurora palette behind the theme seam</h3>
+          <span class="chip badge-done">✓ shipped · 3 commits</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Was:</strong> the WebGL renderer's palette was authored as raw hex in the shell template, outside the token system, and re-converted with <code class="text-xs">new Color()</code> every frame — the one dashed leak left on the system map.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Now:</strong> a pure <code class="text-xs">aurora-palette.ts</code> maps theme → palette; <code class="text-xs">ThemeService.auroraPalette</code> is a memoized computed the shell binds to (raw hex left the template). The <code class="text-xs">Color()</code> conversion moved from the 60fps tick into <code class="text-xs">ngOnChanges</code> — zero per-frame allocation.</p>
+            <ul class="winlist"><li>Shell no longer knows GLSL inputs</li><li>Palette joins the token system, memoized</li><li>Per-frame allocations → zero</li></ul>
+          </div>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">Theme owns the mapping</p>
+<pre class="mermaid">
+flowchart LR
+  THM["ThemeService&lt;br/&gt;auroraPalette · resolveTheme"] -->|"@Input (memoized)"| AUR["Aurora&lt;br/&gt;memoized Color, ngOnChanges"]
+  AUR --> GPU["GPU"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class THM,AUR good
+</pre>
+            <p class="commitline mt-2"><b>1b75a22</b> aurora-palette+spec · <b>41c0763</b> ThemeService computed + shell binds · <b>4411e2a</b> memoize Color off the tick</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ REMAINING ============ -->
+  <section class="mb-14">
+    <h2 class="serif italic text-3xl text-[#F5EFE6] mb-1">4 · The finale — C4 + C9, shipped 2026-07-14</h2>
+    <p class="text-[#8F8272] text-sm mb-6">Both grilled first, then executed straight through ("skip halting" — no confirm between commits, but tests + build verified at every one). These closed the candidate list.</p>
+    <div class="space-y-8">
+
+      <!-- C4 -->
+      <article class="panel p-6 done-rail" id="c4">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C4</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">Motion-capability seam + hidden-tab pause</h3>
+          <span class="chip badge-done">✓ shipped · 9 commits</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Was:</strong> every visual system privately re-implemented "may I animate" — reduced-motion read ×7 (app, site-nav ×2, constellation, about, work, certifications) and pointer ×2 (the original ×3 miscounted work's <code class="text-xs">min-width</code> query as pointer), each frozen at init. And while browsers park rAF in hidden tabs anyway, the frame pulse handed the whole hidden gap to the first tick back as <code class="text-xs">dt</code>, lurching every smoothing consumer on tab-return.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Now:</strong> <code class="text-xs">MotionSettingsService</code> exposes <code class="text-xs">reducedMotion</code> / <code class="text-xs">finePointer</code> / <code class="text-xs">coarsePointer</code> as <em>live</em> signals (matchMedia <code class="text-xs">change</code> listeners — the ThemeService pattern). Fine and coarse stay two independent signals: they're non-complementary (a hybrid touch-laptop matches neither), so each consumer keeps its exact question and behaviour is unchanged. FramePulse cancels rAF on <code class="text-xs">visibilitychange</code>→hidden and re-arms with <code class="text-xs">lastTime</code> reset, so the first visible tick reports <strong>dt = 0</strong> — the <code class="text-xs">onTick</code> interface untouched.</p>
+            <ul class="winlist"><li>9 private matchMedia reads → 1 seam; zero left in TS</li><li>Live preference flips propagate (consumers opt in later)</li><li>Tab-return dt spike killed — no smoothing lurch</li><li>Renderers stay dumb adapters</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — each asked the browser, once</p>
+<pre class="mermaid">
+flowchart LR
+  MM["matchMedia"]
+  A["app"] --> MM
+  B["nav ×2"] --> MM
+  C["about"] --> MM
+  D["constellation"] --> MM
+  E["work"] --> MM
+  F["certs ×2"] --> MM
+  G["aurora"] --> MM
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class A,B,C,D,E,F,G bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — one live seam, pulse paused when hidden</p>
+<pre class="mermaid">
+flowchart LR
+  MS["MotionSettingsService&lt;br/&gt;reducedMotion · finePointer · coarsePointer&lt;br/&gt;live via change events"]
+  FP["FramePulse&lt;br/&gt;+ hidden pause · dt reset"]
+  MS --> R["all renderers"]
+  FP --> R
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class MS,FP good
+</pre></div>
+          </div>
+        </div>
+        <p class="commitline mt-4"><b>9d834b7</b> seam+spec · <b>405c6e5</b> app · <b>66b0a1a</b> nav · <b>f8a9a10</b> constellation · <b>5e7d3a6</b> about · <b>de45222</b> work · <b>556b00c</b> certs · <b>4f0f37e</b> aurora · <b>ce3a872</b> pulse pause</p>
+      </article>
+
+      <!-- C9 -->
+      <article class="panel p-6 done-rail" id="c9">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="chip bg-[#2A241D] text-[#E8A75D]">C9</span>
+          <h3 class="text-xl font-semibold text-[#F5EFE6]">One in-viewport seam — the IntersectionObservers</h3>
+          <span class="chip badge-done">✓ shipped · 6 commits · the last candidate</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-sm mb-2"><strong class="text-[#E8A75D]">Was:</strong> "element entered the viewport" was re-implemented five times with different thresholds, lifecycles (one-shot vs repeating), and an inconsistent zone story — about deliberately ran outside Angular, certs ran inside wrapping one write, the rest never thought about it. C3 had knowingly added the fifth (the <code class="text-xs">#projects</code> highlight) to keep that commit tight.</p>
+            <p class="text-sm mb-3"><strong class="text-[#7FB57F]">Now:</strong> <code class="text-xs">InViewportService</code> — <code class="text-xs">observe(target, options, onChange) → release</code>, the ScrollLockService idiom. Observers are <strong>shared by serialized option set</strong> (root is always the viewport, so <code class="text-xs">rootMargin</code> + <code class="text-xs">threshold</code> identify a reusable instance watching many targets): nav <code class="text-xs">#projects</code> + the about-glow icons ride one middle-line observer; the shell reveal + every <code class="text-xs">appScrollReveal</code> share the 0.15 one — <strong>five observers → three</strong>. The callback runs outside Angular; only certs' <code class="text-xs">armed.set</code> re-enters via <code class="text-xs">zone.run</code>. The directive keeps its template API and delegates; one-shot consumers just call <code class="text-xs">release()</code> in their callback.</p>
+            <ul class="winlist"><li>5 private observers → 1 owner, 3 shared instances</li><li>Zero raw <code class="text-xs">new IntersectionObserver</code> outside the seam</li><li>About glow shed its own NgZone; zone story consistent</li><li>Release: idempotent, unobserve, disconnect-when-empty</li></ul>
+          </div>
+          <div class="grid grid-rows-2 gap-3">
+            <div><p class="text-[10px] uppercase tracking-widest text-[#C97B6B] mb-1">Before — five private observers</p>
+<pre class="mermaid">
+flowchart LR
+  IO1["shell reveal 0.15"]
+  IO2["directive reveal"]
+  IO3["about midline"]
+  IO4["certs arming"]
+  IO5["nav #projects (C3)"]
+  V["viewport"]
+  V --> IO1
+  V --> IO2
+  V --> IO3
+  V --> IO4
+  V --> IO5
+  classDef bad fill:#3A2420,stroke:#C97B6B,color:#F0D9D2
+  class IO1,IO2,IO3,IO4,IO5 bad
+</pre></div>
+            <div><p class="text-[10px] uppercase tracking-widest text-[#7FB57F] mb-1">After — one owner, observers shared by config</p>
+<pre class="mermaid">
+flowchart LR
+  IV["InViewportService&lt;br/&gt;observe → release&lt;br/&gt;shared by rootMargin + threshold"]
+  IV --> A["section reveal + appScrollReveal&lt;br/&gt;(one 0.15 observer)"]
+  IV --> C["about glow + #projects&lt;br/&gt;(one midline observer)"]
+  IV --> D["certs arming (one-shot)"]
+  classDef good fill:#22301F,stroke:#7FB57F,color:#D9EAD4
+  class IV good
+</pre></div>
+          </div>
+        </div>
+        <p class="commitline mt-4"><b>095eb09</b> service+spec · <b>0218bfa</b> shell reveal · <b>b1af8ea</b> directive · <b>7198b7f</b> nav #projects · <b>adde3b2</b> about glow · <b>996f299</b> certs arming</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ ALREADY DEEP ============ -->
+  <section class="mb-12">
+    <h2 class="serif italic text-3xl text-[#F5EFE6] mb-4">5 · The deep core now</h2>
+    <div class="panel p-6" style="border-color:#3D5237">
+      <div class="grid md:grid-cols-2 gap-x-10 gap-y-3 text-sm">
+        <div><strong class="text-[#7FB57F]">ScrollLoopService + scroll-loop.math</strong> — the Cycle behind a 6-member interface now; DOM I/O stays in the shell, math is pure and spec'd. <span class="text-[#E8A75D]">Deepened with <code class="text-xs">activeDestination</code> (C3).</span></div>
+        <div><strong class="text-[#7FB57F]">destinations.ts</strong> — the single registry the shell, nav, and constellation order consume. <span class="text-[#E8A75D]">New (C2); spec-guarded against drift.</span></div>
+        <div><strong class="text-[#7FB57F]">ScrollLockService</strong> — one ref-counted owner of the root scroll lock + iOS workaround, behind an <code class="text-xs">acquire()</code> → handle interface. <span class="text-[#E8A75D]">New (C5).</span></div>
+        <div><strong class="text-[#7FB57F]">motion.math</strong> — the frame-rate-independent smoothing, one tested copy. <span class="text-[#E8A75D]">New (C8).</span></div>
+        <div><strong class="text-[#7FB57F]">FramePulseService</strong> — one rAF, out of zone, ref-counted, one-method interface; pauses on hidden tabs and resets its clock on return so the first tick back reports dt = 0. <span class="text-[#E8A75D]">Deepened (C4) behind the unchanged interface.</span></div>
+        <div><strong class="text-[#7FB57F]">MotionSettingsService</strong> — the one "may I animate, and how does the visitor point?" answer: three live readonly signals every renderer consumes. <span class="text-[#E8A75D]">New (C4); zero motion/pointer matchMedia left elsewhere.</span></div>
+        <div><strong class="text-[#7FB57F]">InViewportService</strong> — the one "is this element in the viewport?" owner behind <code class="text-xs">observe() → release</code>, sharing observers by config and running callbacks out of zone. <span class="text-[#E8A75D]">New (C9); absorbed all five raw observers.</span></div>
+        <div><strong class="text-[#7FB57F]">MorphDriver + constellation-morph + figures</strong> — morph physics/interpolation as pure, spec-covered modules; the component is a thin SVG adapter.</div>
+        <div><strong class="text-[#7FB57F]">certifications.math</strong> — tilt, mask, FLIP arithmetic, spec'd; <code class="text-xs">smoothingK</code> moved out to <code class="text-xs">motion.math</code> (C8).</div>
+        <div><strong class="text-[#7FB57F]">theme.decision.ts + aurora-palette.ts</strong> — one theme decision rule and one theme→palette mapping, both pure and spec'd. <span class="text-[#E8A75D]">New (C7 + C6); closed the last system-map leak.</span></div>
+        <div><strong class="text-[#7FB57F]">Aurora's @Input seam</strong> — the only pixel renderer, 4 inputs hiding 300 lines + GLSL; palette now theme-owned and memoized off the frame tick (C6).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="text-center py-10 border-t border-[#2E2822]">
+    <p class="serif italic text-2xl text-[#F5EFE6] mb-2">All nine seams closed. The review is complete.</p>
+    <p class="text-[#8F8272] text-sm mb-1">Tests went 50 → 89 as deep-module interfaces gained specs (41 commits + 2 housekeeping, HEAD eb8fba1, pushed to origin/main). Every commit stayed green; deletion-test work was confirmed by production AOT build.</p>
+    <p class="text-[#B4A794] text-xs">Only open item: a real-browser eyeball pass over the motion behaviours the headless preview can't animate. Related docs: Decision Document (C2 + C3), ADR-0007 addendum, session handoff (updated 2026-07-14).</p>
+  </footer>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    securityLevel: 'loose',
+    theme: 'base',
+    themeVariables: {
+      darkMode: true,
+      background: '#161310',
+      primaryColor: '#2A241D',
+      primaryTextColor: '#EDE6DC',
+      primaryBorderColor: '#5A4A38',
+      lineColor: '#8A7A66',
+      secondaryColor: '#241F19',
+      tertiaryColor: '#1B1814',
+      clusterBkg: '#1B1814',
+      clusterBorder: '#3A322A',
+      edgeLabelBackground: '#14120F',
+      fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+      fontSize: '12.5px'
+    },
+    flowchart: { curve: 'basis', htmlLabels: true, padding: 8 }
+  });
+</script>
+</body>
+</html>
