@@ -9,6 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { FramePulseService } from '../../core/frame-pulse.service';
+import { MotionSettingsService } from '../../core/motion-settings.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
 import { smoothingK } from '../../motion.math';
 import { CERTIFICATIONS, Certification } from './certifications-data';
@@ -89,11 +90,12 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     private pulse: FramePulseService,
     private host: ElementRef<HTMLElement>,
     private scrollLock: ScrollLockService,
+    private motion: MotionSettingsService,
   ) {}
 
   ngAfterViewInit(): void {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const hoverFine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const reduce = this.motion.reducedMotion();
+    const hoverFine = this.motion.finePointer();
     this.enabled = hoverFine && !reduce;
 
     // Arm (one-shot) when the section is within half a viewport: the preview
