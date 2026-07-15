@@ -97,6 +97,25 @@
   color: var(--color-text-primary);
 }
 
+/* Weight-contrast lockup (hero-name idiom: extralight "Bino" / black
+   "Hlongwana"). The org sits at black; the descriptor drops a size and a
+   weight tier into the secondary colour, so the eye lands on SITA first and
+   reads the platform second. */
+.role-title-org {
+  display: block;
+  font-weight: var(--font-weight-black);
+  letter-spacing: var(--tracking-tighter);
+}
+
+.role-title-desc {
+  display: block;
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-snug);
+  color: var(--color-text-secondary);
+}
+
 .role-points {
   grid-column: 7 / 13;
   display: flex;
@@ -171,15 +190,28 @@
 }
 
 /* Heavier rule under the block label, lighter rules between rows — the
-   classic Swiss table hierarchy, drawn with the border tokens. */
+   classic Swiss table hierarchy, drawn with the border tokens. Both rules are
+   pseudo-elements (not borders) so the reveal cascade can sweep them in with
+   scaleX; a border can't animate that way. */
 .index-label {
+  position: relative;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-text-muted);
   padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--color-border-dark);
+}
+
+.index-label::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--color-border-dark);
+  transform-origin: left center;
 }
 
 .index-list {
@@ -189,18 +221,30 @@
 }
 
 .index-row {
+  position: relative;
   display: grid;
   grid-template-columns: var(--space-2xl) minmax(0, 1fr);
   column-gap: var(--space-md);
   row-gap: var(--space-xs);
   align-items: baseline;
   padding-block: var(--space-md);
-  border-top: 1px solid var(--color-border);
+}
+
+.index-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-border);
+  transform-origin: left center;
+  transition: background-color var(--transition-base);
 }
 
 /* First row sits directly under the label's heavier rule. */
-.index-row:first-child {
-  border-top: none;
+.index-row:first-child::before {
+  content: none;
 }
 
 .index-num {
@@ -223,6 +267,9 @@
      Development & Web Applications" it pinches word-spacing instead. */
   letter-spacing: var(--tracking-normal);
   color: var(--color-text-primary);
+  /* Hover nudge rides a transform (see the hover block below) so the grid
+     never reflows — same restraint as the role-points padding nudge. */
+  transition: transform var(--transition-base);
 }
 
 .index-desc {
@@ -248,12 +295,16 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .index-row:hover {
-    border-top-color: var(--color-border-dark);
+  .index-row:hover::before {
+    background-color: var(--color-border-dark);
   }
 
   .index-row:hover .index-num {
     color: var(--color-accent-vivid);
+  }
+
+  .index-row:hover .index-term {
+    transform: translateX(6px);
   }
 }
 
@@ -271,6 +322,70 @@
 
 .index-soft.scroll-reveal {
   transition-delay: 160ms;
+}
+
+/* ---- Ledger cascade ---- */
+/* Instead of each ledger arriving as one slab, its rows typeset themselves:
+   the label's heavy rule sweeps in, then row after row rises while its own
+   hairline draws across (--row-i, set in the template, spaces the beats).
+   Every hidden state below is scoped under .scroll-reveal — a class the
+   directive adds at runtime — so no-JS renders the ledgers complete and
+   static, the same fail-open contract as the global rule. */
+
+/* The block itself only fades: the rows carry all the movement, so the two
+   translates (block + row) never stack into one big lurch. */
+.index-block.scroll-reveal {
+  transform: none;
+}
+
+.index-block.scroll-reveal .index-row {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.index-block.scroll-reveal .index-row::before,
+.index-block.scroll-reveal .index-label::after {
+  transform: scaleX(0);
+}
+
+/* 150ms base clears the block's own fade-in delay; 70ms per row is quick
+   enough that six rows settle inside ~1.1s — cascade, not slideshow. */
+.index-block.scroll-reveal.revealed .index-row {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.6s var(--ease-out-expo) calc(150ms + var(--row-i, 0) * 70ms),
+    transform 0.6s var(--ease-out-expo) calc(150ms + var(--row-i, 0) * 70ms);
+}
+
+/* background-color rides along un-delayed so the hover brighten (above)
+   still eases once the cascade has settled. */
+.index-block.scroll-reveal.revealed .index-row::before {
+  transform: scaleX(1);
+  transition:
+    transform 0.75s var(--ease-out-expo) calc(150ms + var(--row-i, 0) * 70ms),
+    background-color var(--transition-base);
+}
+
+.index-block.scroll-reveal.revealed .index-label::after {
+  transform: scaleX(1);
+  transition: transform 0.75s var(--ease-out-expo) 60ms;
+}
+
+/* Mirror of the global .scroll-reveal reduced-motion reset: rows and rules
+   render settled, no cascade. */
+@media (prefers-reduced-motion: reduce) {
+  .index-block.scroll-reveal .index-row {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .index-block.scroll-reveal .index-row::before,
+  .index-block.scroll-reveal .index-label::after {
+    transform: none;
+    transition: none;
+  }
 }
 
 /* ---- Projects poster header (mirrors Experience/About above; no destination-
@@ -492,6 +607,10 @@
 
   .role-title {
     font-size: var(--font-size-2xl);
+  }
+
+  .role-title-desc {
+    font-size: var(--font-size-lg);
   }
 
   .index-term {

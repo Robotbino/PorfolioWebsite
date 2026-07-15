@@ -16,7 +16,16 @@
          and the grid do the framing that the old glass card used to. Copy is
          unchanged. -->
     <article class="role" appScrollReveal>
-      <h3 class="role-title">SITA &mdash; Java EE case management &amp; workflow platform</h3>
+      <!-- Weight-contrast lockup (hero-name idiom): the org anchors at black,
+           the platform descriptor drops a tier. Copy is unchanged — the spans
+           only stack what was one uniform run. -->
+      <!-- Trailing space lives INSIDE the org span: Angular's default
+           whitespace stripping would otherwise drop it and fuse the heading's
+           accessible name into "SITA—Java EE…". -->
+      <h3 class="role-title">
+        <span class="role-title-org">SITA </span>
+        <span class="role-title-desc">&mdash; Java EE case management &amp; workflow platform</span>
+      </h3>
       <ul class="role-points" role="list">
         <li>
           Consolidated attachment-handling logic that had been copied across several
@@ -44,7 +53,8 @@
       <article class="index-block index-tech" appScrollReveal>
         <h3 class="index-label">Technologies</h3>
         <ul class="index-list" role="list">
-          <li class="index-row" *ngFor="let group of experienceGroups; let i = index">
+          <!-- --row-i drives the cascade's per-row transition delay in CSS. -->
+          <li class="index-row" *ngFor="let group of experienceGroups; let i = index" [style.--row-i]="i">
             <span class="index-num" aria-hidden="true">0{{ i + 1 }}</span>
             <h4 class="index-term">{{ group.label }}</h4>
             <p class="index-desc">{{ group.description }}</p>
@@ -55,19 +65,19 @@
       <article class="index-block index-soft" appScrollReveal>
         <h3 class="index-label">Non-Technical Skills</h3>
         <ul class="index-list" role="list">
-          <li class="index-row">
+          <li class="index-row" style="--row-i: 0">
             <span class="index-num" aria-hidden="true">01</span>
             <h4 class="index-term">Communication and Collaboration</h4>
           </li>
-          <li class="index-row">
+          <li class="index-row" style="--row-i: 1">
             <span class="index-num" aria-hidden="true">02</span>
             <h4 class="index-term">Analytical Thinker</h4>
           </li>
-          <li class="index-row">
+          <li class="index-row" style="--row-i: 2">
             <span class="index-num" aria-hidden="true">03</span>
             <h4 class="index-term">Continuous Learning</h4>
           </li>
-          <li class="index-row">
+          <li class="index-row" style="--row-i: 3">
             <span class="index-num" aria-hidden="true">04</span>
             <h4 class="index-term">Deadline and Results-Driven</h4>
           </li>
