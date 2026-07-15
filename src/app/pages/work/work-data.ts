@@ -58,9 +58,9 @@ export const PROJECTS: readonly Project[] = [
   {
     title: 'Memory Leak',
     description:
-      'An interactive memory card game built with Angular featuring themed cards, ' +
-      'score tracking, and attempt limits. Players flip cards to find matching pairs ' +
-      'while racing against their remaining attempts.',
+      'A card-matching memory game built with Angular and deployed live. Players ' +
+      'flip themed cards to find pairs within a limited number of attempts, with ' +
+      'score tracking and game logic handled entirely on the front end.',
     tech: ['Angular', 'JavaScript', 'CSS3', 'HTML5'],
     href: 'https://github.com/Robotbino/CodePairs.git',
     demoHref: 'https://codepairsgame.netlify.app/',
@@ -74,28 +74,29 @@ export const PROJECTS: readonly Project[] = [
     },
   },
   {
-    title: 'Employee Manager',
+    title: 'Employee Management System',
     description:
-      'A full-stack employee management system with Spring Boot backend and Angular ' +
-      'frontend. Features JWT authentication, CRUD operations, and MySQL database ' +
-      'integration for secure employee data management.',
+      'A full-stack web application for managing employee records, built with a ' +
+      'Spring Boot REST API and an Angular front end. Implements JWT authentication ' +
+      'and full CRUD functionality over a MySQL database for secure data handling.',
     tech: ['Spring Boot', 'Angular', 'MySQL', 'JWT'],
     href: 'https://github.com/Robotbino/EmployeeManager-Application.git',
     img: {
       dark: '/assets/EmployeeManagerInterface.jpg',
       light: '/assets/EmployeeManagerInterface.jpg',
       alt: {
-        dark: 'Employee Manager dashboard interface',
-        light: 'Employee Manager dashboard interface',
+        dark: 'Employee Management System dashboard interface',
+        light: 'Employee Management System dashboard interface',
       },
     },
   },
   {
     title: 'Game Store',
     description:
-      'A full-stack game storefront with a React 19 + TypeScript frontend and a Spring Boot ' +
-      'REST API. Features JWT authentication, a live-search shop with game detail pages, a ' +
-      'personal library, and a separate admin portal with full CRUD backed by MySQL.',
+      'A full-stack e-commerce storefront for video games, pairing a React 19 + ' +
+      'TypeScript front end with a Spring Boot REST API. Features JWT authentication, ' +
+      'live search with game detail pages, a personal library, and a separate admin ' +
+      'portal with full CRUD backed by MySQL.',
     tech: ['React', 'TypeScript', 'Spring Boot', 'MySQL'],
     href: 'https://github.com/Robotbino/gameStore.git',
     img: {
@@ -110,9 +111,10 @@ export const PROJECTS: readonly Project[] = [
   {
     title: 'Portfolio Website',
     description:
-      'The site you are viewing — an Angular single-page app built as one continuous ' +
-      'scroll that loops through four destinations. A shared frame loop drives the ' +
-      'star-map and aurora, morphing the constellation between three shapes as you scroll.',
+      'The site you are viewing — an Angular single-page application with a custom ' +
+      'WebGL star-map and aurora driven by a single shared frame loop. The ' +
+      'constellation morphs between shapes as you scroll, with full light and dark ' +
+      'theming throughout.',
     tech: ['Angular', 'TypeScript', 'WebGL', 'CSS3'],
     href: 'https://github.com/Robotbino/PorfolioWebsite.git',
     img: {
