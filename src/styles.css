@@ -488,3 +488,63 @@ textarea:not([rows]) { min-height: 10em; }
     transition: none;
   }
 }
+
+/* ============================================
+   NAV VIEW TRANSITIONS
+   Long nav jumps teleport instantly inside document.startViewTransition()
+   (NavTransitionService); these rules turn the default cross-fade into a
+   directional drift-fade. `data-nav-transition` on <html> carries the travel
+   direction for the duration of the transition.
+   ============================================ */
+
+:root {
+  --vt-nav-duration: 0.6s;
+  --vt-nav-drift: 2.5vh;
+}
+
+/* Only the nav is lifted out of the root snapshot, so it stays static (and
+   live — the active-link underline moves immediately) while the page drifts.
+   Do NOT name aurora/constellation: groups paint in element order with root
+   first, so lifting a z-0 background would paint it OVER the content
+   mid-transition. Never name anything inside .dest — the Home seam clone
+   would duplicate the name and abort every transition. */
+.navigation-bar {
+  view-transition-name: site-nav;
+}
+
+/* The pseudo-element tree overlays the viewport; keep the nav clickable
+   mid-flight so a rapid second click can redirect the transition. */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--vt-nav-duration);
+  animation-timing-function: var(--ease-out-expo);
+  animation-fill-mode: both;
+  /* Default is plus-lighter, which over-brightens once the layers drift apart. */
+  mix-blend-mode: normal;
+}
+
+:root[data-nav-transition='down']::view-transition-old(root) { animation-name: vt-out-up; }
+:root[data-nav-transition='down']::view-transition-new(root) { animation-name: vt-in-from-below; }
+:root[data-nav-transition='up']::view-transition-old(root)   { animation-name: vt-out-down; }
+:root[data-nav-transition='up']::view-transition-new(root)   { animation-name: vt-in-from-above; }
+
+@keyframes vt-out-up        { to   { opacity: 0; transform: translateY(calc(-1 * var(--vt-nav-drift))); } }
+@keyframes vt-out-down      { to   { opacity: 0; transform: translateY(var(--vt-nav-drift)); } }
+@keyframes vt-in-from-below { from { opacity: 0; transform: translateY(var(--vt-nav-drift)); } }
+@keyframes vt-in-from-above { from { opacity: 0; transform: translateY(calc(-1 * var(--vt-nav-drift))); } }
+
+/* The global `*` kill-switch can't match pseudo-elements — explicit off-switch.
+   (NavTransitionService never starts a transition under reduced motion; this
+   also covers a preference flip that lands mid-transition.) */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-image-pair(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

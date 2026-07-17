@@ -10,6 +10,7 @@ import { ThemeService } from '../../core/theme.service';
 import { ScrollLoopService } from '../../scroll-loop.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
+import { NavTransitionService } from '../../core/nav-transition.service';
 import { InViewportService } from '../../core/in-viewport.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
 import { DESTINATIONS } from '../../destinations';
@@ -77,6 +78,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     private pulse: FramePulseService,
     private scrollLock: ScrollLockService,
     private motion: MotionSettingsService,
+    private navTransition: NavTransitionService,
     private inView: InViewportService,
   ) {}
 
@@ -135,13 +137,12 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   }
 
   scrollToSection(id: string, event: Event): void {
-    const el = document.getElementById(id);
-    if (!el) {
-      return;
+    // While the mobile overlay is open the transition is suppressed: the jump
+    // lands instantly behind the scrim, and closeMenu()'s overlay fade is the
+    // reveal — two stacked animations would fight each other.
+    if (this.navTransition.navigateTo(id, { suppressTransition: this.menuOpen })) {
+      event.preventDefault();
     }
-    event.preventDefault();
-    const reduce = this.motion.reducedMotion();
-    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   }
 
   /** Group every in-page link (logo, desktop, mobile) by the destination id it targets. */

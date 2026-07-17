@@ -10,6 +10,7 @@ import {
 import { ThemeService } from '../../core/theme.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
+import { NavTransitionService } from '../../core/nav-transition.service';
 import { smoothingK } from '../../motion.math';
 import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-data';
 
@@ -44,6 +45,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   private active = false;
 
   private unsub: (() => void) | null = null;
+  private teleportRelease: (() => void) | null = null;
   private rendered = 0;
   private stickRange = 0;
   private maxX = 0;
@@ -59,6 +61,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     private pulse: FramePulseService,
     private host: ElementRef<HTMLElement>,
     private motion: MotionSettingsService,
+    private navTransition: NavTransitionService,
   ) {}
 
   // Maps a tech-stack label to a Font Awesome class pair (the project's existing
@@ -94,6 +97,12 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.reduce = this.motion.reducedMotion();
     this.applyMode();
+    // A nav teleport lands the viewport somewhere new in one frame; the
+    // exponentially-smoothed track would otherwise chase the new target with a
+    // visible catch-up slide. Snap it to the landed geometry synchronously —
+    // inside the view transition's update callback — so the captured snapshot
+    // and the first live frames are already final.
+    this.teleportRelease = this.navTransition.onTeleport(() => this.snapToTarget());
   }
 
   @HostListener('window:resize')
@@ -166,20 +175,22 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private tick = (_now: number, dt: number): void => {
+  /** Pin progress (0→1) from live geometry, or null when the showcase isn't runnable. */
+  private progress(): number | null {
     const viewport = this.viewportRef?.nativeElement;
+    if (!viewport || !this.stageRef || !this.trackRef || this.stickRange <= 0 || this.maxX <= 0) {
+      return null;
+    }
+    return Math.min(1, Math.max(0, -viewport.getBoundingClientRect().top / this.stickRange));
+  }
+
+  /** Every per-frame DOM write for progress `p` at the current `rendered` offset. */
+  private paint(p: number): void {
     const stage = this.stageRef?.nativeElement;
     const track = this.trackRef?.nativeElement;
-    if (!viewport || !stage || !track || this.stickRange <= 0 || this.maxX <= 0) {
+    if (!stage || !track) {
       return;
     }
-    const p = Math.min(1, Math.max(0, -viewport.getBoundingClientRect().top / this.stickRange));
-    const target = -p * this.maxX;
-    // Frame-rate-independent exponential smoothing: keeps the calm ≈0.12/60fps
-    // feel identical at 60Hz or 120Hz, so the sweep never reads faster or
-    // "slippery" on high-refresh displays.
-    const k = smoothingK(dt, 0.12);
-    this.rendered += (target - this.rendered) * k;
     track.style.transform = `translate3d(${this.rendered.toFixed(2)}px,0,0)`;
 
     // Progress (0→1) drives the pinned HUD rail and the entry-hint fade — pure
@@ -207,7 +218,38 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
         readout.textContent = '0' + (active + 1);
       }
     }
+  }
+
+  private tick = (_now: number, dt: number): void => {
+    const p = this.progress();
+    if (p === null) {
+      return;
+    }
+    // Frame-rate-independent exponential smoothing: keeps the calm ≈0.12/60fps
+    // feel identical at 60Hz or 120Hz, so the sweep never reads faster or
+    // "slippery" on high-refresh displays.
+    const k = smoothingK(dt, 0.12);
+    this.rendered += (-p * this.maxX - this.rendered) * k;
+    this.paint(p);
   };
+
+  /**
+   * A nav teleport just relocated the viewport: kill the smoothing lag by
+   * writing the track (and everything downstream) at its exact target. Runs
+   * synchronously inside the teleport, so the interleaved rAF tick becomes a
+   * fixed-point write — no catch-up slide, correct readout on the first frame.
+   */
+  private snapToTarget(): void {
+    if (!this.active) {
+      return;
+    }
+    const p = this.progress();
+    if (p === null) {
+      return;
+    }
+    this.rendered = -p * this.maxX;
+    this.paint(p);
+  }
 
   /** Bring the card that just received focus into the pinned frame. */
   private onFocusIn = (event: FocusEvent): void => {
@@ -248,6 +290,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.unsub?.();
+    this.teleportRelease?.();
     this.trackRef?.nativeElement.removeEventListener('focusin', this.onFocusIn);
   }
 }
