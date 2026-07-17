@@ -131,12 +131,16 @@
   pointer-events: none;
 }
 
+/* Display voice (the poster family, not the body face) so the lead opens with
+   an editorial beat instead of a bold body line. */
 .contact-lead-title {
   display: block;
   margin-bottom: var(--space-sm);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
+  line-height: var(--line-height-tight);
   color: var(--color-text-primary);
 }
 
@@ -159,17 +163,11 @@
   border-top: 1px solid var(--color-border-dark);
 }
 
-/* Email row only: the link shares the row with a trailing copy button. */
-.channel-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.channel-row .channel-link {
-  flex: 1 1 auto;
-  min-width: 0;
-}
+/* Staggered reveal — each row lands on its own beat (the certifications
+   ledger cadence). Delay only; the transition itself is the global
+   .scroll-reveal's. */
+.channel.scroll-reveal:nth-child(1) { transition-delay: 60ms; }
+.channel.scroll-reveal:nth-child(2) { transition-delay: 130ms; }
 
 .channel-link {
   position: relative;
@@ -282,8 +280,9 @@
   max-width: 100%;
 }
 
-/* Surfaceless copy button — no border/background, so it stays in the ledger
-   idiom; the label reads "Copy", swapping to "Copied" with a check on success. */
+/* Surfaceless copy button — no border/background, so it stays in the section's
+   boxless idiom; rides the marquee's baseline. The label reads "Copy",
+   swapping to "Copied" with a check on success. */
 .channel-copy {
   flex: none;
   display: inline-flex;
@@ -393,6 +392,165 @@
 }
 
 /* ============================================
+   MARQUEE — the terminal email beat
+   The address itself at poster scale: the lead promises "email is the fastest
+   way" and this is the payoff. Same grammar as everything else — kicker-style
+   micro-label, underline-draw, arrow nudge — just louder.
+   ============================================ */
+
+.contact-marquee {
+  margin-top: var(--space-3xl);
+}
+
+/* Micro-label above the address — the kicker idiom (index + label + hairline). */
+.marquee-label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.marquee-index {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-vivid);
+}
+
+.marquee-label::after {
+  content: '';
+  align-self: center;
+  width: var(--space-2xl);
+  height: 1px;
+  background: var(--color-border-dark);
+}
+
+.marquee-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.marquee-link {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  /* 6.4vw leaves room for the trailing arrow + gap beside the 23-character
+     address, so the poster moment stays one unbroken line down to 320px
+     phones instead of turning into a ragged mid-word wrap. */
+  font-family: var(--font-family-display);
+  font-size: clamp(1.25rem, 6.4vw, 4rem);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  transition: color var(--transition-base);
+}
+
+.marquee-address {
+  /* Anchor for the underline, so it spans the address, not the arrow too. */
+  position: relative;
+  /* Safety net only — the clamp above is sized so this never fires. */
+  overflow-wrap: anywhere;
+}
+
+/* Underline draws in from the left (the site's link idiom, at poster weight —
+   2px, because a hairline disappears under display type). */
+.marquee-address::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.08em;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-accent-vivid);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--transition-slow);
+}
+
+.marquee-arrow {
+  font-size: 0.6em;
+  color: var(--color-text-muted);
+  transition:
+    transform var(--transition-base),
+    color var(--transition-base);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .marquee-link:hover {
+    color: var(--color-accent-vivid);
+  }
+
+  .marquee-link:hover .marquee-address::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .marquee-link:hover .marquee-arrow {
+    transform: translate(0.12em, -0.12em);
+    color: var(--color-accent-vivid);
+  }
+}
+
+/* Keyboard parity — the focused marquee gets the same lit state as hover. */
+.marquee-link:focus-visible {
+  outline: none;
+  color: var(--color-accent-vivid);
+}
+
+.marquee-link:focus-visible .marquee-address::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.marquee-link:focus-visible .marquee-arrow {
+  transform: translate(0.12em, -0.12em);
+  color: var(--color-accent-vivid);
+}
+
+/* Touch feedback — the tap lights the address the way hover would. */
+.marquee-link:active {
+  color: var(--color-accent-vivid);
+}
+
+/* ============================================
+   COLOPHON — the loop's sign-off
+   One quiet strip in the ledger's micro-type: © | loop hint | coords + local
+   clock. The coords bookend the hero's "Pretoria · South Africa"; the clock
+   makes the site feel inhabited.
+   ============================================ */
+
+.contact-colophon {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-xl);
+  flex-wrap: wrap;
+  margin-top: var(--space-4xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border-dark);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.colophon-item {
+  margin: 0;
+}
+
+.colophon-time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 
@@ -432,17 +590,16 @@
     transform: none;
   }
 
-  /* Tight columns: drop to an icon-only copy button (aria-label carries the
-     accessible name); the long email address keeps the row's width. */
-  .channel-copy-text {
-    display: none;
+  /* The marquee owns a full-width beat now, so the copy button keeps its
+     label — no need for the old icon-only squeeze. */
+  .contact-marquee {
+    margin-top: var(--space-2xl);
   }
 
-  .channel-copy {
-    padding: var(--space-sm);
-  }
-
-  .channel-copy-icon {
-    font-size: var(--font-size-md);
+  /* Single quiet column; the sign-off reads top-to-bottom like the ledger. */
+  .contact-colophon {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: var(--space-3xl);
   }
 }

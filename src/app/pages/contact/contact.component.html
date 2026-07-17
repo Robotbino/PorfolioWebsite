@@ -32,33 +32,12 @@
         </p>
       </div>
 
-      <!-- Channels ledger — the old link row flattened into a typographic index:
-           hairline rules, uppercase micro-labels, index numerals. Each icon is a
-           star that comes into focus on hover — it lifts, glows, the value
-           underlines in, and the arrow slides out. -->
-      <ul class="contact-channels" role="list" appScrollReveal>
-        <!-- Email is the primary channel: full-row mailto link plus a one-tap
-             copy affordance (surfaceless, so it stays in the ledger idiom). -->
-        <li class="channel">
-          <div class="channel-row">
-            <a class="channel-link" href="mailto:HlongwanaBino@gmail.com">
-              <span class="channel-index" aria-hidden="true">01</span>
-              <i class="fa-solid fa-envelope channel-icon" aria-hidden="true"></i>
-              <span class="channel-meta">
-                <span class="channel-label">Email</span>
-                <span class="channel-value">HlongwanaBino&#64;gmail.com</span>
-              </span>
-            </a>
-            <button class="channel-copy" type="button"
-                    [class.is-copied]="copied"
-                    (click)="copyEmail('HlongwanaBino@gmail.com')"
-                    [attr.aria-label]="copied ? 'Email address copied to clipboard' : 'Copy email address'">
-              <i class="channel-copy-icon fa-solid" [class.fa-copy]="!copied" [class.fa-check]="copied" aria-hidden="true"></i>
-              <span class="channel-copy-text">{{ copied ? 'Copied' : 'Copy' }}</span>
-            </button>
-          </div>
-        </li>
-        <li class="channel">
+      <!-- Channels ledger — the secondary channels as a typographic index:
+           hairline rules, uppercase micro-labels, index numerals. Email keeps
+           its 01 but graduates to the marquee below; each row reveals on its
+           own beat (the certifications ledger cadence). -->
+      <ul class="contact-channels" role="list">
+        <li class="channel" appScrollReveal>
           <a class="channel-link" href="https://github.com/Robotbino" target="_blank"
             rel="noopener noreferrer">
             <span class="channel-index" aria-hidden="true">02</span>
@@ -70,7 +49,7 @@
             <span class="channel-arrow" aria-hidden="true">&rarr;</span>
           </a>
         </li>
-        <li class="channel">
+        <li class="channel" appScrollReveal>
           <a class="channel-link" href="https://www.linkedin.com/in/bino-hlongwana-162226272/" target="_blank"
             rel="noopener noreferrer">
             <span class="channel-index" aria-hidden="true">03</span>
@@ -84,5 +63,43 @@
         </li>
       </ul>
     </div>
+
+    <!-- Marquee — the section's terminal beat. The lead promises "email is the
+         fastest way"; this is the payoff: the address itself, poster-scale,
+         with the site's underline-draw idiom and the copy affordance riding
+         its baseline. It keeps channel index 01. -->
+    <div class="contact-marquee" appScrollReveal>
+      <p class="marquee-label">
+        <span class="marquee-index" aria-hidden="true">01</span>
+        <span>Email</span>
+      </p>
+      <div class="marquee-row">
+        <a class="marquee-link" href="mailto:HlongwanaBino@gmail.com">
+          <span class="marquee-address">HlongwanaBino&#64;gmail.com</span>
+          <span class="marquee-arrow" aria-hidden="true">&#8599;</span>
+        </a>
+        <button class="channel-copy" type="button"
+                [class.is-copied]="copied"
+                (click)="copyEmail('HlongwanaBino@gmail.com')"
+                [attr.aria-label]="copied ? 'Email address copied to clipboard' : 'Copy email address'">
+          <i class="channel-copy-icon fa-solid" [class.fa-copy]="!copied" [class.fa-check]="copied" aria-hidden="true"></i>
+          <span class="channel-copy-text">{{ copied ? 'Copied' : 'Copy' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Colophon — the loop's sign-off. Bookends the hero: the coords that
+         open the journey close it, with the local clock making the site feel
+         inhabited. The centre line is quiet wayfinding for the seam wrap. -->
+    <footer class="contact-colophon" appScrollReveal>
+      <p class="colophon-item">&copy; {{ year }} Bino Hlongwana</p>
+      <p class="colophon-item colophon-loop">
+        Keep scrolling &mdash; the map loops <span aria-hidden="true">&#8595;</span>
+      </p>
+      <p class="colophon-item">
+        Pretoria&nbsp;&middot; South&nbsp;Africa
+        <span class="colophon-time">&middot; {{ localTime }} SAST</span>
+      </p>
+    </footer>
   </div>
 </section>
