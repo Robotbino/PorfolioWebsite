@@ -24,6 +24,7 @@ const SMOOTH_HOP_MAX_VH = 1.75;
 export class NavTransitionService {
   private activeTransition: ViewTransition | null = null;
   private readonly teleportListeners = new Set<() => void>();
+  private readonly navigateListeners = new Set<() => void>();
 
   constructor(
     private zone: NgZone,
@@ -36,6 +37,16 @@ export class NavTransitionService {
    * default anchor behaviour, matching the old inline handler's semantics).
    */
   navigateTo(id: string, options: { suppressTransition?: boolean } = {}): boolean {
+    // Overlays first: a full-screen overlay (the certifications spotlight)
+    // dismissing here also releases its scroll lock, which can change viewport
+    // geometry — so listeners must run before the measurement below.
+    for (const listener of this.navigateListeners) {
+      try {
+        listener();
+      } catch {
+        // A listener failure must never block navigation.
+      }
+    }
     const el = document.getElementById(id);
     if (!el) {
       return false;
@@ -54,6 +65,19 @@ export class NavTransitionService {
       this.startTransition(el, delta > 0 ? 'down' : 'up');
     }
     return true;
+  }
+
+  /**
+   * Run `listener` synchronously at the start of every nav-initiated journey,
+   * before anything is measured or scrolled. Full-screen overlays that would
+   * otherwise cover the travel (the certifications spotlight) use this to
+   * dismiss themselves. Returns a release handle.
+   */
+  onNavigate(listener: () => void): () => void {
+    this.navigateListeners.add(listener);
+    return () => {
+      this.navigateListeners.delete(listener);
+    };
   }
 
   /**

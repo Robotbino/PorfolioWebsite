@@ -548,3 +548,39 @@ textarea:not([rows]) { min-height: 10em; }
     animation: none !important;
   }
 }
+
+/* ============================================
+   CERTIFICATE SPOTLIGHT × PERSISTENT NAV
+   The spotlight lives inside .starscroll's stacking context (z:1), so the
+   root-level sticky nav (z:100) paints above its scrim — by design: the links
+   stay visible and clickable while a certificate is open, and clicking one
+   closes the spotlight (NavTransitionService.onNavigate) and travels. Two
+   adjustments while `body.certs-spotlight-open` is set (by the certifications
+   component): the header's transparent full-width strip must stop intercepting
+   clicks — the spotlight's Close button lives inside that band — and the
+   action cluster (theme toggle + hamburger) yields the top-right corner to
+   that Close button, which it exactly overlaps on mobile. Lives here, not in
+   site-nav.component.css, because it spans two components (same precedent as
+   the .navigation-bar view-transition-name above).
+   ============================================ */
+
+body.certs-spotlight-open .navigation-bar {
+  pointer-events: none;
+}
+
+body.certs-spotlight-open .navigation-bar :is(.logo, .nav-link) {
+  pointer-events: auto;
+}
+
+/* visibility (not display): the hidden cluster keeps its flex slot, so the
+   links don't reflow toward the corner; it also leaves the tab order. The
+   discrete visibility transition flips at the end of the fade-out and the
+   start of the fade-in, so both directions animate. */
+.nav-actions {
+  transition: opacity 240ms var(--ease-out-quart), visibility 240ms;
+}
+
+body.certs-spotlight-open .nav-actions {
+  opacity: 0;
+  visibility: hidden;
+}

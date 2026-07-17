@@ -11,6 +11,7 @@ import {
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
 import { InViewportService } from '../../core/in-viewport.service';
+import { NavTransitionService } from '../../core/nav-transition.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
 import { smoothingK } from '../../motion.math';
 import { CERTIFICATIONS, Certification } from './certifications-data';
@@ -86,6 +87,15 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
   // Held while the spotlight is open; releasing it lets the shared lock go.
   private spotlockRelease: (() => void) | null = null;
 
+  // Nav clicks travel elsewhere — the spotlight must not stay covering the trip.
+  private navRelease: (() => void) | null = null;
+
+  /** Body flag styles.css keys off while the spotlight is open: the sticky nav
+   *  (which paints above the page's stacking context, spotlight included) stops
+   *  intercepting clicks over the dialog and its action cluster yields the
+   *  top-right corner to the Close button. */
+  private static readonly BODY_OPEN_CLASS = 'certs-spotlight-open';
+
   constructor(
     private zone: NgZone,
     private pulse: FramePulseService,
@@ -93,12 +103,20 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     private scrollLock: ScrollLockService,
     private motion: MotionSettingsService,
     private inView: InViewportService,
+    private navTransition: NavTransitionService,
   ) {}
 
   ngAfterViewInit(): void {
     const reduce = this.motion.reducedMotion();
     const hoverFine = this.motion.finePointer();
     this.enabled = hoverFine && !reduce;
+
+    // A nav click means the user is leaving — the spotlight closes (releasing
+    // its scroll lock) so the journey isn't hidden behind a stale modal. No
+    // focus restore: focus belongs with the navigation, not the ledger row.
+    this.navRelease = this.navTransition.onNavigate(() =>
+      this.closeSpotlight({ restoreFocus: false }),
+    );
 
     // Arm (one-shot) when the section is within half a viewport: the preview
     // images start fetching before the first possible hover, not at page load.
@@ -209,6 +227,7 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
 
     root.classList.add('is-open');
     root.setAttribute('aria-hidden', 'false');
+    document.body.classList.add(CertificationsComponent.BODY_OPEN_CLASS);
     // Acquire the shared scroll lock; release it when closing.
     this.spotlockRelease = this.scrollLock.acquire();
     this.zone.runOutsideAngular(() => {
@@ -241,7 +260,7 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     this.spotCloseRef?.nativeElement.focus();
   }
 
-  closeSpotlight(): void {
+  closeSpotlight(options: { restoreFocus?: boolean } = {}): void {
     const root = this.spotlightRef?.nativeElement;
     const frame = this.spotFrameRef?.nativeElement;
     if (!root || !root.classList.contains('is-open')) {
@@ -250,6 +269,7 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     root.classList.remove('is-open');
     root.classList.add('is-closing');
     root.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove(CertificationsComponent.BODY_OPEN_CLASS);
     if (frame) {
       frame.style.transformOrigin = '';
       frame.style.transform = 'scale(0.97)';
@@ -272,8 +292,12 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
       }, 320);
     });
 
-    this.suppressNextFocus = true;
-    this.lastTrigger?.focus();
+    // The page hasn't scrolled while locked, so the row is still in view —
+    // preventScroll keeps the focus jump from nudging the viewport anyway.
+    if (options.restoreFocus !== false) {
+      this.suppressNextFocus = true;
+      this.lastTrigger?.focus({ preventScroll: true });
+    }
     this.lastTrigger = null;
   }
 
@@ -405,12 +429,16 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsub?.();
     this.armRelease?.();
+    this.navRelease?.();
+    this.navRelease = null;
     this.host.nativeElement.removeEventListener('pointermove', this.onPointerMove);
     document.removeEventListener('keydown', this.onSpotlightDocKeydown);
     if (this.spotTimer !== null) {
       clearTimeout(this.spotTimer);
     }
-    // If destroyed with the spotlight open, release its hold on the scroll lock.
+    // If destroyed with the spotlight open, release its hold on the scroll lock
+    // and drop the body flag the nav styles key off.
+    document.body.classList.remove(CertificationsComponent.BODY_OPEN_CLASS);
     this.spotlockRelease?.();
     this.spotlockRelease = null;
   }

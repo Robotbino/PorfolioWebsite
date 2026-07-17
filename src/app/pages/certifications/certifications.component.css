@@ -338,7 +338,13 @@
 .certs-spotlight {
   position: fixed;
   inset: 0;
-  z-index: 150; /* above the persistent nav — it's a modal */
+  /* Top of the PAGE stacking context only: .starscroll (z:1) traps this, so the
+     root-level sticky nav (z:100) still paints above the scrim — intentionally.
+     Its links stay clickable while a certificate is open (a nav click closes
+     the spotlight and travels); styles.css `body.certs-spotlight-open` rules
+     stop the transparent header strip from shadowing the Close button and hide
+     the theme-toggle/hamburger cluster that shares its corner. */
+  z-index: 150;
   display: grid;
   place-items: center;
   padding: var(--space-xl);
@@ -461,14 +467,17 @@
   height: 2.75rem;
   display: grid;
   place-items: center;
-  font-size: var(--font-size-xl);
-  line-height: 1;
   color: var(--color-text-primary);
   border: 1px solid var(--color-border-dark);
   border-radius: var(--radius-full);
   opacity: 0;
   transform: scale(0.9);
   transition: opacity 240ms var(--ease-out-quart), transform 240ms var(--ease-out-quart);
+}
+
+/* Block, or the SVG sits on the text baseline and drops below centre. */
+.certs-spotlight-close svg {
+  display: block;
 }
 
 .certs-spotlight.is-open .certs-spotlight-close {
