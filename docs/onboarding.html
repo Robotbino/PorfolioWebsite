@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Star-Map Portfolio — Engineering Onboarding</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer onload="mermaid.initialize({startOnLoad:false})"></script>
 <style>
 :root{
   --bg:#101010;--bg2:#161616;--panel:#1b1b1b;--panel2:#212121;--line:#2c2c2c;--line2:#3a3a3a;
@@ -594,11 +594,13 @@ $$('pre[data-copy]').forEach(p=>{const b=document.createElement('button');b.clas
 // scrollspy: highlight the sidebar link for the section in view
 const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$('.slink').forEach(l=>l.classList.toggle('cur',l.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-15% 0px -70% 0px'});
 $$('.panel>section[id]').forEach(s=>spy.observe(s));
-// mermaid: lazy-render on first Architecture visit (needs the panel visible to measure text)
+// mermaid: lazy-render on first Architecture visit. Uses render() (off-DOM sandbox), not run(),
+// since run() measures in-place and collapses to a 0-size svg inside our display:none panel.
 const mmRender=()=>{if(mm||!window.mermaid)return;mm=true;
  mermaid.initialize({startOnLoad:false,theme:'dark',securityLevel:'loose',flowchart:{curve:'basis'},
   themeVariables:{background:'#1b1b1b',primaryColor:'#242220',primaryBorderColor:'#5a4a3a',primaryTextColor:'#e4e0da',secondaryColor:'#1f1d1b',tertiaryColor:'#191817',lineColor:'#8a7f72',clusterBkg:'#171614',clusterBorder:'#3a3630',edgeLabelBackground:'#1b1b1b',fontSize:'13px'}});
- mermaid.run({querySelector:'.mermaid'}).catch(()=>$('#mm-fallback').classList.add('show'))};
+ const el=$('.mermaid');
+ mermaid.render('mm-svg',el.textContent.trim()).then(({svg})=>{el.innerHTML=svg}).catch(()=>$('#mm-fallback').classList.add('show'))};
 window.addEventListener('load',()=>{if(!window.mermaid)$('#mm-fallback').classList.add('show');if($('#tab-arch').classList.contains('on'))mmRender()});
 })();
 </script>
