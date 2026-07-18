@@ -57,10 +57,16 @@
               transform var(--transition-base);
 }
 
-/* Bring the whole nav back when pointed at or focused, so the labelled nav stays
-   operable for mouse and keyboard even mid-travel (CONTEXT.md Wayfinding). */
-.navigation-bar:hover,
-.navigation-bar:focus-within {
+/* Bring the nav back when genuinely engaged, so the labelled nav stays
+   operable for mouse and keyboard even mid-travel (CONTEXT.md Wayfinding).
+   Deliberately NOT the whole bar: the padded strip spans the full viewport
+   width, so a cursor parked at the top while wheel-scrolling would pin the
+   nav bright through the entire travel. Same for focus — :focus-visible,
+   not :focus-within, because a mouse click's residual focus (the theme
+   toggle, right after switching themes) must not hold the fade off; only
+   real keyboard focus should. */
+.navigation-bar:has(.logo:hover, .nav-items:hover, .nav-actions:hover),
+.navigation-bar:has(:focus-visible) {
   --nav-mute: 0;
 }
 

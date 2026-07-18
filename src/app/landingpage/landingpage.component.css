@@ -52,6 +52,12 @@
   gap: var(--space-sm);
 }
 
+/* Local clock riding the coords — tabular numerals so the minute flip never
+   shifts the line, in the meta row's one quiet voice (no extra colour). */
+.hero-time {
+  font-variant-numeric: tabular-nums;
+}
+
 /* Static marker (not a pulsing "available" indicator) — just a typographic
    bullet in the accent hue before the current-role line. */
 .hero-status-dot {
@@ -234,6 +240,10 @@
   background-color: var(--color-accent-vivid-hover);
   border-color: var(--color-accent-vivid-hover);
   outline-offset: 4px;
+  box-shadow:
+    0 0 10px color-mix(in srgb, var(--color-accent-vivid) 55%, transparent),
+    0 0 28px color-mix(in srgb, var(--color-accent-vivid) 40%, transparent),
+    0 14px 44px color-mix(in srgb, var(--color-accent-vivid) 30%, transparent);
 }
 
 .hero-cta:active {
@@ -249,10 +259,16 @@
   .hero-cta:hover {
     background-color: var(--color-accent-vivid-hover);
     border-color: var(--color-accent-vivid-hover);
-    /* Lift + slight scale, with an accent-tinted glow that tracks the theme via
-       color-mix (the accent brightens on dark, deepens on light). */
+    /* Lift + slight scale, with a layered star-glow (the contact icons'
+       halo-and-bloom language at CTA scale): a tight halo hugging the chip,
+       a wider omnidirectional bloom, then a soft downward cast for depth.
+       Accent-tinted via color-mix so it tracks the theme — brightens on
+       dark, deepens on light. */
     transform: translateY(-2px) scale(1.04);
-    box-shadow: 0 14px 34px color-mix(in srgb, var(--color-accent-vivid) 45%, transparent);
+    box-shadow:
+      0 0 10px color-mix(in srgb, var(--color-accent-vivid) 55%, transparent),
+      0 0 28px color-mix(in srgb, var(--color-accent-vivid) 40%, transparent),
+      0 14px 44px color-mix(in srgb, var(--color-accent-vivid) 30%, transparent);
   }
 
   .hero-cta:hover .hero-cta-arrow,

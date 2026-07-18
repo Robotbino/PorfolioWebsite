@@ -432,12 +432,17 @@
   margin-top: var(--space-2xl);
 }
 
+/* Opaque by design (the one surface the site keeps): over the fixed star map
+   a transparent card would fight its own copy. The frame is a hairline, not a
+   shadow-blob — the Swiss rule idiom at card scale. */
 .project-card {
   background-color: var(--color-background);
-  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   transition: transform var(--transition-base),
-              box-shadow var(--transition-base);
+              box-shadow var(--transition-base),
+              border-color var(--transition-base);
   margin: var(--space-2xl) 0;
 }
 
@@ -455,8 +460,36 @@
   gap: var(--space-lg);
 }
 
+/* Card index — the site-wide numeral wayfinding (certs rows, contact
+   channels), here as the card's kicker: vivid tabular numeral + hairline. */
+.project-kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-vivid);
+}
+
+.project-kicker::after {
+  content: '';
+  width: var(--space-2xl);
+  height: 1px;
+  background: var(--color-border-dark);
+}
+
+/* Poster voice (the Experience/About headline treatment at card scale), so
+   the title anchors the card the way section titles anchor their spreads.
+   Fluid: steps down with the viewport so the longest title ("Employee
+   Management System") never pushes the fixed-height showcase card into its
+   overflow scrollbar at short viewports. */
 .project-title {
-  font-size: var(--font-size-2xl);
+  font-size: clamp(var(--font-size-2xl), 3vw, var(--font-size-3xl));
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--tracking-tighter);
   color: var(--color-text-primary);
 }
 
@@ -466,53 +499,98 @@
   color: var(--color-text-secondary);
 }
 
+/* Tech stack as a typographic meta row — the pills' surfaces removed the same
+   way the skills cards became ledgers. Uppercase micro-labels, icon marks,
+   whitespace instead of chrome. Static: these aren't links, so they don't
+   perform (less but better). */
 .project-tech {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: var(--space-xs) var(--space-lg);
 }
 
 .tech-tag {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-sm) var(--space-md);
-  background-color: var(--color-tag-bg);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  transition: background-color var(--transition-fast),
-              transform var(--transition-fast),
-              color var(--transition-fast);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
 }
 
-/* Greyscale by design: a muted mark that stays neutral across every card's
-   stack regardless of the tag's own hover recolor, so the icons read as one
+/* Greyscale by design: a muted mark that keeps the icons reading as one
    consistent set rather than a row of brand colours. */
 .tech-tag-icon {
   flex-shrink: 0;
-  font-size: 0.95em;
+  font-size: 1.1em;
   line-height: 1;
   color: var(--color-text-secondary);
   filter: grayscale(1);
 }
 
+/* Card actions — real buttons, not quiet links: the cards exist to get
+   visitors INTO the repos and demos, so the affordance must read as pressable
+   at a glance. A refined chip chassis (hairline pill, uppercase micro-label,
+   vivid arrow) rather than the old 2px-accent border; hover inverts to a
+   solid accent fill with a lift, echoing the hero CTA at secondary volume. */
 .project-links {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-md);
 }
 
-/* .btn is already inline-flex + nowrap, so the gap and em-sized icon keep the
-   label's optical centre without shifting the button's metrics. */
-.project-links .btn {
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   gap: var(--space-sm);
+  min-height: 2.75rem; /* 44px touch target, now carried by the chip itself */
+  padding: var(--space-xs) var(--space-lg);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  transition: color var(--transition-base),
+              background-color var(--transition-base),
+              border-color var(--transition-base),
+              transform var(--transition-base);
 }
 
-.btn-icon {
-  width: 1.1em;
-  height: 1.1em;
-  flex-shrink: 0;
+/* The arrow keeps the one vivid spark at rest, then rides the inverted fill. */
+.project-link-arrow {
+  display: inline-block;
+  color: var(--color-accent-vivid);
+  transition: transform var(--transition-base), color var(--transition-base);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .project-link:hover {
+    background-color: var(--color-accent-vivid);
+    border-color: var(--color-accent-vivid);
+    color: var(--color-background);
+    transform: translateY(-2px);
+  }
+
+  .project-link:hover .project-link-arrow {
+    color: var(--color-background);
+    transform: translate(2px, -2px);
+  }
+}
+
+.project-link:focus-visible {
+  outline: 2px solid var(--color-accent-vivid);
+  outline-offset: 3px;
+  border-color: var(--color-accent-vivid);
+}
+
+.project-link:active {
+  transform: scale(0.97);
 }
 
 .project-image {
@@ -579,6 +657,7 @@
 @media (hover: hover) and (pointer: fine) {
   .project-card:hover {
     transform: translateY(-2px);
+    border-color: var(--color-border-dark);
     box-shadow: var(--shadow-lg);
   }
 
@@ -586,13 +665,6 @@
   .project-card:hover .project-image img {
     transform: scale(1.05);
   }
-
-  .tech-tag:hover {
-    background-color: var(--color-tag-hover);
-    transform: translateY(-3px) scale(1.05);
-    color: var(--color-accent);
-  }
-
 }
 
 @media (max-width: 768px) {
@@ -635,8 +707,6 @@
 
   .project-title {
     font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: var(--tracking-tighter);
   }
 
   .project-description {
@@ -658,19 +728,6 @@
     );
   }
 
-  .project-card:nth-child(even) .project-content {
-    direction: ltr;
-  }
-
-  .project-card:nth-child(even) .project-image::after {
-    background: linear-gradient(
-      to top,
-      var(--gradient-overlay-start) 0%,
-      var(--gradient-overlay-mid) 50%,
-      var(--gradient-overlay-full) 100%
-    );
-  }
-
   .projects-container {
     gap: var(--space-md);
     margin-top: var(--space-lg);
@@ -678,16 +735,8 @@
 }
 
 @media (max-width: 480px) {
-  .project-links {
-    flex-direction: column;
-  }
-
   .project-text {
     padding: var(--space-md);
-  }
-
-  .tech-tag {
-    font-size: var(--font-size-xs);
   }
 
   .project-image {
@@ -791,14 +840,14 @@
 }
 
 /* ---- Card elevation + centre focus ---- */
-/* A resting border + shadow so each opaque card reads as a distinct object
-   lifted off the star-map (not floating ambiguously on it), which is also what
-   lets the hover lift below actually pop. --card-focus (1 = centred) is written
-   per frame by WorkComponent; edge cards dim so the centred one is unmistakably
-   the subject. No transition on opacity — it already tracks the eased transform,
-   so it moves smoothly frame to frame. */
+/* The hairline border darkens a step on the pinned stage and a shadow lifts
+   each opaque card off the star-map (not floating ambiguously on it), which is
+   also what lets the hover lift below actually pop. --card-focus (1 = centred)
+   is written per frame by WorkComponent; edge cards dim so the centred one is
+   unmistakably the subject. No transition on opacity — it already tracks the
+   eased transform, so it moves smoothly frame to frame. */
 :host(.showcase-on) .project-card {
-  border: 0px solid var(--color-border);
+  border-color: var(--color-border-dark);
   box-shadow: var(--shadow-md);
   opacity: calc(0.5 + 0.5 * var(--card-focus, 1));
 }

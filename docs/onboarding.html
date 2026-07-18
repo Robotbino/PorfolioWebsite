@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Star-Map Portfolio — Engineering Onboarding</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js" defer></script>
+<style>
+:root{
+  --bg:#101010;--bg2:#161616;--panel:#1b1b1b;--panel2:#212121;--line:#2c2c2c;--line2:#3a3a3a;
+  --tx:#e4e0da;--tx2:#a8a29a;--tx3:#7d786f;
+  --acc:#ff8c42;--acc2:#ffa363;--acc-dim:rgba(255,140,66,.12);
+  --ok:#7ec699;--warn:#e2b93d;
+  --mono:ui-monospace,'Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif;
+  --r:10px;--head-h:7.2rem;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:15.5px;line-height:1.65;
+  background-image:radial-gradient(circle at 15% 0%,rgba(255,140,66,.05),transparent 40%),radial-gradient(circle at 85% 100%,rgba(90,61,43,.14),transparent 45%)}
+::selection{background:var(--acc);color:#111}
+
+/* ---------- header + tabs ---------- */
+header{position:sticky;top:0;z-index:50;background:rgba(16,16,16,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.hwrap{max-width:1200px;margin:0 auto;padding:1rem 1.5rem .65rem}
+.brand{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap}
+.brand h1{font-size:1.12rem;font-weight:650;letter-spacing:-.01em}
+.brand h1 b{color:var(--acc);font-weight:650}
+.brand span{color:var(--tx3);font-size:.8rem}
+nav.tabs{display:flex;gap:.25rem;margin-top:.7rem;overflow-x:auto}
+.tab{appearance:none;border:none;background:none;color:var(--tx2);font:inherit;font-size:.86rem;font-weight:550;
+  padding:.45rem .95rem;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,background .15s}
+.tab:hover{color:var(--tx);background:var(--panel)}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc);background:var(--panel)}
+.tab .k{display:inline-block;margin-right:.45rem;font-family:var(--mono);font-size:.7rem;color:var(--tx3)}
+.tab.on .k{color:var(--acc2)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1200px;margin:0 auto;padding:1.6rem 1.5rem 5rem;display:grid;grid-template-columns:236px 1fr;gap:2.2rem;align-items:start}
+aside{position:sticky;top:var(--head-h);max-height:calc(100vh - var(--head-h) - 2rem);overflow-y:auto;padding-right:.4rem;scrollbar-width:thin}
+.sgroup{display:none}
+.sgroup.on{display:block}
+.sgroup h4{font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:var(--tx3);margin:.2rem 0 .55rem}
+.slink{display:block;padding:.34rem .65rem;margin:.1rem 0;font-size:.855rem;color:var(--tx2);text-decoration:none;border-left:2px solid var(--line);border-radius:0 6px 6px 0;transition:all .15s}
+.slink:hover{color:var(--tx);background:var(--panel);border-left-color:var(--line2)}
+.slink.cur{color:var(--acc);border-left-color:var(--acc);background:var(--acc-dim)}
+.sfoot{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid var(--line);font-size:.74rem;color:var(--tx3);line-height:1.55}
+.sfoot code{font-size:.72rem}
+
+/* ---------- panels + typography ---------- */
+.panel{display:none;min-width:0}
+.panel.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.panel>section{margin-bottom:3rem;scroll-margin-top:calc(var(--head-h) + .8rem)}
+h2{font-size:1.5rem;font-weight:650;letter-spacing:-.015em;margin-bottom:.9rem;padding-bottom:.55rem;border-bottom:1px solid var(--line)}
+h2 .n{color:var(--acc);font-family:var(--mono);font-size:.95rem;margin-right:.55rem;font-weight:500}
+h3{font-size:1.06rem;font-weight:640;margin:1.5rem 0 .55rem;color:var(--tx)}
+p{margin-bottom:.8rem;color:var(--tx2)}
+p b,li b{color:var(--tx);font-weight:600}
+ul,ol{margin:0 0 1rem 1.3rem;color:var(--tx2)}
+li{margin-bottom:.4rem}
+a{color:var(--acc2);text-decoration:none}
+a:hover{text-decoration:underline}
+code{font-family:var(--mono);font-size:.83em;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:.1em .38em;color:#f0c9a8;white-space:nowrap}
+.lead{font-size:1.02rem;color:var(--tx)}
+
+/* ---------- code blocks + copy ---------- */
+pre{position:relative;background:#141414;border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;margin:0 0 1.1rem;overflow-x:auto;line-height:1.55}
+pre code{background:none;border:none;padding:0;white-space:pre;color:#d7d2ca;font-size:.83rem;display:block}
+pre[data-lang]::before{content:attr(data-lang);position:absolute;top:.55rem;right:4.6rem;font-family:var(--mono);font-size:.66rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em}
+.cbtn{position:absolute;top:.5rem;right:.5rem;font-family:var(--mono);font-size:.7rem;color:var(--tx2);background:var(--panel2);border:1px solid var(--line2);border-radius:6px;padding:.28rem .6rem;cursor:pointer;transition:all .15s}
+.cbtn:hover{color:var(--acc);border-color:var(--acc)}
+.cbtn.ok{color:var(--ok);border-color:var(--ok)}
+.c-cmt{color:#8a8478}.c-key{color:#ff9d5c}.c-str{color:#b8cf8e}.c-num{color:#8fc7e8}
+pre.tree{background:var(--panel);font-size:.82rem}
+pre.tree code{color:var(--tx2)}
+pre.tree .d{color:var(--acc2);font-weight:600}
+pre.tree .a{color:var(--tx3)}
+
+/* ---------- tables / callouts / cards ---------- */
+.tblwrap{overflow-x:auto;margin-bottom:1.1rem;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th{text-align:left;background:var(--panel2);color:var(--tx);font-weight:600;padding:.6rem .85rem;border-bottom:1px solid var(--line2);white-space:nowrap}
+td{padding:.55rem .85rem;border-bottom:1px solid var(--line);color:var(--tx2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{white-space:nowrap}
+.note,.warn{border-radius:var(--r);padding:.85rem 1rem .85rem 1.1rem;margin-bottom:1.1rem;font-size:.9rem;border:1px solid var(--line);border-left:3px solid var(--acc);background:var(--panel)}
+.note b:first-child,.warn b:first-child{display:block;margin-bottom:.2rem}
+.warn{border-left-color:var(--warn)}
+.warn b:first-child{color:var(--warn)}
+.note b:first-child{color:var(--acc)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.9rem;margin-bottom:1.1rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem}
+.card h4{font-size:.92rem;margin-bottom:.35rem;color:var(--acc2)}
+.card p{font-size:.84rem;margin:0;color:var(--tx2)}
+.pill{display:inline-block;font-family:var(--mono);font-size:.68rem;background:var(--acc-dim);color:var(--acc2);border:1px solid rgba(255,140,66,.3);border-radius:999px;padding:.1rem .6rem;margin:0 .3rem .3rem 0}
+
+/* ---------- mermaid ---------- */
+.mmbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:1.2rem;margin-bottom:1.1rem;overflow-x:auto}
+.mermaid{display:flex;justify-content:center;min-height:120px;font-family:var(--mono);font-size:.78rem;color:var(--tx3)}
+.mermaid svg{max-width:100%;height:auto}
+#mm-fallback{display:none}
+#mm-fallback.show{display:block}
+
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr;padding-top:1rem}
+  aside{position:static;max-height:none;display:flex;flex-wrap:wrap;gap:.3rem;border:1px solid var(--line);border-radius:var(--r);padding:.8rem;background:var(--panel)}
+  .sgroup h4,.sfoot{display:none}
+  .slink{border:1px solid var(--line);border-radius:999px;padding:.25rem .8rem;font-size:.78rem}
+  :root{--head-h:8.6rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hwrap">
+    <div class="brand">
+      <h1><b>★</b> Star-Map Portfolio — Engineering Onboarding</h1>
+      <span>Angular 19 · TypeScript 5.6 · OGL WebGL · looping scroll</span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab on" data-tab="qs"  role="tab"><span class="k">01</span>Quick Start</button>
+      <button class="tab" data-tab="arch"   role="tab"><span class="k">02</span>Architecture</button>
+      <button class="tab" data-tab="map"    role="tab"><span class="k">03</span>Component Map</button>
+      <button class="tab" data-tab="mod"    role="tab"><span class="k">04</span>Modification Guide</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<aside>
+  <div class="sgroup on" data-tab="qs">
+    <h4>Quick Start</h4>
+    <a class="slink" data-tab="qs" href="#s-qs-prereq">Prerequisites</a>
+    <a class="slink" data-tab="qs" href="#s-qs-run">Install &amp; run</a>
+    <a class="slink" data-tab="qs" href="#s-qs-scripts">Script reference</a>
+    <a class="slink" data-tab="qs" href="#s-qs-deploy">Deployment</a>
+    <a class="slink" data-tab="qs" href="#s-qs-read">Read this first</a>
+  </div>
+  <div class="sgroup" data-tab="arch">
+    <h4>Architecture</h4>
+    <a class="slink" data-tab="arch" href="#s-arch-concept">The concept</a>
+    <a class="slink" data-tab="arch" href="#s-arch-diagram">System diagram</a>
+    <a class="slink" data-tab="arch" href="#s-arch-loop">The scroll loop</a>
+    <a class="slink" data-tab="arch" href="#s-arch-hotpath">Signals &amp; the hot path</a>
+    <a class="slink" data-tab="arch" href="#s-arch-theme">Theming model</a>
+    <a class="slink" data-tab="arch" href="#s-arch-adr">ADR index</a>
+  </div>
+  <div class="sgroup" data-tab="map">
+    <h4>Component Map</h4>
+    <a class="slink" data-tab="map" href="#s-map-tree">Directory tour</a>
+    <a class="slink" data-tab="map" href="#s-map-routing">Routing logic</a>
+    <a class="slink" data-tab="map" href="#s-map-components">Components</a>
+    <a class="slink" data-tab="map" href="#s-map-services">Core services</a>
+    <a class="slink" data-tab="map" href="#s-map-data">Data files</a>
+  </div>
+  <div class="sgroup" data-tab="mod">
+    <h4>Modification Guide</h4>
+    <a class="slink" data-tab="mod" href="#s-mod-project">Add a project</a>
+    <a class="slink" data-tab="mod" href="#s-mod-certs">Update certifications</a>
+    <a class="slink" data-tab="mod" href="#s-mod-constellation">Tweak the constellation</a>
+    <a class="slink" data-tab="mod" href="#s-mod-aurora">Tune the aurora</a>
+    <a class="slink" data-tab="mod" href="#s-mod-tokens">Design tokens (CSS vars)</a>
+    <a class="slink" data-tab="mod" href="#s-mod-destination">Add a destination</a>
+  </div>
+  <div class="sfoot">
+    Repo: <code>PorfolioWebsite</code><br>
+    Vocabulary lives in <code>CONTEXT.md</code>; decisions in <code>docs/adr/</code>.
+  </div>
+</aside>
+
+<main>
+
+<!-- ================= QUICK START ================= -->
+<div class="panel on" id="tab-qs">
+  <section id="s-qs-prereq">
+    <h2><span class="n">01.1</span>Prerequisites</h2>
+    <p class="lead">This is a static Angular 19 single-page app — no backend, no environment secrets, no database. You need exactly two things installed:</p>
+    <div class="tblwrap"><table>
+      <tr><th>Tool</th><th>Version</th><th>Why</th></tr>
+      <tr><td><b>Node.js</b></td><td><code>^18.19.1</code>, <code>^20.11.1</code> or <code>^22.x</code></td><td>Angular 19's supported range</td></tr>
+      <tr><td><b>npm</b></td><td>bundled with Node</td><td>The Angular CLI is a local dev-dependency — no global install needed (<code>npm start</code> wraps it)</td></tr>
+    </table></div>
+  </section>
+
+  <section id="s-qs-run">
+    <h2><span class="n">01.2</span>Install &amp; run</h2>
+    <pre data-lang="shell" data-copy><code><span class="c-cmt"># clone and install</span>
+git clone https://github.com/Robotbino/PorfolioWebsite.git
+cd PorfolioWebsite
+npm install
+
+<span class="c-cmt"># dev server with live reload → http://localhost:4200</span>
+npm start</code></pre>
+    <p>First meaningful check that everything works: the page should show the hero with a slowly drifting <b>Ursa Major</b> constellation over a warm aurora. Scroll down — the constellation morphs into Orion (Experience), Leo (About), Corona Borealis (Certifications), then Cygnus (Contact), and scrolling past Contact wraps you invisibly back to Home.</p>
+    <pre data-lang="shell" data-copy><code><span class="c-cmt"># run the unit tests (Jasmine + Karma, opens Chrome)</span>
+npm test</code></pre>
+    <div class="note"><b>Tests matter here</b>The pure math modules (<code>scroll-loop.math.ts</code>, <code>motion.math.ts</code>, <code>certifications.math.ts</code>, the constellation morph) are all spec-guarded. If you touch destinations or figures, the specs are what catch a broken key or star count — run them before pushing.</div>
+  </section>
+
+  <section id="s-qs-scripts">
+    <h2><span class="n">01.3</span>Script reference</h2>
+    <div class="tblwrap"><table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>npm start</code></td><td><code>ng serve</code> — dev server on <code>http://localhost:4200</code>, HMR-style live reload</td></tr>
+      <tr><td><code>npm run build</code></td><td><code>ng build</code> — production bundle to <code>dist/professional-porfolio/</code></td></tr>
+      <tr><td><code>npm run watch</code></td><td>Development-config build that rebuilds on every file change</td></tr>
+      <tr><td><code>npm test</code></td><td><code>ng test</code> — Karma + Jasmine, watches specs</td></tr>
+    </table></div>
+    <pre data-lang="shell" data-copy><code><span class="c-cmt"># run a single spec file (example: the loop math)</span>
+npx ng test --include='**/scroll-loop.math.spec.ts'</code></pre>
+  </section>
+
+  <section id="s-qs-deploy">
+    <h2><span class="n">01.4</span>Deployment</h2>
+    <p>The site deploys to <b>Netlify</b>; <code>netlify.toml</code> at the repo root is the whole config:</p>
+    <pre data-lang="toml" data-copy><code>[build]
+command = "ng build --configuration production"
+publish = "dist/professional-porfolio/browser"
+
+[[redirects]]
+from = "/*"
+to   = "/index.html"
+status = 200          <span class="c-cmt"># SPA fallback — every path serves the app</span></code></pre>
+    <p>Pushing to <code>main</code> triggers the build. There are no environment variables to configure.</p>
+  </section>
+
+  <section id="s-qs-read">
+    <h2><span class="n">01.5</span>Read this first</h2>
+    <div class="cards">
+      <div class="card"><h4>CONTEXT.md</h4><p>The design-language glossary. Code comments use its vocabulary — <b>Cycle</b>, <b>Seam</b>, <b>Travel</b>, <b>Destination</b>, <b>Loop clone</b> — so read it before the code makes sense.</p></div>
+      <div class="card"><h4>docs/adr/</h4><p>Eight Architecture Decision Records. Every "why is it built this way?" has an answer here — see the ADR index on the Architecture tab.</p></div>
+      <div class="card"><h4>src/app/destinations.ts</h4><p>The single source of truth for the five stops. Start reading the codebase from this file; almost everything derives from it.</p></div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= ARCHITECTURE ================= -->
+<div class="panel" id="tab-arch">
+  <section id="s-arch-concept">
+    <h2><span class="n">02.1</span>The concept — star-map wayfinding</h2>
+    <p class="lead">The cosmos <em>is</em> the navigation system, not decoration. The site is <b>one continuous, downward-looping vertical scroll</b> through five <b>Destinations</b> — Home, Experience (Work), About, Certifications, Contact. Each destination owns a real constellation; scrolling between destinations morphs one figure into the next, and passing the end wraps invisibly back to the start.</p>
+    <ul>
+      <li><b>No Angular Router.</b> The "pages" under <code>src/app/pages/</code> are full-viewport <code>&lt;section&gt;</code>s stacked in one template. Navigation is scrolling (or nav-link travel), not route changes.</li>
+      <li><b>Immersion outranks scan-speed.</b> The optimisation target is a visitor who engages with the experience, per <code>CONTEXT.md</code>. Motion is restrained: opacity, blur, long <code>--ease-out-expo</code> curves — never spectacle.</li>
+      <li><b>Accessibility is the baseline.</b> The labeled nav always works (keyboard, screen reader), the loop clone is <code>inert</code>, and everything animated respects <code>prefers-reduced-motion</code>.</li>
+    </ul>
+  </section>
+
+  <section id="s-arch-diagram">
+    <h2><span class="n">02.2</span>System diagram</h2>
+    <p>How the registry, the scroll state, the frame pulse and the visuals connect. Solid arrows are data/ownership; dotted arrows are the 60&nbsp;fps <em>non-reactive</em> signal reads that keep change detection off the hot path.</p>
+    <div class="mmbox">
+      <pre class="mermaid">
+flowchart TB
+  DEST["destinations.ts<br/>DESTINATIONS registry — id · label · figure key"]
+  subgraph SHELL["AppComponent — the app shell"]
+    TMPL["app.component.html<br/>5 dest sections + inert Home clone"]
+    IO["DOM I/O: scrollY · offsetTop · scrollTo"]
+  end
+  subgraph STATE["Scroll state"]
+    SLS["ScrollLoopService<br/>position signal · activeDestination · wrapOffset"]
+    MATH["scroll-loop.math.ts<br/>pure, unit-tested"]
+  end
+  PULSE["FramePulseService<br/>ONE shared rAF, outside NgZone"]
+  subgraph BG["Persistent background — z-0, mounts once"]
+    CON["ConstellationComponent<br/>SVG star-map morph"]
+    FIG["constellation.figures.ts<br/>5 figures × 8 stars"]
+    AUR["AuroraComponent<br/>OGL WebGL simplex shader"]
+  end
+  NAV["SiteNavComponent — z-100<br/>loop-aware mute · active link"]
+  THEME["ThemeService (signals)"]
+  PAL["aurora-palette.ts"]
+  TOK["styles.css tokens<br/>light-dark() + color-scheme"]
+
+  DEST --> TMPL
+  DEST --> NAV
+  DEST --> FIG
+  IO --> SLS
+  SLS --> MATH
+  FIG --> CON
+  PULSE --> CON
+  PULSE --> NAV
+  SLS -. "position() read at 60fps, non-reactive" .-> CON
+  SLS -. "position()" .-> NAV
+  SLS -- "activeDestination (computed, safe to bind)" --> NAV
+  THEME --> PAL --> AUR
+  THEME --> TOK
+      </pre>
+      <p id="mm-fallback" class="warn" style="margin:0"><b>Diagram not rendered</b>Mermaid loads from a CDN and appears to be unreachable — the raw diagram definition is shown above instead. Open this file with internet access to see it rendered.</p>
+    </div>
+  </section>
+
+  <section id="s-arch-loop">
+    <h2><span class="n">02.3</span>The scroll loop (the spine of the site)</h2>
+    <p>Vocabulary first (all from <code>CONTEXT.md</code>):</p>
+    <div class="cards">
+      <div class="card"><h4>Cycle</h4><p>One full pass Home → Work → About → Certifications → Contact, measured in "destination units" (0 = Home, 1 = Work, …).</p></div>
+      <div class="card"><h4>Loop clone</h4><p>A second, non-interactive copy of Home placed after Contact — <code>inert</code> + <code>aria-hidden</code>. It gives the Contact→Home morph its scroll distance and acts as the seam buffer.</p></div>
+      <div class="card"><h4>Seam</h4><p>The wrap point. When you reach the clone's top, the content on screen is pixel-identical to real Home, so subtracting exactly one cycle from <code>scrollY</code> is invisible.</p></div>
+      <div class="card"><h4>One-direction</h4><p>Only wraps downward. Scrolling up is normal native scroll and clamps at Home (bidirectional looping was rejected — it fights native scroll).</p></div>
+    </div>
+    <p><b>The mechanics, end to end:</b></p>
+    <ol>
+      <li><code>AppComponent</code> measures every section's <code>offsetTop</code> (a <code>ResizeObserver</code> re-measures on any reflow) and hands the list to <code>ScrollLoopService.setAnchors()</code>. The last anchor is the clone — its offset <em>is</em> the cycle length in pixels.</li>
+      <li>On every scroll event the shell calls <code>loop.wrapOffset(scrollY)</code>. When the answer is non-null, the seam is due: the shell does <code>window.scrollTo(0, adjustment)</code>, preserving momentum overshoot instead of snapping to 0.</li>
+      <li>The shell also feeds <code>loop.update(scrollY, innerHeight)</code>, which recomputes the continuous <code>position</code> signal via the pure functions in <code>scroll-loop.math.ts</code>.</li>
+    </ol>
+    <div class="note"><b>Division of labour (ADR-0007)</b>The shell owns all DOM I/O (reads and the <code>scrollTo</code>); <code>ScrollLoopService</code> owns the state; <code>scroll-loop.math.ts</code> owns the arithmetic and is fully unit-tested. Keep new logic on the correct side of that seam.</div>
+  </section>
+
+  <section id="s-arch-hotpath">
+    <h2><span class="n">02.4</span>Signals &amp; the 60 fps hot path</h2>
+    <p>The whole animation system runs on <b>one</b> <code>requestAnimationFrame</code> loop — <code>FramePulseService</code> — registered <em>outside</em> Angular's zone. Subscribers (the constellation morph, the nav mute) write straight to the DOM. Two signal rules keep change detection out of the hot path:</p>
+    <ul>
+      <li><b><code>ScrollLoopService.position</code> is hot — never bind it in a template.</b> It is read ~60×/s from rAF callbacks as a plain <code>position()</code> call, which is non-reactive and schedules nothing. Binding it would reintroduce 60 fps change detection.</li>
+      <li><b><code>activeDestination</code> is the safe one.</b> A <code>computed</code> that collapses a whole section of positions into one id (<code>'dest-work'</code>…), so it notifies roughly once per destination. The nav binds this for the active-link underline and <code>aria-current</code>.</li>
+    </ul>
+    <p><code>FramePulseService.onTick(fn)</code> returns an unsubscribe function; the loop starts with the first subscriber and stops with the last. It also pauses on a hidden tab and resets its clock on return, so the first frame back never receives the whole hidden gap as <code>dt</code>.</p>
+  </section>
+
+  <section id="s-arch-theme">
+    <h2><span class="n">02.5</span>Theming model</h2>
+    <p>Every colour token in <code>src/styles.css</code> is declared <b>once</b> using <code>light-dark(&lt;light&gt;, &lt;dark&gt;)</code>, and <code>color-scheme</code> picks the side:</p>
+    <ul>
+      <li>No class on <code>:root</code> → <code>color-scheme: light dark</code> follows the OS preference.</li>
+      <li><code>ThemeService</code> (signals, persisted to <code>localStorage</code>, plus a pre-paint guard in <code>index.html</code>) adds <code>.light-mode</code> / <code>.dark-mode</code>, which only need to <em>flip the scheme</em> — no token overrides, with one exception (<code>--scrim-rgb</code>, a raw RGB triple that can't use <code>light-dark()</code>).</li>
+      <li>The aurora is a theme decision too: <code>aurora-palette.ts</code> maps dark/light to shader tuning, exposed as a memoized computed on <code>ThemeService</code> and bound to <code>&lt;app-aurora&gt;</code>'s inputs in the shell template.</li>
+    </ul>
+  </section>
+
+  <section id="s-arch-adr">
+    <h2><span class="n">02.6</span>ADR index — why it's built this way</h2>
+    <div class="tblwrap"><table>
+      <tr><th>ADR</th><th>Decision</th></tr>
+      <tr><td><code>0001</code></td><td>Full multipage, immersion-first concept (the original framing)</td></tr>
+      <tr><td><code>0002</code></td><td>Star-map wayfinding — the cosmos as the navigation system</td></tr>
+      <tr><td><code>0003</code></td><td>Pivot to ONE looping scroll with real constellations (routes became vestigial)</td></tr>
+      <tr><td><code>0004</code></td><td>Seamless loop via the inert Home clone + invisible wrap</td></tr>
+      <tr><td><code>0005</code></td><td>Loop-aware nav muting (distance-from-Home, symmetric around the seam)</td></tr>
+      <tr><td><code>0006</code></td><td>Glass-card surface (frosted tint + backdrop-filter, opaque fallback)</td></tr>
+      <tr><td><code>0007</code></td><td>Deepened cycle module — shell does DOM I/O, service holds state, math is pure</td></tr>
+      <tr><td><code>0008</code></td><td>Projects showcase legibility</td></tr>
+    </table></div>
+    <p>All live in <code>docs/adr/</code>. If you're about to reverse one of these decisions, read its ADR first — several list rejected alternatives and why.</p>
+  </section>
+</div>
+
+<!-- ================= COMPONENT MAP ================= -->
+<div class="panel" id="tab-map">
+  <section id="s-map-tree">
+    <h2><span class="n">03.1</span>Directory tour</h2>
+    <pre class="tree"><code><span class="d">src/</span>
+├─ <span class="d">styles.css</span>              <span class="a">← ALL design tokens (CSS custom properties) + reset + view transitions</span>
+├─ index.html               <span class="a">← Instrument Serif font, pre-paint theme guard</span>
+├─ main.ts                  <span class="a">← bootstraps AppModule (NgModule app, not standalone)</span>
+├─ assets/                  <span class="a">← fonts, project screenshots, cert scans (served at /assets/)</span>
+└─ <span class="d">app/</span>
+   ├─ app.module.ts         <span class="a">← the single NgModule — every component is declared here</span>
+   ├─ app.component.*       <span class="a">← the shell: aurora + constellation + nav + 5 sections + clone</span>
+   ├─ <span class="d">destinations.ts</span>       <span class="a">← ★ single source of truth for the five stops</span>
+   ├─ scroll-loop.service.ts<span class="a">  ← cycle position state + seam wrap</span>
+   ├─ scroll-loop.math.ts   <span class="a">← pure scroll arithmetic (unit-tested)</span>
+   ├─ motion.math.ts        <span class="a">← easing / interpolation helpers</span>
+   ├─ scroll-reveal.directive.ts
+   ├─ <span class="d">aurora/</span>               <span class="a">← WebGL aurora (OGL simplex shader) + CSS fallback</span>
+   ├─ <span class="d">constellation/</span>        <span class="a">← SVG star-map: component · model · figures · morph driver</span>
+   ├─ <span class="d">core/</span>                 <span class="a">← app-wide services (theme, frame pulse, viewport, motion…)</span>
+   ├─ landingpage/           <span class="a">← Home hero + CV download</span>
+   ├─ layout/site-nav/       <span class="a">← persistent nav with loop-aware muting</span>
+   ├─ <span class="d">pages/</span>                <span class="a">← work · about · certifications · contact</span>
+   └─ shared/                <span class="a">← display-heading · theme-toggle</span>
+<span class="d">docs/adr/</span>                   <span class="a">← Architecture Decision Records 0001–0008</span>
+CONTEXT.md                  <span class="a">← design-language glossary (the code's vocabulary)</span>
+netlify.toml                <span class="a">← prod build + SPA redirect</span></code></pre>
+  </section>
+
+  <section id="s-map-routing">
+    <h2><span class="n">03.2</span>Routing logic — there is no router</h2>
+    <p class="lead">Deliberately, <b><code>RouterModule</code> is not imported anywhere</b>. The five "pages" are sections of one template, and "navigation" is scroll travel:</p>
+    <ol>
+      <li><b>The registry drives everything.</b> <code>destinations.ts</code> exports the ordered <code>DESTINATIONS</code> array (<code>id</code>, <code>label</code>, <code>figure</code>). The nav renders its links from it and <code>constellation.figures.ts</code> derives its morph <code>order</code> from it — so ids can't drift.</li>
+      <li><b>The shell template lays out the sections</b> (<code>app.component.html</code>): five <code>&lt;section #dest id="dest-…" class="dest"&gt;</code> elements plus the inert Home clone at the end. Home is pre-revealed (loop anchor + LCP); Work/About/Certifications/Contact fade in via <code>InViewportService</code>.</li>
+      <li><b>Nav clicks are travel, not navigation.</b> Short hops smooth-scroll. Long jumps <em>teleport</em> instantly inside <code>document.startViewTransition()</code> (<code>NavTransitionService</code>), styled in <code>styles.css</code> as a directional drift-fade via <code>data-nav-transition="up|down"</code> on <code>&lt;html&gt;</code>.</li>
+      <li><b>Two hand-written exceptions</b> (by design, documented in <code>destinations.ts</code>): the <code>#projects</code> sub-anchor inside Work, and the desktop bar omitting Home because the logo <em>is</em> Home.</li>
+      <li><b>Deep links:</b> Netlify's <code>/* → /index.html</code> redirect means any URL serves the app.</li>
+    </ol>
+  </section>
+
+  <section id="s-map-components">
+    <h2><span class="n">03.3</span>Components</h2>
+    <div class="tblwrap"><table>
+      <tr><th>Selector</th><th>Location</th><th>Responsibility</th></tr>
+      <tr><td><code>app-root</code></td><td><code>app/</code></td><td>The shell. Measures section anchors, feeds <code>ScrollLoopService</code>, applies the seam wrap, arms scroll reveals.</td></tr>
+      <tr><td><code>app-aurora</code></td><td><code>aurora/</code></td><td>Persistent WebGL backdrop (z-0). OGL + GLSL simplex noise; inputs <code>colorStops · blend · amplitude · speed</code>; CSS fallback when WebGL is unavailable.</td></tr>
+      <tr><td><code>app-constellation</code></td><td><code>constellation/</code></td><td>Persistent SVG star-map (z-0). Reads <code>position()</code> each frame and interpolates between adjacent figures; lines cross-fade through the dim point.</td></tr>
+      <tr><td><code>app-site-nav</code></td><td><code>layout/site-nav/</code></td><td>Persistent nav (z-100). Renders links from <code>DESTINATIONS</code>; mutes via a single <code>--nav-mute</code> custom property on the shared tick; underlines <code>activeDestination()</code>.</td></tr>
+      <tr><td><code>app-landingpage</code></td><td><code>landingpage/</code></td><td>Home hero + CV download. <b>Rendered twice</b> — real Home and the inert loop clone — so keep it side-effect safe.</td></tr>
+      <tr><td><code>app-work</code></td><td><code>pages/work/</code></td><td>Experience groups + sticky projects showcase. Pure renderer of <code>work-data.ts</code>.</td></tr>
+      <tr><td><code>app-about</code></td><td><code>pages/about/</code></td><td>About copy ("less but better") + the glowing ledger glyphs.</td></tr>
+      <tr><td><code>app-certifications</code></td><td><code>pages/certifications/</code></td><td>Cert cards + full-screen spotlight overlay (sets <code>body.certs-spotlight-open</code>, which the nav CSS reacts to).</td></tr>
+      <tr><td><code>app-contact</code></td><td><code>pages/contact/</code></td><td>Marquee email finale + colophon with a live SAST clock.</td></tr>
+      <tr><td><code>app-theme-toggle</code></td><td><code>shared/</code></td><td>Dark/light switch bound to <code>ThemeService</code>.</td></tr>
+      <tr><td><code>app-display-heading</code></td><td><code>shared/</code></td><td>The section-header pattern (pre-title + title). Use it instead of re-inlining heading markup.</td></tr>
+      <tr><td><code>[appScrollReveal]</code></td><td><code>app/</code></td><td>Directive: fade-up on first intersection (adds <code>.revealed</code>).</td></tr>
+    </table></div>
+    <div class="note"><b>All declared in one place</b>This is an NgModule app: any new component/directive must be added to the <code>declarations</code> array in <code>app.module.ts</code> or the template won't recognise its selector.</div>
+  </section>
+
+  <section id="s-map-services">
+    <h2><span class="n">03.4</span>Core services (<code>src/app/core/</code> + root)</h2>
+    <div class="tblwrap"><table>
+      <tr><th>Service</th><th>Responsibility</th></tr>
+      <tr><td><code>ScrollLoopService</code></td><td>Owns the Cycle: hot <code>position</code> signal, bindable <code>activeDestination</code> computed, <code>setAnchors / update / wrapOffset</code>. Root of the site's spine.</td></tr>
+      <tr><td><code>FramePulseService</code></td><td>The one shared rAF, outside NgZone. <code>onTick(fn)</code> → unsubscribe fn. Handles hidden-tab pause + clock reset.</td></tr>
+      <tr><td><code>ThemeService</code></td><td>Signals-based theme state; OS detection + <code>localStorage</code>; exposes the memoized <code>auroraPalette()</code>. Pure decision logic lives in <code>theme.decision.ts</code>.</td></tr>
+      <tr><td><code>MotionSettingsService</code></td><td>One answer for <code>prefers-reduced-motion</code> — check it before starting any animation.</td></tr>
+      <tr><td><code>InViewportService</code></td><td>IntersectionObserver wrapper (section reveals, icon-at-centre glow, the <code>#projects</code> highlight).</td></tr>
+      <tr><td><code>ScrollLockService</code></td><td>Shared scroll lock, held by the mobile menu and the certificate spotlight.</td></tr>
+      <tr><td><code>NavTransitionService</code></td><td>Long nav jumps: instant teleport wrapped in a View Transition; closes the cert spotlight on navigate; no-ops under reduced motion.</td></tr>
+    </table></div>
+  </section>
+
+  <section id="s-map-data">
+    <h2><span class="n">03.5</span>Data files — editorial content lives in TS</h2>
+    <p>Templates stay as one <code>*ngFor</code> per section; the copy lives in typed constants:</p>
+    <div class="tblwrap"><table>
+      <tr><th>File</th><th>Drives</th></tr>
+      <tr><td><code>app/destinations.ts</code></td><td>The five stops: nav links, section order, constellation order</td></tr>
+      <tr><td><code>app/pages/work/work-data.ts</code></td><td><code>EXPERIENCE_GROUPS</code> (skills) + <code>PROJECTS</code> (the showcase)</td></tr>
+      <tr><td><code>app/pages/certifications/certifications-data.ts</code></td><td><code>CERTIFICATIONS</code> — credentials, rendered verbatim</td></tr>
+      <tr><td><code>app/constellation/constellation.figures.ts</code></td><td>The five 8-star asterisms + shared drift traits</td></tr>
+      <tr><td><code>app/core/aurora-palette.ts</code></td><td>Aurora colours/tuning per theme</td></tr>
+    </table></div>
+  </section>
+</div>
+
+<!-- ================= MODIFICATION GUIDE ================= -->
+<div class="panel" id="tab-mod">
+  <section id="s-mod-project">
+    <h2><span class="n">04.1</span>Add a new project</h2>
+    <p class="lead">Two steps, zero template changes — the Work page is a pure renderer of <code>PROJECTS</code>.</p>
+    <ol>
+      <li>Drop a screenshot into <code>src/assets/</code> (it builds to <code>/assets/…</code>). Provide a dark and a light variant if the shot differs per theme; reuse one path for both if not.</li>
+      <li>Append an entry to <code>PROJECTS</code> in <code>src/app/pages/work/work-data.ts</code>:</li>
+    </ol>
+    <pre data-lang="typescript" data-copy><code><span class="c-cmt">// src/app/pages/work/work-data.ts — append inside PROJECTS</span>
+{
+  title: <span class="c-str">'My New Project'</span>,
+  description:
+    <span class="c-str">'One to three sentences. What it is, the stack, and what it proves. '</span> +
+    <span class="c-str">'Written for a hiring reviewer.'</span>,
+  tech: [<span class="c-str">'Angular'</span>, <span class="c-str">'TypeScript'</span>, <span class="c-str">'Spring Boot'</span>],
+  href: <span class="c-str">'https://github.com/Robotbino/my-new-project'</span>,
+  demoHref: <span class="c-str">'https://my-new-project.netlify.app/'</span>, <span class="c-cmt">// optional — renders a "Live Demo" link</span>
+  img: {
+    dark:  <span class="c-str">'/assets/my-project.png'</span>,  <span class="c-cmt">// shown in dark mode</span>
+    light: <span class="c-str">'/assets/my-project.png'</span>, <span class="c-cmt">// shown in light mode</span>
+    alt: {
+      dark:  <span class="c-str">'My New Project dashboard in dark mode'</span>,
+      light: <span class="c-str">'My New Project dashboard in light mode'</span>,
+    },
+  },
+},</code></pre>
+    <p>Skills copy works the same way — edit <code>EXPERIENCE_GROUPS</code> in the same file.</p>
+  </section>
+
+  <section id="s-mod-certs">
+    <h2><span class="n">04.2</span>Update certifications</h2>
+    <div class="warn"><b>Credentials are rendered verbatim</b>Titles, issuers and verify URLs in <code>certifications-data.ts</code> are credentials — never embellish, rename, or add entries that aren't real, verified certificates. The <code>img</code>/<code>alt</code> fields are presentation-only (the scan shown in the hover preview and spotlight) and carry no credential claim.</div>
+    <pre data-lang="typescript" data-copy><code><span class="c-cmt">// src/app/pages/certifications/certifications-data.ts — append inside CERTIFICATIONS</span>
+{
+  title:  <span class="c-str">'Exact Certificate Title'</span>,
+  issuer: <span class="c-str">'Issuing Organisation'</span>,
+  href:   <span class="c-str">'https://verify.example.com/…'</span>,  <span class="c-cmt">// the official verify URL</span>
+  img:    <span class="c-str">'/assets/certs/my-cert.png'</span>,     <span class="c-cmt">// scan for the spotlight</span>
+  alt:    <span class="c-str">'Exact Certificate Title certificate from Issuer'</span>,
+},</code></pre>
+  </section>
+
+  <section id="s-mod-constellation">
+    <h2><span class="n">04.3</span>Tweak the constellation background</h2>
+    <p class="lead">Everything lives in <code>src/app/constellation/constellation.figures.ts</code>. The one hard rule: <b>every figure has exactly <code>STAR_COUNT = 8</code> stars</b>, because the morph interpolates star <em>i</em> of one figure to star <em>i</em> of the next, 1:1 by index. Specs enforce this — <code>npm test</code> after any change.</p>
+    <h3>Move or reshape a figure</h3>
+    <p>Each figure is index-ordered <code>[x, y]</code> coordinates in a <code>300 × 300</code> viewBox, plus its own line list:</p>
+    <pre data-lang="typescript" data-copy><code><span class="c-cmt">// constellation.figures.ts — e.g. the Work figure (Orion)</span>
+work: figure(<span class="c-str">'Orion'</span>, [
+  [<span class="c-num">96</span>, <span class="c-num">96</span>],    <span class="c-cmt">// star 0 — Betelgeuse   ← move a star by editing its [x, y]</span>
+  [<span class="c-num">176</span>, <span class="c-num">84</span>],   <span class="c-cmt">// star 1 — Bellatrix</span>
+  <span class="c-cmt">// … exactly 8 coordinate pairs, always</span>
+], [
+  { a: <span class="c-num">2</span>, b: <span class="c-num">0</span> },  <span class="c-cmt">// a line between stars 2 and 0 (indices into the array above)</span>
+  { a: <span class="c-num">3</span>, b: <span class="c-num">4</span> },  <span class="c-cmt">// link counts MAY differ per figure — lines cross-fade at the</span>
+]),                <span class="c-cmt">//   dim point of each morph, so they never need to match up</span></code></pre>
+    <h3>Change star character (size &amp; drift)</h3>
+    <p>Per-index traits are shared across <em>all</em> figures so star <em>i</em> keeps its identity through every morph:</p>
+    <pre data-lang="typescript" data-copy><code><span class="c-cmt">// shared per-index traits — index i applies to star i of EVERY figure</span>
+<span class="c-key">export const</span> R   = [<span class="c-num">3.3</span>, <span class="c-num">2.6</span>, <span class="c-num">2.2</span>, <span class="c-num">2.5</span>, <span class="c-num">2.7</span>, <span class="c-num">2.7</span>, <span class="c-num">2.6</span>, <span class="c-num">2.6</span>]; <span class="c-cmt">// star radius</span>
+<span class="c-key">export const</span> AMP = [<span class="c-num">6</span>, <span class="c-num">5</span>, <span class="c-num">5</span>, <span class="c-num">6</span>, <span class="c-num">6</span>, <span class="c-num">6</span>, <span class="c-num">7</span>, <span class="c-num">7</span>];       <span class="c-cmt">// drift radius (viewBox units)</span>
+<span class="c-key">export const</span> PHX = [<span class="c-num">0.0</span>, <span class="c-num">0.8</span>, <span class="c-num">1.6</span>, <span class="c-num">2.4</span>, <span class="c-num">3.2</span>, <span class="c-num">4.0</span>, <span class="c-num">4.8</span>, <span class="c-num">5.6</span>]; <span class="c-cmt">// x-drift phase</span>
+<span class="c-key">export const</span> PHY = [<span class="c-num">1.0</span>, <span class="c-num">2.2</span>, <span class="c-num">0.4</span>, <span class="c-num">1.7</span>, <span class="c-num">2.6</span>, <span class="c-num">0.9</span>, <span class="c-num">1.5</span>, <span class="c-num">3.0</span>]; <span class="c-cmt">// y-drift phase</span></code></pre>
+    <ul>
+      <li><b>Bigger stars:</b> raise values in <code>R</code>. <b>Lazier/livelier drift:</b> adjust <code>AMP</code>; phases (<code>PHX</code>/<code>PHY</code>) just de-synchronise the wander.</li>
+      <li><b>Morph behaviour</b> (timing, dim point, interpolation) lives in <code>constellation-morph.ts</code> / <code>morph-driver.ts</code> — both spec-covered.</li>
+      <li><b>Reduced motion:</b> the drift and morph settle automatically via <code>MotionSettingsService</code>; you don't need to handle it per figure.</li>
+    </ul>
+  </section>
+
+  <section id="s-mod-aurora">
+    <h2><span class="n">04.4</span>Tune the aurora</h2>
+    <p>The WebGL aurora's look is a <em>theme decision</em>, so its knobs live in <code>src/app/core/aurora-palette.ts</code> — not in the shader or the shell template:</p>
+    <pre data-lang="typescript" data-copy><code><span class="c-cmt">// src/app/core/aurora-palette.ts</span>
+<span class="c-key">export function</span> auroraPalette(isDark: <span class="c-key">boolean</span>): AuroraPalette {
+  <span class="c-key">return</span> isDark
+    ? { colorStops: [<span class="c-str">'#1E1C1A'</span>, <span class="c-str">'#3D312A'</span>, <span class="c-str">'#5A3D2B'</span>], blend: <span class="c-num">0.5</span>, amplitude: <span class="c-num">1.0</span>,  speed: <span class="c-num">0.5</span> }
+    : { colorStops: [<span class="c-str">'#FDFCFB'</span>, <span class="c-str">'#F5F2EE'</span>, <span class="c-str">'#FAF0E8'</span>], blend: <span class="c-num">1.0</span>, amplitude: <span class="c-num">0.25</span>, speed: <span class="c-num">0.5</span> };
+}</code></pre>
+    <div class="tblwrap"><table>
+      <tr><th>Knob</th><th>Effect</th></tr>
+      <tr><td><code>colorStops</code></td><td>Three-stop gradient the simplex noise flows through (left → right)</td></tr>
+      <tr><td><code>blend</code></td><td>How softly the aurora blends into the page background (higher = softer)</td></tr>
+      <tr><td><code>amplitude</code></td><td>Vertical intensity of the waves — light mode keeps this low on purpose</td></tr>
+      <tr><td><code>speed</code></td><td>Flow speed of the noise field</td></tr>
+    </table></div>
+    <p>The shader itself (GLSL simplex noise via <a href="https://github.com/oframe/ogl">OGL</a>) is in <code>src/app/aurora/aurora.component.ts</code>. Change it only if a palette knob can't express what you need — and keep the CSS fallback path working.</p>
+  </section>
+
+  <section id="s-mod-tokens">
+    <h2><span class="n">04.5</span>Update design tokens</h2>
+    <div class="note"><b>CSS custom properties, not SCSS</b>This repo has no SCSS. All "variables" are CSS custom properties defined once in <code>src/styles.css</code> under <code>:root</code> — typography scale, Nohemi weight ladder, tracking, colours, spacing, radii, shadows, easings, layout widths.</div>
+    <p>The theming rule: <b>declare each colour once</b> with <code>light-dark()</code>, never as separate light/dark overrides:</p>
+    <pre data-lang="css" data-copy><code><span class="c-cmt">/* src/styles.css — the pattern for every colour token */</span>
+:root {
+  color-scheme: light dark;                <span class="c-cmt">/* follows the OS with no class */</span>
+  --color-background:  light-dark(#ffffff, #121212);
+  --color-accent-vivid: light-dark(#d9480f, #ff8c42);  <span class="c-cmt">/* the ONE non-monochrome hue */</span>
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);      <span class="c-cmt">/* the house easing curve */</span>
+  --font-size-display: clamp(3.25rem, 11.5vw, 11.5rem);
+}
+.light-mode { color-scheme: light; }       <span class="c-cmt">/* manual toggle only flips the scheme */</span>
+.dark-mode  { color-scheme: dark; --scrim-rgb: 18, 18, 18; }</code></pre>
+    <ul>
+      <li><b>Never hardcode hex values in component CSS</b> — add a token in <code>styles.css</code> and reference it, or both themes break.</li>
+      <li><b>Don't add overrides to <code>.light-mode</code>/<code>.dark-mode</code></b> — they exist only to flip <code>color-scheme</code> (plus <code>--scrim-rgb</code>, the documented exception).</li>
+      <li><b>Motion tokens matter:</b> new animation should use <code>--ease-out-expo</code> / <code>--transition-slow</code> — long and calm is the house style ("less but better").</li>
+      <li>Glass-card surface tokens (<code>--glass-*</code>) are in the same file; see ADR-0006 before touching them.</li>
+    </ul>
+  </section>
+
+  <section id="s-mod-destination">
+    <h2><span class="n">04.6</span>Add a whole new destination</h2>
+    <p class="lead">Rarer, but this is the full checklist. The registry keeps the nav and constellation in sync automatically; the shell template and module are the two manual touch points.</p>
+    <ol>
+      <li><b><code>src/app/destinations.ts</code></b> — extend the <code>DestinationFigure</code> union and add the entry at its scroll position (order = array position):
+      <pre data-lang="typescript" data-copy><code><span class="c-key">export type</span> DestinationFigure = <span class="c-str">'home'</span> | <span class="c-str">'work'</span> | <span class="c-str">'about'</span> | <span class="c-str">'certifications'</span> | <span class="c-str">'contact'</span> | <span class="c-str">'lab'</span>;
+
+{ id: <span class="c-str">'dest-lab'</span>, label: <span class="c-str">'Lab'</span>, figure: <span class="c-str">'lab'</span> },</code></pre></li>
+      <li><b><code>constellation.figures.ts</code></b> — add a <code>lab:</code> figure to <code>byRoute</code> with exactly 8 stars (the <code>destinations.spec.ts</code> guard fails the build-time tests if the key doesn't resolve).</li>
+      <li><b><code>app.component.html</code></b> — add the section in scroll order, <em>before</em> the Home clone (the clone must stay last — it is the seam):
+      <pre data-lang="html" data-copy><code>&lt;section #dest id="dest-lab" class="dest"&gt;&lt;app-lab&gt;&lt;/app-lab&gt;&lt;/section&gt;</code></pre></li>
+      <li><b>Create the component</b> under <code>src/app/pages/lab/</code> and declare it in <code>app.module.ts</code>. Use <code>&lt;app-display-heading&gt;</code> for the section header and put its copy in a <code>lab-data.ts</code>, matching the house pattern.</li>
+      <li><b>Verify:</b> <code>npm test</code> (registry + figure guards), then scroll a full loop in the browser — check the new morph both in and out, the nav underline, and the seam still wrapping invisibly.</li>
+    </ol>
+    <div class="warn"><b>Do not touch the clone</b>The final <code>&lt;section&gt;</code> (Home clone, <code>inert</code> + <code>aria-hidden</code>, no <code>id</code>) must remain the last child and pixel-identical to real Home — the invisible seam wrap depends on it. See ADR-0004.</div>
+  </section>
+</div>
+
+</main>
+</div>
+
+<script>
+(()=>{"use strict";
+const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
+const tabs=$$('.tab'),panels=$$('.panel'),groups=$$('.sgroup');let mm=false;
+const show=(id,anchor)=>{tabs.forEach(t=>{const on=t.dataset.tab===id;t.classList.toggle('on',on);t.setAttribute('aria-selected',on)});
+ panels.forEach(p=>p.classList.toggle('on',p.id==='tab-'+id));
+ groups.forEach(g=>g.classList.toggle('on',g.dataset.tab===id));
+ if(id==='arch')mmRender();
+ if(anchor){const el=document.getElementById(anchor);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'','#'+anchor)}}
+ else window.scrollTo({top:0})};
+tabs.forEach(t=>t.addEventListener('click',()=>show(t.dataset.tab)));
+$$('.slink').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();show(a.dataset.tab,a.getAttribute('href').slice(1))}));
+// deep link: #s-… hash opens the right tab
+const h=location.hash.slice(1);if(h){const el=document.getElementById(h),p=el&&el.closest('.panel');if(p)show(p.id.slice(4),h)}
+// copy-to-clipboard on every pre[data-copy]
+$$('pre[data-copy]').forEach(p=>{const b=document.createElement('button');b.className='cbtn';b.type='button';b.textContent='Copy';
+ b.addEventListener('click',async()=>{const t=p.querySelector('code').innerText;
+  try{await navigator.clipboard.writeText(t)}
+  catch{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.append(ta);ta.select();document.execCommand('copy');ta.remove()}
+  b.textContent='Copied ✓';b.classList.add('ok');setTimeout(()=>{b.textContent='Copy';b.classList.remove('ok')},1600)});
+ p.append(b)});
+// scrollspy: highlight the sidebar link for the section in view
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$('.slink').forEach(l=>l.classList.toggle('cur',l.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-15% 0px -70% 0px'});
+$$('.panel>section[id]').forEach(s=>spy.observe(s));
+// mermaid: lazy-render on first Architecture visit (needs the panel visible to measure text)
+const mmRender=()=>{if(mm||!window.mermaid)return;mm=true;
+ mermaid.initialize({startOnLoad:false,theme:'dark',securityLevel:'loose',flowchart:{curve:'basis'},
+  themeVariables:{background:'#1b1b1b',primaryColor:'#242220',primaryBorderColor:'#5a4a3a',primaryTextColor:'#e4e0da',secondaryColor:'#1f1d1b',tertiaryColor:'#191817',lineColor:'#8a7f72',clusterBkg:'#171614',clusterBorder:'#3a3630',edgeLabelBackground:'#1b1b1b',fontSize:'13px'}});
+ mermaid.run({querySelector:'.mermaid'}).catch(()=>$('#mm-fallback').classList.add('show'))};
+window.addEventListener('load',()=>{if(!window.mermaid)$('#mm-fallback').classList.add('show');if($('#tab-arch').classList.contains('on'))mmRender()});
+})();
+</script>
+</body>
+</html>

@@ -3,13 +3,18 @@
   <section class="hero" id="hero" aria-labelledby="hero-name">
     <div class="hero-frame">
 
-      <!-- Top meta — editorial poster framing pinned to the viewport edge. -->
+      <!-- Top meta — editorial poster framing pinned to the viewport edge.
+           The local clock rides the coords cluster (place, then its time),
+           so the meta stays two anchored groups: status left, locale right. -->
       <div class="hero-meta">
         <span class="hero-status">
           <span class="hero-status-dot" aria-hidden="true"></span>
           Currently &#64; SITA
         </span>
-        <span class="hero-coords">Pretoria&nbsp;· South&nbsp;Africa</span>
+        <span class="hero-coords">
+          Pretoria&nbsp;&middot; South&nbsp;Africa
+          <span class="hero-time">&middot;&nbsp;{{ localTime }}&nbsp;SAST</span>
+        </span>
       </div>
 
       <!-- Headline — the one fixed point the whole layout balances against. -->
