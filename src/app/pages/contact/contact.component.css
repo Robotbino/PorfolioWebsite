@@ -1,7 +1,6 @@
 :host {
   display: block;
   position: relative;
-  z-index: 1;
   min-height: 100vh;
   min-height: 100svh;
 
@@ -55,8 +54,9 @@
   line-height: var(--line-height-none);
   letter-spacing: var(--tracking-tighter);
 }
-
+/*fLAIR*/
 .contact-title-soft {
+
   font-weight: var(--font-weight-extralight);
 }
 

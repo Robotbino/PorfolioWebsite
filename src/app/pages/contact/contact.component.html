@@ -2,17 +2,18 @@
   <div class="container">
     <!-- Editorial header — flush-left poster headline, mirroring About/Work.
          Replaces the shared centred <app-display-heading> so Contact joins the
-         same editorial language; 05 is Contact's place in the loop order
-         (Home 01, Work 02, About 03, Certifications 04). The weight-contrast pair echoes About's
+         same editorial language; 06 is Contact's place in the loop order
+         (Home 01, Work 02, About 03, Certifications 05). The weight-contrast pair echoes About's
          "About Me". Copy is unchanged. -->
     <header class="contact-header" appScrollReveal>
       <p class="contact-kicker">
-        <span class="contact-kicker-index" aria-hidden="true">05</span>
+        <span class="contact-kicker-index" aria-hidden="true">06</span>
         <span>Get in touch</span>
       </p>
       <!-- The space lives inside the first span so the accessible name reads
            "Contact Me", not "ContactMe" (inter-element whitespace is dropped). -->
-      <h2 class="contact-title" id="contact-title"><span class="contact-title-soft">Contact </span><span class="contact-title-strong">Me</span></h2>
+      <h2 class="contact-title" id="contact-title"><span class="contact-title-soft">Contact </span><span
+          class="contact-title-strong">Me</span></h2>
     </header>
 
     <div class="contact-spread">
@@ -38,8 +39,7 @@
            own beat (the certifications ledger cadence). -->
       <ul class="contact-channels" role="list">
         <li class="channel" appScrollReveal>
-          <a class="channel-link" href="https://github.com/Robotbino" target="_blank"
-            rel="noopener noreferrer">
+          <a class="channel-link" href="https://github.com/Robotbino" target="_blank" rel="noopener noreferrer">
             <span class="channel-index" aria-hidden="true">02</span>
             <i class="fa-brands fa-github channel-icon" aria-hidden="true"></i>
             <span class="channel-meta">
@@ -78,11 +78,11 @@
           <span class="marquee-address">HlongwanaBino&#64;gmail.com</span>
           <span class="marquee-arrow" aria-hidden="true">&#8599;</span>
         </a>
-        <button class="channel-copy" type="button"
-                [class.is-copied]="copied"
-                (click)="copyEmail('HlongwanaBino@gmail.com')"
-                [attr.aria-label]="copied ? 'Email address copied to clipboard' : 'Copy email address'">
-          <i class="channel-copy-icon fa-solid" [class.fa-copy]="!copied" [class.fa-check]="copied" aria-hidden="true"></i>
+        <button class="channel-copy" type="button" [class.is-copied]="copied"
+          (click)="copyEmail('HlongwanaBino@gmail.com')"
+          [attr.aria-label]="copied ? 'Email address copied to clipboard' : 'Copy email address'">
+          <i class="channel-copy-icon fa-solid" [class.fa-copy]="!copied" [class.fa-check]="copied"
+            aria-hidden="true"></i>
           <span class="channel-copy-text">{{ copied ? 'Copied' : 'Copy' }}</span>
         </button>
       </div>
