@@ -6,7 +6,7 @@
 
 The About cards are plain opaque boxes (`background: var(--color-card-bg)` + a 2px border). They
 sit on top of the live aurora gradient + constellation but ignore it, reading as generic panels
-rather than part of the star-map. We want a premium, readable surface that complements the
+rather than part of the star-map. I want a premium, readable surface that complements the
 backdrop while honouring *less but better*.
 
 Glassmorphism is the obvious fit but carries two real risks over an **animated WebGL** backdrop:
@@ -27,7 +27,7 @@ design rather than hoped away:
   browsers still get a readable card. The blur is a *subtle enhancement*, never load-bearing for
   readability — which also means it can be dropped under a future low-power media query.
 
-**Scope decisions:**
+## Scope decisions
 
 - Introduces a small **glass token set** (surface tint, hairline border, top highlight, shadow),
   defined for both light and dark themes.

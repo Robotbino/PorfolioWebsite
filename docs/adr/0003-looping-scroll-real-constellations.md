@@ -20,7 +20,7 @@ scroll target along the shortest path on the loop, so the wrap seam stays contin
 **star-settle** keyed to scroll speed (stars shrink, links dim while moving; settle at rest). At
 the bottom a short runway carries the last→first morph, then the scroll wraps to the top.
 
-We now use **real constellations** — Ursa Major (Home), Orion (Work), Leo (About), Cygnus
+I now use **real constellations** — Ursa Major (Home), Orion (Work), Leo (About), Cygnus
 (Contact). Each is drawn with **8 stars** so positions still morph 1:1, but keeps its **own real
 asterism lines**, which **cross-fade** (outgoing → incoming) through each transition.
 

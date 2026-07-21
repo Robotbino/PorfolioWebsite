@@ -7,7 +7,7 @@ removed — the nav is now *always* transparent, no toggle" consequence of
 ## Context
 
 The hero nav is visually heavy while reading the lower destinations, working against the
-*less but better* declutter goal. We want the nav to recede as the visitor travels: the Work /
+*less but better* declutter goal. I want the nav to recede as the visitor travels: the Work /
 About / Contact links fade to a faint ghost and the Home (house) icon shrinks and mutes — full
 nav only at the Home destination.
 
@@ -35,7 +35,7 @@ Drive the nav state from **loop-aware distance-from-Home**, not raw `scrollY`:
   pixel-identical. This is the loop-aware idea ADR-0004 floated (`min(scrollY, cycle − scrollY)`)
   but rebuilt intentionally as a feature, not a backdrop.
 
-**Scope decisions:**
+## Scope decisions
 
 - **Operability preserved.** Ghost links stay in the DOM and tab order; the nav un-mutes on
   `:hover` *or* `:focus-within`, so a keyboard / screen-reader user instantly gets the full,

@@ -28,7 +28,7 @@ Make the wrap **seamless in one direction (downward only)** by replacing the bla
 - The reset is **invisible**: clone-Home == real-Home and the constellation is already at Home, so
   no pixel changes at the swap frame.
 
-**Scope decisions (settled in the grill-with-docs session):**
+## Scope decisions (settled in the grill-with-docs session)
 
 - **One direction only.** Scrolling *up* is normal native scroll and clamps at the real Home top.
   Fully bidirectional looping was considered and rejected: it needs a *leading* clone and
