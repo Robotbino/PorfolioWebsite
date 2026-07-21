@@ -1,7 +1,24 @@
 # Refactor Plan — Star-map wayfinding portfolio
 
-> Ready-to-file GitHub issue. Design decisions are settled in [CONTEXT.md](../CONTEXT.md),
-> [ADR-0001](adr/0001-full-multipage-immersion-first.md), and
+> **Superseded (2026-06-20) — kept as a historical record. Do not follow as instructions.**
+>
+> This plan describes the **multipage** rebuild: four routes and a router-event `TravelService`.
+> Phases A–C were delivered as written, but seen live the discrete page-to-page experience read as
+> too plain, and [ADR-0003](adr/0003-looping-scroll-real-constellations.md) overturned the framing.
+> What actually stands today differs on three load-bearing points:
+>
+> - **No routing.** The site is one continuous, downward-looping vertical scroll. The routes and the
+>   `<router-outlet>` were made vestigial by the pivot and have since been removed entirely.
+> - **No `TravelService`.** The morph is driven continuously by scroll position
+>   (`ScrollLoopService`, see [ADR-0007](adr/0007-deepen-cycle-module.md)), not by navigation events.
+> - **Real constellations, and five of them.** Ursa Major, Orion, Leo, Corona Borealis, and Cygnus —
+>   not the four bespoke figures planned here. Certifications was added as a destination later.
+>
+> Still worth reading for the reasoning, the sequencing rationale, and the rejected alternatives.
+> For the architecture as built, read `onboarding.html`; for the decisions, read `adr/`.
+
+> *Original framing (2026-06-19):* Ready-to-file GitHub issue. Design decisions are settled in
+> [CONTEXT.md](../CONTEXT.md), [ADR-0001](adr/0001-full-multipage-immersion-first.md), and
 > [ADR-0002](adr/0002-star-map-wayfinding-concept.md). Sequencing: "pages first, wow last."
 
 ## Problem Statement

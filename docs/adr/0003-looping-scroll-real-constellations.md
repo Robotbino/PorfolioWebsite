@@ -44,3 +44,5 @@ asterism lines**, which **cross-fade** (outgoing → incoming) through each tran
 - The loop seam still teleports content at the very bottom — smoothing that (mask/clone) is a
   follow-up.
 - `CONTEXT.md` and the refactor plan describe the multipage framing and need a later alignment pass.
+  *(Closed 2026-07-21: `CONTEXT.md` realigned to the loop framing; the refactor plan marked
+  superseded and kept as a historical record.)*
