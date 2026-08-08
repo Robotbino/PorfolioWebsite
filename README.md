@@ -60,7 +60,7 @@ The scroll loop is the spine of the site. `ScrollLoopService` owns the reader's 
 
 There is deliberately **no Angular Router**: the five destinations are defined once in `src/app/destinations.ts` and composed into a single looping page by the app shell.
 
-Every significant design decision is recorded as an ADR in [docs/adr](docs/adr) — from the initial immersion-first concept to the seamless clone-wrap and the glass-card surface treatment. For the full picture of how these pieces interlock, read the **[onboarding guide](docs/onboarding.html)**.
+Every significant design decision is recorded as an ADR in [docs/adr](docs/adr) — from the initial immersion-first concept to the seamless clone-wrap and the loop-aware nav muting — each carrying a status (a couple were tried and rejected, and the ADRs keep the trail). For the full picture of how these pieces interlock, read the **[onboarding guide](docs/onboarding.html)**.
 
 ---
 
@@ -78,7 +78,7 @@ src/app/
 │   ├── about/
 │   ├── certifications/        # Spotlight overlay (certifications-data.ts, certifications.math.ts)
 │   └── contact/               # Marquee email, channels, colophon with live SAST clock
-├── shared/                    # display-heading, theme-toggle
+├── shared/                    # theme-toggle
 ├── destinations.ts            # Single source of truth for the five destinations
 ├── scroll-loop.service.ts     # Scroll cycle state + seam wrap
 ├── scroll-loop.math.ts        # Pure scroll math (unit-tested)
@@ -139,10 +139,10 @@ The site deploys to **Netlify** via [netlify.toml](netlify.toml):
 <summary>Click to expand</summary>
 
 ### Dark Mode
-![Portfolio in dark mode](src/assets/portfolio_dark_mode.png)
+![Portfolio in dark mode](src/assets/portfolio_dark_mode.webp)
 
 ### Light Mode
-![Portfolio in light mode](src/assets/portfolio_light_mode.png)
+![Portfolio in light mode](src/assets/portfolio_light_mode.webp)
 
 </details>
 

@@ -293,7 +293,7 @@ npm test
 
 <span class="c-cmt"># no Chrome installed? Karma honours CHROME_BIN — point it at Edge (PowerShell):</span>
 $env:CHROME_BIN = <span class="c-str">"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"</span>; npm test</code></pre>
-    <div class="note"><b>Tests matter here</b>The pure math modules (<code>scroll-loop.math.ts</code>, <code>motion.math.ts</code>, <code>certifications.math.ts</code>, the constellation morph) are all spec-guarded. If you touch destinations or figures, the specs are what catch a broken key or star count — run them before pushing.</div>
+    <div class="note"><b>Tests matter here</b>The pure math modules (<code>scroll-loop.math.ts</code>, <code>motion.math.ts</code>, <code>certifications.math.ts</code>, the constellation morph) are all spec-guarded, and <code>aurora.component.spec.ts</code> locks the two paths a browser can't easily prove — the theme-flip recolour and the reduced-motion gate. If you touch destinations or figures, the specs are what catch a broken key or star count — run them before pushing.</div>
   </section>
 
   <section id="s-qs-scripts">
@@ -420,6 +420,7 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
       <li><b><code>activeDestination</code> is the safe one.</b> A <code>computed</code> that collapses a whole section of positions into one id (<code>'dest-work'</code>…), so it notifies roughly once per destination. The nav binds this for the active-link underline and <code>aria-current</code>.</li>
     </ul>
     <p><code>FramePulseService.onTick(fn)</code> returns an unsubscribe function; the loop starts with the first subscriber and stops with the last. It also pauses on a hidden tab and resets its clock on return, so the first frame back never receives the whole hidden gap as <code>dt</code>.</p>
+    <p>The same discipline reaches the shell: <code>AppComponent</code> is <code>OnPush</code>, and its <code>scroll</code>/<code>resize</code> listeners are registered with <code>ngZone.runOutsideAngular</code> (the seam wrap and <code>loop.update()</code> need no change detection). The body <code>ResizeObserver</code> is coalesced to a single <code>requestAnimationFrame</code> so a burst of reflows — lazy images decoding, the showcase re-measuring — triggers one re-measure, not a cascade.</p>
   </section>
 
   <section id="s-arch-theme">
@@ -440,12 +441,12 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
       <tr><td><code>0002</code></td><td>Star-map wayfinding — the cosmos as the navigation system</td></tr>
       <tr><td><code>0003</code></td><td>Pivot to ONE looping scroll with real constellations (routes became vestigial)</td></tr>
       <tr><td><code>0004</code></td><td>Seamless loop via the inert Home clone + invisible wrap</td></tr>
-      <tr><td><code>0005</code></td><td>Loop-aware nav muting (distance-from-Home, symmetric around the seam)</td></tr>
-      <tr><td><code>0006</code></td><td>Glass-card surface (frosted tint + backdrop-filter, opaque fallback)</td></tr>
+      <tr><td><code>0005</code></td><td><b>Accepted.</b> Loop-aware nav muting (distance-from-Home, symmetric around the seam). Amended: the mute is gated on a fine pointer so a hover-less tablet keeps a fully operable nav.</td></tr>
+      <tr><td><code>0006</code></td><td><b>Rejected — never implemented.</b> A frosted glass-card surface was proposed, but the editorial rebuild replaced every card with boxless hairline ledgers; its <code>--glass-*</code> tokens have been removed. Kept as the trail for why glassmorphism was dropped.</td></tr>
       <tr><td><code>0007</code></td><td>Deepened cycle module — shell does DOM I/O, service holds state, math is pure</td></tr>
       <tr><td><code>0008</code></td><td>Projects showcase legibility</td></tr>
     </table></div>
-    <p>All live in <code>docs/adr/</code>. If you're about to reverse one of these decisions, read its ADR first — several list rejected alternatives and why.</p>
+    <p>All live in <code>docs/adr/</code>. Each carries a <b>status</b> (accepted / rejected / superseded); if you're about to reverse a decision, read its ADR first — several list rejected alternatives and why.</p>
   </section>
   <div class="pn">
     <a href="#s-qs-prereq" data-goto="qs"><span>Prev · 01</span>← Quick Start</a>
@@ -459,9 +460,9 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
     <h2><span class="n">03.1</span>Directory tour</h2>
     <pre class="tree"><code><span class="d">src/</span>
 ├─ <span class="d">styles.css</span>              <span class="a">← ALL design tokens (CSS custom properties) + reset + view transitions</span>
-├─ index.html               <span class="a">← Instrument Serif font, pre-paint theme guard</span>
+├─ index.html               <span class="a">← Instrument Serif font, pre-paint theme guard, hero-font preloads</span>
 ├─ main.ts                  <span class="a">← bootstraps AppModule (NgModule app, not standalone)</span>
-├─ assets/                  <span class="a">← fonts, project screenshots, cert scans (served at /assets/)</span>
+├─ assets/                  <span class="a">← Nohemi (.woff2), project screenshots + cert scans (.webp) — served at /assets/</span>
 └─ <span class="d">app/</span>
    ├─ app.module.ts         <span class="a">← the single NgModule — every component is declared here</span>
    ├─ app.component.*       <span class="a">← the shell: aurora + constellation + nav + 5 sections + clone</span>
@@ -476,7 +477,7 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
    ├─ landingpage/           <span class="a">← Home hero + CV download</span>
    ├─ layout/site-nav/       <span class="a">← persistent nav with loop-aware muting</span>
    ├─ <span class="d">pages/</span>                <span class="a">← work · about · certifications · contact</span>
-   └─ shared/                <span class="a">← display-heading · theme-toggle</span>
+   └─ shared/                <span class="a">← theme-toggle (each section writes its own editorial header now)</span>
 <span class="d">docs/adr/</span>                   <span class="a">← Architecture Decision Records 0001–0008</span>
 CONTEXT.md                  <span class="a">← design-language glossary (the code's vocabulary)</span>
 netlify.toml                <span class="a">← prod build + SPA redirect</span></code></pre>
@@ -499,16 +500,15 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
     <div class="tblwrap"><table>
       <tr><th>Selector</th><th>Location</th><th>Responsibility</th></tr>
       <tr><td><code>app-root</code></td><td><code>app/</code></td><td>The shell. Measures section anchors, feeds <code>ScrollLoopService</code>, applies the seam wrap, arms scroll reveals.</td></tr>
-      <tr><td><code>app-aurora</code></td><td><code>aurora/</code></td><td>Persistent WebGL backdrop (z-0). OGL + GLSL simplex noise; inputs <code>colorStops · blend · amplitude · speed</code>; CSS fallback when WebGL is unavailable.</td></tr>
+      <tr><td><code>app-aurora</code></td><td><code>aurora/</code></td><td>Persistent WebGL backdrop (z-0). OGL + GLSL simplex noise; inputs <code>colorStops · blend · amplitude · speed</code>; CSS fallback when WebGL is unavailable. Under <code>prefers-reduced-motion</code> it paints a single static frame (still theme-reactive) and never joins the frame pulse — the global reduced-motion CSS rule can't reach a canvas.</td></tr>
       <tr><td><code>app-constellation</code></td><td><code>constellation/</code></td><td>Persistent SVG star-map (z-0). Reads <code>position()</code> each frame and interpolates between adjacent figures; lines cross-fade through the dim point.</td></tr>
       <tr><td><code>app-site-nav</code></td><td><code>layout/site-nav/</code></td><td>Persistent nav (z-100). Renders links from <code>DESTINATIONS</code>; mutes via a single <code>--nav-mute</code> custom property on the shared tick; underlines <code>activeDestination()</code>.</td></tr>
       <tr><td><code>app-landingpage</code></td><td><code>landingpage/</code></td><td>Home hero + CV download. <b>Rendered twice</b> — real Home and the inert loop clone — so keep it side-effect safe.</td></tr>
       <tr><td><code>app-work</code></td><td><code>pages/work/</code></td><td>Experience groups + sticky projects showcase. Pure renderer of <code>work-data.ts</code>.</td></tr>
       <tr><td><code>app-about</code></td><td><code>pages/about/</code></td><td>About copy ("less but better") + the glowing ledger glyphs.</td></tr>
-      <tr><td><code>app-certifications</code></td><td><code>pages/certifications/</code></td><td>Cert cards + full-screen spotlight overlay (sets <code>body.certs-spotlight-open</code>, which the nav CSS reacts to).</td></tr>
+      <tr><td><code>app-certifications</code></td><td><code>pages/certifications/</code></td><td>Ledger of certs + full-screen spotlight, which is a true modal: <code>aria-modal</code>, a focus trap, and <code>body.certs-spotlight-open</code> makes the whole nav recede (opacity + visibility, out of the tab order). The cursor-preview image stack is gated on a fine pointer, so touch never fetches it.</td></tr>
       <tr><td><code>app-contact</code></td><td><code>pages/contact/</code></td><td>Marquee email finale + colophon with a live SAST clock.</td></tr>
       <tr><td><code>app-theme-toggle</code></td><td><code>shared/</code></td><td>Dark/light switch bound to <code>ThemeService</code>.</td></tr>
-      <tr><td><code>app-display-heading</code></td><td><code>shared/</code></td><td>The section-header pattern (pre-title + title). Use it instead of re-inlining heading markup.</td></tr>
       <tr><td><code>[appScrollReveal]</code></td><td><code>app/</code></td><td>Directive: fade-up on first intersection (adds <code>.revealed</code>).</td></tr>
     </table></div>
     <div class="note"><b>All declared in one place</b>This is an NgModule app: any new component/directive must be added to the <code>declarations</code> array in <code>app.module.ts</code> or the template won't recognise its selector.</div>
@@ -552,7 +552,7 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
     <h2><span class="n">04.1</span>Add a new project</h2>
     <p class="lead">Two steps, zero template changes — the Work page is a pure renderer of <code>PROJECTS</code>.</p>
     <ol>
-      <li>Drop a screenshot into <code>src/assets/</code> (it builds to <code>/assets/…</code>). Provide a dark and a light variant if the shot differs per theme; reuse one path for both if not.</li>
+      <li>Add a screenshot to <code>src/assets/</code> as <b>WebP</b> (the house format — every raster asset is WebP; a PNG export at q80–85 lands ~90% smaller). It builds to <code>/assets/…</code>. Provide a dark and a light variant if the shot differs per theme; reuse one path for both if not.</li>
       <li>Append an entry to <code>PROJECTS</code> in <code>src/app/pages/work/work-data.ts</code>:</li>
     </ol>
     <pre data-lang="typescript" data-copy><code><span class="c-cmt">// src/app/pages/work/work-data.ts — append inside PROJECTS</span>
@@ -565,14 +565,17 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
   href: <span class="c-str">'https://github.com/Robotbino/my-new-project'</span>,
   demoHref: <span class="c-str">'https://my-new-project.netlify.app/'</span>, <span class="c-cmt">// optional — renders a "Live Demo" link</span>
   img: {
-    dark:  <span class="c-str">'/assets/my-project.png'</span>,  <span class="c-cmt">// shown in dark mode</span>
-    light: <span class="c-str">'/assets/my-project.png'</span>, <span class="c-cmt">// shown in light mode</span>
+    dark:   <span class="c-str">'/assets/my-project.webp'</span>,  <span class="c-cmt">// shown in dark mode</span>
+    light:  <span class="c-str">'/assets/my-project.webp'</span>, <span class="c-cmt">// shown in light mode</span>
+    width:  <span class="c-num">1920</span>,             <span class="c-cmt">// intrinsic px — REQUIRED; rendered as the &lt;img&gt; width/height</span>
+    height: <span class="c-num">1080</span>,             <span class="c-cmt">//   so the browser reserves the box before the lazy image lands</span>
     alt: {
       dark:  <span class="c-str">'My New Project dashboard in dark mode'</span>,
       light: <span class="c-str">'My New Project dashboard in light mode'</span>,
     },
   },
 },</code></pre>
+    <div class="note"><b>width/height are mandatory</b>The <code>ProjectImage</code> interface requires <code>width</code> and <code>height</code> (intrinsic pixel size) — TypeScript won't compile without them. Where the dark/light variants differ by a few pixels, use the dark one's size; the card is <code>object-fit: cover</code>, so a sub-2% ratio difference isn't observable.</div>
     <p>Skills copy works the same way — edit <code>EXPERIENCE_GROUPS</code> in the same file.</p>
   </section>
 
@@ -584,9 +587,10 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
   title:  <span class="c-str">'Exact Certificate Title'</span>,
   issuer: <span class="c-str">'Issuing Organisation'</span>,
   href:   <span class="c-str">'https://verify.example.com/…'</span>,  <span class="c-cmt">// the official verify URL</span>
-  img:    <span class="c-str">'/assets/certs/my-cert.png'</span>,     <span class="c-cmt">// scan for the spotlight</span>
+  img:    <span class="c-str">'/assets/certs/my-cert.webp'</span>,    <span class="c-cmt">// scan for the spotlight — WebP, in src/assets/certs/</span>
   alt:    <span class="c-str">'Exact Certificate Title certificate from Issuer'</span>,
 },</code></pre>
+    <p>The scan is the largest asset a certificate adds, so convert it to WebP before committing (a screenshot at q82 drops from ~1.3&nbsp;MB to ~50&nbsp;kB with no visible loss). On a fine pointer the spotlight FLIP-morphs from a cursor-tethered preview; on touch that preview never mounts, so tapping the row opens the spotlight directly.</p>
   </section>
 
   <section id="s-mod-constellation">
@@ -633,7 +637,7 @@ work: figure(<span class="c-str">'Orion'</span>, [
       <tr><td><code>amplitude</code></td><td>Vertical intensity of the waves — light mode keeps this low on purpose</td></tr>
       <tr><td><code>speed</code></td><td>Flow speed of the noise field</td></tr>
     </table></div>
-    <p>The shader itself (GLSL simplex noise via <a href="https://github.com/oframe/ogl">OGL</a>) is in <code>src/app/aurora/aurora.component.ts</code>. Change it only if a palette knob can't express what you need — and keep the CSS fallback path working.</p>
+    <p>The shader itself (GLSL simplex noise via <a href="https://github.com/oframe/ogl">OGL</a>) is in <code>src/app/aurora/aurora.component.ts</code>. Change it only if a palette knob can't express what you need — and keep both non-default paths working: the CSS blob fallback (no WebGL) and the <code>prefers-reduced-motion</code> path (one static frame, no frame-pulse subscription). Neither is reachable by the global reduced-motion CSS rule, so the gates live in the component and are covered by <code>aurora.component.spec.ts</code> — run <code>npm test</code> after touching them.</p>
   </section>
 
   <section id="s-mod-tokens">
@@ -646,15 +650,14 @@ work: figure(<span class="c-str">'Orion'</span>, [
   --color-background:  light-dark(#ffffff, #121212);
   --color-accent-vivid: light-dark(#d9480f, #ff8c42);  <span class="c-cmt">/* the ONE non-monochrome hue */</span>
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);      <span class="c-cmt">/* the house easing curve */</span>
-  --font-size-display: clamp(3.25rem, 11.5vw, 11.5rem);
 }
 .light-mode { color-scheme: light; }       <span class="c-cmt">/* manual toggle only flips the scheme */</span>
 .dark-mode  { color-scheme: dark; --scrim-rgb: 18, 18, 18; }</code></pre>
     <ul>
-      <li><b>Never hardcode hex values in component CSS</b> — add a token in <code>styles.css</code> and reference it, or both themes break.</li>
+      <li><b>Never hardcode hex values in component CSS</b> — add a token in <code>styles.css</code> and reference it, or both themes break. (The hero statement and the mobile overlay each earned a token this way: <code>--color-text-statement</code> is <code>light-dark()</code>; <code>--color-overlay-text</code> / <code>--color-overlay-accent</code> are deliberately fixed because the overlay is near-black in both themes.)</li>
       <li><b>Don't add overrides to <code>.light-mode</code>/<code>.dark-mode</code></b> — they exist only to flip <code>color-scheme</code> (plus <code>--scrim-rgb</code>, the documented exception).</li>
       <li><b>Motion tokens matter:</b> new animation should use <code>--ease-out-expo</code> / <code>--transition-slow</code> — long and calm is the house style ("less but better").</li>
-      <li>Glass-card surface tokens (<code>--glass-*</code>) are in the same file; see ADR-0006 before touching them.</li>
+      <li><b>The Nohemi weight ladder is the type system's contrast engine</b> — <code>--font-weight-thin</code> (100) through <code>--font-weight-black</code> (900). There is no <code>800</code> token: that face had no consumer and was dropped, so re-add the token and its <code>@font-face</code> together if a design ever needs it.</li>
     </ul>
   </section>
 
@@ -669,7 +672,7 @@ work: figure(<span class="c-str">'Orion'</span>, [
       <li><b><code>constellation.figures.ts</code></b> — add a <code>lab:</code> figure to <code>byRoute</code> with exactly 8 stars (the <code>destinations.spec.ts</code> guard fails the build-time tests if the key doesn't resolve).</li>
       <li><b><code>app.component.html</code></b> — add the section in scroll order, <em>before</em> the Home clone (the clone must stay last — it is the seam):
       <pre data-lang="html" data-copy><code>&lt;section #dest id="dest-lab" class="dest"&gt;&lt;app-lab&gt;&lt;/app-lab&gt;&lt;/section&gt;</code></pre></li>
-      <li><b>Create the component</b> under <code>src/app/pages/lab/</code> and declare it in <code>app.module.ts</code>. Use <code>&lt;app-display-heading&gt;</code> for the section header and put its copy in a <code>lab-data.ts</code>, matching the house pattern.</li>
+      <li><b>Create the component</b> under <code>src/app/pages/lab/</code> and declare it in <code>app.module.ts</code>. Write the section header inline in the editorial pattern every other section uses — a kicker (<code>aria-hidden</code> destination numeral + a short hairline rule) above a poster title in the Nohemi weight ladder; copy the markup from <code>about.component.html</code> and give it the next index (<code>06</code>). Put the section's copy in a <code>lab-data.ts</code>, matching the house pattern.</li>
       <li><b>Verify:</b> <code>npm test</code> (registry + figure guards), then scroll a full loop in the browser — check the new morph both in and out, the nav underline, and the seam still wrapping invisibly.</li>
     </ol>
     <div class="warn"><b>Do not touch the clone</b>The final <code>&lt;section&gt;</code> (Home clone, <code>inert</code> + <code>aria-hidden</code>, no <code>id</code>) must remain the last child and pixel-identical to real Home — the invisible seam wrap depends on it. See ADR-0004.</div>
@@ -768,7 +771,7 @@ const NODES={
   d:'The ordered registry of the five stops — <code>id</code>, <code>label</code>, <code>figure</code> key. Nav links, section order and the constellation’s morph order all derive from this one array, so ids can never drift.',
   links:[['03.5 Data files','map:s-map-data'],['04.6 Add a destination','mod:s-mod-destination']]},
  tok:{x:440,y:28,w:210,h:56,mono:1,t:'styles.css tokens',s:'light-dark() + color-scheme',file:'src/styles.css',
-  d:'Every colour token is declared once with <code>light-dark()</code>; <code>.light-mode</code>/<code>.dark-mode</code> only flip <code>color-scheme</code>. Also home to the type scale, easings, spacing and the glass-card tokens.',
+  d:'Every colour token is declared once with <code>light-dark()</code>; <code>.light-mode</code>/<code>.dark-mode</code> only flip <code>color-scheme</code>. Also home to the type scale, the Nohemi weight ladder, easings and spacing.',
   links:[['04.5 Design tokens','mod:s-mod-tokens'],['02.5 Theming model','arch:s-arch-theme']]},
  theme:{x:700,y:28,w:230,h:56,t:'ThemeService',s:'signals · OS detect · localStorage',file:'src/app/core/theme.service.ts',
   d:'Signals-based theme state: OS detection, <code>localStorage</code> persistence, a pre-paint guard in <code>index.html</code>, and the memoized <code>auroraPalette()</code> computed that the shell binds to the aurora.',

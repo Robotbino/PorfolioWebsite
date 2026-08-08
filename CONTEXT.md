@@ -124,7 +124,9 @@ The one-shot icon animation played each time an icon reaches viewport centre —
 pop with the glow ramping on, then settling back. Replaces the old hover-only infinite glow
 (hover still works). Re-arms on exit, so it recurs each loop. Off under reduced motion.
 
-**Glass card**:
-The frosted content-card surface: a high-opacity warm tint + conservative `backdrop-filter` blur,
-hairline border with a top highlight, and a depth shadow, with an opaque `@supports` fallback.
-Keeps text contrast and performance safe. See [ADR-0006](adr/0006-glass-card-surface.md).
+**Glass card** _(rejected — not in the codebase)_:
+A frosted content-card surface (warm tint + `backdrop-filter` blur, hairline + top highlight,
+depth shadow) proposed in [ADR-0006](adr/0006-glass-card-surface.md) but never implemented — the
+editorial rebuild replaced every card with boxless hairline ledgers and radial scrims, and the
+`--glass-*` tokens have been removed. The term is kept only so the ADR trail resolves; reach for
+the **boxless scrim** idiom (see the section spreads), not a glass surface.
