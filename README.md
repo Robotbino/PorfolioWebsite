@@ -2,6 +2,9 @@
 
 A portfolio built as one continuous scrolling journey — five destinations (Home, Experience, About, Certifications, Contact) connected by a morphing star map and a WebGL aurora, looping seamlessly back to the start.
 
+**→ [binohlongwana.netlify.app](https://binohlongwana.netlify.app/)**
+
+[![Live site](https://img.shields.io/badge/Live_Site-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://binohlongwana.netlify.app/)
 ![Angular](https://img.shields.io/badge/Angular_19-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![WebGL](https://img.shields.io/badge/WebGL-990000?style=for-the-badge&logo=webgl&logoColor=white)
@@ -204,7 +207,8 @@ rejected, because the trail is the point.
 
 ## 🚀 Deployment
 
-The site deploys to **Netlify** via [netlify.toml](netlify.toml):
+Live at **[binohlongwana.netlify.app](https://binohlongwana.netlify.app/)**, deployed to **Netlify**
+via [netlify.toml](netlify.toml):
 
 - Build: `ng build --configuration production`
 - Publish directory: `dist/professional-porfolio/browser`
