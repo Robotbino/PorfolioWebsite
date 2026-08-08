@@ -64,12 +64,18 @@
        decorative (the rows hold the real content). Transform-only shutter:
        .certs-preview translates with the cursor, -tilt rotates with velocity,
        mask/unmask counter-scale for the reveal. The img stack mounts once the
-       section is armed, warming the cache before the first hover. -->
+       section is armed, warming the cache before the first hover.
+
+       `enabled` gates the stack as well as `armed()`: the CSS hides this whole
+       subtree on touch and under reduced motion, but display:none does not stop
+       the fetch, so without this gate a phone downloaded all five certificates
+       for a preview it can never show. Tapping a row still opens the spotlight,
+       which loads the one image it needs. -->
   <div class="certs-preview" #preview aria-hidden="true">
     <div class="certs-preview-tilt" #tilt>
       <div class="certs-preview-mask" #mask>
         <div class="certs-preview-unmask" #unmask>
-          <ng-container *ngIf="armed()">
+          <ng-container *ngIf="armed() && enabled">
             <img
               *ngFor="let cert of certifications; let i = index"
               class="certs-preview-img"

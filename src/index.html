@@ -6,7 +6,19 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Nohemi ExtraLight(200) + Black(900) are the hero headline's two weights —
+        the LCP element. Preloading them means the first paint of "Bino
+        Hlongwana" is already in the real face instead of painting in the
+        fallback and reflowing once font-display:swap resolves. Only these two:
+        preloading the whole ladder would compete with them for bandwidth.
+
+        These hrefs must match the @font-face src in styles.css BYTE FOR BYTE, or
+        the browser fetches a second copy and warns that the preload went unused.
+        Both sides are root-absolute for that reason — see the long note in
+        styles.css for why the fonts are deliberately not build-processed. -->
+   <link rel="preload" href="/assets/fonts/Nohemi-ExtraLight.woff2" as="font" type="font/woff2" crossorigin>
+   <link rel="preload" href="/assets/fonts/Nohemi-Black.woff2" as="font" type="font/woff2" crossorigin>
+   <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <!-- Instrument Serif italic is the lone editorial accent; Nohemi (body + display) is self-hosted. -->
    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">

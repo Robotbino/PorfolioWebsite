@@ -18,7 +18,12 @@ import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-da
   selector: 'app-work',
   standalone: false,
   templateUrl: './work.component.html',
-  styleUrl: './work.component.css',
+  // Two stylesheets, one component: the pinned horizontal gallery is a
+  // self-contained enhancement over the vertical card stack, and keeping it
+  // separate also puts each file back inside the anyComponentStyle budget.
+  // Encapsulation is per-component, not per-file, so :host(.showcase-on) in the
+  // second sheet still resolves against this host.
+  styleUrls: ['./work.component.css', './work.showcase.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkComponent implements AfterViewInit, OnDestroy {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-contact',
@@ -6,18 +6,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css',
 })
-export class ContactComponent implements OnInit, OnDestroy {
-
+export class ContactComponent implements OnDestroy {
   copied = false;
   private resetTimer: ReturnType<typeof setTimeout> | null = null;
-  /** Bino's local wall-clock (SAST is fixed UTC+2, but the IANA zone keeps it
-   *  honest), shown in the colophon so a visitor knows when to expect a reply. */
-  localTime = '';
-  private clockTimer: ReturnType<typeof setTimeout> | null = null;
-
-  ngOnInit(): void {
-    
-  }
 
   async copyEmail(email: string): Promise<void> {
     try {
@@ -34,14 +25,9 @@ export class ContactComponent implements OnInit, OnDestroy {
     this.resetTimer = setTimeout(() => (this.copied = false), 2000);
   }
 
- 
-
   ngOnDestroy(): void {
     if (this.resetTimer) {
       clearTimeout(this.resetTimer);
-    }
-    if (this.clockTimer) {
-      clearTimeout(this.clockTimer);
     }
   }
 }

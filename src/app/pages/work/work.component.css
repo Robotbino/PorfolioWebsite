@@ -129,7 +129,11 @@
   font-size: var(--font-size-md);
   line-height: var(--line-height-relaxed);
   color: var(--color-text-secondary);
-  transition: padding-left var(--transition-base), color var(--transition-base);
+  /* Nudge rides a transform, not padding-left: animating padding reflows the item
+     and re-wraps its text every frame. Same restraint as .index-term below. The
+     bullet is an absolutely-positioned child, so it travels with this transform
+     and counter-translates in its own rule to hold position. */
+  transition: transform var(--transition-base), color var(--transition-base);
 }
 
 /* Accent bullet set on the cap height. It twinkles faintly, tying the bullets
@@ -155,15 +159,17 @@
   50%      { opacity: 1; }
 }
 
-/* Hover nudges the text and lights the bullet like a star coming into focus. */
+/* Hover nudges the text and lights the bullet like a star coming into focus.
+   The 4px shift is the li's transform; the bullet cancels it so only the copy
+   moves, exactly as the padding version looked. */
 @media (hover: hover) and (pointer: fine) {
   .role-points li:hover {
-    padding-left: calc(var(--space-lg) + var(--space-xs));
+    transform: translateX(4px);
     color: var(--color-text-primary);
   }
 
   .role-points li:hover::before {
-    transform: scale(1.6);
+    transform: translateX(-4px) scale(1.6);
     box-shadow: 0 0 10px var(--color-accent);
   }
 }
@@ -267,6 +273,10 @@
      Development & Web Applications" it pinches word-spacing instead. */
   letter-spacing: var(--tracking-normal);
   color: var(--color-text-primary);
+  /* Was inherited from the global h1–h6 rule until these rows stopped being
+     headings (they are ledger entries, not document sections — see the template).
+     Declared here so the demotion changed nothing visually. */
+  text-wrap: balance;
   /* Hover nudge rides a transform (see the hover block below) so the grid
      never reflows — same restraint as the role-points padding nudge. */
   transition: transform var(--transition-base);
@@ -744,220 +754,5 @@
   }
 }
 
-/* === HORIZONTAL SHOWCASE — driven by WorkComponent rAF === */
-/* Armed by WorkComponent (`.showcase-on` on the host) only on wide screens with
-   motion allowed. The wrappers below are inert blocks otherwise, so the cards
-   keep the vertical-stack layout above as a fail-open fallback. */
-
-:host(.showcase-on) .projects-viewport {
-  /* WorkComponent sets the real height from the horizontal travel (≈1:1 with
-     scroll). This is just a floor for the frame before the first measure.
-     svh (vh line = fallback): stays constant while mobile browser chrome
-     collapses, so the JS-measured pin geometry never jitters mid-scroll. */
-  min-height: 100vh;
-  min-height: 100svh;
-  margin-top: var(--space-2xl);
-}
-
-:host(.showcase-on) .projects-stage {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
-  display: flex;
-  align-items: center;
-  /* clip (not hidden): no native scrollport, so focusing an off-frame card link
-     can't jump the layout sideways. Soft edges let cards melt in/out of frame. */
-  overflow: clip;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
-}
-
-:host(.showcase-on) .projects-container {
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  width: max-content;
-  max-width: none;
-  gap: var(--space-2xl);
-  margin: 0;
-  padding-inline: 11vw; /* lead-in / lead-out so the first and last card can sit in frame */
-  will-change: transform;
-}
-
-:host(.showcase-on) .project-card {
-  flex: 0 0 78vw;
-  max-width: 1100px;
-  height: min(72vh, 620px);
-  height: min(72svh, 620px);
-  margin: 0;
-}
-
-:host(.showcase-on) .project-content {
-  height: 100%;
-  min-height: 0;
-}
-
-/* The card height is fixed in showcase mode, so a longer description can push the
-   text column past the card and get clipped by .project-card's overflow:hidden
-   (the button was the casualty). Constrain the column to the card height and let
-   it scroll internally as a safety net, and trim the vertical rhythm so normal
-   copy simply fits without scrolling. */
-:host(.showcase-on) .project-text {
-  height: 100%;
-  min-height: 0;
-  justify-content: center;
-  gap: var(--space-md);
-  /* Trimmed block padding (was --space-2xl top+bottom) and tightened the copy's
-     rhythm so the longest description still fits inside the fixed card height.
-     overflow-y:auto is the last-resort net; in practice the content now sits
-     fully in-frame without scrolling. */
-  padding-block: var(--space-sm);
-  overflow-y: auto;
-}
-
-:host(.showcase-on) .project-description {
-  line-height: var(--line-height-normal);
-}
-
-/* ---- Constellation scrim ---- */
-/* The star-map is position:fixed and keeps morphing site-wide. Behind the pinned
-   cards it competes with the copy, so dim it locally toward the page colour (same
-   background-scrim idiom as .role::before) — no surface, theme-aware via
-   --scrim-rgb. Sits above the fixed map, below the opaque cards. */
-:host(.showcase-on) .projects-stage::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(
-    62% 68% at 50% 50%,
-    rgba(var(--scrim-rgb), 0.55) 0%,
-    rgba(var(--scrim-rgb), 0.30) 55%,
-    transparent 82%
-  );
-  pointer-events: none;
-}
-
-/* ---- Card elevation + centre focus ---- */
-/* The hairline border darkens a step on the pinned stage and a shadow lifts
-   each opaque card off the star-map (not floating ambiguously on it), which is
-   also what lets the hover lift below actually pop. --card-focus (1 = centred)
-   is written per frame by WorkComponent; edge cards dim so the centred one is
-   unmistakably the subject. No transition on opacity — it already tracks the
-   eased transform, so it moves smoothly frame to frame. */
-:host(.showcase-on) .project-card {
-  border-color: var(--color-border-dark);
-  box-shadow: var(--shadow-md);
-  opacity: calc(0.5 + 0.5 * var(--card-focus, 1));
-}
-
-@media (hover: hover) and (pointer: fine) {
-  :host(.showcase-on) .project-card:hover {
-    box-shadow: var(--shadow-hover);
-  }
-}
-
-/* ---- Pinned wayfinding HUD ---- */
-/* Hidden by default so the vertical-stack fallback (no-JS / reduced motion /
-   narrow) stays clean; revealed only when the showcase is armed. */
-.showcase-hud {
-  display: none;
-}
-
-:host(.showcase-on) .showcase-hud {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(var(--space-lg), 5vh, var(--space-3xl));
-  transform: translateX(-50%);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-sm);
-  width: min(420px, 60vw);
-  pointer-events: none; /* wayfinding only — never intercept a card click */
-}
-
-.showcase-counter {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-xs);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  font-variant-numeric: tabular-nums;
-  color: var(--color-text-muted);
-}
-
-/* The current index takes the one vivid hue, echoing the section kicker. */
-.showcase-counter-current {
-  color: var(--color-accent-vivid);
-}
-
-.showcase-counter-sep {
-  color: var(--color-text-tertiary);
-}
-
-.showcase-rail {
-  position: relative;
-  width: 100%;
-  height: 2px;
-  background: var(--color-border-dark);
-  border-radius: var(--radius-full);
-}
-
-/* Fill grows with scroll progress; scaleX is cheaper than animating width and
-   composites off the main thread. */
-.showcase-rail-fill {
-  position: absolute;
-  inset: 0;
-  transform-origin: left center;
-  transform: scaleX(var(--showcase-progress, 0));
-  background: var(--color-accent-vivid);
-  border-radius: inherit;
-}
-
-/* One notch per project — a static count marker the fill sweeps past. */
-.showcase-rail-tick {
-  position: absolute;
-  top: 50%;
-  width: 4px;
-  height: 4px;
-  margin-left: -2px;
-  border-radius: var(--radius-full);
-  background: var(--color-background);
-  box-shadow: 0 0 0 1px var(--color-border-dark);
-  transform: translateY(-50%);
-}
-
-.showcase-hint {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-size: var(--font-size-xs);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  /* Guidance when it's needed, gone the moment the sweep starts. */
-  opacity: clamp(0, calc(1 - var(--showcase-progress, 0) * 10), 1);
-  transition: opacity var(--transition-base);
-}
-
-.showcase-hint-arrow {
-  animation: hintNudge 1.6s var(--ease-out-quart) infinite;
-}
-
-@keyframes hintNudge {
-  0%, 100% { transform: translateX(0); opacity: 0.6; }
-  50%      { transform: translateX(4px); opacity: 1; }
-}
-
-/* Belt-and-braces: the HUD only shows in showcase mode (which is already off
-   under reduced motion), but never loop the arrow if motion is reduced. */
-@media (prefers-reduced-motion: reduce) {
-  .showcase-hint-arrow {
-    animation: none;
-  }
-}
+/* The horizontal projects showcase (the .showcase-on pinned gallery) lives in
+   work.showcase.component.css — same component, second stylesheet. */

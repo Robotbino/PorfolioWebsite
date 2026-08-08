@@ -160,6 +160,11 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   // Colour stops converted to GPU vec3s, recomputed only when the `colorStops`
   // input changes (a theme flip) — never per frame.
   private colorStopsVec: number[][] = [];
+  // Set ONLY on the reduced-motion WebGL path, where there is no frame loop to
+  // repaint the canvas. Anything that invalidates the drawing buffer (a theme
+  // flip pushing new uniforms, a resize clearing it) calls this to paint the one
+  // static frame again. Null whenever the rAF is driving.
+  private renderStatic: (() => void) | null = null;
 
   constructor(
     private pulse: FramePulseService,
@@ -180,6 +185,9 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.program.uniforms.uColorStops.value = this.colorStopsVec;
       this.program.uniforms.uAmplitude.value = this.amplitude;
       this.program.uniforms.uBlend.value = this.blend;
+      // Under reduced motion nothing is repainting the canvas, so push the new
+      // palette to the screen here or the flip would never become visible.
+      this.renderStatic?.();
     }
   }
 
@@ -217,6 +225,10 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
       if (this.program) {
         this.program.uniforms.uResolution.value = [width, height];
       }
+      // Resizing reallocates (and clears) the drawing buffer. With the rAF
+      // running the next tick redraws anyway; under reduced motion this is the
+      // only thing that would, so the canvas must be repainted here.
+      this.renderStatic?.();
     };
     this.resizeHandler = resize;
     window.addEventListener('resize', resize);
@@ -247,6 +259,22 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
     const mesh = new Mesh(gl, { geometry, program: this.program });
     ctn.appendChild(gl.canvas);
 
+    if (this.motion.reducedMotion()) {
+      // Reduced motion: the aurora is the largest moving surface on the page and
+      // the global `@media (prefers-reduced-motion)` rule in styles.css cannot
+      // reach it — that rule only clamps CSS animations/transitions, never a
+      // WebGL canvas. So never subscribe to the frame pulse; keep the shader and
+      // paint ONE frame at a fixed uTime. The backdrop still reads as an aurora,
+      // it just doesn't move. A theme flip repaints via renderStatic() from
+      // ngOnChanges, so the palette stays live without a running loop.
+      this.renderStatic = () => {
+        this.program.uniforms.uTime.value = 0;
+        renderer.render({ scene: mesh });
+      };
+      resize(); // sizes the buffer, then paints via renderStatic
+      return;
+    }
+
     // Only time advances per frame now; palette/amplitude/blend are pushed by
     // ngOnChanges on a theme flip, so there is no per-frame Color allocation.
     this.unsub = this.pulse.onTick((now) => {
@@ -274,20 +302,34 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
         a: 'translate3d(-3%,5%,0) scale(1.05)', b: 'translate3d(5%,-10%,0) scale(1.1)' },
     ];
 
+    // Same reasoning as the WebGL path: these are Web Animations API objects, so
+    // the global reduced-motion CSS rule cannot clamp them either. Under reduced
+    // motion the blobs are still built and still recolour on a theme flip — they
+    // simply rest at their first keyframe instead of drifting forever.
+    const animate = !this.motion.reducedMotion();
+
     this.colorStops.forEach((hex, i) => {
       const c = blobs[i];
       const el = document.createElement('div');
       Object.assign(el.style, {
-        position: 'absolute', borderRadius: '50%', willChange: 'transform',
+        position: 'absolute', borderRadius: '50%',
+        // will-change earns its keep only while something is actually animating;
+        // holding a compositor layer for a static blob is pure cost.
+        willChange: animate ? 'transform' : 'auto',
         opacity: '0.6', width: c.w, height: c.h, top: c.t, left: c.l,
         background: this.blobGradient(hex),
       });
-      this.fallbackAnimations.push(
-        el.animate(
-          [{ transform: c.a }, { transform: c.b }],
-          { duration: c.dur, easing: 'ease-in-out', iterations: Infinity, direction: 'alternate', fill: 'both' }
-        )
-      );
+      if (animate) {
+        this.fallbackAnimations.push(
+          el.animate(
+            [{ transform: c.a }, { transform: c.b }],
+            { duration: c.dur, easing: 'ease-in-out', iterations: Infinity, direction: 'alternate', fill: 'both' }
+          )
+        );
+      } else {
+        // Rest at the first keyframe so the composition still reads as intended.
+        el.style.transform = c.a;
+      }
       this.fallbackBlobs.push(el);
       ctn.appendChild(el);
     });

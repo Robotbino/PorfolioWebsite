@@ -1,23 +1,50 @@
-/* Font Awesome icons (installed as npm package for reliability) */
-@import '@fortawesome/fontawesome-free/css/all.min.css';
+/* Font Awesome icons (installed as npm package for reliability).
+   Core + the two families this site actually uses, NOT all.min.css: the site
+   references 16 glyphs across `fa-solid` and `fa-brands` only, and `all` also
+   pulls the `fa-regular` (18.9 kB) and `fa-v4compatibility` (4.0 kB) webfonts,
+   which no class here has ever referenced. Add a family back here if a design
+   starts using it. */
+@import '@fortawesome/fontawesome-free/css/fontawesome.min.css';
+@import '@fortawesome/fontawesome-free/css/solid.min.css';
+@import '@fortawesome/fontawesome-free/css/brands.min.css';
 
 /* ============================================
    NOHEMI — primary typeface (self-hosted)
-   Geometric display sans, full Thin(100)→Black(900) range. Drives every
-   headline, label and body run. Instrument Serif (loaded in index.html)
-   survives only as the italic accent — see --font-family-accent.
-   Paths resolve from src/assets/fonts at build time; font-display:swap so
-   the constellation hero paints immediately (LCP) and reflows once.
+   Geometric display sans. Drives every headline, label and body run. Instrument
+   Serif (loaded in index.html) survives only as the italic accent — see
+   --font-family-accent.
+
+   WOFF2, not WOFF: same glyph data, brotli instead of zlib, ~28% smaller across
+   the ladder (250 kB → 179 kB). Support is universal for anything that can run
+   this site.
+
+   Eight weights, not nine: 800 (ExtraBold) had no consumer in any stylesheet, so
+   the face and its --font-weight-extrabold token are gone. If a design ever wants
+   800, re-add both together — a token without a face silently falls back to a
+   synthesised weight.
+
+   URLs are root-absolute (/assets/...), matching how work-data.ts and
+   certifications-data.ts reference their images. This is load-bearing, not
+   cosmetic: a build-relative url() gets processed by the CSS pipeline and
+   re-emitted into media/ under a content hash, which meant the fonts shipped
+   TWICE (hashed in media/ for the CSS, unhashed via the assets glob) and made
+   the preload below unmatchable — it would fetch a third copy the CSS never
+   uses. Root-absolute URLs are left alone by the build, so the glob copy is the
+   single source and the preload hrefs can be written by hand. The cost is no
+   content hash on fonts; they are immutable, so a change needs a new filename.
+
+   font-display:swap keeps the hero painting immediately; index.html preloads the
+   two weights the headline uses (200/900) so that first paint is already in the
+   real face rather than reflowing once swap resolves.
    ============================================ */
-@font-face { font-family: 'Nohemi'; src: url('assets/fonts/Nohemi-Thin.woff')       format('woff'); font-weight: 100; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Nohemi'; src: url('assets/fonts/Nohemi-ExtraLight.woff') format('woff'); font-weight: 200; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Nohemi'; src: url('assets/fonts/Nohemi-Light.woff')      format('woff'); font-weight: 300; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Nohemi'; src: url('assets/fonts/Nohemi-Regular.woff')    format('woff'); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Nohemi'; src: url('assets/fonts/Nohemi-Medium.woff')     format('woff'); font-weight: 500; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Nohemi'; src: url('assets/fonts/Nohemi-SemiBold.woff')   format('woff'); font-weight: 600; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Nohemi'; src: url('assets/fonts/Nohemi-Bold.woff')       format('woff'); font-weight: 700; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Nohemi'; src: url('assets/fonts/Nohemi-ExtraBold.woff')  format('woff'); font-weight: 800; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Nohemi'; src: url('assets/fonts/Nohemi-Black.woff')      format('woff'); font-weight: 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-Thin.woff2')       format('woff2'); font-weight: 100; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-ExtraLight.woff2') format('woff2'); font-weight: 200; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-Light.woff2')      format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-Regular.woff2')    format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-Medium.woff2')     format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-SemiBold.woff2')   format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-Bold.woff2')       format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-Black.woff2')      format('woff2'); font-weight: 900; font-style: normal; font-display: swap; }
 
 /* ============================================
    DESIGN SYSTEM - CSS CUSTOM PROPERTIES
@@ -41,9 +68,10 @@
   --font-size-5xl: 4rem;
   --font-size-6xl: 6.2rem;
 
-  /* Fluid display steps — poster-scale headlines that breathe with the viewport
-     without per-breakpoint juggling. Used by the hero. */
-  --font-size-display: clamp(3.25rem, 11.5vw, 11.5rem);
+  /* Fluid display step — poster-scale, breathes with the viewport without
+     per-breakpoint juggling. Used by the hero eyebrow. (The larger
+     --font-size-display was removed: the hero name sets its own clamp() and
+     nothing else ever consumed it.) */
   --font-size-display-sm: clamp(2.25rem, 5vw, 4rem);
 
   /* Full Nohemi weight ladder — the contrast engine of the system. */
@@ -54,7 +82,9 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
+  /* No 800: see the @font-face block — the face was dropped for want of a
+     consumer, so the token goes with it rather than resolving to a synthesised
+     weight. Re-add both together if a design needs it. */
   --font-weight-black: 900;
 
   /* Tracking (letter-spacing) — explicit intent at every scale.
@@ -105,6 +135,20 @@
   /* About ledger glow glyphs — darkened on light to register on the warm field. */
   --color-glow-bulb: light-dark(#b45309, #f5a623);
   --color-glow-code: light-dark(#1d6fd1, #3d9bf5);
+  /* Hero statement — a tier below text-primary, expressed as alpha over the page
+     rather than a flat grey so it sits on the aurora rather than on top of it.
+     Lives here rather than in landingpage.component.css, which used to hard-code
+     both values and re-derive the theme with a @media query plus two
+     :host-context() rules — three encodings of a decision light-dark() already
+     makes once. */
+  --color-text-statement: light-dark(rgba(26, 26, 26, 0.72), rgba(255, 255, 255, 0.7));
+
+  /* Mobile nav overlay. Deliberately NOT light-dark(): the overlay is a near-black
+     scrim in both themes (see .mobile-overlay), so its text and active tint are
+     fixed rather than theme-tracking. The accent is the dark-theme value of
+     --color-accent-vivid, which is the one that reads on that scrim. */
+  --color-overlay-text: #fafafa;
+  --color-overlay-accent: #ff8c42;
 
   /* Gradient overlay + scrim track the background. scrim-rgb is a raw triple
      used inside rgba(), so it can't be light-dark() — .dark-mode flips it. */
@@ -152,7 +196,6 @@
   --max-width-content: 1400px;
   --max-width-text: 65ch;
   --section-spacing: var(--space-5xl);
-  --content-margin-top: 5em;
 }
 
 /* ============================================
@@ -169,19 +212,6 @@
 .dark-mode {
   color-scheme: dark;
   --scrim-rgb: 18, 18, 18;
-}
-
-/* ============================================
-   GLASS CARD SURFACE (see docs/adr/0006)
-   Each token declared once as light-dark(); follows `color-scheme` like the
-   colour tokens above, so the manual classes need no glass overrides.
-   ============================================ */
-:root {
-  --glass-bg: light-dark(rgba(255, 255, 255, 0.55), rgba(44, 36, 31, 0.62));
-  --glass-bg-solid: light-dark(rgba(250, 247, 243, 0.94), rgba(38, 32, 27, 0.97));
-  --glass-border: light-dark(rgba(20, 16, 12, 0.10), rgba(255, 255, 255, 0.14));
-  --glass-highlight: light-dark(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.18));
-  --glass-shadow: 0 22px 44px light-dark(rgba(20, 16, 12, 0.14), rgba(0, 0, 0, 0.45));
 }
 
 /* ============================================
@@ -351,14 +381,6 @@ textarea:not([rows]) { min-height: 10em; }
 
 .section { padding-block: var(--section-spacing); }
 
-.text-center { text-align: center; }
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 /* ============================================
    RESPONSIVE BREAKPOINTS
    ============================================ */
@@ -382,8 +404,6 @@ textarea:not([rows]) { min-height: 10em; }
     --font-size-6xl: 2.5rem;
     --section-spacing: var(--space-3xl);
   }
-
-  .btn { width: 100%; }
 }
 
 /* ============================================
@@ -395,72 +415,6 @@ textarea:not([rows]) { min-height: 10em; }
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-/* ============================================
-   SHARED COMPONENTS
-   ============================================ */
-
-/* Section heading rules (.section-header / -pre-title / -title) live in
-   shared/display-heading. Use <app-display-heading> instead of inlining. */
-
-/* Button component */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-md) var(--space-xl);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-base);
-  border-radius: var(--radius-full);
-  transition: transform var(--transition-base),
-              box-shadow var(--transition-base),
-              background-color var(--transition-base),
-              color var(--transition-base),
-              border-color var(--transition-base);
-  white-space: nowrap;
-  text-align: center;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.btn:focus-visible {
-  outline-offset: 4px;
-}
-
-.btn-primary {
-  background-color: var(--color-accent);
-  color: var(--color-background);
-  border: 2px solid var(--color-accent);
-}
-
-.btn-primary:active {
-  transform: scale(0.97);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .btn-primary:hover {
-    background-color: var(--color-accent-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
-}
-
-.btn-secondary {
-  background-color: transparent;
-  color: var(--color-accent);
-  border: 2px solid var(--color-accent);
-}
-
-.btn-secondary:active {
-  transform: scale(0.97);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .btn-secondary:hover {
-    background-color: var(--color-accent);
-    color: var(--color-background);
-    transform: translateY(-2px);
   }
 }
 
@@ -552,35 +506,47 @@ textarea:not([rows]) { min-height: 10em; }
 /* ============================================
    CERTIFICATE SPOTLIGHT × PERSISTENT NAV
    The spotlight lives inside .starscroll's stacking context (z:1), so the
-   root-level sticky nav (z:100) paints above its scrim — by design: the links
-   stay visible and clickable while a certificate is open, and clicking one
-   closes the spotlight (NavTransitionService.onNavigate) and travels. Two
-   adjustments while `body.certs-spotlight-open` is set (by the certifications
-   component): the header's transparent full-width strip must stop intercepting
-   clicks — the spotlight's Close button lives inside that band — and the
-   action cluster (theme toggle + hamburger) yields the top-right corner to
-   that Close button, which it exactly overlaps on mobile. Lives here, not in
-   site-nav.component.css, because it spans two components (same precedent as
-   the .navigation-bar view-transition-name above).
+   root-level sticky nav (z:100) paints above its scrim. The nav therefore has
+   to be dealt with explicitly while `body.certs-spotlight-open` is set (by the
+   certifications component), on two counts:
+
+   1. The header's transparent full-width strip must stop intercepting clicks —
+      the spotlight's Close button lives inside that band.
+   2. The whole nav must RECEDE. The dialog is `aria-modal="true"` and traps
+      focus between its Verify and Close controls, which is a promise that
+      everything behind it is unavailable. An earlier revision kept the logo and
+      links clickable on purpose, but that made the promise false: pointer users
+      kept a working nav while screen-reader and keyboard users were told (and
+      by the trap, made) to have none. One contract, honoured for everyone —
+      Close / Esc / scrim are the only ways out. `visibility: hidden` also drops
+      the links from the tab order, which is what makes the trap truthful.
+
+   Lives here, not in site-nav.component.css, because it spans two components
+   (same precedent as the .navigation-bar view-transition-name above).
    ============================================ */
 
 body.certs-spotlight-open .navigation-bar {
   pointer-events: none;
 }
 
-body.certs-spotlight-open .navigation-bar :is(.logo, .nav-link) {
-  pointer-events: auto;
-}
+/* visibility (not display): the hidden elements keep their flex slots, so
+   nothing reflows toward the corner while the dialog is open; it also takes
+   them out of the tab order. The discrete visibility transition flips at the
+   end of the fade-out and the start of the fade-in, so both directions
+   animate. --nav-mute is left alone: the rAF keeps writing it, and the nav
+   returns to whatever travel state it was in when the dialog closes.
 
-/* visibility (not display): the hidden cluster keeps its flex slot, so the
-   links don't reflow toward the corner; it also leaves the tab order. The
-   discrete visibility transition flips at the end of the fade-out and the
-   start of the fade-in, so both directions animate. */
-.nav-actions {
+   `.logo` is absent here on purpose — it carries its own transition in
+   site-nav.component.css (for the --nav-mute scale), and under Angular's
+   emulated encapsulation that rule outranks this one, so declaring a
+   competing transition here would silently lose. Its `visibility` is
+   transitioned there instead, beside the properties it belongs with. */
+.nav-actions,
+.nav-items {
   transition: opacity 240ms var(--ease-out-quart), visibility 240ms;
 }
 
-body.certs-spotlight-open .nav-actions {
+body.certs-spotlight-open :is(.nav-actions, .logo, .nav-items) {
   opacity: 0;
   visibility: hidden;
 }

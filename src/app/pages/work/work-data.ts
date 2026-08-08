@@ -11,6 +11,15 @@ export interface ExperienceGroup {
 export interface ProjectImage {
   readonly dark: string;
   readonly light: string;
+  /**
+   * Intrinsic pixel size, rendered as the <img> width/height attributes so the
+   * browser knows the ratio before the lazy image decodes. Where the dark and
+   * light variants differ by a few pixels (the portfolio screenshots) the dark
+   * one's size is used — the cards are `object-fit: cover` inside a grid-fixed
+   * box, so a sub-2% ratio difference is not observable.
+   */
+  readonly width: number;
+  readonly height: number;
   readonly alt: {
     readonly dark: string;
     readonly light: string;
@@ -66,8 +75,10 @@ export const PROJECTS: readonly Project[] = [
     href: 'https://github.com/Robotbino/CodePairs.git',
     demoHref: 'https://codepairsgame.netlify.app/',
     img: {
-      dark: '/assets/CodePairsDemo1.png',
-      light: '/assets/CodePairsDemo1.png',
+      dark: '/assets/CodePairsDemo1.webp',
+      light: '/assets/CodePairsDemo1.webp',
+      width: 1920,
+      height: 1080,
       alt: {
         dark: 'Memory Leak game showing card matching interface',
         light: 'Memory Leak game showing card matching interface',
@@ -83,8 +94,10 @@ export const PROJECTS: readonly Project[] = [
     tech: ['Spring Boot', 'Angular', 'MySQL', 'JWT'],
     href: 'https://github.com/Robotbino/EmployeeManager-Application.git',
     img: {
-      dark: '/assets/EmployeeManagerInterface.jpg',
-      light: '/assets/EmployeeManagerInterface.jpg',
+      dark: '/assets/EmployeeManagerInterface.webp',
+      light: '/assets/EmployeeManagerInterface.webp',
+      width: 1600,
+      height: 900,
       alt: {
         dark: 'Employee Management System dashboard interface',
         light: 'Employee Management System dashboard interface',
@@ -101,8 +114,10 @@ export const PROJECTS: readonly Project[] = [
     tech: ['React', 'TypeScript', 'Spring Boot', 'MySQL'],
     href: 'https://github.com/Robotbino/gameStore.git',
     img: {
-      dark: '/assets/gameStore.png',
-      light: '/assets/gameStore.png',
+      dark: '/assets/gameStore.webp',
+      light: '/assets/gameStore.webp',
+      width: 1920,
+      height: 1080,
       alt: {
         dark: 'Game Store storefront showing a featured game hero and the available games grid',
         light: 'Game Store storefront showing a featured game hero and the available games grid',
@@ -119,8 +134,10 @@ export const PROJECTS: readonly Project[] = [
     tech: ['Angular', 'TypeScript', 'WebGL', 'CSS3'],
     href: 'https://github.com/Robotbino/PorfolioWebsite.git',
     img: {
-      dark: '/assets/portfolio_dark_mode.png',
-      light: '/assets/portfolio_light_mode.png',
+      dark: '/assets/portfolio_dark_mode.webp',
+      light: '/assets/portfolio_light_mode.webp',
+      width: 1726,
+      height: 873,
       alt: {
         dark: 'Portfolio website in dark mode',
         light: 'Portfolio website in light mode',

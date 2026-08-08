@@ -1,8 +1,9 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
-  HostListener,
+  NgZone,
   OnDestroy,
   QueryList,
   ViewChildren,
@@ -17,6 +18,11 @@ import { ScrollLoopService } from './scroll-loop.service';
   templateUrl: './app.component.html',
   standalone: false,
   styleUrl: './app.component.css',
+  // The shell's own template is static (the aurora's inputs change only on a
+  // theme flip, which is a signal read). Nothing here needs to be re-checked on
+  // an unrelated event, and the scroll/resize listeners below deliberately run
+  // outside the zone, so OnPush matches how this component actually behaves.
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('dest') private dests!: QueryList<ElementRef<HTMLElement>>;
@@ -24,6 +30,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   private reduce = false;
   private ro?: ResizeObserver;
   private revealReleases: (() => void)[] = [];
+  private teardown: (() => void)[] = [];
+  private measureFrame = 0;
 
   // Public so the persistent background layer can bind to the theme signal.
   constructor(
@@ -31,6 +39,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     private loop: ScrollLoopService,
     private motion: MotionSettingsService,
     private inView: InViewportService,
+    private zone: NgZone,
   ) {}
 
   ngAfterViewInit(): void {
@@ -38,12 +47,34 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     this.measure();
     this.update();
 
-    // Section heights shift as lazy images load, so re-measure on any reflow.
-    this.ro = new ResizeObserver(() => {
-      this.measure();
-      this.update();
+    // Scroll and resize are the app's hottest events and neither needs change
+    // detection: the loop is a plain service the out-of-zone rAF consumers read
+    // with a non-reactive `position()`, and the seam wrap is a scrollTo. Running
+    // them through @HostListener meant every scroll event ticked the zone and
+    // re-checked the whole default-strategy tree. Registered by hand outside the
+    // zone instead, matching FramePulseService and InViewportService.
+    this.zone.runOutsideAngular(() => {
+      const onScroll = () => this.onScroll();
+      const onResize = () => {
+        this.measure();
+        this.update();
+      };
+      // passive: this listener never calls preventDefault, so let the browser
+      // scroll without waiting on it.
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onResize);
+      this.teardown.push(
+        () => window.removeEventListener('scroll', onScroll),
+        () => window.removeEventListener('resize', onResize),
+      );
+
+      // Section heights shift as lazy images load, so re-measure on any reflow.
+      // Coalesced to one frame: measure() writes nothing itself, but the Work
+      // showcase's own measure sets `viewport.style.height`, which can retrigger
+      // this observer — without the guard the two can chase each other.
+      this.ro = new ResizeObserver(() => this.scheduleMeasure());
+      this.ro.observe(document.body);
     });
-    this.ro.observe(document.body);
 
     // Reveal each destination as it enters (fail-open: only hidden once JS arms it).
     if (!this.reduce) {
@@ -64,8 +95,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  @HostListener('window:scroll')
-  onScroll(): void {
+  private onScroll(): void {
     // Seamless wrap: at the clone's top we are one cycle down on pixel-identical
     // content, so the loop hands back the offset to subtract (keeping momentum
     // overshoot) instead of snapping to the top. null = no wrap due.
@@ -76,10 +106,16 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     this.update();
   }
 
-  @HostListener('window:resize')
-  onResize(): void {
-    this.measure();
-    this.update();
+  /** Collapse a burst of reflows into a single measure on the next frame. */
+  private scheduleMeasure(): void {
+    if (this.measureFrame !== 0) {
+      return;
+    }
+    this.measureFrame = requestAnimationFrame(() => {
+      this.measureFrame = 0;
+      this.measure();
+      this.update();
+    });
   }
 
   private measure(): void {
@@ -94,7 +130,11 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.measureFrame !== 0) {
+      cancelAnimationFrame(this.measureFrame);
+    }
     this.ro?.disconnect();
+    this.teardown.forEach((off) => off());
     this.revealReleases.forEach((release) => release());
   }
 }

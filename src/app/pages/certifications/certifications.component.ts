@@ -65,7 +65,16 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
   readonly armed = signal(false);
   readonly activeIndex = signal(-1);
 
-  private enabled = false;
+  /**
+   * Whether the cursor tether runs at all: a fine pointer that can hover, with
+   * motion allowed. Public because the template gates the preview <img> stack on
+   * it too — `@media (hover: none) { display: none }` hides the preview but does
+   * NOT stop the browser fetching its images, so touch visitors were downloading
+   * every certificate to render a 4.5rem thumbnail chip. Assigned in
+   * ngAfterViewInit, before the arm observer can fire, so a plain field is
+   * enough — no signal needed.
+   */
+  enabled = false;
   private armRelease?: () => void;
   private unsub: (() => void) | null = null;
 
@@ -111,9 +120,14 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     const hoverFine = this.motion.finePointer();
     this.enabled = hoverFine && !reduce;
 
-    // A nav click means the user is leaving — the spotlight closes (releasing
-    // its scroll lock) so the journey isn't hidden behind a stale modal. No
-    // focus restore: focus belongs with the navigation, not the ledger row.
+    // Any navigation away closes the spotlight (releasing its scroll lock) so the
+    // journey can't end up hidden behind a stale modal. No focus restore: focus
+    // belongs with the navigation, not the ledger row.
+    //
+    // Defensive rather than reachable today: the dialog is a true modal, so
+    // styles.css hides the nav (opacity + visibility, out of the tab order) while
+    // it is open and no nav link can be clicked or focused. This keeps the
+    // invariant honest for any future programmatic navigateTo() call.
     this.navRelease = this.navTransition.onNavigate(() =>
       this.closeSpotlight({ restoreFocus: false }),
     );

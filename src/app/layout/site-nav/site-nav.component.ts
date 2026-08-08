@@ -26,6 +26,8 @@ import { DESTINATIONS } from '../../destinations';
  *   `--nav-mute` (0..1) custom property the CSS interpolates off. Loop-aware
  *   (distance-from-Home, not raw scrollY) so the nav is back to full before the
  *   loop seam and never pops there. See docs/adr/0005-loop-aware-nav-muting.md.
+ *   Runs only where it can be undone — fine pointer, motion allowed; see
+ *   `muteAllowed`.
  * - Active destination: the link for `ScrollLoopService.activeDestination()` is
  *   underlined (`.active`) and marked `aria-current`. The nav is a pure reader
  *   of that one signal — it keeps no section geometry of its own; the loop
@@ -55,7 +57,15 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   private unsub: (() => void) | null = null;
   private lastMute = -1;
-  private reduce = false;
+  // The travel-fade only runs where its escape hatch exists. ADR-0005 makes
+  // operability a condition of the mute: "the nav un-mutes on :hover or
+  // :focus-within, so a keyboard / screen-reader user instantly gets the full,
+  // operable baseline", upholding CONTEXT.md's Wayfinding rule. On a hover-less
+  // viewport wider than the hamburger breakpoint (a tablet in landscape) there is
+  // neither hover nor focus to trigger it, and no hamburger either — so the links
+  // sat at opacity 0.12 with no way back. Same shape as the reduced-motion gate
+  // the ADR already specifies: when the declutter can't be undone, don't apply it.
+  private muteAllowed = false;
 
   // Every in-page link grouped by the destination id it targets, so desktop,
   // mobile and the logo all light up together for the active destination.
@@ -83,13 +93,13 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   ) {}
 
   ngAfterViewInit(): void {
-    this.reduce = this.motion.reducedMotion();
+    this.muteAllowed = !this.motion.reducedMotion() && this.motion.finePointer();
     this.collectLinks();
     this.observeProjects();
 
     this.unsub = this.pulse.onTick(() => {
       this.updateActiveLink();
-      if (!this.reduce) {
+      if (this.muteAllowed) {
         this.updateMute();
       }
     });

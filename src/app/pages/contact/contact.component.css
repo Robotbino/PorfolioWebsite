@@ -33,8 +33,8 @@
   color: var(--color-text-muted);
 }
 
-/* Destination index (05 = Contact in the loop order) — the one vivid hue,
-   echoing the hero's status dot. Decorative, so aria-hidden in the template. */
+/* Destination index (05 = Contact, the fifth and last loop destination) — the one
+   vivid hue, echoing the hero's status dot. Decorative, so aria-hidden. */
 .contact-kicker-index {
   font-variant-numeric: tabular-nums;
   color: var(--color-accent-vivid);
@@ -546,10 +546,6 @@
   margin: 0;
 }
 
-.colophon-time {
-  font-variant-numeric: tabular-nums;
-}
-
 /* ============================================
    RESPONSIVE
    ============================================ */
@@ -576,7 +572,10 @@
     margin-bottom: var(--space-2xl);
   }
 
-  .contact-lead {
+  /* On .contact-lead-body, not .contact-lead: the copy lives in the -body, which
+     sets its own --font-size-xl and therefore won out over an override on the
+     wrapper. The mobile step-down silently never applied. */
+  .contact-lead-body {
     font-size: var(--font-size-lg);
   }
 
@@ -584,11 +583,9 @@
     font-size: var(--font-size-xl);
   }
 
-  /* No hover on touch: keep the arrow visible so the affordance still reads. */
-  .channel-arrow {
-    opacity: 1;
-    transform: none;
-  }
+  /* (The .channel-arrow reveal used to be repeated here too. Width is the wrong
+     axis for a hover question — the `@media (hover: none)` rule above already
+     covers every hover-less device, including touch tablets wider than this.) */
 
   /* The marquee owns a full-width beat now, so the copy button keeps its
      label — no need for the old icon-only squeeze. */

@@ -150,23 +150,13 @@
   max-width: 46ch;
   font-size: var(--font-size-md);
   line-height: 1.6;
-  /* Slight-opacity body colour drops it a tier below the bold lead + headings
-     for clearer hierarchy. Theme-scoped below; this default matches light mode
-     so it's correct even before ThemeService applies a class. */
-  color: rgba(26, 26, 26, 0.72);
+  /* Slight-opacity body colour drops it a tier below the bold lead + headings for
+     clearer hierarchy. One token, resolved by light-dark() off `color-scheme` like
+     every other colour in the system — this used to be a hard-coded rgba() plus a
+     @media (prefers-color-scheme) block plus two :host-context() rules, all
+     restating what the token block already decides. */
+  color: var(--color-text-statement);
 }
-
-/* Theme flip. The theme class sits on <html> (outside this component), so a
-   plain `.dark-mode .hero-statement` descendant selector is broken by Angular's
-   emulated encapsulation (it scopes BOTH compounds, and <html> has no scope
-   attribute). `:host-context()` is the encapsulation-safe way to react to an
-   ancestor class. The @media rule covers the OS default before a class lands. */
-@media (prefers-color-scheme: dark) {
-  .hero-statement { color: rgba(255, 255, 255, 0.7); }
-}
-
-:host-context(.light-mode) .hero-statement { color: rgba(26, 26, 26, 0.72); }
-:host-context(.dark-mode) .hero-statement { color: rgba(255, 255, 255, 0.7); }
 
 .hero-statement-lead {
   display: block;
@@ -319,9 +309,10 @@
   }
 
   /* Premium sibling-dim: hovering one link fades the rest back so the pointed-at
-     one leads. */
+     one leads. 0.65 keeps the un-pointed-at label readable — these sit at
+     text-tertiary already, so 0.5 stacked two reductions on the same text. */
   .hero-socials:hover .hero-social {
-    opacity: 0.5;
+    opacity: 0.65;
   }
 
   .hero-socials:hover .hero-social:hover {

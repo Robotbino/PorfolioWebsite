@@ -1,6 +1,12 @@
 # Frosted-glass surface for content cards
 
-**Status:** proposed (2026-06-21) — awaiting approval.
+**Status:** rejected (2026-08-08). Proposed 2026-06-21, never implemented. The
+editorial rebuild ([ADR-0001](0001-full-multipage-immersion-first.md) onward)
+replaced every content card with boxless hairline ledgers and radial scrims —
+the opposite direction to a translucent surface — so glass had no place to land.
+Its `--glass-*` tokens sat unused in styles.css until they were removed in the
+2026-08-08 remediation; this record is kept as the trail for why glassmorphism
+was considered and dropped.
 
 ## Context
 

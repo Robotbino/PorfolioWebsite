@@ -34,9 +34,9 @@
   color: var(--color-text-muted);
 }
 
-/* Destination index (04 = Certifications in the loop order) — the one vivid
-   hue, echoing the hero's status dot. Decorative, so aria-hidden in the
-   template. */
+/* Destination index (04 = Certifications, the fourth loop destination; Contact
+   follows at 05) — the one vivid hue, echoing the hero's status dot. Decorative,
+   so aria-hidden in the template. */
 .certs-kicker-index {
   font-variant-numeric: tabular-nums;
   color: var(--color-accent-vivid);
@@ -198,9 +198,13 @@
 
 @media (hover: hover) and (pointer: fine) {
   /* Sibling dim: the hovered row holds, the rest recede — the list reads as an
-     index being scanned. Opacity only. */
+     index being scanned. Opacity only.
+     0.65, not 0.4: at 0.4 the certificate titles in every non-hovered row fell to
+     roughly 2.5:1 against the page, so resting the cursor anywhere in the ledger
+     made four of the five unreadable. 0.65 still reads clearly as recessive while
+     keeping the titles legible. */
   .certs-list:hover .certs-row {
-    opacity: 0.4;
+    opacity: 0.65;
   }
 
   .certs-list:hover .certs-row:hover {
@@ -237,7 +241,7 @@
    hover query so keyboards on touch devices get it too. ---- */
 
 .certs-list:has(.certs-trigger:focus-visible) .certs-row {
-  opacity: 0.4;
+  opacity: 0.65;
 }
 
 .certs-list .certs-row:has(.certs-trigger:focus-visible) {

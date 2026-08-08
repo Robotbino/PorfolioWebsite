@@ -1,8 +1,8 @@
 <section class="section" aria-labelledby="experience-title">
   <div class="container">
-    <!-- Editorial header — flush-left poster headline (mirrors About). Replaces
-         the shared centred <app-display-heading> for this section only; copy is
-         unchanged. -->
+    <!-- Editorial header — flush-left poster headline (mirrors About, Certifications
+         and Contact). Every section now writes its own header this way; the old
+         shared centred heading component was removed once nothing used it. -->
     <header class="experience-header" appScrollReveal>
       <p class="experience-kicker">
         <span class="experience-kicker-index" aria-hidden="true">02</span>
@@ -48,7 +48,15 @@
     <!-- Skills index — the old Technologies / Non-Technical cards flattened into
          two typographic ledgers on a staggered 12-col grid; the offset bottoms
          leave negative space for the constellation. Copy is unchanged; the index
-         numerals are decorative wayfinding, hence aria-hidden. -->
+         numerals are decorative wayfinding, hence aria-hidden.
+
+         .index-term is a <span>, not a heading. These rows are ledger entries —
+         "Analytical Thinker" is an item in a list, not a section of the document.
+         As <h4> they put ten stops into the heading outline (25 headings total,
+         ten of them list entries), which turns heading navigation — a primary
+         screen-reader mode — into list-reading. The <ul role="list"> + <li>
+         already carry the item semantics; the block <h3> above is the real
+         heading. Styling is unaffected: .index-term sets its own type. -->
     <div class="experience-index">
       <article class="index-block index-tech" appScrollReveal>
         <h3 class="index-label">Technologies</h3>
@@ -56,7 +64,7 @@
           <!-- --row-i drives the cascade's per-row transition delay in CSS. -->
           <li class="index-row" *ngFor="let group of experienceGroups; let i = index" [style.--row-i]="i">
             <span class="index-num" aria-hidden="true">0{{ i + 1 }}</span>
-            <h4 class="index-term">{{ group.label }}</h4>
+            <span class="index-term">{{ group.label }}</span>
             <p class="index-desc">{{ group.description }}</p>
           </li>
         </ul>
@@ -67,19 +75,19 @@
         <ul class="index-list" role="list">
           <li class="index-row" style="--row-i: 0">
             <span class="index-num" aria-hidden="true">01</span>
-            <h4 class="index-term">Communication and Collaboration</h4>
+            <span class="index-term">Communication and Collaboration</span>
           </li>
           <li class="index-row" style="--row-i: 1">
             <span class="index-num" aria-hidden="true">02</span>
-            <h4 class="index-term">Analytical Thinker</h4>
+            <span class="index-term">Analytical Thinker</span>
           </li>
           <li class="index-row" style="--row-i: 2">
             <span class="index-num" aria-hidden="true">03</span>
-            <h4 class="index-term">Continuous Learning</h4>
+            <span class="index-term">Continuous Learning</span>
           </li>
           <li class="index-row" style="--row-i: 3">
             <span class="index-num" aria-hidden="true">04</span>
-            <h4 class="index-term">Deadline and Results-Driven</h4>
+            <span class="index-term">Deadline and Results-Driven</span>
           </li>
         </ul>
       </article>
@@ -91,9 +99,8 @@
 <section class="section" id="projects" aria-labelledby="projects-title">
   <div class="container">
     <!-- Editorial header — flush-left poster headline, matching the Experience
-         header above and About's pattern. Replaces the shared centred
-         <app-display-heading>; no destination-index numeral here since Projects
-         is a subsection of Work, not a separate loop destination. Copy unchanged. -->
+         header above and About's pattern. No destination-index numeral here since
+         Projects is a subsection of Work, not a separate loop destination. -->
     <header class="projects-header" appScrollReveal>
       <p class="projects-kicker">
         <span>Browse My Recent</span>
@@ -143,8 +150,14 @@
                   </a>
                 </div>
               </div>
+              <!-- width/height give the browser the intrinsic ratio before the
+                   lazy image lands. The grid and .project-content's min-height
+                   already fix the card's box, so this isn't load-bearing for
+                   layout — it just stops the shell's body ResizeObserver being
+                   woken by a decode that changes nothing. -->
               <div class="project-image">
-                <img [src]="projectImg(project)" [alt]="projectAlt(project)" loading="lazy">
+                <img [src]="projectImg(project)" [alt]="projectAlt(project)" loading="lazy"
+                  [attr.width]="project.img.width" [attr.height]="project.img.height">
               </div>
             </div>
           </article>

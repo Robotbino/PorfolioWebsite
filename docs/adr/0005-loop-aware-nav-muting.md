@@ -1,8 +1,17 @@
 # Loop-aware (Home-anchored) navigation muting
 
-**Status:** proposed (2026-06-21) — awaiting approval. **Supersedes** the "scroll-driven backdrop
+**Status:** accepted (proposed 2026-06-21, shipped). Implemented in
+`SiteNavComponent` exactly as described. **Supersedes** the "scroll-driven backdrop
 removed — the nav is now *always* transparent, no toggle" consequence of
 [ADR-0004](0004-seamless-loop-clone-wrap.md).
+
+> **2026-08-08 amendment.** The operability guarantee below ("un-mutes on `:hover`
+> *or* `:focus-within`") silently failed on a hover-less pointer wider than the
+> mobile breakpoint — a tablet in landscape — where neither trigger can fire and
+> no hamburger is shown, leaving the links stuck at ~0.12 opacity. The mute is now
+> gated on a fine pointer (`MotionSettingsService.finePointer()`), the same way it
+> was already gated on reduced motion, so a hover-less visitor keeps the full,
+> operable nav. This enforces the operability clause rather than changing it.
 
 ## Context
 

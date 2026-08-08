@@ -1,4 +1,4 @@
-// shared/: stateless reusable building blocks (theme toggle, display heading)
+// shared/: stateless reusable building blocks (theme toggle)
 // core/: app-wide services (theme)
 // layout/: persistent shell pieces (site nav)
 // pages/: routed page components (work, about, certifications, contact)
@@ -18,7 +18,6 @@ import { ContactComponent } from './pages/contact/contact.component';
 import { SiteNavComponent } from './layout/site-nav/site-nav.component';
 import { ScrollRevealDirective } from './scroll-reveal.directive';
 import { ThemeToggleComponent } from './shared/theme-toggle/theme-toggle.component';
-import { DisplayHeadingComponent } from './shared/display-heading/display-heading.component';
 
 @NgModule({
   declarations: [
@@ -32,8 +31,7 @@ import { DisplayHeadingComponent } from './shared/display-heading/display-headin
     ContactComponent,
     SiteNavComponent,
     ScrollRevealDirective,
-    ThemeToggleComponent,
-    DisplayHeadingComponent
+    ThemeToggleComponent
   ],
   imports: [
     BrowserModule
