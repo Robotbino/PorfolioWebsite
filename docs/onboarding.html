@@ -3,283 +3,949 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Star-Map Portfolio — Engineering Onboarding</title>
+<title>Star-Map Portfolio — Developer Guide</title>
 <style>
-:root{
-  --bg:#101010;--bg2:#161616;--panel:#1b1b1b;--panel2:#212121;--line:#2c2c2c;--line2:#3a3a3a;
-  --tx:#e4e0da;--tx2:#a8a29a;--tx3:#7d786f;
-  --acc:#ff8c42;--acc2:#ffa363;--acc-dim:rgba(255,140,66,.12);
-  --ok:#7ec699;--warn:#e2b93d;
-  --mono:ui-monospace,'Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace;
-  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',Roboto,sans-serif;
-  --r:10px;--head-h:7.2rem;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:15.5px;line-height:1.65;
-  background-image:radial-gradient(circle at 15% 0%,rgba(255,140,66,.05),transparent 40%),radial-gradient(circle at 85% 100%,rgba(90,61,43,.14),transparent 45%)}
-::selection{background:var(--acc);color:#111}
+/* ========================================
+   Design tokens
+   ======================================== */
+:root {
+  /* Palette — warm, restrained, room to breathe */
+  --bg: #0c0c0b;
+  --bg2: #111110;
+  --panel: #171715;
+  --panel2: #1d1d1a;
+  --line: #252420;
+  --line2: #302e28;
 
-/* ---------- header + tabs ---------- */
-header{position:sticky;top:0;z-index:50;background:rgba(16,16,16,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.hwrap{max-width:1200px;margin:0 auto;padding:1rem 1.5rem .65rem}
-.brand{display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap}
-.brand h1{font-size:1.12rem;font-weight:650;letter-spacing:-.01em}
-.brand h1 b{color:var(--acc);font-weight:650}
-.brand span{color:var(--tx3);font-size:.8rem}
-nav.tabs{display:flex;gap:.25rem;margin-top:.7rem;overflow-x:auto}
-.tab{appearance:none;border:none;background:none;color:var(--tx2);font:inherit;font-size:.86rem;font-weight:550;
-  padding:.45rem .95rem;border-radius:8px 8px 0 0;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,background .15s}
-.tab:hover{color:var(--tx);background:var(--panel)}
-.tab.on{color:var(--acc);border-bottom-color:var(--acc);background:var(--panel)}
-.tab .k{display:inline-block;margin-right:.45rem;font-family:var(--mono);font-size:.7rem;color:var(--tx3)}
-.tab.on .k{color:var(--acc2)}
+  /* Text — three clear levels */
+  --tx: #e8e4dd;
+  --tx2: #a09a8f;
+  --tx3: #6d675d;
 
-/* ---------- layout ---------- */
-.wrap{max-width:1200px;margin:0 auto;padding:1.6rem 1.5rem 5rem;display:grid;grid-template-columns:236px 1fr;gap:2.2rem;align-items:start}
-aside{position:sticky;top:var(--head-h);max-height:calc(100vh - var(--head-h) - 2rem);overflow-y:auto;padding-right:.4rem;scrollbar-width:thin}
-.sgroup{display:none}
-.sgroup.on{display:block}
-.sgroup h4{font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:var(--tx3);margin:.2rem 0 .55rem}
-.slink{display:block;padding:.34rem .65rem;margin:.1rem 0;font-size:.855rem;color:var(--tx2);text-decoration:none;border-left:2px solid var(--line);border-radius:0 6px 6px 0;transition:all .15s}
-.slink:hover{color:var(--tx);background:var(--panel);border-left-color:var(--line2)}
-.slink.cur{color:var(--acc);border-left-color:var(--acc);background:var(--acc-dim)}
-.sfoot{margin-top:1.4rem;padding-top:.9rem;border-top:1px solid var(--line);font-size:.74rem;color:var(--tx3);line-height:1.55}
-.sfoot code{font-size:.72rem}
+  /* Accent — warm amber, used sparingly */
+  --acc: #f08c3a;
+  --acc2: #f5a05a;
+  --acc-dim: rgba(240,140,58,.06);
 
-/* ---------- panels + typography ---------- */
-.panel{display:none;min-width:0}
-.panel.on{display:block;animation:fade .25s ease}
-@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-.panel>section{margin-bottom:3rem;scroll-margin-top:calc(var(--head-h) + .8rem)}
-h2{font-size:1.5rem;font-weight:650;letter-spacing:-.015em;margin-bottom:.9rem;padding-bottom:.55rem;border-bottom:1px solid var(--line)}
-h2 .n{color:var(--acc);font-family:var(--mono);font-size:.95rem;margin-right:.55rem;font-weight:500}
-h3{font-size:1.06rem;font-weight:640;margin:1.5rem 0 .55rem;color:var(--tx)}
-p{margin-bottom:.8rem;color:var(--tx2)}
-p b,li b{color:var(--tx);font-weight:600}
-ul,ol{margin:0 0 1rem 1.3rem;color:var(--tx2)}
-li{margin-bottom:.4rem}
-a{color:var(--acc2);text-decoration:none}
-a:hover{text-decoration:underline}
-code{font-family:var(--mono);font-size:.83em;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:.1em .38em;color:#f0c9a8;white-space:nowrap}
-.lead{font-size:1.02rem;color:var(--tx)}
+  /* Semantic */
+  --ok: #7ec699;
+  --warn: #d4a72c;
 
-/* ---------- code blocks + copy ---------- */
-pre{position:relative;background:#141414;border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;margin:0 0 1.1rem;overflow-x:auto;line-height:1.55}
-pre code{background:none;border:none;padding:0;white-space:pre;color:#d7d2ca;font-size:.83rem;display:block}
-pre[data-lang]::before{content:attr(data-lang);position:absolute;top:.55rem;right:4.6rem;font-family:var(--mono);font-size:.66rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em}
-.cbtn{position:absolute;top:.5rem;right:.5rem;font-family:var(--mono);font-size:.7rem;color:var(--tx2);background:var(--panel2);border:1px solid var(--line2);border-radius:6px;padding:.28rem .6rem;cursor:pointer;transition:all .15s}
-.cbtn:hover{color:var(--acc);border-color:var(--acc)}
-.cbtn.ok{color:var(--ok);border-color:var(--ok)}
-.c-cmt{color:#8a8478}.c-key{color:#ff9d5c}.c-str{color:#b8cf8e}.c-num{color:#8fc7e8}
-pre.tree{background:var(--panel);font-size:.82rem}
-pre.tree code{color:var(--tx2)}
-pre.tree .d{color:var(--acc2);font-weight:600}
-pre.tree .a{color:var(--tx3)}
+  /* Elevation — softer, less dramatic */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.25);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.3);
+  --shadow-lg: 0 10px 36px rgba(0,0,0,.4);
 
-/* ---------- tables / callouts / cards ---------- */
-.tblwrap{overflow-x:auto;margin-bottom:1.1rem;border:1px solid var(--line);border-radius:var(--r)}
-table{width:100%;border-collapse:collapse;font-size:.86rem}
-th{text-align:left;background:var(--panel2);color:var(--tx);font-weight:600;padding:.6rem .85rem;border-bottom:1px solid var(--line2);white-space:nowrap}
-td{padding:.55rem .85rem;border-bottom:1px solid var(--line);color:var(--tx2);vertical-align:top}
-tr:last-child td{border-bottom:none}
-td code{white-space:nowrap}
-.note,.warn{border-radius:var(--r);padding:.85rem 1rem .85rem 1.1rem;margin-bottom:1.1rem;font-size:.9rem;border:1px solid var(--line);border-left:3px solid var(--acc);background:var(--panel)}
-.note b:first-child,.warn b:first-child{display:block;margin-bottom:.2rem}
-.warn{border-left-color:var(--warn)}
-.warn b:first-child{color:var(--warn)}
-.note b:first-child{color:var(--acc)}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.9rem;margin-bottom:1.1rem}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem}
-.card h4{font-size:.92rem;margin-bottom:.35rem;color:var(--acc2)}
-.card p{font-size:.84rem;margin:0;color:var(--tx2)}
-.pill{display:inline-block;font-family:var(--mono);font-size:.68rem;background:var(--acc-dim);color:var(--acc2);border:1px solid rgba(255,140,66,.3);border-radius:999px;padding:.1rem .6rem;margin:0 .3rem .3rem 0}
+  /* Type */
+  --mono: ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
 
-/* ---------- interactive system diagram ---------- */
-.dgbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1rem .6rem;margin-bottom:1.1rem}
-.dg-views{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.75rem;align-items:center}
-.dg-views .lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--tx3);margin-right:.3rem}
-.vbtn{appearance:none;font:inherit;font-size:.76rem;font-weight:550;color:var(--tx2);background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:.24rem .75rem;cursor:pointer;transition:all .15s}
-.vbtn:hover{color:var(--tx);border-color:var(--tx3)}
-.vbtn.on{color:var(--acc);border-color:var(--acc);background:var(--acc-dim)}
-.dg-scroll{overflow-x:auto}
-#sysdg{display:block;width:100%;min-width:720px;height:auto;font-family:var(--sans)}
-#sysdg .grp{fill:rgba(255,255,255,.015);stroke:#33302c;stroke-dasharray:5 4;rx:12}
-#sysdg .grplbl{fill:var(--tx3);font-size:11px;text-transform:uppercase;letter-spacing:.1em}
-#sysdg .node rect{fill:#242220;stroke:#3f3a34;stroke-width:1.2;rx:9;transition:stroke .15s,fill .15s}
-#sysdg .node:hover rect,#sysdg .node:focus-visible rect{stroke:var(--acc2);fill:#2a2724}
-#sysdg .node.sel rect{stroke:var(--acc);stroke-width:1.8;fill:#2c2620}
-#sysdg .node{cursor:pointer;outline:none}
-#sysdg .nt{fill:var(--tx);font-size:13px;font-weight:600}
-#sysdg .ns{fill:var(--tx2);font-size:10.5px}
-#sysdg .node.mono .nt{font-family:var(--mono);font-weight:500;font-size:12.5px}
-#sysdg .edge{fill:none;stroke:#7a7166;stroke-width:1.4}
-#sysdg .edge.hot{stroke:var(--warn);stroke-dasharray:5 5}
-#sysdg .edge.acc{stroke:var(--acc)}
-#sysdg .elbl{font-size:10px;font-family:var(--mono);fill:var(--tx2)}
-#sysdg .elbl.hot{fill:var(--warn)}
-#sysdg .elbl.acc{fill:var(--acc2)}
-#sysdg .elbg{fill:#1b1b1b;opacity:.92;rx:4}
-#sysdg .dim{opacity:.14;transition:opacity .2s}
-#sysdg .hi{opacity:1;transition:opacity .2s}
-@media (prefers-reduced-motion:no-preference){
-  #sysdg .edge.hot.hi{animation:dgflow 1.1s linear infinite}
-  @keyframes dgflow{to{stroke-dashoffset:-20}}
-}
-.dg-detail{margin-top:.7rem;border-top:1px solid var(--line);padding:.8rem .2rem .4rem;min-height:5.2rem}
-.dg-detail .hint{color:var(--tx3);font-size:.85rem;margin:0}
-.dg-detail h4{font-size:.95rem;color:var(--acc2);margin:0 0 .25rem;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
-.dg-detail h4 code{font-size:.72rem}
-.dg-detail p{font-size:.86rem;margin:0 0 .4rem}
-.dg-detail .rel{font-size:.78rem;color:var(--tx3)}
-.dg-detail .rel a{margin-right:.9rem}
-
-/* ---------- scroll-loop demo ---------- */
-.loopdemo{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:1.1rem}
-.ld-head{display:flex;justify-content:space-between;align-items:center;gap:.8rem;flex-wrap:wrap;margin-bottom:.75rem;font-size:.88rem;color:var(--tx2)}
-.ld-head b{color:var(--acc)}
-#ld-play{appearance:none;font:inherit;font-size:.76rem;font-weight:550;color:var(--tx2);background:var(--panel2);border:1px solid var(--line2);border-radius:999px;padding:.24rem .8rem;cursor:pointer;transition:all .15s}
-#ld-play:hover{color:var(--acc);border-color:var(--acc)}
-.ld-track{position:relative;display:flex;height:2.6rem;border:1px solid var(--line2);border-radius:8px;overflow:hidden;margin-bottom:.55rem}
-.ld-seg{flex:1;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-family:var(--mono);color:var(--tx3);border-right:1px solid var(--line);background:#1e1c1a;white-space:nowrap;min-width:0;overflow:hidden}
-.ld-seg.act{color:var(--acc2);background:var(--acc-dim)}
-.ld-clone{background:repeating-linear-gradient(135deg,#1a1815,#1a1815 5px,#211d18 5px,#211d18 10px);color:var(--tx3);font-style:italic}
-.ld-playhead{position:absolute;top:0;bottom:0;width:2px;background:var(--acc);box-shadow:0 0 8px rgba(255,140,66,.8);pointer-events:none;left:0}
-.ld-flash{position:absolute;top:0;bottom:0;left:83.333%;width:2px;background:var(--warn);opacity:0;pointer-events:none}
-.ld-flash.go{animation:ldflash .9s ease-out}
-@keyframes ldflash{0%{opacity:1;box-shadow:0 0 14px var(--warn)}100%{opacity:0}}
-#ld-scroll{width:100%;accent-color:var(--acc);margin-bottom:.55rem;cursor:ew-resize}
-.ld-read{display:flex;gap:1.4rem;flex-wrap:wrap;font-family:var(--mono);font-size:.76rem;color:var(--tx3)}
-.ld-read b{color:var(--tx);font-weight:500}
-.ld-read .wrapn{color:var(--warn)}
-.ld-note{font-size:.78rem;color:var(--tx3);margin:.6rem 0 0}
-
-/* ---------- search ---------- */
-.search{position:relative;margin-left:auto;flex:0 1 300px;min-width:190px}
-#q{width:100%;font:inherit;font-size:.83rem;color:var(--tx);background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:.42rem .8rem;outline:none;transition:border-color .15s}
-#q:focus{border-color:var(--acc)}
-#q::placeholder{color:var(--tx3)}
-.qr{position:absolute;top:calc(100% + .35rem);right:0;width:min(30rem,88vw);background:var(--panel2);border:1px solid var(--line2);border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.55);overflow:hidden;display:none;z-index:60}
-.qr.open{display:block}
-.qi{display:block;width:100%;text-align:left;appearance:none;background:none;border:none;border-bottom:1px solid var(--line);padding:.55rem .85rem;cursor:pointer;font:inherit}
-.qi:last-child{border-bottom:none}
-.qi:hover,.qi.cur{background:var(--acc-dim)}
-.qi b{display:block;font-size:.84rem;color:var(--tx);font-weight:600}
-.qi b .qt{font-family:var(--mono);font-size:.68rem;color:var(--acc2);font-weight:500;margin-right:.5rem}
-.qi em{display:block;font-style:normal;font-size:.75rem;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.qi mark{background:none;color:var(--acc);font-weight:600}
-.qempty{padding:.6rem .85rem;font-size:.8rem;color:var(--tx3)}
-
-/* ---------- prev / next ---------- */
-.pn{display:flex;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);padding-top:1.1rem;margin-top:2.5rem}
-.pn a{display:block;font-size:.86rem;color:var(--tx2);text-decoration:none;border:1px solid var(--line);border-radius:var(--r);padding:.6rem .95rem;transition:all .15s;max-width:48%}
-.pn a:hover{color:var(--acc);border-color:var(--acc);text-decoration:none}
-.pn a span{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--tx3);margin-bottom:.15rem}
-.pn .nxt{margin-left:auto;text-align:right}
-
-kbd{font-family:var(--mono);font-size:.7rem;color:var(--tx2);background:var(--panel2);border:1px solid var(--line2);border-bottom-width:2px;border-radius:5px;padding:.06em .45em}
-
-@media print{
-  :root{--bg:#fff;--bg2:#fff;--panel:#f6f4f1;--panel2:#efece8;--line:#d8d4ce;--line2:#c6c1b9;--tx:#1a1917;--tx2:#3c3a36;--tx3:#6d6960;--acc:#c05a12;--acc2:#a34c0e;--acc-dim:rgba(192,90,18,.1)}
-  body{background:#fff !important;background-image:none !important}
-  header,aside,.cbtn,.dg-views,#ld-play,.search,.pn{display:none !important}
-  .wrap{display:block;max-width:none;padding:0}
-  .panel{display:block !important;page-break-before:always}
-  .panel:first-child{page-break-before:auto}
-  pre,pre code{background:#f3f1ed !important;color:#222 !important}
-  .c-cmt{color:#77715f}.c-key{color:#a3450b}.c-str{color:#4c6b1f}.c-num{color:#155e86}
-  code{color:#8a3d08}
+  /* Geometry */
+  --r: 10px;
+  --head-h: 7.4rem;
 }
 
-@media (max-width:860px){
-  .wrap{grid-template-columns:1fr;padding-top:1rem}
-  aside{position:static;max-height:none;display:flex;flex-wrap:wrap;gap:.3rem;border:1px solid var(--line);border-radius:var(--r);padding:.8rem;background:var(--panel)}
-  .sgroup h4,.sfoot{display:none}
-  .slink{border:1px solid var(--line);border-radius:999px;padding:.25rem .8rem;font-size:.78rem}
-  :root{--head-h:8.6rem}
+
+/* ========================================
+   Reset & base
+   ======================================== */
+* { box-sizing: border-box; margin: 0; padding: 0 }
+html { scroll-behavior: smooth }
+
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.75;
+  background-image:
+    radial-gradient(ellipse at 12% 0%, rgba(240,140,58,.03), transparent 55%),
+    radial-gradient(ellipse at 88% 100%, rgba(90,61,43,.06), transparent 55%);
+}
+
+::selection { background: var(--acc); color: #111 }
+
+
+/* ========================================
+   Header & tabs
+   ======================================== */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(11,11,11,.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.hwrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.1rem 1.5rem .7rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  flex-wrap: wrap;
+}
+
+.brand h1 {
+  font-size: 1.1rem;
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+
+.brand h1 b { color: var(--acc); font-weight: 650 }
+.brand span { color: var(--tx3); font-size: .78rem }
+
+nav.tabs {
+  display: flex;
+  gap: .3rem;
+  margin-top: .75rem;
+  overflow-x: auto;
+}
+
+.tab {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--tx2);
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 550;
+  padding: .55rem 1.1rem;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, background .2s;
+}
+
+.tab:hover { color: var(--tx); background: var(--panel) }
+
+.tab.on {
+  color: var(--acc);
+  border-bottom-color: var(--acc);
+  background: var(--panel);
+}
+
+.tab .k {
+  display: inline-block;
+  margin-right: .5rem;
+  font-family: var(--mono);
+  font-size: .7rem;
+  color: var(--tx3);
+}
+
+.tab.on .k { color: var(--acc2) }
+
+
+/* ========================================
+   Layout — sidebar + main
+   ======================================== */
+.wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 2.8rem;
+  align-items: start;
+}
+
+aside {
+  position: sticky;
+  top: var(--head-h);
+  max-height: calc(100vh - var(--head-h) - 2rem);
+  overflow-y: auto;
+  padding-right: .5rem;
+  scrollbar-width: thin;
+}
+
+.sgroup { display: none }
+.sgroup.on { display: block }
+
+.sgroup h4 {
+  font-size: .66rem;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--tx3);
+  margin: .3rem 0 .65rem;
+}
+
+.slink {
+  display: block;
+  padding: .42rem .75rem;
+  margin: .15rem 0;
+  font-size: .86rem;
+  color: var(--tx2);
+  text-decoration: none;
+  border-left: 2px solid var(--line);
+  border-radius: 0 6px 6px 0;
+  transition: all .2s;
+}
+
+.slink:hover {
+  color: var(--tx);
+  background: var(--panel);
+  border-left-color: var(--line2);
+}
+
+.slink.cur {
+  color: var(--acc);
+  border-left-color: var(--acc);
+  background: var(--acc-dim);
+}
+
+.sfoot {
+  margin-top: 1.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: .74rem;
+  color: var(--tx3);
+  line-height: 1.6;
+}
+
+.sfoot code { font-size: .72rem }
+
+
+/* ========================================
+   Panels & typography
+   ======================================== */
+.panel { display: none; min-width: 0 }
+
+.panel.on {
+  display: block;
+  animation: fade .25s ease;
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(6px) }
+  to   { opacity: 1; transform: none }
+}
+
+.panel > section {
+  margin-bottom: 4.5rem;
+  scroll-margin-top: calc(var(--head-h) + 1.2rem);
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: -.02em;
+  line-height: 1.3;
+  margin-bottom: 1.2rem;
+  padding-bottom: .7rem;
+  border-bottom: 1px solid var(--line);
+}
+
+h2 .n {
+  color: var(--acc);
+  font-family: var(--mono);
+  font-size: .88rem;
+  margin-right: .6rem;
+  font-weight: 500;
+}
+
+h3 {
+  font-size: 1.06rem;
+  font-weight: 640;
+  margin: 2rem 0 .7rem;
+  color: var(--tx);
+}
+
+p { margin-bottom: 1rem; color: var(--tx2) }
+p b, li b { color: var(--tx); font-weight: 600 }
+ul, ol { margin: 0 0 1.2rem 1.3rem; color: var(--tx2) }
+li { margin-bottom: .55rem }
+a { color: var(--acc2); text-decoration: none }
+a:hover { text-decoration: underline }
+
+code {
+  font-family: var(--mono);
+  font-size: .84em;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: .14em .42em;
+  color: #ecc8a4;
+  white-space: nowrap;
+}
+
+.lead { font-size: 1.06rem; color: var(--tx); line-height: 1.8 }
+
+
+/* ========================================
+   Code blocks & copy button
+   ======================================== */
+pre {
+  position: relative;
+  background: #0f0f0f;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 1.2rem 1.3rem;
+  margin: 0 0 1.2rem;
+  overflow-x: auto;
+  line-height: 1.6;
+  box-shadow: var(--shadow-sm);
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  white-space: pre;
+  color: #d7d2ca;
+  font-size: .85rem;
+  display: block;
+}
+
+pre[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: .6rem;
+  right: 5rem;
+  font-family: var(--mono);
+  font-size: .64rem;
+  color: var(--tx3);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.cbtn {
+  position: absolute;
+  top: .55rem;
+  right: .55rem;
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--tx2);
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  border-radius: 6px;
+  padding: .3rem .7rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.cbtn:hover { color: var(--acc); border-color: var(--acc) }
+.cbtn.ok { color: var(--ok); border-color: var(--ok) }
+
+/* Syntax highlighting */
+.c-cmt { color: #8a8478 }
+.c-key { color: #ff9d5c }
+.c-str { color: #b8cf8e }
+.c-num { color: #8fc7e8 }
+
+pre.tree { background: var(--panel); font-size: .84rem; box-shadow: none }
+pre.tree code { color: var(--tx2) }
+pre.tree .d { color: var(--acc2); font-weight: 600 }
+pre.tree .a { color: var(--tx3) }
+
+
+/* ========================================
+   Tables, callouts & cards
+   ======================================== */
+.tblwrap {
+  overflow-x: auto;
+  margin-bottom: 1.3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+}
+
+table { width: 100%; border-collapse: collapse; font-size: .88rem }
+
+th {
+  text-align: left;
+  background: var(--panel);
+  color: var(--tx);
+  font-weight: 600;
+  padding: .7rem 1rem;
+  border-bottom: 1px solid var(--line2);
+  white-space: nowrap;
+}
+
+td {
+  padding: .65rem 1rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--tx2);
+  vertical-align: top;
+}
+
+tr:last-child td { border-bottom: none }
+td code { white-space: nowrap }
+
+.note, .warn {
+  border-radius: var(--r);
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1.4rem;
+  font-size: .92rem;
+  border: 1px solid var(--line2);
+  background: var(--panel);
+}
+
+.note b:first-child, .warn b:first-child {
+  display: block;
+  margin-bottom: .35rem;
+  font-size: .82rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.warn b:first-child { color: var(--warn) }
+.note b:first-child { color: var(--acc) }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.3rem;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 1.2rem 1.3rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .25s, border-color .25s;
+}
+
+.card:hover { box-shadow: var(--shadow-md); border-color: var(--line2) }
+.card h4 { font-size: .94rem; margin-bottom: .45rem; color: var(--acc2); font-weight: 620 }
+.card p { font-size: .86rem; margin: 0; color: var(--tx2); line-height: 1.65 }
+
+.pill {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: .68rem;
+  background: var(--acc-dim);
+  color: var(--acc2);
+  border: 1px solid rgba(255,140,66,.2);
+  border-radius: 999px;
+  padding: .12rem .65rem;
+  margin: 0 .3rem .3rem 0;
+}
+
+
+/* ========================================
+   Interactive system diagram
+   ======================================== */
+.dgbox {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 1.2rem 1.2rem .8rem;
+  margin-bottom: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.dg-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: .85rem;
+  align-items: center;
+}
+
+.dg-views .lbl {
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--tx3);
+  margin-right: .3rem;
+}
+
+.vbtn {
+  appearance: none;
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 550;
+  color: var(--tx2);
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  border-radius: 999px;
+  padding: .3rem .85rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.vbtn:hover { color: var(--tx); border-color: var(--tx3) }
+
+.vbtn.on {
+  color: var(--acc);
+  border-color: var(--acc);
+  background: var(--acc-dim);
+}
+
+.dg-scroll { overflow-x: auto }
+
+#sysdg {
+  display: block;
+  width: 100%;
+  min-width: 720px;
+  height: auto;
+  font-family: var(--sans);
+}
+
+#sysdg .grp { fill: rgba(255,255,255,.015); stroke: #33302c; stroke-dasharray: 5 4; rx: 12 }
+#sysdg .grplbl { fill: var(--tx3); font-size: 11px; text-transform: uppercase; letter-spacing: .1em }
+#sysdg .node rect { fill: #242220; stroke: #3f3a34; stroke-width: 1.2; rx: 9; transition: stroke .2s, fill .2s }
+#sysdg .node:hover rect, #sysdg .node:focus-visible rect { stroke: var(--acc2); fill: #2a2724 }
+#sysdg .node.sel rect { stroke: var(--acc); stroke-width: 1.8; fill: #2c2620 }
+#sysdg .node { cursor: pointer; outline: none }
+#sysdg .nt { fill: var(--tx); font-size: 13px; font-weight: 600 }
+#sysdg .ns { fill: var(--tx2); font-size: 10.5px }
+#sysdg .node.mono .nt { font-family: var(--mono); font-weight: 500; font-size: 12.5px }
+#sysdg .edge { fill: none; stroke: #7a7166; stroke-width: 1.4 }
+#sysdg .edge.hot { stroke: var(--warn); stroke-dasharray: 5 5 }
+#sysdg .edge.acc { stroke: var(--acc) }
+#sysdg .elbl { font-size: 10px; font-family: var(--mono); fill: var(--tx2) }
+#sysdg .elbl.hot { fill: var(--warn) }
+#sysdg .elbl.acc { fill: var(--acc2) }
+#sysdg .elbg { fill: #1b1b1b; opacity: .92; rx: 4 }
+#sysdg .dim { opacity: .14; transition: opacity .2s }
+#sysdg .hi { opacity: 1; transition: opacity .2s }
+
+@media (prefers-reduced-motion: no-preference) {
+  #sysdg .edge.hot.hi { animation: dgflow 1.1s linear infinite }
+  @keyframes dgflow { to { stroke-dashoffset: -20 } }
+}
+
+.dg-detail {
+  margin-top: .85rem;
+  border-top: 1px solid var(--line);
+  padding: .9rem .2rem .5rem;
+  min-height: 5.2rem;
+}
+
+.dg-detail .hint { color: var(--tx3); font-size: .88rem; margin: 0 }
+
+.dg-detail h4 {
+  font-size: .96rem;
+  color: var(--acc2);
+  margin: 0 0 .3rem;
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+  flex-wrap: wrap;
+}
+
+.dg-detail h4 code { font-size: .72rem }
+.dg-detail p { font-size: .88rem; margin: 0 0 .45rem }
+.dg-detail .rel { font-size: .8rem; color: var(--tx3) }
+.dg-detail .rel a { margin-right: .9rem }
+
+
+/* ========================================
+   Scroll-loop demo
+   ======================================== */
+.loopdemo {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 1.2rem 1.3rem;
+  margin-bottom: 1.3rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.ld-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: .8rem;
+  flex-wrap: wrap;
+  margin-bottom: .85rem;
+  font-size: .9rem;
+  color: var(--tx2);
+}
+
+.ld-head b { color: var(--acc) }
+
+#ld-play {
+  appearance: none;
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 550;
+  color: var(--tx2);
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  border-radius: 999px;
+  padding: .3rem .9rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+#ld-play:hover { color: var(--acc); border-color: var(--acc) }
+
+.ld-track {
+  position: relative;
+  display: flex;
+  height: 2.8rem;
+  border: 1px solid var(--line2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: .65rem;
+}
+
+.ld-seg {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .7rem;
+  font-family: var(--mono);
+  color: var(--tx3);
+  border-right: 1px solid var(--line);
+  background: #1a1917;
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  transition: background .2s, color .2s;
+}
+
+.ld-seg.act { color: var(--acc2); background: var(--acc-dim) }
+
+.ld-clone {
+  background: repeating-linear-gradient(135deg, #1a1815, #1a1815 5px, #211d18 5px, #211d18 10px);
+  color: var(--tx3);
+  font-style: italic;
+}
+
+.ld-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--acc);
+  box-shadow: 0 0 6px rgba(0,0,0,.6);
+  pointer-events: none;
+  left: 0;
+}
+
+.ld-flash {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 83.333%;
+  width: 2px;
+  background: var(--warn);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ld-flash.go { animation: ldflash .9s ease-out }
+@keyframes ldflash { 0% { opacity: 1; box-shadow: 0 0 10px rgba(0,0,0,.5) } 100% { opacity: 0 } }
+
+#ld-scroll {
+  width: 100%;
+  accent-color: var(--acc);
+  margin-bottom: .65rem;
+  cursor: ew-resize;
+}
+
+.ld-read {
+  display: flex;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--tx3);
+}
+
+.ld-read b { color: var(--tx); font-weight: 500 }
+.ld-read .wrapn { color: var(--warn) }
+.ld-note { font-size: .8rem; color: var(--tx3); margin: .7rem 0 0 }
+
+
+/* ========================================
+   Search
+   ======================================== */
+.search {
+  position: relative;
+  margin-left: auto;
+  flex: 0 1 300px;
+  min-width: 190px;
+}
+
+#q {
+  width: 100%;
+  font: inherit;
+  font-size: .86rem;
+  color: var(--tx);
+  background: var(--panel);
+  border: 1px solid var(--line2);
+  border-radius: 10px;
+  padding: .5rem .9rem;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+#q:focus {
+  border-color: var(--acc);
+  box-shadow: 0 0 0 3px rgba(255,140,66,.12);
+}
+
+#q::placeholder { color: var(--tx3) }
+
+.qr {
+  position: absolute;
+  top: calc(100% + .4rem);
+  right: 0;
+  width: min(30rem, 88vw);
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  display: none;
+  z-index: 60;
+}
+
+.qr.open { display: block }
+
+.qi {
+  display: block;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  padding: .6rem .95rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.qi:last-child { border-bottom: none }
+.qi:hover, .qi.cur { background: var(--acc-dim) }
+.qi b { display: block; font-size: .86rem; color: var(--tx); font-weight: 600 }
+
+.qi b .qt {
+  font-family: var(--mono);
+  font-size: .68rem;
+  color: var(--acc2);
+  font-weight: 500;
+  margin-right: .5rem;
+}
+
+.qi em {
+  display: block;
+  font-style: normal;
+  font-size: .76rem;
+  color: var(--tx3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qi mark { background: none; color: var(--acc); font-weight: 600 }
+.qempty { padding: .7rem .95rem; font-size: .82rem; color: var(--tx3) }
+
+
+/* ========================================
+   Prev / next navigation
+   ======================================== */
+.pn {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.2rem;
+  margin-top: 3rem;
+}
+
+.pn a {
+  display: block;
+  font-size: .88rem;
+  color: var(--tx2);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: .7rem 1.05rem;
+  transition: all .2s;
+  max-width: 48%;
+}
+
+.pn a:hover {
+  color: var(--acc);
+  border-color: var(--acc);
+  text-decoration: none;
+}
+
+.pn a span {
+  display: block;
+  font-size: .66rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--tx3);
+  margin-bottom: .2rem;
+}
+
+.pn .nxt { margin-left: auto; text-align: right }
+
+kbd {
+  font-family: var(--mono);
+  font-size: .7rem;
+  color: var(--tx2);
+  background: var(--panel2);
+  border: 1px solid var(--line2);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  padding: .06em .45em;
+}
+
+
+/* ========================================
+   Print styles
+   ======================================== */
+@media print {
+  :root {
+    --bg: #fff; --bg2: #fff;
+    --panel: #f6f4f1; --panel2: #efece8;
+    --line: #d8d4ce; --line2: #c6c1b9;
+    --tx: #1a1917; --tx2: #3c3a36; --tx3: #6d6960;
+    --acc: #c05a12; --acc2: #a34c0e;
+    --acc-dim: rgba(192,90,18,.1);
+  }
+
+  body { background: #fff !important; background-image: none !important }
+  header, aside, .cbtn, .dg-views, #ld-play, .search, .pn { display: none !important }
+  .wrap { display: block; max-width: none; padding: 0 }
+  .panel { display: block !important; page-break-before: always }
+  .panel:first-child { page-break-before: auto }
+  pre, pre code { background: #f3f1ed !important; color: #222 !important }
+  .c-cmt { color: #77715f }
+  .c-key { color: #a3450b }
+  .c-str { color: #4c6b1f }
+  .c-num { color: #155e86 }
+  code { color: #8a3d08 }
+}
+
+
+/* ========================================
+   Mobile responsive
+   ======================================== */
+@media (max-width: 860px) {
+  .wrap {
+    grid-template-columns: 1fr;
+    padding-top: 1.2rem;
+  }
+
+  aside {
+    position: static;
+    max-height: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    padding: .9rem;
+    background: var(--panel);
+  }
+
+  .sgroup h4, .sfoot { display: none }
+
+  .slink {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: .3rem .9rem;
+    font-size: .78rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  :root { --head-h: 8.6rem }
 }
 </style>
 </head>
 <body>
 
+<!-- ===== Header ===== -->
 <header>
   <div class="hwrap">
     <div class="brand" style="align-items:center">
-      <h1><b>★</b> Star-Map Portfolio — Engineering Onboarding</h1>
-      <span>Angular 19 · TypeScript 5.6 · OGL WebGL · looping scroll</span>
+      <h1><b>★</b> Star-Map Portfolio — A Developer's Guide</h1>
+      <span>Angular 19 · TypeScript · WebGL · infinite scroll</span>
       <div class="search">
-        <input id="q" type="search" placeholder="Search the doc…  ( / )" aria-label="Search the doc" autocomplete="off">
+        <input id="q" type="search" placeholder="Search… (press /)" aria-label="Search the guide" autocomplete="off">
         <div id="qr" class="qr" role="listbox"></div>
       </div>
     </div>
-    <nav class="tabs" role="tablist" aria-label="Doc sections">
-      <button class="tab on" data-tab="qs" id="tabbtn-qs" role="tab" aria-selected="true" aria-controls="tab-qs"><span class="k">01</span>Quick Start</button>
-      <button class="tab" data-tab="arch" id="tabbtn-arch" role="tab" aria-selected="false" aria-controls="tab-arch" tabindex="-1"><span class="k">02</span>Architecture</button>
-      <button class="tab" data-tab="map" id="tabbtn-map" role="tab" aria-selected="false" aria-controls="tab-map" tabindex="-1"><span class="k">03</span>Component Map</button>
-      <button class="tab" data-tab="mod" id="tabbtn-mod" role="tab" aria-selected="false" aria-controls="tab-mod" tabindex="-1"><span class="k">04</span>Modification Guide</button>
+    <nav class="tabs" role="tablist" aria-label="Guide sections">
+      <button class="tab on" data-tab="qs" id="tabbtn-qs" role="tab" aria-selected="true" aria-controls="tab-qs"><span class="k">01</span>Get Started</button>
+      <button class="tab" data-tab="arch" id="tabbtn-arch" role="tab" aria-selected="false" aria-controls="tab-arch" tabindex="-1"><span class="k">02</span>How It Works</button>
+      <button class="tab" data-tab="map" id="tabbtn-map" role="tab" aria-selected="false" aria-controls="tab-map" tabindex="-1"><span class="k">03</span>The Code</button>
+      <button class="tab" data-tab="mod" id="tabbtn-mod" role="tab" aria-selected="false" aria-controls="tab-mod" tabindex="-1"><span class="k">04</span>Make Changes</button>
     </nav>
   </div>
 </header>
 
 <div class="wrap">
+
+<!-- ===== Sidebar ===== -->
 <aside>
   <div class="sgroup on" data-tab="qs">
-    <h4>Quick Start</h4>
-    <a class="slink" data-tab="qs" href="#s-qs-prereq">Prerequisites</a>
-    <a class="slink" data-tab="qs" href="#s-qs-run">Install &amp; run</a>
-    <a class="slink" data-tab="qs" href="#s-qs-scripts">Script reference</a>
+    <h4>Get Started</h4>
+    <a class="slink" data-tab="qs" href="#s-qs-prereq">What you need</a>
+    <a class="slink" data-tab="qs" href="#s-qs-run">Up and running</a>
+    <a class="slink" data-tab="qs" href="#s-qs-scripts">Useful commands</a>
     <a class="slink" data-tab="qs" href="#s-qs-deploy">Deployment</a>
-    <a class="slink" data-tab="qs" href="#s-qs-read">Read this first</a>
+    <a class="slink" data-tab="qs" href="#s-qs-read">Start here</a>
   </div>
   <div class="sgroup" data-tab="arch">
-    <h4>Architecture</h4>
-    <a class="slink" data-tab="arch" href="#s-arch-concept">The concept</a>
-    <a class="slink" data-tab="arch" href="#s-arch-diagram">System diagram</a>
+    <h4>How It Works</h4>
+    <a class="slink" data-tab="arch" href="#s-arch-concept">The big idea</a>
+    <a class="slink" data-tab="arch" href="#s-arch-diagram">How it connects</a>
     <a class="slink" data-tab="arch" href="#s-arch-loop">The scroll loop</a>
-    <a class="slink" data-tab="arch" href="#s-arch-hotpath">Signals &amp; the hot path</a>
-    <a class="slink" data-tab="arch" href="#s-arch-theme">Theming model</a>
-    <a class="slink" data-tab="arch" href="#s-arch-adr">ADR index</a>
+    <a class="slink" data-tab="arch" href="#s-arch-hotpath">60fps performance</a>
+    <a class="slink" data-tab="arch" href="#s-arch-theme">Theming</a>
+    <a class="slink" data-tab="arch" href="#s-arch-adr">Design decisions</a>
   </div>
   <div class="sgroup" data-tab="map">
-    <h4>Component Map</h4>
-    <a class="slink" data-tab="map" href="#s-map-tree">Directory tour</a>
-    <a class="slink" data-tab="map" href="#s-map-routing">Routing logic</a>
+    <h4>The Code</h4>
+    <a class="slink" data-tab="map" href="#s-map-tree">File structure</a>
+    <a class="slink" data-tab="map" href="#s-map-routing">Navigation</a>
     <a class="slink" data-tab="map" href="#s-map-components">Components</a>
-    <a class="slink" data-tab="map" href="#s-map-services">Core services</a>
+    <a class="slink" data-tab="map" href="#s-map-services">Services</a>
     <a class="slink" data-tab="map" href="#s-map-data">Data files</a>
   </div>
   <div class="sgroup" data-tab="mod">
-    <h4>Modification Guide</h4>
+    <h4>Make Changes</h4>
     <a class="slink" data-tab="mod" href="#s-mod-project">Add a project</a>
     <a class="slink" data-tab="mod" href="#s-mod-certs">Update certifications</a>
-    <a class="slink" data-tab="mod" href="#s-mod-constellation">Tweak the constellation</a>
+    <a class="slink" data-tab="mod" href="#s-mod-constellation">Tweak the stars</a>
     <a class="slink" data-tab="mod" href="#s-mod-aurora">Tune the aurora</a>
-    <a class="slink" data-tab="mod" href="#s-mod-tokens">Design tokens (CSS vars)</a>
-    <a class="slink" data-tab="mod" href="#s-mod-destination">Add a destination</a>
+    <a class="slink" data-tab="mod" href="#s-mod-tokens">Design tokens</a>
+    <a class="slink" data-tab="mod" href="#s-mod-destination">Add a new section</a>
   </div>
   <div class="sfoot">
     Repo: <code>PorfolioWebsite</code><br>
-    Vocabulary lives in <code>CONTEXT.md</code>; decisions in <code>docs/adr/</code>.<br><br>
-    <kbd>1</kbd>–<kbd>4</kbd> switch tabs · <kbd>/</kbd> search
+    Glossary: <code>CONTEXT.md</code> · Decisions: <code>docs/adr/</code><br><br>
+    <kbd>1</kbd>–<kbd>4</kbd> tabs · <kbd>/</kbd> search
   </div>
 </aside>
 
 <main>
 
-<!-- ================= QUICK START ================= -->
+<!-- ========================= GET STARTED ========================= -->
 <div class="panel on" id="tab-qs" role="tabpanel" aria-labelledby="tabbtn-qs">
+
   <section id="s-qs-prereq">
-    <h2><span class="n">01.1</span>Prerequisites</h2>
-    <p class="lead">This is a static Angular 19 single-page app — no backend, no environment secrets, no database. You need exactly two things installed:</p>
+    <h2><span class="n">01.1</span>What You Need</h2>
+    <p class="lead">This is a plain Angular 19 app — no backend, no database, nothing to configure. You only need two things to run it:</p>
     <div class="tblwrap"><table>
       <tr><th>Tool</th><th>Version</th><th>Why</th></tr>
-      <tr><td><b>Node.js</b></td><td><code>^18.19.1</code>, <code>^20.11.1</code> or <code>^22.x</code></td><td>Angular 19's supported range</td></tr>
-      <tr><td><b>npm</b></td><td>bundled with Node</td><td>The Angular CLI is a local dev-dependency — no global install needed (<code>npm start</code> wraps it)</td></tr>
+      <tr><td><b>Node.js</b></td><td><code>^18.19.1</code>, <code>^20.11.1</code> or <code>^22.x</code></td><td>Angular 19 requires one of these</td></tr>
+      <tr><td><b>npm</b></td><td>comes with Node</td><td>The Angular CLI is already in the project — <code>npm start</code> runs it for you</td></tr>
     </table></div>
   </section>
 
   <section id="s-qs-run">
-    <h2><span class="n">01.2</span>Install &amp; run</h2>
+    <h2><span class="n">01.2</span>Up and Running</h2>
+    <p class="lead">Three commands and you're live:</p>
     <pre data-lang="shell" data-copy><code><span class="c-cmt"># clone and install</span>
 git clone https://github.com/Robotbino/PorfolioWebsite.git
 cd PorfolioWebsite
@@ -287,17 +953,17 @@ npm install
 
 <span class="c-cmt"># dev server with live reload → http://localhost:4200</span>
 npm start</code></pre>
-    <p>First meaningful check that everything works: the page should show the hero with a slowly drifting <b>Ursa Major</b> constellation over a warm aurora. Scroll down — the constellation morphs into Orion (Experience), Leo (About), Corona Borealis (Certifications), then Cygnus (Contact), and scrolling past Contact wraps you invisibly back to Home.</p>
+    <p>You'll see the hero with a slowly drifting <b>Ursa Major</b> constellation over a warm aurora. Scroll down and the constellation smoothly reshapes into Orion (Experience), Leo (About), Corona Borealis (Certifications), then Cygnus (Contact). Keep scrolling past Contact and you'll land right back at Home — that's the loop.</p>
     <pre data-lang="shell" data-copy><code><span class="c-cmt"># run the unit tests (Jasmine + Karma, opens Chrome)</span>
 npm test
 
 <span class="c-cmt"># no Chrome installed? Karma honours CHROME_BIN — point it at Edge (PowerShell):</span>
 $env:CHROME_BIN = <span class="c-str">"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"</span>; npm test</code></pre>
-    <div class="note"><b>Tests matter here</b>The pure math modules (<code>scroll-loop.math.ts</code>, <code>motion.math.ts</code>, <code>certifications.math.ts</code>, the constellation morph) are all spec-guarded, and <code>aurora.component.spec.ts</code> locks the two paths a browser can't easily prove — the theme-flip recolour and the reduced-motion gate. If you touch destinations or figures, the specs are what catch a broken key or star count — run them before pushing.</div>
+    <div class="note"><b>Why run the tests?</b> The scroll loop, constellation morph, and animation maths all have specs that catch mistakes early. The aurora tests cover the two trickiest things a browser can't show you: whether colors update on a theme flip, and whether the reduced-motion gate works. If you change destinations or star figures, the tests will tell you what broke before you push.</div>
   </section>
 
   <section id="s-qs-scripts">
-    <h2><span class="n">01.3</span>Script reference</h2>
+    <h2><span class="n">01.3</span>Useful Commands</h2>
     <div class="tblwrap"><table>
       <tr><th>Command</th><th>What it does</th></tr>
       <tr><td><code>npm start</code></td><td><code>ng serve</code> — dev server on <code>http://localhost:4200</code>, HMR-style live reload</td></tr>
@@ -311,7 +977,7 @@ npx ng test --include='**/scroll-loop.math.spec.ts'</code></pre>
 
   <section id="s-qs-deploy">
     <h2><span class="n">01.4</span>Deployment</h2>
-    <p>The site deploys to <b>Netlify</b>; <code>netlify.toml</code> at the repo root is the whole config:</p>
+    <p>The site deploys to <b>Netlify</b>. The entire config is in <code>netlify.toml</code> at the repo root:</p>
     <pre data-lang="toml" data-copy><code>[build]
 command = "ng build --configuration production"
 publish = "dist/professional-porfolio/browser"
@@ -320,68 +986,74 @@ publish = "dist/professional-porfolio/browser"
 from = "/*"
 to   = "/index.html"
 status = 200          <span class="c-cmt"># SPA fallback — every path serves the app</span></code></pre>
-    <p>Pushing to <code>main</code> triggers the build. There are no environment variables to configure.</p>
+    <p>Push to <code>main</code> and Netlify builds automatically. No environment variables to configure.</p>
   </section>
 
   <section id="s-qs-read">
-    <h2><span class="n">01.5</span>Read this first</h2>
+    <h2><span class="n">01.5</span>Start Here</h2>
+    <p class="lead">These three files explain the decisions behind the code. Skim them first — they make everything else click:</p>
     <div class="cards">
-      <div class="card"><h4>CONTEXT.md</h4><p>The design-language glossary. Code comments use its vocabulary — <b>Cycle</b>, <b>Seam</b>, <b>Travel</b>, <b>Destination</b>, <b>Loop clone</b> — so read it before the code makes sense.</p></div>
-      <div class="card"><h4>docs/adr/</h4><p>Eight Architecture Decision Records. Every "why is it built this way?" has an answer here — see the ADR index on the Architecture tab.</p></div>
-      <div class="card"><h4>src/app/destinations.ts</h4><p>The single source of truth for the five stops. Start reading the codebase from this file; almost everything derives from it.</p></div>
+      <div class="card"><h4>CONTEXT.md</h4><p>The glossary. The codebase uses its own vocabulary — <b>Cycle</b>, <b>Seam</b>, <b>Travel</b>, <b>Destination</b>, <b>Loop clone</b> — and this file defines each term.</p></div>
+      <div class="card"><h4>docs/adr/</h4><p>Eight Architecture Decision Records. Every "why is it built this way?" is answered in one of these short documents.</p></div>
+      <div class="card"><h4>src/app/destinations.ts</h4><p>The single source of truth for the five sections. Start reading here — almost everything else in the project derives from this file.</p></div>
     </div>
   </section>
+
   <div class="pn">
-    <a class="nxt" href="#s-arch-concept" data-goto="arch"><span>Next · 02</span>Architecture →</a>
+    <a class="nxt" href="#s-arch-concept" data-goto="arch"><span>Next · 02</span>How It Works →</a>
   </div>
 </div>
 
-<!-- ================= ARCHITECTURE ================= -->
+
+<!-- ========================= HOW IT WORKS ========================= -->
 <div class="panel" id="tab-arch" role="tabpanel" aria-labelledby="tabbtn-arch">
+
   <section id="s-arch-concept">
-    <h2><span class="n">02.1</span>The concept — star-map wayfinding</h2>
-    <p class="lead">The cosmos <em>is</em> the navigation system, not decoration. The site is <b>one continuous, downward-looping vertical scroll</b> through five <b>Destinations</b> — Home, Experience (Work), About, Certifications, Contact. Each destination owns a real constellation; scrolling between destinations morphs one figure into the next, and passing the end wraps invisibly back to the start.</p>
+    <h2><span class="n">02.1</span>The Big Idea</h2>
+    <p class="lead">The night sky isn't decoration — it <em>is</em> the navigation. The entire site is <b>one continuous, downward-looping scroll</b> through five sections: Home, Experience (Work), About, Certifications, and Contact. Each section owns a real constellation; scrolling between them morphs one figure into the next, and passing the end wraps you back to the start without any visible jump.</p>
     <ul>
-      <li><b>No Angular Router.</b> The "pages" under <code>src/app/pages/</code> are full-viewport <code>&lt;section&gt;</code>s stacked in one template. Navigation is scrolling (or nav-link travel), not route changes.</li>
-      <li><b>Immersion outranks scan-speed.</b> The optimisation target is a visitor who engages with the experience, per <code>CONTEXT.md</code>. Motion is restrained: opacity, blur, long <code>--ease-out-expo</code> curves — never spectacle.</li>
-      <li><b>Accessibility is the baseline.</b> The labeled nav always works (keyboard, screen reader), the loop clone is <code>inert</code>, and everything animated respects <code>prefers-reduced-motion</code>.</li>
+      <li><b>No router.</b> The "pages" under <code>src/app/pages/</code> are full-viewport <code>&lt;section&gt;</code>s stacked in one template. You navigate by scrolling (or clicking a nav link), not by changing routes.</li>
+      <li><b>Experience over efficiency.</b> The design rewards visitors who scroll through the journey. Motion is restrained — opacity, blur, long easing curves — never flashy for its own sake.</li>
+      <li><b>Accessibility from the start.</b> The nav works with keyboard and screen readers, the loop clone is <code>inert</code>, and every animation respects <code>prefers-reduced-motion</code>.</li>
     </ul>
   </section>
 
   <section id="s-arch-diagram">
-    <h2><span class="n">02.2</span>System diagram</h2>
-    <p>How the registry, the scroll state, the frame pulse and the visuals connect. Solid arrows are data/ownership; dashed amber arrows are the 60&nbsp;fps <em>non-reactive</em> signal reads that keep change detection off the hot path.</p>
-    <p><b>It's interactive:</b> hover any node to trace what it feeds and what feeds it; click (or <kbd>Enter</kbd>) for its role, file and where to read more; use the view pills to isolate one subsystem. <kbd>Esc</kbd> clears the selection.</p>
+    <h2><span class="n">02.2</span>How Everything Connects</h2>
+    <p>This diagram shows how the main pieces fit together: the section registry, scroll state, animation loop, and visual layers. Solid arrows mean "owns or feeds data to"; dashed amber arrows are the fast per-frame reads that stay outside Angular's change detection.</p>
+    <p><b>It's interactive</b> — hover any box to see what it connects to, or click it for a description and links. Use the view buttons to zoom into one subsystem. Press <kbd>Esc</kbd> to reset.</p>
     <div class="dgbox">
       <div class="dg-views" role="group" aria-label="Diagram views">
         <span class="lbl">View</span>
         <button class="vbtn on" data-view="all">Everything</button>
         <button class="vbtn" data-view="loop">Scroll loop</button>
-        <button class="vbtn" data-view="hot">60 fps hot path</button>
-        <button class="vbtn" data-view="registry">Registry fan-out</button>
+        <button class="vbtn" data-view="hot">60fps animation</button>
+        <button class="vbtn" data-view="registry">Source of truth</button>
         <button class="vbtn" data-view="theme">Theming</button>
       </div>
       <div class="dg-scroll">
-        <svg id="sysdg" viewBox="0 0 960 700" role="group" aria-label="System diagram — hover or focus a node to trace its connections, activate it for details"></svg>
+        <svg id="sysdg" viewBox="0 0 960 700" role="group" aria-label="System diagram — hover or focus a node to trace its connections, click for details"></svg>
       </div>
       <div class="dg-detail" id="dg-detail" aria-live="polite">
-        <p class="hint">Nothing selected — hover a node to trace its connections, click it for the full story.</p>
+        <p class="hint">Click any box to learn what it does, or hover to trace its connections.</p>
       </div>
     </div>
   </section>
 
   <section id="s-arch-loop">
-    <h2><span class="n">02.3</span>The scroll loop (the spine of the site)</h2>
-    <p>Vocabulary first (all from <code>CONTEXT.md</code>):</p>
+    <h2><span class="n">02.3</span>The Scroll Loop</h2>
+    <p>A few terms first (all defined in <code>CONTEXT.md</code>):</p>
     <div class="cards">
-      <div class="card"><h4>Cycle</h4><p>One full pass Home → Work → About → Certifications → Contact, measured in "destination units" (0 = Home, 1 = Work, …).</p></div>
-      <div class="card"><h4>Loop clone</h4><p>A second, non-interactive copy of Home placed after Contact — <code>inert</code> + <code>aria-hidden</code>. It gives the Contact→Home morph its scroll distance and acts as the seam buffer.</p></div>
-      <div class="card"><h4>Seam</h4><p>The wrap point. When you reach the clone's top, the content on screen is pixel-identical to real Home, so subtracting exactly one cycle from <code>scrollY</code> is invisible.</p></div>
-      <div class="card"><h4>One-direction</h4><p>Only wraps downward. Scrolling up is normal native scroll and clamps at Home (bidirectional looping was rejected — it fights native scroll).</p></div>
+      <div class="card"><h4>Cycle</h4><p>One full pass through Home → Work → About → Certifications → Contact. Measured in "destination units" where 0 = Home, 1 = Work, and so on.</p></div>
+      <div class="card"><h4>Loop clone</h4><p>A hidden, non-interactive copy of Home placed right after Contact. It gives the last section something to scroll into, and makes the wrap-back look seamless.</p></div>
+      <div class="card"><h4>Seam</h4><p>The wrap point. When you scroll into the clone, the screen looks identical to real Home — so jumping back is invisible.</p></div>
+      <div class="card"><h4>One-direction</h4><p>The loop only wraps going down. Scrolling up works normally and stops at Home. Two-way looping was considered but fights the browser's native scroll.</p></div>
     </div>
+
+    <!-- Scroll-loop interactive demo -->
     <div class="loopdemo">
       <div class="ld-head">
-        <span><b>Feel the seam</b> — drag the scroll position. When the playhead reaches the clone's top, the wrap fires and you're back at Home, invisibly.</span>
+        <span><b>Try it</b> — drag the slider to scroll through the sections. When you reach the end, the page wraps back to Home without any visible jump.</span>
         <button id="ld-play" type="button" aria-pressed="false">▶ Auto-scroll</button>
       </div>
       <div class="ld-track" aria-hidden="true">
@@ -401,40 +1073,42 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
         <span>activeDestination() <b id="ld-act">dest-home</b></span>
         <span>seam wraps <b class="wrapn" id="ld-wraps">0</b></span>
       </div>
-      <p class="ld-note">Toy numbers: each destination is 700&nbsp;px tall, so the cycle is 3500&nbsp;px and the clone's top <em>is</em> the seam. Crossing it runs <code>scrollTo(scrollY − 3500)</code> — overshoot is preserved, which is why momentum never stutters. Dragging left just clamps at Home: the loop is one-direction by design.</p>
+      <p class="ld-note">This demo uses simplified numbers — each section is 700&nbsp;px tall, making the full cycle 3500&nbsp;px. When you cross the end, it runs <code>scrollTo(scrollY − 3500)</code>. Any leftover scroll momentum is preserved, so you never feel a stutter. Dragging left just clamps at Home because the loop only wraps in one direction.</p>
     </div>
-    <p><b>The mechanics, end to end:</b></p>
+
+    <p><b>How it works, step by step:</b></p>
     <ol>
-      <li><code>AppComponent</code> measures every section's <code>offsetTop</code> (a <code>ResizeObserver</code> re-measures on any reflow) and hands the list to <code>ScrollLoopService.setAnchors()</code>. The last anchor is the clone — its offset <em>is</em> the cycle length in pixels.</li>
-      <li>On every scroll event the shell calls <code>loop.wrapOffset(scrollY)</code>. When the answer is non-null, the seam is due: the shell does <code>window.scrollTo(0, adjustment)</code>, preserving momentum overshoot instead of snapping to 0.</li>
-      <li>The shell also feeds <code>loop.update(scrollY, innerHeight)</code>, which recomputes the continuous <code>position</code> signal via the pure functions in <code>scroll-loop.math.ts</code>.</li>
+      <li><code>AppComponent</code> measures each section's position on the page (and re-measures whenever the layout changes). It passes those positions to <code>ScrollLoopService.setAnchors()</code>. The last anchor — the clone — tells the service how long one cycle is in pixels.</li>
+      <li>On every scroll event the shell asks <code>loop.wrapOffset(scrollY)</code> whether a wrap is due. If it is, the shell calls <code>window.scrollTo()</code> to jump back, preserving any leftover momentum so it never feels like a hard stop.</li>
+      <li>The shell also updates <code>loop.update(scrollY, innerHeight)</code>, which recalculates the continuous <code>position</code> signal using pure functions from <code>scroll-loop.math.ts</code>.</li>
     </ol>
-    <div class="note"><b>Division of labour (ADR-0007)</b>The shell owns all DOM I/O (reads and the <code>scrollTo</code>); <code>ScrollLoopService</code> owns the state; <code>scroll-loop.math.ts</code> owns the arithmetic and is fully unit-tested. Keep new logic on the correct side of that seam.</div>
+    <div class="note"><b>Three clear responsibilities</b> The app shell handles all DOM reads and writes. <code>ScrollLoopService</code> manages the state. <code>scroll-loop.math.ts</code> handles the arithmetic and is fully unit-tested. When adding new code, keep it on the right side of these lines (see ADR-0007).</div>
   </section>
 
   <section id="s-arch-hotpath">
-    <h2><span class="n">02.4</span>Signals &amp; the 60 fps hot path</h2>
-    <p>The whole animation system runs on <b>one</b> <code>requestAnimationFrame</code> loop — <code>FramePulseService</code> — registered <em>outside</em> Angular's zone. Subscribers (the constellation morph, the nav mute) write straight to the DOM. Two signal rules keep change detection out of the hot path:</p>
+    <h2><span class="n">02.4</span>Staying Smooth at 60 fps</h2>
+    <p>All animations share <b>one</b> <code>requestAnimationFrame</code> loop — <code>FramePulseService</code> — running outside Angular's zone. The constellation morph and nav fade both write directly to the DOM from that loop. Two rules keep Angular's change detection out of the way:</p>
     <ul>
-      <li><b><code>ScrollLoopService.position</code> is hot — never bind it in a template.</b> It is read ~60×/s from rAF callbacks as a plain <code>position()</code> call, which is non-reactive and schedules nothing. Binding it would reintroduce 60 fps change detection.</li>
-      <li><b><code>activeDestination</code> is the safe one.</b> A <code>computed</code> that collapses a whole section of positions into one id (<code>'dest-work'</code>…), so it notifies roughly once per destination. The nav binds this for the active-link underline and <code>aria-current</code>.</li>
+      <li><b><code>position</code> is the fast signal — never bind it in a template.</b> It's read ~60 times a second from animation callbacks. Binding it in a template would force Angular to re-check the whole component tree on every frame.</li>
+      <li><b><code>activeDestination</code> is the template-safe signal.</b> It only changes when you cross from one section to the next (not on every pixel of scroll), so it's fine for the nav underline and <code>aria-current</code>.</li>
     </ul>
-    <p><code>FramePulseService.onTick(fn)</code> returns an unsubscribe function; the loop starts with the first subscriber and stops with the last. It also pauses on a hidden tab and resets its clock on return, so the first frame back never receives the whole hidden gap as <code>dt</code>.</p>
-    <p>The same discipline reaches the shell: <code>AppComponent</code> is <code>OnPush</code>, and its <code>scroll</code>/<code>resize</code> listeners are registered with <code>ngZone.runOutsideAngular</code> (the seam wrap and <code>loop.update()</code> need no change detection). The body <code>ResizeObserver</code> is coalesced to a single <code>requestAnimationFrame</code> so a burst of reflows — lazy images decoding, the showcase re-measuring — triggers one re-measure, not a cascade.</p>
+    <p><code>FramePulseService.onTick(fn)</code> returns an unsubscribe function. The loop starts when the first subscriber joins and stops when the last one leaves. It pauses on hidden tabs and resets its clock cleanly on return.</p>
+    <p>The shell follows the same pattern: <code>AppComponent</code> uses <code>OnPush</code>, and its scroll/resize listeners run outside Angular's zone. The <code>ResizeObserver</code> batches reflows into a single <code>requestAnimationFrame</code> so things like lazy images and the showcase re-measuring trigger one measurement, not a cascade.</p>
   </section>
 
   <section id="s-arch-theme">
-    <h2><span class="n">02.5</span>Theming model</h2>
-    <p>Every colour token in <code>src/styles.css</code> is declared <b>once</b> using <code>light-dark(&lt;light&gt;, &lt;dark&gt;)</code>, and <code>color-scheme</code> picks the side:</p>
+    <h2><span class="n">02.5</span>How Theming Works</h2>
+    <p>Every colour in <code>src/styles.css</code> is declared <b>once</b> using <code>light-dark(light, dark)</code>. The browser picks which value to use based on <code>color-scheme</code>:</p>
     <ul>
-      <li>No class on <code>:root</code> → <code>color-scheme: light dark</code> follows the OS preference.</li>
-      <li><code>ThemeService</code> (signals, persisted to <code>localStorage</code>, plus a pre-paint guard in <code>index.html</code>) adds <code>.light-mode</code> / <code>.dark-mode</code>, which only need to <em>flip the scheme</em> — no token overrides, with one exception (<code>--scrim-rgb</code>, a raw RGB triple that can't use <code>light-dark()</code>).</li>
-      <li>The aurora is a theme decision too: <code>aurora-palette.ts</code> maps dark/light to shader tuning, exposed as a memoized computed on <code>ThemeService</code> and bound to <code>&lt;app-aurora&gt;</code>'s inputs in the shell template.</li>
+      <li>By default, <code>color-scheme: light dark</code> follows whatever the operating system prefers.</li>
+      <li>When the user toggles the theme, <code>ThemeService</code> adds a <code>.light-mode</code> or <code>.dark-mode</code> class that flips the scheme. No token overrides needed, with one small exception (<code>--scrim-rgb</code>, which can't use <code>light-dark()</code> because it's a raw RGB triple).</li>
+      <li>The aurora's appearance is a theme decision too — <code>aurora-palette.ts</code> maps each theme to a different set of shader colours and intensity.</li>
     </ul>
   </section>
 
   <section id="s-arch-adr">
-    <h2><span class="n">02.6</span>ADR index — why it's built this way</h2>
+    <h2><span class="n">02.6</span>Design Decisions</h2>
+    <p class="lead">Every significant decision is documented. Here's the full list:</p>
     <div class="tblwrap"><table>
       <tr><th>ADR</th><th>Decision</th></tr>
       <tr><td><code>0001</code></td><td>Full multipage, immersion-first concept (the original framing)</td></tr>
@@ -446,18 +1120,21 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
       <tr><td><code>0007</code></td><td>Deepened cycle module — shell does DOM I/O, service holds state, math is pure</td></tr>
       <tr><td><code>0008</code></td><td>Projects showcase legibility</td></tr>
     </table></div>
-    <p>All live in <code>docs/adr/</code>. Each carries a <b>status</b> (accepted / rejected / superseded); if you're about to reverse a decision, read its ADR first — several list rejected alternatives and why.</p>
+    <p>All live in <code>docs/adr/</code>. Each carries a <b>status</b> (accepted / rejected / superseded). If you're about to reverse a decision, read its ADR first — several list rejected alternatives and why.</p>
   </section>
+
   <div class="pn">
-    <a href="#s-qs-prereq" data-goto="qs"><span>Prev · 01</span>← Quick Start</a>
-    <a class="nxt" href="#s-map-tree" data-goto="map"><span>Next · 03</span>Component Map →</a>
+    <a href="#s-qs-prereq" data-goto="qs"><span>Prev · 01</span>← Get Started</a>
+    <a class="nxt" href="#s-map-tree" data-goto="map"><span>Next · 03</span>The Code →</a>
   </div>
 </div>
 
-<!-- ================= COMPONENT MAP ================= -->
+
+<!-- ========================= THE CODE ========================= -->
 <div class="panel" id="tab-map" role="tabpanel" aria-labelledby="tabbtn-map">
+
   <section id="s-map-tree">
-    <h2><span class="n">03.1</span>Directory tour</h2>
+    <h2><span class="n">03.1</span>File Structure at a Glance</h2>
     <pre class="tree"><code><span class="d">src/</span>
 ├─ <span class="d">styles.css</span>              <span class="a">← ALL design tokens (CSS custom properties) + reset + view transitions</span>
 ├─ index.html               <span class="a">← Instrument Serif font, pre-paint theme guard, hero-font preloads</span>
@@ -466,7 +1143,7 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
 └─ <span class="d">app/</span>
    ├─ app.module.ts         <span class="a">← the single NgModule — every component is declared here</span>
    ├─ app.component.*       <span class="a">← the shell: aurora + constellation + nav + 5 sections + clone</span>
-   ├─ <span class="d">destinations.ts</span>       <span class="a">← ★ single source of truth for the five stops</span>
+   ├─ <span class="d">destinations.ts</span>       <span class="a">← ★ single source of truth for the five sections</span>
    ├─ scroll-loop.service.ts<span class="a">  ← cycle position state + seam wrap</span>
    ├─ scroll-loop.math.ts   <span class="a">← pure scroll arithmetic (unit-tested)</span>
    ├─ motion.math.ts        <span class="a">← easing / interpolation helpers</span>
@@ -484,41 +1161,41 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
   </section>
 
   <section id="s-map-routing">
-    <h2><span class="n">03.2</span>Routing logic — there is no router</h2>
-    <p class="lead">Deliberately, <b><code>RouterModule</code> is not imported anywhere</b>. The five "pages" are sections of one template, and "navigation" is scroll travel:</p>
+    <h2><span class="n">03.2</span>Navigation — No Router</h2>
+    <p class="lead">There's <b>no <code>RouterModule</code></b> — the five "pages" are sections of one template, and you navigate by scrolling:</p>
     <ol>
-      <li><b>The registry drives everything.</b> <code>destinations.ts</code> exports the ordered <code>DESTINATIONS</code> array (<code>id</code>, <code>label</code>, <code>figure</code>). The nav renders its links from it and <code>constellation.figures.ts</code> derives its morph <code>order</code> from it — so ids can't drift.</li>
-      <li><b>The shell template lays out the sections</b> (<code>app.component.html</code>): five <code>&lt;section #dest id="dest-…" class="dest"&gt;</code> elements plus the inert Home clone at the end. Home is pre-revealed (loop anchor + LCP); Work/About/Certifications/Contact fade in via <code>InViewportService</code>.</li>
-      <li><b>Nav clicks are travel, not navigation.</b> Short hops smooth-scroll. Long jumps <em>teleport</em> instantly inside <code>document.startViewTransition()</code> (<code>NavTransitionService</code>), styled in <code>styles.css</code> as a directional drift-fade via <code>data-nav-transition="up|down"</code> on <code>&lt;html&gt;</code>.</li>
-      <li><b>Two hand-written exceptions</b> (by design, documented in <code>destinations.ts</code>): the <code>#projects</code> sub-anchor inside Work, and the desktop bar omitting Home because the logo <em>is</em> Home.</li>
-      <li><b>Deep links:</b> Netlify's <code>/* → /index.html</code> redirect means any URL serves the app.</li>
+      <li><b>One registry drives everything.</b> <code>destinations.ts</code> exports an ordered array of sections. The nav links and constellation shapes both derive from it, so they can't fall out of sync.</li>
+      <li><b>The shell template lays out the sections</b> in <code>app.component.html</code>: five <code>&lt;section&gt;</code>s stacked in scroll order, plus the hidden Home clone at the end. Home is always visible (it's the first thing visitors see); the other sections fade in as you reach them.</li>
+      <li><b>Clicking a nav link scrolls you there.</b> Short hops use smooth scrolling. Long jumps teleport instantly using <code>startViewTransition()</code>, styled as a directional drift-fade.</li>
+      <li><b>Two deliberate exceptions</b> (documented in <code>destinations.ts</code>): the <code>#projects</code> sub-anchor inside Work, and the desktop nav omitting Home because the logo already takes you there.</li>
+      <li><b>Deep links work</b> because Netlify's catch-all redirect serves the app for any URL.</li>
     </ol>
   </section>
 
   <section id="s-map-components">
     <h2><span class="n">03.3</span>Components</h2>
     <div class="tblwrap"><table>
-      <tr><th>Selector</th><th>Location</th><th>Responsibility</th></tr>
+      <tr><th>Selector</th><th>Location</th><th>What it does</th></tr>
       <tr><td><code>app-root</code></td><td><code>app/</code></td><td>The shell. Measures section anchors, feeds <code>ScrollLoopService</code>, applies the seam wrap, arms scroll reveals.</td></tr>
       <tr><td><code>app-aurora</code></td><td><code>aurora/</code></td><td>Persistent WebGL backdrop (z-0). OGL + GLSL simplex noise; inputs <code>colorStops · blend · amplitude · speed</code>; CSS fallback when WebGL is unavailable. Under <code>prefers-reduced-motion</code> it paints a single static frame (still theme-reactive) and never joins the frame pulse — the global reduced-motion CSS rule can't reach a canvas.</td></tr>
       <tr><td><code>app-constellation</code></td><td><code>constellation/</code></td><td>Persistent SVG star-map (z-0). Reads <code>position()</code> each frame and interpolates between adjacent figures; lines cross-fade through the dim point.</td></tr>
       <tr><td><code>app-site-nav</code></td><td><code>layout/site-nav/</code></td><td>Persistent nav (z-100). Renders links from <code>DESTINATIONS</code>; mutes via a single <code>--nav-mute</code> custom property on the shared tick; underlines <code>activeDestination()</code>.</td></tr>
       <tr><td><code>app-landingpage</code></td><td><code>landingpage/</code></td><td>Home hero + CV download. <b>Rendered twice</b> — real Home and the inert loop clone — so keep it side-effect safe.</td></tr>
       <tr><td><code>app-work</code></td><td><code>pages/work/</code></td><td>Experience groups + sticky projects showcase. Pure renderer of <code>work-data.ts</code>.</td></tr>
-      <tr><td><code>app-about</code></td><td><code>pages/about/</code></td><td>About copy ("less but better") + the glowing ledger glyphs.</td></tr>
-      <tr><td><code>app-certifications</code></td><td><code>pages/certifications/</code></td><td>Ledger of certs + full-screen spotlight, which is a true modal: <code>aria-modal</code>, a focus trap, and <code>body.certs-spotlight-open</code> makes the whole nav recede (opacity + visibility, out of the tab order). The cursor-preview image stack is gated on a fine pointer, so touch never fetches it.</td></tr>
+      <tr><td><code>app-about</code></td><td><code>pages/about/</code></td><td>About copy + the glowing ledger glyphs.</td></tr>
+      <tr><td><code>app-certifications</code></td><td><code>pages/certifications/</code></td><td>Ledger of certs + full-screen spotlight (a true modal: <code>aria-modal</code>, a focus trap, and <code>body.certs-spotlight-open</code> makes the whole nav recede). The cursor-preview image stack is gated on a fine pointer, so touch never fetches it.</td></tr>
       <tr><td><code>app-contact</code></td><td><code>pages/contact/</code></td><td>Marquee email finale + colophon with a live SAST clock.</td></tr>
       <tr><td><code>app-theme-toggle</code></td><td><code>shared/</code></td><td>Dark/light switch bound to <code>ThemeService</code>.</td></tr>
       <tr><td><code>[appScrollReveal]</code></td><td><code>app/</code></td><td>Directive: fade-up on first intersection (adds <code>.revealed</code>).</td></tr>
     </table></div>
-    <div class="note"><b>All declared in one place</b>This is an NgModule app: any new component/directive must be added to the <code>declarations</code> array in <code>app.module.ts</code> or the template won't recognise its selector.</div>
+    <div class="note"><b>One place to register</b> This is an NgModule app, so any new component or directive needs to be added to the <code>declarations</code> array in <code>app.module.ts</code>. If you skip this step, Angular won't recognize the new tag in templates.</div>
   </section>
 
   <section id="s-map-services">
-    <h2><span class="n">03.4</span>Core services (<code>src/app/core/</code> + root)</h2>
+    <h2><span class="n">03.4</span>Core Services</h2>
     <div class="tblwrap"><table>
-      <tr><th>Service</th><th>Responsibility</th></tr>
-      <tr><td><code>ScrollLoopService</code></td><td>Owns the Cycle: hot <code>position</code> signal, bindable <code>activeDestination</code> computed, <code>setAnchors / update / wrapOffset</code>. Root of the site's spine.</td></tr>
+      <tr><th>Service</th><th>What it does</th></tr>
+      <tr><td><code>ScrollLoopService</code></td><td>Owns the Cycle: the fast <code>position</code> signal, the template-safe <code>activeDestination</code> computed, and <code>setAnchors / update / wrapOffset</code>. The spine of the site.</td></tr>
       <tr><td><code>FramePulseService</code></td><td>The one shared rAF, outside NgZone. <code>onTick(fn)</code> → unsubscribe fn. Handles hidden-tab pause + clock reset.</td></tr>
       <tr><td><code>ThemeService</code></td><td>Signals-based theme state; OS detection + <code>localStorage</code>; exposes the memoized <code>auroraPalette()</code>. Pure decision logic lives in <code>theme.decision.ts</code>.</td></tr>
       <tr><td><code>MotionSettingsService</code></td><td>One answer for <code>prefers-reduced-motion</code> — check it before starting any animation.</td></tr>
@@ -529,30 +1206,33 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
   </section>
 
   <section id="s-map-data">
-    <h2><span class="n">03.5</span>Data files — editorial content lives in TS</h2>
-    <p>Templates stay as one <code>*ngFor</code> per section; the copy lives in typed constants:</p>
+    <h2><span class="n">03.5</span>Where the Content Lives</h2>
+    <p>Templates are thin — just loops over data. All the real content lives in typed constants:</p>
     <div class="tblwrap"><table>
       <tr><th>File</th><th>Drives</th></tr>
-      <tr><td><code>app/destinations.ts</code></td><td>The five stops: nav links, section order, constellation order</td></tr>
+      <tr><td><code>app/destinations.ts</code></td><td>The five sections: nav links, section order, constellation order</td></tr>
       <tr><td><code>app/pages/work/work-data.ts</code></td><td><code>EXPERIENCE_GROUPS</code> (skills) + <code>PROJECTS</code> (the showcase)</td></tr>
       <tr><td><code>app/pages/certifications/certifications-data.ts</code></td><td><code>CERTIFICATIONS</code> — credentials, rendered verbatim</td></tr>
       <tr><td><code>app/constellation/constellation.figures.ts</code></td><td>The five 8-star asterisms + shared drift traits</td></tr>
       <tr><td><code>app/core/aurora-palette.ts</code></td><td>Aurora colours/tuning per theme</td></tr>
     </table></div>
   </section>
+
   <div class="pn">
-    <a href="#s-arch-concept" data-goto="arch"><span>Prev · 02</span>← Architecture</a>
-    <a class="nxt" href="#s-mod-project" data-goto="mod"><span>Next · 04</span>Modification Guide →</a>
+    <a href="#s-arch-concept" data-goto="arch"><span>Prev · 02</span>← How It Works</a>
+    <a class="nxt" href="#s-mod-project" data-goto="mod"><span>Next · 04</span>Make Changes →</a>
   </div>
 </div>
 
-<!-- ================= MODIFICATION GUIDE ================= -->
+
+<!-- ========================= MAKE CHANGES ========================= -->
 <div class="panel" id="tab-mod" role="tabpanel" aria-labelledby="tabbtn-mod">
+
   <section id="s-mod-project">
-    <h2><span class="n">04.1</span>Add a new project</h2>
-    <p class="lead">Two steps, zero template changes — the Work page is a pure renderer of <code>PROJECTS</code>.</p>
+    <h2><span class="n">04.1</span>Add a New Project</h2>
+    <p class="lead">Two steps, no template changes — the Work page renders whatever is in <code>PROJECTS</code>.</p>
     <ol>
-      <li>Add a screenshot to <code>src/assets/</code> as <b>WebP</b> (the house format — every raster asset is WebP; a PNG export at q80–85 lands ~90% smaller). It builds to <code>/assets/…</code>. Provide a dark and a light variant if the shot differs per theme; reuse one path for both if not.</li>
+      <li>Add a screenshot to <code>src/assets/</code> as <b>WebP</b> (the project's standard image format — typically ~90% smaller than PNG). If the screenshot looks different in dark and light mode, provide both versions; otherwise reuse the same path for both.</li>
       <li>Append an entry to <code>PROJECTS</code> in <code>src/app/pages/work/work-data.ts</code>:</li>
     </ol>
     <pre data-lang="typescript" data-copy><code><span class="c-cmt">// src/app/pages/work/work-data.ts — append inside PROJECTS</span>
@@ -575,13 +1255,13 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
     },
   },
 },</code></pre>
-    <div class="note"><b>width/height are mandatory</b>The <code>ProjectImage</code> interface requires <code>width</code> and <code>height</code> (intrinsic pixel size) — TypeScript won't compile without them. Where the dark/light variants differ by a few pixels, use the dark one's size; the card is <code>object-fit: cover</code>, so a sub-2% ratio difference isn't observable.</div>
+    <div class="note"><b>Dimensions are required</b> TypeScript enforces <code>width</code> and <code>height</code> (in pixels) — the project won't build without them. If your dark and light screenshots differ slightly, just use the dark one's dimensions. The card uses <code>object-fit: cover</code>, so small ratio differences won't show.</div>
     <p>Skills copy works the same way — edit <code>EXPERIENCE_GROUPS</code> in the same file.</p>
   </section>
 
   <section id="s-mod-certs">
-    <h2><span class="n">04.2</span>Update certifications</h2>
-    <div class="warn"><b>Credentials are rendered verbatim</b>Titles, issuers and verify URLs in <code>certifications-data.ts</code> are credentials — never embellish, rename, or add entries that aren't real, verified certificates. The <code>img</code>/<code>alt</code> fields are presentation-only (the scan shown in the hover preview and spotlight) and carry no credential claim.</div>
+    <h2><span class="n">04.2</span>Update Your Certifications</h2>
+    <div class="warn"><b>Real credentials only</b> Titles, issuers, and verify URLs must match actual, verified certificates — don't embellish or add entries that aren't genuine. The <code>img</code> and <code>alt</code> fields are for the visual preview only.</div>
     <pre data-lang="typescript" data-copy><code><span class="c-cmt">// src/app/pages/certifications/certifications-data.ts — append inside CERTIFICATIONS</span>
 {
   title:  <span class="c-str">'Exact Certificate Title'</span>,
@@ -594,10 +1274,10 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
   </section>
 
   <section id="s-mod-constellation">
-    <h2><span class="n">04.3</span>Tweak the constellation background</h2>
-    <p class="lead">Everything lives in <code>src/app/constellation/constellation.figures.ts</code>. The one hard rule: <b>every figure has exactly <code>STAR_COUNT = 8</code> stars</b>, because the morph interpolates star <em>i</em> of one figure to star <em>i</em> of the next, 1:1 by index. Specs enforce this — <code>npm test</code> after any change.</p>
+    <h2><span class="n">04.3</span>Tweak the Constellation</h2>
+    <p class="lead">All star data lives in <code>src/app/constellation/constellation.figures.ts</code>. The one rule: <b>every figure must have exactly 8 stars</b>, because the morph animation pairs them by index. Tests enforce this — run <code>npm test</code> after any edit.</p>
     <h3>Move or reshape a figure</h3>
-    <p>Each figure is index-ordered <code>[x, y]</code> coordinates in a <code>300 × 300</code> viewBox, plus its own line list:</p>
+    <p>Each figure is a list of <code>[x, y]</code> coordinates in a <code>300 × 300</code> viewBox, plus its own line list:</p>
     <pre data-lang="typescript" data-copy><code><span class="c-cmt">// constellation.figures.ts — e.g. the Work figure (Orion)</span>
 work: figure(<span class="c-str">'Orion'</span>, [
   [<span class="c-num">96</span>, <span class="c-num">96</span>],    <span class="c-cmt">// star 0 — Betelgeuse   ← move a star by editing its [x, y]</span>
@@ -622,8 +1302,8 @@ work: figure(<span class="c-str">'Orion'</span>, [
   </section>
 
   <section id="s-mod-aurora">
-    <h2><span class="n">04.4</span>Tune the aurora</h2>
-    <p>The WebGL aurora's look is a <em>theme decision</em>, so its knobs live in <code>src/app/core/aurora-palette.ts</code> — not in the shader or the shell template:</p>
+    <h2><span class="n">04.4</span>Tune the Aurora</h2>
+    <p>The WebGL aurora's appearance is a <em>theme decision</em>, so its controls live in <code>src/app/core/aurora-palette.ts</code> — not in the shader or the shell template:</p>
     <pre data-lang="typescript" data-copy><code><span class="c-cmt">// src/app/core/aurora-palette.ts</span>
 <span class="c-key">export function</span> auroraPalette(isDark: <span class="c-key">boolean</span>): AuroraPalette {
   <span class="c-key">return</span> isDark
@@ -631,19 +1311,19 @@ work: figure(<span class="c-str">'Orion'</span>, [
     : { colorStops: [<span class="c-str">'#FDFCFB'</span>, <span class="c-str">'#F5F2EE'</span>, <span class="c-str">'#FAF0E8'</span>], blend: <span class="c-num">1.0</span>, amplitude: <span class="c-num">0.25</span>, speed: <span class="c-num">0.5</span> };
 }</code></pre>
     <div class="tblwrap"><table>
-      <tr><th>Knob</th><th>Effect</th></tr>
+      <tr><th>Knob</th><th>What it controls</th></tr>
       <tr><td><code>colorStops</code></td><td>Three-stop gradient the simplex noise flows through (left → right)</td></tr>
       <tr><td><code>blend</code></td><td>How softly the aurora blends into the page background (higher = softer)</td></tr>
       <tr><td><code>amplitude</code></td><td>Vertical intensity of the waves — light mode keeps this low on purpose</td></tr>
       <tr><td><code>speed</code></td><td>Flow speed of the noise field</td></tr>
     </table></div>
-    <p>The shader itself (GLSL simplex noise via <a href="https://github.com/oframe/ogl">OGL</a>) is in <code>src/app/aurora/aurora.component.ts</code>. Change it only if a palette knob can't express what you need — and keep both non-default paths working: the CSS blob fallback (no WebGL) and the <code>prefers-reduced-motion</code> path (one static frame, no frame-pulse subscription). Neither is reachable by the global reduced-motion CSS rule, so the gates live in the component and are covered by <code>aurora.component.spec.ts</code> — run <code>npm test</code> after touching them.</p>
+    <p>The shader itself (GLSL simplex noise via <a href="https://github.com/oframe/ogl">OGL</a>) is in <code>src/app/aurora/aurora.component.ts</code>. Change it only if the palette knobs above can't do what you need. If you do, make sure two alternate paths still work: the CSS gradient fallback (when WebGL isn't available) and the reduced-motion path (a single static frame). Both are covered by <code>aurora.component.spec.ts</code> — run <code>npm test</code> after editing.</p>
   </section>
 
   <section id="s-mod-tokens">
-    <h2><span class="n">04.5</span>Update design tokens</h2>
-    <div class="note"><b>CSS custom properties, not SCSS</b>This repo has no SCSS. All "variables" are CSS custom properties defined once in <code>src/styles.css</code> under <code>:root</code> — typography scale, Nohemi weight ladder, tracking, colours, spacing, radii, shadows, easings, layout widths.</div>
-    <p>The theming rule: <b>declare each colour once</b> with <code>light-dark()</code>, never as separate light/dark overrides:</p>
+    <h2><span class="n">04.5</span>Update Design Tokens</h2>
+    <div class="note"><b>Plain CSS, not SCSS</b> All tokens are CSS custom properties in <code>src/styles.css</code> under <code>:root</code>. That covers the type scale, font weights, colours, spacing, radii, shadows, easings, and layout widths.</div>
+    <p>The one theming rule: <b>declare each colour once</b> using <code>light-dark()</code>, never as separate light/dark overrides:</p>
     <pre data-lang="css" data-copy><code><span class="c-cmt">/* src/styles.css — the pattern for every colour token */</span>
 :root {
   color-scheme: light dark;                <span class="c-cmt">/* follows the OS with no class */</span>
@@ -654,16 +1334,16 @@ work: figure(<span class="c-str">'Orion'</span>, [
 .light-mode { color-scheme: light; }       <span class="c-cmt">/* manual toggle only flips the scheme */</span>
 .dark-mode  { color-scheme: dark; --scrim-rgb: 18, 18, 18; }</code></pre>
     <ul>
-      <li><b>Never hardcode hex values in component CSS</b> — add a token in <code>styles.css</code> and reference it, or both themes break. (The hero statement and the mobile overlay each earned a token this way: <code>--color-text-statement</code> is <code>light-dark()</code>; <code>--color-overlay-text</code> / <code>--color-overlay-accent</code> are deliberately fixed because the overlay is near-black in both themes.)</li>
-      <li><b>Don't add overrides to <code>.light-mode</code>/<code>.dark-mode</code></b> — they exist only to flip <code>color-scheme</code> (plus <code>--scrim-rgb</code>, the documented exception).</li>
-      <li><b>Motion tokens matter:</b> new animation should use <code>--ease-out-expo</code> / <code>--transition-slow</code> — long and calm is the house style ("less but better").</li>
-      <li><b>The Nohemi weight ladder is the type system's contrast engine</b> — <code>--font-weight-thin</code> (100) through <code>--font-weight-black</code> (900). There is no <code>800</code> token: that face had no consumer and was dropped, so re-add the token and its <code>@font-face</code> together if a design ever needs it.</li>
+      <li><b>Never hardcode hex values in component CSS.</b> Always add a token in <code>styles.css</code> and reference it — otherwise one of the two themes breaks.</li>
+      <li><b>Don't add overrides to <code>.light-mode</code>/<code>.dark-mode</code></b> — those classes only flip <code>color-scheme</code> (plus <code>--scrim-rgb</code>, the one documented exception).</li>
+      <li><b>Use the house easing.</b> New animations should use <code>--ease-out-expo</code> / <code>--transition-slow</code> — long and calm is the pattern here.</li>
+      <li><b>Nohemi weights are the type system's contrast tool</b> — <code>--font-weight-thin</code> (100) through <code>--font-weight-black</code> (900). There's no weight 800 token — it had no use and was dropped. Re-add the token and its <code>@font-face</code> together if a future design needs it.</li>
     </ul>
   </section>
 
   <section id="s-mod-destination">
-    <h2><span class="n">04.6</span>Add a whole new destination</h2>
-    <p class="lead">Rarer, but this is the full checklist. The registry keeps the nav and constellation in sync automatically; the shell template and module are the two manual touch points.</p>
+    <h2><span class="n">04.6</span>Add a Whole New Section</h2>
+    <p class="lead">This is less common, but here's the full checklist. The registry keeps the nav and constellation in sync automatically — you only need to touch the shell template and the module by hand.</p>
     <ol>
       <li><b><code>src/app/destinations.ts</code></b> — extend the <code>DestinationFigure</code> union and add the entry at its scroll position (order = array position):
       <pre data-lang="typescript" data-copy><code><span class="c-key">export type</span> DestinationFigure = <span class="c-str">'home'</span> | <span class="c-str">'work'</span> | <span class="c-str">'about'</span> | <span class="c-str">'certifications'</span> | <span class="c-str">'contact'</span> | <span class="c-str">'lab'</span>;
@@ -675,244 +1355,906 @@ work: figure(<span class="c-str">'Orion'</span>, [
       <li><b>Create the component</b> under <code>src/app/pages/lab/</code> and declare it in <code>app.module.ts</code>. Write the section header inline in the editorial pattern every other section uses — a kicker (<code>aria-hidden</code> destination numeral + a short hairline rule) above a poster title in the Nohemi weight ladder; copy the markup from <code>about.component.html</code> and give it the next index (<code>06</code>). Put the section's copy in a <code>lab-data.ts</code>, matching the house pattern.</li>
       <li><b>Verify:</b> <code>npm test</code> (registry + figure guards), then scroll a full loop in the browser — check the new morph both in and out, the nav underline, and the seam still wrapping invisibly.</li>
     </ol>
-    <div class="warn"><b>Do not touch the clone</b>The final <code>&lt;section&gt;</code> (Home clone, <code>inert</code> + <code>aria-hidden</code>, no <code>id</code>) must remain the last child and pixel-identical to real Home — the invisible seam wrap depends on it. See ADR-0004.</div>
+    <div class="warn"><b>Leave the clone alone</b> The last <code>&lt;section&gt;</code> is a hidden copy of Home. It must stay last and look exactly like the real Home — the seamless loop depends on it being pixel-identical. See ADR-0004 for the reasoning.</div>
   </section>
+
   <div class="pn">
-    <a href="#s-map-tree" data-goto="map"><span>Prev · 03</span>← Component Map</a>
+    <a href="#s-map-tree" data-goto="map"><span>Prev · 03</span>← The Code</a>
   </div>
 </div>
 
 </main>
 </div>
 
+
 <script>
-(()=>{"use strict";
-const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
-const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const TAB_ORDER=['qs','arch','map','mod'];
-const TAB_NAMES={qs:'Quick Start',arch:'Architecture',map:'Component Map',mod:'Modification Guide'};
-const tabs=$$('.tab'),panels=$$('.panel'),groups=$$('.sgroup');
+(function () {
+  "use strict";
 
-/* ---------- tabs ---------- */
-const show=(id,anchor)=>{if(!TAB_ORDER.includes(id))return;
- tabs.forEach(t=>{const on=t.dataset.tab===id;t.classList.toggle('on',on);t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1});
- panels.forEach(p=>p.classList.toggle('on',p.id==='tab-'+id));
- groups.forEach(g=>g.classList.toggle('on',g.dataset.tab===id));
- if(anchor){const el=document.getElementById(anchor);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'','#'+anchor)}}
- else{window.scrollTo({top:0});history.replaceState(null,'','#tab-'+id)}};
-tabs.forEach(t=>t.addEventListener('click',()=>show(t.dataset.tab)));
-$('.tabs').addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
- const i=TAB_ORDER.indexOf(document.activeElement.dataset?.tab);if(i<0)return;
- const n=(i+(e.key==='ArrowRight'?1:TAB_ORDER.length-1))%TAB_ORDER.length;
- show(TAB_ORDER[n]);tabs[n].focus();e.preventDefault()});
-$$('.slink').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();show(a.dataset.tab,a.getAttribute('href').slice(1))}));
-// cross-tab links anywhere in content: data-goto="tab" or "tab:anchor"
-document.addEventListener('click',e=>{const g=e.target.closest('[data-goto]');if(!g)return;
- e.preventDefault();const[t,a]=g.dataset.goto.split(':');show(t,a)});
-// deep links: #s-… opens the owning tab, #tab-… opens the tab itself
-const openHash=h=>{if(!h)return;
- if(h.startsWith('tab-'))return show(h.slice(4));
- const el=document.getElementById(h),p=el&&el.closest('.panel');if(p)show(p.id.slice(4),h)};
-openHash(location.hash.slice(1));
-window.addEventListener('hashchange',()=>openHash(location.hash.slice(1)));
+  /* ====================================================================
+     Utilities
+     ==================================================================== */
 
-/* ---------- copy buttons ---------- */
-$$('pre[data-copy]').forEach(p=>{const b=document.createElement('button');b.className='cbtn';b.type='button';b.textContent='Copy';b.setAttribute('aria-label','Copy code to clipboard');
- b.addEventListener('click',async()=>{const t=p.querySelector('code').innerText;
-  try{await navigator.clipboard.writeText(t)}
-  catch{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.append(ta);ta.select();document.execCommand('copy');ta.remove()}
-  b.textContent='Copied ✓';b.classList.add('ok');setTimeout(()=>{b.textContent='Copy';b.classList.remove('ok')},1600)});
- p.append(b)});
+  /**
+   * Shorthand for querySelector.
+   * @param {string} selector - CSS selector
+   * @param {Element|Document} context - Search root (defaults to document)
+   * @returns {Element|null}
+   */
+  const select = (selector, context = document) =>
+    context.querySelector(selector);
 
-/* ---------- scrollspy ---------- */
-const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$('.slink').forEach(l=>l.classList.toggle('cur',l.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-15% 0px -70% 0px'});
-$$('.panel>section[id]').forEach(s=>spy.observe(s));
+  /**
+   * Shorthand for querySelectorAll, returns a real array.
+   * @param {string} selector - CSS selector
+   * @param {Element|Document} context - Search root (defaults to document)
+   * @returns {Element[]}
+   */
+  const selectAll = (selector, context = document) =>
+    [...context.querySelectorAll(selector)];
 
-/* ---------- search ---------- */
-const q=$('#q'),qr=$('#qr');
-const INDEX=$$('.panel>section[id]').map(s=>{const tab=s.closest('.panel').id.slice(4);
- const num=s.querySelector('h2 .n')?.textContent.trim()??'';
- const name=s.querySelector('h2')?.textContent.replace(num,'').trim()??s.id;
- return{id:s.id,tab,num,name,text:s.textContent.toLowerCase().replace(/\s+/g,' ')}});
-let qCur=-1;
-const qClose=()=>{qr.classList.remove('open');qr.innerHTML='';qCur=-1};
-const qRun=()=>{const v=q.value.trim().toLowerCase();if(v.length<2)return qClose();
- const hits=INDEX.map(s=>{const inName=s.name.toLowerCase().includes(v),i=s.text.indexOf(v);
-   return(inName||i>=0)?{s,i:Math.max(i,0),score:inName?0:1}:null}).filter(Boolean)
-  .sort((a,b)=>a.score-b.score).slice(0,8);
- if(!hits.length){qr.innerHTML='<div class="qempty">No matches — try a file name, a service, or a concept like “seam”.</div>';qr.classList.add('open');qCur=-1;return}
- qr.innerHTML=hits.map(h=>{const t=h.s.text,a=Math.max(0,h.i-34),b=Math.min(t.length,h.i+v.length+48);
-  const snip=(a>0?'…':'')+esc(t.slice(a,h.i))+'<mark>'+esc(t.slice(h.i,h.i+v.length))+'</mark>'+esc(t.slice(h.i+v.length,b))+(b<t.length?'…':'');
-  return`<button class="qi" role="option" data-goto="${h.s.tab}:${h.s.id}"><b><span class="qt">${esc(h.s.num)}</span>${esc(h.s.name)}</b><em>${TAB_NAMES[h.s.tab]} — ${snip}</em></button>`}).join('');
- qr.classList.add('open');qCur=-1};
-q.addEventListener('input',qRun);
-q.addEventListener('keydown',e=>{const items=$$('.qi',qr);
- if(e.key==='Escape'){qClose();q.blur()}
- else if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!items.length)return;e.preventDefault();
-  qCur=(qCur+(e.key==='ArrowDown'?1:items.length-1)+items.length)%items.length;
-  items.forEach((it,i)=>it.classList.toggle('cur',i===qCur))}
- else if(e.key==='Enter'&&items.length){e.preventDefault();(items[Math.max(qCur,0)]).click()}});
-qr.addEventListener('click',()=>{qClose();q.blur()});
-document.addEventListener('mousedown',e=>{if(!e.target.closest('.search'))qClose()});
+  /**
+   * Escapes HTML special characters for safe insertion into innerHTML.
+   * @param {string} str - Raw string
+   * @returns {string} Escaped string
+   */
+  function escapeHtml(str) {
+    return str.replace(/[&<>"]/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'
+    })[ch]);
+  }
 
-/* ---------- global keyboard shortcuts ---------- */
-document.addEventListener('keydown',e=>{const tag=e.target.tagName;
- if(tag==='INPUT'||tag==='TEXTAREA'||e.metaKey||e.ctrlKey||e.altKey)return;
- if(e.key==='/'){e.preventDefault();q.focus();q.select()}
- else if(e.key>='1'&&e.key<='4')show(TAB_ORDER[+e.key-1])});
 
-/* =========================================================
-   Interactive system diagram — hand-built SVG, no CDN.
-   Geometry + adjacency live in the tables below; the SVG is
-   generated so hover/click/filter state stays one source.
-   ========================================================= */
-const NODES={
- dest:{x:70,y:28,w:250,h:56,mono:1,t:'destinations.ts',s:'DESTINATIONS registry — the five stops',file:'src/app/destinations.ts',
-  d:'The ordered registry of the five stops — <code>id</code>, <code>label</code>, <code>figure</code> key. Nav links, section order and the constellation’s morph order all derive from this one array, so ids can never drift.',
-  links:[['03.5 Data files','map:s-map-data'],['04.6 Add a destination','mod:s-mod-destination']]},
- tok:{x:440,y:28,w:210,h:56,mono:1,t:'styles.css tokens',s:'light-dark() + color-scheme',file:'src/styles.css',
-  d:'Every colour token is declared once with <code>light-dark()</code>; <code>.light-mode</code>/<code>.dark-mode</code> only flip <code>color-scheme</code>. Also home to the type scale, the Nohemi weight ladder, easings and spacing.',
-  links:[['04.5 Design tokens','mod:s-mod-tokens'],['02.5 Theming model','arch:s-arch-theme']]},
- theme:{x:700,y:28,w:230,h:56,t:'ThemeService',s:'signals · OS detect · localStorage',file:'src/app/core/theme.service.ts',
-  d:'Signals-based theme state: OS detection, <code>localStorage</code> persistence, a pre-paint guard in <code>index.html</code>, and the memoized <code>auroraPalette()</code> computed that the shell binds to the aurora.',
-  links:[['02.5 Theming model','arch:s-arch-theme'],['03.4 Core services','map:s-map-services']]},
- tmpl:{x:70,y:162,w:250,h:56,mono:1,t:'app.component.html',s:'5 sections + inert Home clone',file:'src/app/app.component.html',
-  d:'The shell template: five full-viewport <code>&lt;section&gt;</code>s stacked in scroll order, plus the inert Home clone at the end. The clone’s offset <em>is</em> the cycle length, and its top is the seam.',
-  links:[['02.3 The scroll loop','arch:s-arch-loop'],['03.2 Routing logic','map:s-map-routing']]},
- io:{x:70,y:236,w:250,h:56,t:'DOM I/O',s:'scrollY · offsetTop · scrollTo',file:'src/app/app.component.ts',
-  d:'The shell owns every DOM read and write: <code>scrollY</code> on scroll, <code>offsetTop</code> measurement re-run by a <code>ResizeObserver</code>, and the <code>window.scrollTo</code> that applies the seam wrap. Nothing else touches the DOM for scroll (ADR-0007).',
-  links:[['02.3 The scroll loop','arch:s-arch-loop']]},
- pal:{x:705,y:250,w:220,h:52,mono:1,t:'aurora-palette.ts',s:'theme → shader tuning',file:'src/app/core/aurora-palette.ts',
-  d:'Maps dark/light to shader tuning — <code>colorStops</code>, <code>blend</code>, <code>amplitude</code>, <code>speed</code>. The aurora’s look is a theme decision, so the knobs live here, not in the shader.',
-  links:[['04.4 Tune the aurora','mod:s-mod-aurora']]},
- sls:{x:70,y:382,w:250,h:56,t:'ScrollLoopService',s:'position · activeDestination · wrap',file:'src/app/scroll-loop.service.ts',
-  d:'Owns the Cycle state. <code>position</code> is the hot signal — read non-reactively at 60 fps, never template-bound. <code>activeDestination</code> is the bindable computed. <code>wrapOffset</code> says when the seam is due.',
-  links:[['02.4 Signals & the hot path','arch:s-arch-hotpath'],['03.4 Core services','map:s-map-services']]},
- math:{x:70,y:466,w:250,h:52,mono:1,t:'scroll-loop.math.ts',s:'pure, unit-tested',file:'src/app/scroll-loop.math.ts',
-  d:'Pure arithmetic for cycle position and the wrap — no DOM, no Angular, fully spec-covered. If you change loop behaviour, change it here first and let the tests catch you.',
-  links:[['02.3 The scroll loop','arch:s-arch-loop']]},
- pulse:{x:460,y:300,w:220,h:56,t:'FramePulseService',s:'ONE shared rAF, outside NgZone',file:'src/app/core/frame-pulse.service.ts',
-  d:'The single shared <code>requestAnimationFrame</code>, registered outside NgZone. <code>onTick(fn)</code> returns an unsubscribe; the loop starts with the first subscriber, stops with the last, pauses on hidden tabs and resets its clock on return.',
-  links:[['02.4 Signals & the hot path','arch:s-arch-hotpath']]},
- nav:{x:480,y:420,w:230,h:64,t:'SiteNavComponent',s:'z-100 · loop-aware mute · active link',file:'src/app/layout/site-nav/site-nav.component.ts',
-  d:'The persistent nav. Renders its links from <code>DESTINATIONS</code>, mutes near the seam via one <code>--nav-mute</code> custom property written on the shared tick, and binds <code>activeDestination()</code> for the underline and <code>aria-current</code>.',
-  links:[['03.3 Components','map:s-map-components'],['02.6 ADR-0005','arch:s-arch-adr']]},
- fig:{x:70,y:594,w:210,h:60,mono:1,t:'constellation.figures.ts',s:'5 figures × 8 stars',file:'src/app/constellation/constellation.figures.ts',
-  d:'The five 8-star asterisms plus the shared per-index traits (radius, drift amplitude, phase). Exactly 8 stars per figure — the morph maps star <em>i</em> to star <em>i</em>, and the specs enforce it.',
-  links:[['04.3 Tweak the constellation','mod:s-mod-constellation']]},
- con:{x:310,y:594,w:220,h:60,t:'ConstellationComponent',s:'SVG star-map morph',file:'src/app/constellation/constellation.component.ts',
-  d:'The persistent SVG star-map (z-0, mounts once). Each frame it reads <code>position()</code> and interpolates star <em>i</em> between the two adjacent figures; lines cross-fade through the dim point.',
-  links:[['03.3 Components','map:s-map-components'],['04.3 Tweak the constellation','mod:s-mod-constellation']]},
- aur:{x:720,y:594,w:190,h:60,t:'AuroraComponent',s:'OGL WebGL simplex shader',file:'src/app/aurora/aurora.component.ts',
-  d:'The WebGL aurora backdrop — OGL + GLSL simplex noise, with a CSS fallback when WebGL is unavailable. Its look is entirely driven by the palette inputs; the shader itself rarely changes.',
-  links:[['04.4 Tune the aurora','mod:s-mod-aurora']]}};
-const GROUPS=[
- {x:50,y:130,w:290,h:180,t:'AppComponent — the app shell'},
- {x:50,y:344,w:290,h:192,t:'Scroll state'},
- {x:50,y:560,w:880,h:116,t:'Persistent background — z-0, mounts once'}];
-const EDGES=[
- {f:'dest',t:'tmpl',d:'M195,84 L195,156'},
- {f:'dest',t:'fig',d:'M85,84 C15,220 15,460 108,590'},
- {f:'dest',t:'nav',d:'M320,66 C400,140 400,330 512,414'},
- {f:'io',t:'sls',d:'M195,292 L195,376'},
- {f:'sls',t:'math',d:'M195,438 L195,460'},
- {f:'fig',t:'con',d:'M280,624 L304,624'},
- {f:'pulse',t:'con',d:'M500,356 C460,430 435,520 445,588',l:'tick',lx:438,ly:470},
- {f:'pulse',t:'nav',d:'M570,356 L570,414',l:'tick',lx:592,ly:390},
- {f:'sls',t:'con',k:'hot',d:'M320,430 C390,480 400,540 412,588',l:'position() @ 60 fps',lx:372,ly:508},
- {f:'sls',t:'nav',k:'hot',d:'M320,396 C400,396 420,442 474,442',l:'position()',lx:390,ly:388},
- {f:'sls',t:'nav',k:'acc',d:'M320,418 C390,418 405,464 474,464',l:'activeDestination()',lx:386,ly:488},
- {f:'theme',t:'tok',d:'M700,56 L656,56'},
- {f:'theme',t:'pal',d:'M815,84 L815,244'},
- {f:'pal',t:'aur',d:'M815,302 L815,588'}];
-const VIEWS={
- loop:{n:['tmpl','io','sls','math'],e:[3,4],
-  hint:'<b>The scroll loop (ADR-0007):</b> the shell template + DOM I/O feed <code>ScrollLoopService</code>, which delegates the arithmetic to pure, unit-tested math. Read §02.3.'},
- hot:{n:['pulse','sls','con','nav'],e:[6,7,8,9],
-  hint:'<b>The 60 fps hot path:</b> one rAF ticks the constellation and the nav; both read <code>position()</code> non-reactively, so change detection never runs per frame. Read §02.4.'},
- registry:{n:['dest','tmpl','nav','fig'],e:[0,1,2],
-  hint:'<b>Registry fan-out:</b> sections, nav links and morph order all derive from the one <code>DESTINATIONS</code> array — ids can’t drift.'},
- theme:{n:['theme','pal','tok','aur'],e:[11,12,13],
-  hint:'<b>Theming:</b> one service flips <code>color-scheme</code> for the CSS tokens and feeds the palette that tunes the WebGL aurora. Read §02.5.'}};
-const svg=$('#sysdg'),detail=$('#dg-detail'),NS='http://www.w3.org/2000/svg';
-const mk=(t,at,parent)=>{const n=document.createElementNS(NS,t);for(const k in at)n.setAttribute(k,at[k]);parent.append(n);return n};
-// arrowheads
-const defs=mk('defs',{},svg);
-[['dg-ar','#7a7166'],['dg-ar-hot','#e2b93d'],['dg-ar-acc','#ff8c42']].forEach(([id,c])=>{
- const m=mk('marker',{id,markerWidth:7,markerHeight:7,refX:6,refY:3.5,orient:'auto'},defs);
- mk('path',{d:'M0,0 L7,3.5 L0,7 Z',fill:c},m)});
-// group boxes
-GROUPS.forEach(g=>{mk('rect',{class:'grp',x:g.x,y:g.y,width:g.w,height:g.h,rx:12},svg);
- const t=mk('text',{class:'grplbl',x:g.x+14,y:g.y+21},svg);t.textContent=g.t});
-// edges + labels
-const edgeEls=[],lblEls=[];
-EDGES.forEach((E,i)=>{const k=E.k||'solid';
- const p=mk('path',{class:'edge'+(E.k?' '+E.k:''),d:E.d,'marker-end':`url(#dg-ar${k==='hot'?'-hot':k==='acc'?'-acc':''})`},svg);
- edgeEls.push(p);
- if(E.l){const g=mk('g',{class:'elabel'},svg);const w=E.l.length*6.4+10;
-  mk('rect',{class:'elbg',x:E.lx-w/2,y:E.ly-9,width:w,height:15,rx:4},g);
-  const t=mk('text',{class:'elbl'+(E.k?' '+E.k:''),x:E.lx,y:E.ly+3,'text-anchor':'middle'},g);t.textContent=E.l;
-  lblEls.push({g,i})}else lblEls.push(null)});
-// nodes
-const nodeEls={};
-for(const id in NODES){const N=NODES[id];
- const g=mk('g',{class:'node'+(N.mono?' mono':''),tabindex:0,role:'button','data-id':id,'aria-label':N.t+' — '+N.s},svg);
- mk('rect',{x:N.x,y:N.y,width:N.w,height:N.h,rx:9},g);
- const t1=mk('text',{class:'nt',x:N.x+N.w/2,y:N.y+N.h/2-4,'text-anchor':'middle'},g);t1.textContent=N.t;
- const t2=mk('text',{class:'ns',x:N.x+N.w/2,y:N.y+N.h/2+14,'text-anchor':'middle'},g);t2.textContent=N.s;
- nodeEls[id]=g}
-// state
-let view='all',sel=null,hover=null;
-const DEFAULT_HINT='<p class="hint">Nothing selected — hover a node to trace its connections, click it for the full story.</p>';
-const applyState=()=>{let ns=null,es=null;
- const focus=hover||sel;
- if(focus){ns=new Set([focus]);es=new Set();
-  EDGES.forEach((E,i)=>{if(E.f===focus||E.t===focus){es.add(i);ns.add(E.f);ns.add(E.t)}})}
- else if(view!=='all'){ns=new Set(VIEWS[view].n);es=new Set(VIEWS[view].e)}
- for(const id in nodeEls){nodeEls[id].classList.toggle('dim',!!ns&&!ns.has(id));
-  nodeEls[id].classList.toggle('sel',id===sel)}
- edgeEls.forEach((p,i)=>{const on=es?es.has(i):true;
-  p.classList.toggle('dim',!on);
-  p.classList.toggle('hi',es?es.has(i):EDGES[i].k==='hot');
-  const L=lblEls[i];if(L)L.g.classList.toggle('dim',!on)})};
-const renderDetail=()=>{
- if(sel){const N=NODES[sel];
-  detail.innerHTML=`<h4>${esc(N.t)} <code>${esc(N.file)}</code></h4><p>${N.d}</p>`+
-   `<div class="rel">Read more: ${N.links.map(([t,g])=>`<a href="#${g.split(':')[1]||''}" data-goto="${g}">${esc(t)}</a>`).join('')}</div>`}
- else if(view!=='all')detail.innerHTML=`<p class="hint">${VIEWS[view].hint}</p>`;
- else detail.innerHTML=DEFAULT_HINT};
-for(const id in nodeEls){const g=nodeEls[id];
- g.addEventListener('mouseenter',()=>{hover=id;applyState()});
- g.addEventListener('mouseleave',()=>{hover=null;applyState()});
- g.addEventListener('focus',()=>{hover=id;applyState()});
- g.addEventListener('blur',()=>{hover=null;applyState()});
- g.addEventListener('click',()=>{sel=sel===id?null:id;applyState();renderDetail()});
- g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();g.click()}})}
-svg.addEventListener('click',e=>{if(!e.target.closest('.node')){sel=null;applyState();renderDetail()}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sel){sel=null;applyState();renderDetail()}});
-$$('.vbtn').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;sel=null;
- $$('.vbtn').forEach(x=>x.classList.toggle('on',x===b));applyState();renderDetail()}));
-applyState();
+  /* ====================================================================
+     Tab navigation
+     ==================================================================== */
 
-/* ---------- scroll-loop demo ---------- */
-const SEG=700,CYCLE=3500,DEST_IDS=['dest-home','dest-work','dest-about','dest-certifications','dest-contact'];
-const sl=$('#ld-scroll'),ph=$('#ld-playhead'),fl=$('#ld-flash'),play=$('#ld-play');
-const ldY=$('#ld-y'),ldPos=$('#ld-pos'),ldAct=$('#ld-act'),ldWraps=$('#ld-wraps');
-const ldSegs=$$('.ld-seg[data-i]');let wraps=0,playing=false,raf=0;
-const ldRender=()=>{let v=+sl.value;
- if(v>=CYCLE){v-=CYCLE;sl.value=v;wraps++;ldWraps.textContent=wraps;   // the seam: scrollTo(y − cycle)
-  fl.classList.remove('go');void fl.offsetWidth;fl.classList.add('go')}
- const pos=v/SEG,ai=Math.floor(pos+0.5)%5;
- ldY.textContent=Math.round(v);ldPos.textContent=pos.toFixed(2);ldAct.textContent=DEST_IDS[ai];
- ldSegs.forEach(s=>s.classList.toggle('act',+s.dataset.i===ai));
- ph.style.left=(v/(CYCLE+SEG)*100)+'%'};
-sl.addEventListener('input',ldRender);
-const step=()=>{sl.value=+sl.value+4;ldRender();raf=requestAnimationFrame(step)};
-play.addEventListener('click',()=>{playing=!playing;
- play.textContent=playing?'⏸ Pause':'▶ Auto-scroll';play.setAttribute('aria-pressed',playing);
- if(playing)step();else cancelAnimationFrame(raf)});
-if(matchMedia('(prefers-reduced-motion: reduce)').matches)play.style.display='none';
-ldRender();
+  const TAB_ORDER = ['qs', 'arch', 'map', 'mod'];
+  const TAB_NAMES = {
+    qs: 'Get Started',
+    arch: 'How It Works',
+    map: 'The Code',
+    mod: 'Make Changes'
+  };
+
+  const tabButtons = selectAll('.tab');
+  const tabPanels = selectAll('.panel');
+  const sidebarGroups = selectAll('.sgroup');
+
+  /**
+   * Switches the active tab, optionally scrolling to an anchor within it.
+   * @param {string} tabId - Tab key (e.g. 'qs', 'arch')
+   * @param {string} [anchorId] - Optional section id to scroll into view
+   */
+  function showTab(tabId, anchorId) {
+    if (!TAB_ORDER.includes(tabId)) return;
+
+    tabButtons.forEach(btn => {
+      const isActive = btn.dataset.tab === tabId;
+      btn.classList.toggle('on', isActive);
+      btn.setAttribute('aria-selected', isActive);
+      btn.tabIndex = isActive ? 0 : -1;
+    });
+
+    tabPanels.forEach(panel =>
+      panel.classList.toggle('on', panel.id === 'tab-' + tabId)
+    );
+
+    sidebarGroups.forEach(group =>
+      group.classList.toggle('on', group.dataset.tab === tabId)
+    );
+
+    if (anchorId) {
+      const target = document.getElementById(anchorId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', '#' + anchorId);
+      }
+    } else {
+      window.scrollTo({ top: 0 });
+      history.replaceState(null, '', '#tab-' + tabId);
+    }
+  }
+
+  /* Tab click handlers */
+  tabButtons.forEach(btn =>
+    btn.addEventListener('click', () => showTab(btn.dataset.tab))
+  );
+
+  /* Arrow-key navigation between tabs */
+  select('.tabs').addEventListener('keydown', event => {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+
+    const currentIndex = TAB_ORDER.indexOf(
+      document.activeElement.dataset?.tab
+    );
+    if (currentIndex < 0) return;
+
+    const nextIndex = (
+      currentIndex + (event.key === 'ArrowRight' ? 1 : TAB_ORDER.length - 1)
+    ) % TAB_ORDER.length;
+
+    showTab(TAB_ORDER[nextIndex]);
+    tabButtons[nextIndex].focus();
+    event.preventDefault();
+  });
+
+  /* Sidebar link click handlers */
+  selectAll('.slink').forEach(link =>
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      showTab(link.dataset.tab, link.getAttribute('href').slice(1));
+    })
+  );
+
+  /* Cross-tab links: data-goto="tabId" or "tabId:anchorId" */
+  document.addEventListener('click', event => {
+    const gotoEl = event.target.closest('[data-goto]');
+    if (!gotoEl) return;
+    event.preventDefault();
+    const [tabId, anchorId] = gotoEl.dataset.goto.split(':');
+    showTab(tabId, anchorId);
+  });
+
+  /* Deep links: #s-… opens the owning tab; #tab-… opens the tab itself */
+  function openHash(hash) {
+    if (!hash) return;
+    if (hash.startsWith('tab-')) return showTab(hash.slice(4));
+
+    const element = document.getElementById(hash);
+    const panel = element && element.closest('.panel');
+    if (panel) showTab(panel.id.slice(4), hash);
+  }
+
+  openHash(location.hash.slice(1));
+  window.addEventListener('hashchange', () =>
+    openHash(location.hash.slice(1))
+  );
+
+
+  /* ====================================================================
+     Copy-to-clipboard buttons
+     ==================================================================== */
+
+  selectAll('pre[data-copy]').forEach(block => {
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'cbtn';
+    copyBtn.type = 'button';
+    copyBtn.textContent = 'Copy';
+    copyBtn.setAttribute('aria-label', 'Copy code to clipboard');
+
+    copyBtn.addEventListener('click', async () => {
+      const codeText = block.querySelector('code')?.innerText ?? '';
+
+      try {
+        await navigator.clipboard.writeText(codeText);
+      } catch {
+        /* Fallback for older browsers */
+        const textarea = document.createElement('textarea');
+        textarea.value = codeText;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.append(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        textarea.remove();
+      }
+
+      copyBtn.textContent = 'Copied ✓';
+      copyBtn.classList.add('ok');
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy';
+        copyBtn.classList.remove('ok');
+      }, 1600);
+    });
+
+    block.append(copyBtn);
+  });
+
+
+  /* ====================================================================
+     Scrollspy — highlights the current sidebar link
+     ==================================================================== */
+
+  const scrollSpy = new IntersectionObserver(
+    entries => entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        selectAll('.slink').forEach(link =>
+          link.classList.toggle(
+            'cur',
+            link.getAttribute('href') === '#' + entry.target.id
+          )
+        );
+      }
+    }),
+    { rootMargin: '-15% 0px -70% 0px' }
+  );
+
+  selectAll('.panel > section[id]').forEach(section =>
+    scrollSpy.observe(section)
+  );
+
+
+  /* ====================================================================
+     Search
+     ==================================================================== */
+
+  const searchInput = select('#q');
+  const searchResultsEl = select('#qr');
+
+  /** Build the search index from all section headings and content. */
+  const SEARCH_INDEX = selectAll('.panel > section[id]').map(section => {
+    const tab = section.closest('.panel').id.slice(4);
+    const num = section.querySelector('h2 .n')?.textContent.trim() ?? '';
+    const name = section.querySelector('h2')?.textContent
+      .replace(num, '').trim() ?? section.id;
+
+    return {
+      id: section.id,
+      tab,
+      num,
+      name,
+      text: section.textContent.toLowerCase().replace(/\s+/g, ' ')
+    };
+  });
+
+  let searchCursorIndex = -1;
+
+  function closeSearch() {
+    searchResultsEl.classList.remove('open');
+    searchResultsEl.innerHTML = '';
+    searchCursorIndex = -1;
+  }
+
+  function runSearch() {
+    const query = searchInput.value.trim().toLowerCase();
+    if (query.length < 2) return closeSearch();
+
+    const matches = SEARCH_INDEX
+      .map(section => {
+        const inName = section.name.toLowerCase().includes(query);
+        const matchIndex = section.text.indexOf(query);
+        return (inName || matchIndex >= 0)
+          ? { section, matchIndex: Math.max(matchIndex, 0), score: inName ? 0 : 1 }
+          : null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 8);
+
+    if (!matches.length) {
+      searchResultsEl.innerHTML =
+        '<div class="qempty">Nothing found — try a file name, service, or concept like "scroll loop".</div>';
+      searchResultsEl.classList.add('open');
+      searchCursorIndex = -1;
+      return;
+    }
+
+    searchResultsEl.innerHTML = matches.map(match => {
+      const text = match.section.text;
+      const snippetStart = Math.max(0, match.matchIndex - 34);
+      const snippetEnd = Math.min(text.length, match.matchIndex + query.length + 48);
+
+      const snippet =
+        (snippetStart > 0 ? '…' : '') +
+        escapeHtml(text.slice(snippetStart, match.matchIndex)) +
+        '<mark>' + escapeHtml(text.slice(match.matchIndex, match.matchIndex + query.length)) + '</mark>' +
+        escapeHtml(text.slice(match.matchIndex + query.length, snippetEnd)) +
+        (snippetEnd < text.length ? '…' : '');
+
+      return `<button class="qi" role="option" data-goto="${match.section.tab}:${match.section.id}">` +
+        `<b><span class="qt">${escapeHtml(match.section.num)}</span>${escapeHtml(match.section.name)}</b>` +
+        `<em>${TAB_NAMES[match.section.tab]} — ${snippet}</em></button>`;
+    }).join('');
+
+    searchResultsEl.classList.add('open');
+    searchCursorIndex = -1;
+  }
+
+  searchInput.addEventListener('input', runSearch);
+
+  searchInput.addEventListener('keydown', event => {
+    const resultItems = selectAll('.qi', searchResultsEl);
+
+    if (event.key === 'Escape') {
+      closeSearch();
+      searchInput.blur();
+    } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      if (!resultItems.length) return;
+      event.preventDefault();
+
+      searchCursorIndex = (
+        searchCursorIndex +
+        (event.key === 'ArrowDown' ? 1 : resultItems.length - 1) +
+        resultItems.length
+      ) % resultItems.length;
+
+      resultItems.forEach((item, idx) =>
+        item.classList.toggle('cur', idx === searchCursorIndex)
+      );
+    } else if (event.key === 'Enter' && resultItems.length) {
+      event.preventDefault();
+      resultItems[Math.max(searchCursorIndex, 0)].click();
+    }
+  });
+
+  searchResultsEl.addEventListener('click', () => {
+    closeSearch();
+    searchInput.blur();
+  });
+
+  document.addEventListener('mousedown', event => {
+    if (!event.target.closest('.search')) closeSearch();
+  });
+
+
+  /* ====================================================================
+     Global keyboard shortcuts
+     ==================================================================== */
+
+  document.addEventListener('keydown', event => {
+    const tag = event.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' ||
+        event.metaKey || event.ctrlKey || event.altKey) return;
+
+    if (event.key === '/') {
+      event.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    } else if (event.key >= '1' && event.key <= '4') {
+      showTab(TAB_ORDER[+event.key - 1]);
+    }
+  });
+
+
+  /* ====================================================================
+     Interactive system diagram
+     ====================================================================
+     Hand-built SVG, no external dependencies.
+     Geometry + adjacency live in the data tables below; the SVG is
+     generated so hover/click/filter state stays in one place.
+     ==================================================================== */
+
+  /** Node definitions — position, label, file path, description, and cross-links. */
+  const NODES = {
+    dest: {
+      x: 70, y: 28, w: 250, h: 56, mono: 1,
+      t: 'destinations.ts',
+      s: 'DESTINATIONS registry — the five sections',
+      file: 'src/app/destinations.ts',
+      d: 'The single source of truth for all five sections. Nav links, section order, and constellation shapes all derive from this one array — nothing can get out of sync.',
+      links: [
+        ['03.5 Where the Content Lives', 'map:s-map-data'],
+        ['04.6 Add a New Section', 'mod:s-mod-destination']
+      ]
+    },
+    tok: {
+      x: 440, y: 28, w: 210, h: 56, mono: 1,
+      t: 'styles.css tokens',
+      s: 'light-dark() + color-scheme',
+      file: 'src/styles.css',
+      d: 'Every color is defined once using <code>light-dark()</code>. The theme toggle classes just flip <code>color-scheme</code>. This file also holds the type scale, Nohemi weight ladder, easings, and spacing.',
+      links: [
+        ['04.5 Design Tokens', 'mod:s-mod-tokens'],
+        ['02.5 How Theming Works', 'arch:s-arch-theme']
+      ]
+    },
+    theme: {
+      x: 700, y: 28, w: 230, h: 56,
+      t: 'ThemeService',
+      s: 'signals · OS detect · localStorage',
+      file: 'src/app/core/theme.service.ts',
+      d: 'Manages theme state using Angular signals — detects OS preference, persists to <code>localStorage</code>, and exposes the memoized <code>auroraPalette()</code> that controls the aurora\'s colors.',
+      links: [
+        ['02.5 How Theming Works', 'arch:s-arch-theme'],
+        ['03.4 Core Services', 'map:s-map-services']
+      ]
+    },
+    tmpl: {
+      x: 70, y: 162, w: 250, h: 56, mono: 1,
+      t: 'app.component.html',
+      s: '5 sections + inert Home clone',
+      file: 'src/app/app.component.html',
+      d: 'The main template: five full-viewport <code>&lt;section&gt;</code>s stacked in scroll order, plus a hidden Home copy at the end. The copy\'s position defines the cycle length and the wrap point.',
+      links: [
+        ['02.3 The Scroll Loop', 'arch:s-arch-loop'],
+        ['03.2 Navigation', 'map:s-map-routing']
+      ]
+    },
+    io: {
+      x: 70, y: 236, w: 250, h: 56,
+      t: 'DOM I/O',
+      s: 'scrollY · offsetTop · scrollTo',
+      file: 'src/app/app.component.ts',
+      d: 'Handles all scroll-related DOM operations: reads <code>scrollY</code> on scroll, re-measures <code>offsetTop</code> via <code>ResizeObserver</code>, and applies the wrap with <code>window.scrollTo</code>. Nothing else touches the scroll DOM (ADR-0007).',
+      links: [
+        ['02.3 The Scroll Loop', 'arch:s-arch-loop']
+      ]
+    },
+    pal: {
+      x: 705, y: 250, w: 220, h: 52, mono: 1,
+      t: 'aurora-palette.ts',
+      s: 'theme → shader tuning',
+      file: 'src/app/core/aurora-palette.ts',
+      d: 'Translates the current theme into aurora shader settings — <code>colorStops</code>, <code>blend</code>, <code>amplitude</code>, <code>speed</code>. The aurora\'s look is a design decision, so the controls live here, not in the shader.',
+      links: [
+        ['04.4 Tune the Aurora', 'mod:s-mod-aurora']
+      ]
+    },
+    sls: {
+      x: 70, y: 382, w: 250, h: 56,
+      t: 'ScrollLoopService',
+      s: 'position · activeDestination · wrap',
+      file: 'src/app/scroll-loop.service.ts',
+      d: 'Manages the scroll loop state. <code>position</code> is the performance-critical signal — read directly at 60fps, never bound in templates. <code>activeDestination</code> is the safe, template-friendly computed. <code>wrapOffset</code> triggers the seamless wrap.',
+      links: [
+        ['02.4 60fps Performance', 'arch:s-arch-hotpath'],
+        ['03.4 Core Services', 'map:s-map-services']
+      ]
+    },
+    math: {
+      x: 70, y: 466, w: 250, h: 52, mono: 1,
+      t: 'scroll-loop.math.ts',
+      s: 'pure, unit-tested',
+      file: 'src/app/scroll-loop.math.ts',
+      d: 'Pure math for calculating scroll position and the wrap point — no DOM, no Angular, fully unit-tested. Change behavior here first and let the tests catch mistakes.',
+      links: [
+        ['02.3 The Scroll Loop', 'arch:s-arch-loop']
+      ]
+    },
+    pulse: {
+      x: 460, y: 300, w: 220, h: 56,
+      t: 'FramePulseService',
+      s: 'ONE shared rAF, outside NgZone',
+      file: 'src/app/core/frame-pulse.service.ts',
+      d: 'The single shared <code>requestAnimationFrame</code> loop, running outside Angular\'s zone. <code>onTick(fn)</code> returns an unsubscribe function. Automatically pauses on hidden tabs and resets cleanly when the tab returns.',
+      links: [
+        ['02.4 60fps Performance', 'arch:s-arch-hotpath']
+      ]
+    },
+    nav: {
+      x: 480, y: 420, w: 230, h: 64,
+      t: 'SiteNavComponent',
+      s: 'z-100 · loop-aware mute · active link',
+      file: 'src/app/layout/site-nav/site-nav.component.ts',
+      d: 'The persistent navigation bar. Renders links from <code>DESTINATIONS</code>, gradually fades near the scroll wrap point using a <code>--nav-mute</code> CSS property, and highlights the current section via <code>activeDestination()</code>.',
+      links: [
+        ['03.3 Components', 'map:s-map-components'],
+        ['02.6 Design Decisions', 'arch:s-arch-adr']
+      ]
+    },
+    fig: {
+      x: 70, y: 594, w: 210, h: 60, mono: 1,
+      t: 'constellation.figures.ts',
+      s: '5 figures × 8 stars',
+      file: 'src/app/constellation/constellation.figures.ts',
+      d: 'Five constellation figures, each with exactly 8 stars, plus shared traits (size, drift, phase). The morph animation maps each star by index, so every figure must have the same count — tests enforce this.',
+      links: [
+        ['04.3 Tweak the Constellation', 'mod:s-mod-constellation']
+      ]
+    },
+    con: {
+      x: 310, y: 594, w: 220, h: 60,
+      t: 'ConstellationComponent',
+      s: 'SVG star-map morph',
+      file: 'src/app/constellation/constellation.component.ts',
+      d: 'The persistent SVG star map (mounts once, stays in the background). Each frame it reads scroll position and smoothly morphs each star between adjacent constellations. Lines cross-fade at the halfway point.',
+      links: [
+        ['03.3 Components', 'map:s-map-components'],
+        ['04.3 Tweak the Constellation', 'mod:s-mod-constellation']
+      ]
+    },
+    aur: {
+      x: 720, y: 594, w: 190, h: 60,
+      t: 'AuroraComponent',
+      s: 'OGL WebGL simplex shader',
+      file: 'src/app/aurora/aurora.component.ts',
+      d: 'The WebGL aurora background — animated simplex noise via OGL. Falls back to a CSS gradient when WebGL isn\'t available. Its appearance is controlled entirely by the palette inputs.',
+      links: [
+        ['04.4 Tune the Aurora', 'mod:s-mod-aurora']
+      ]
+    }
+  };
+
+  /** Group boxes drawn behind related nodes. */
+  const GROUPS = [
+    { x: 50, y: 130, w: 290, h: 180, t: 'AppComponent — the app shell' },
+    { x: 50, y: 344, w: 290, h: 192, t: 'Scroll state' },
+    { x: 50, y: 560, w: 880, h: 116, t: 'Persistent background — z-0, mounts once' }
+  ];
+
+  /** Edge definitions connecting nodes. */
+  const EDGES = [
+    { f: 'dest',  t: 'tmpl',  d: 'M195,84 L195,156' },
+    { f: 'dest',  t: 'fig',   d: 'M85,84 C15,220 15,460 108,590' },
+    { f: 'dest',  t: 'nav',   d: 'M320,66 C400,140 400,330 512,414' },
+    { f: 'io',    t: 'sls',   d: 'M195,292 L195,376' },
+    { f: 'sls',   t: 'math',  d: 'M195,438 L195,460' },
+    { f: 'fig',   t: 'con',   d: 'M280,624 L304,624' },
+    { f: 'pulse', t: 'con',   d: 'M500,356 C460,430 435,520 445,588', l: 'tick', lx: 438, ly: 470 },
+    { f: 'pulse', t: 'nav',   d: 'M570,356 L570,414', l: 'tick', lx: 592, ly: 390 },
+    { f: 'sls',   t: 'con',   k: 'hot', d: 'M320,430 C390,480 400,540 412,588', l: 'position() @ 60 fps', lx: 372, ly: 508 },
+    { f: 'sls',   t: 'nav',   k: 'hot', d: 'M320,396 C400,396 420,442 474,442', l: 'position()', lx: 390, ly: 388 },
+    { f: 'sls',   t: 'nav',   k: 'acc', d: 'M320,418 C390,418 405,464 474,464', l: 'activeDestination()', lx: 386, ly: 488 },
+    { f: 'theme', t: 'tok',   d: 'M700,56 L656,56' },
+    { f: 'theme', t: 'pal',   d: 'M815,84 L815,244' },
+    { f: 'pal',   t: 'aur',   d: 'M815,302 L815,588' }
+  ];
+
+  /** Filter views — each highlights a subsystem. */
+  const VIEWS = {
+    loop: {
+      n: ['tmpl', 'io', 'sls', 'math'],
+      e: [3, 4],
+      hint: '<b>How scrolling works:</b> the app shell measures scroll position and feeds <code>ScrollLoopService</code>, which delegates all arithmetic to pure, unit-tested math functions. See §02.3.'
+    },
+    hot: {
+      n: ['pulse', 'sls', 'con', 'nav'],
+      e: [6, 7, 8, 9],
+      hint: '<b>The animation pipeline:</b> a single requestAnimationFrame ticks the constellation and nav. Both read <code>position()</code> directly (not through templates), so Angular\'s change detection stays out of the loop. See §02.4.'
+    },
+    registry: {
+      n: ['dest', 'tmpl', 'nav', 'fig'],
+      e: [0, 1, 2],
+      hint: '<b>Source of truth:</b> every section, nav link, and constellation shape derives from the single <code>DESTINATIONS</code> array — nothing can drift out of sync.'
+    },
+    theme: {
+      n: ['theme', 'pal', 'tok', 'aur'],
+      e: [11, 12, 13],
+      hint: '<b>Theming:</b> one service controls <code>color-scheme</code> for all CSS tokens and provides the palette that tunes the WebGL aurora. See §02.5.'
+    }
+  };
+
+  /* --- SVG rendering --- */
+
+  const svgEl = select('#sysdg');
+  const detailEl = select('#dg-detail');
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  /**
+   * Creates an SVG element with the given attributes and appends it to a parent.
+   * @param {string} tag - SVG element name
+   * @param {Object} attrs - Attribute key-value pairs
+   * @param {Element} parent - Parent element to append to
+   * @returns {Element} The created element
+   */
+  function createSvgElement(tag, attrs, parent) {
+    const el = document.createElementNS(SVG_NS, tag);
+    for (const key in attrs) {
+      el.setAttribute(key, attrs[key]);
+    }
+    parent.append(el);
+    return el;
+  }
+
+  /* Arrowhead markers */
+  const defs = createSvgElement('defs', {}, svgEl);
+
+  [
+    ['dg-ar',     '#7a7166'],
+    ['dg-ar-hot', '#e2b93d'],
+    ['dg-ar-acc', '#ff8c42']
+  ].forEach(([id, color]) => {
+    const marker = createSvgElement('marker', {
+      id, markerWidth: 7, markerHeight: 7,
+      refX: 6, refY: 3.5, orient: 'auto'
+    }, defs);
+    createSvgElement('path', { d: 'M0,0 L7,3.5 L0,7 Z', fill: color }, marker);
+  });
+
+  /* Group boxes */
+  GROUPS.forEach(group => {
+    createSvgElement('rect', {
+      class: 'grp',
+      x: group.x, y: group.y,
+      width: group.w, height: group.h, rx: 12
+    }, svgEl);
+
+    const label = createSvgElement('text', {
+      class: 'grplbl',
+      x: group.x + 14, y: group.y + 21
+    }, svgEl);
+    label.textContent = group.t;
+  });
+
+  /* Edges and their labels */
+  const edgeElements = [];
+  const edgeLabelData = [];
+
+  EDGES.forEach((edge, idx) => {
+    const kind = edge.k || 'solid';
+    const markerSuffix = kind === 'hot' ? '-hot' : kind === 'acc' ? '-acc' : '';
+
+    const path = createSvgElement('path', {
+      class: 'edge' + (edge.k ? ' ' + edge.k : ''),
+      d: edge.d,
+      'marker-end': `url(#dg-ar${markerSuffix})`
+    }, svgEl);
+
+    edgeElements.push(path);
+
+    if (edge.l) {
+      const labelGroup = createSvgElement('g', { class: 'elabel' }, svgEl);
+      const labelWidth = edge.l.length * 6.4 + 10;
+
+      createSvgElement('rect', {
+        class: 'elbg',
+        x: edge.lx - labelWidth / 2, y: edge.ly - 9,
+        width: labelWidth, height: 15, rx: 4
+      }, labelGroup);
+
+      const labelText = createSvgElement('text', {
+        class: 'elbl' + (edge.k ? ' ' + edge.k : ''),
+        x: edge.lx, y: edge.ly + 3,
+        'text-anchor': 'middle'
+      }, labelGroup);
+      labelText.textContent = edge.l;
+
+      edgeLabelData.push({ group: labelGroup, edgeIndex: idx });
+    } else {
+      edgeLabelData.push(null);
+    }
+  });
+
+  /* Nodes */
+  const nodeElements = {};
+
+  for (const id in NODES) {
+    const node = NODES[id];
+
+    const group = createSvgElement('g', {
+      class: 'node' + (node.mono ? ' mono' : ''),
+      tabindex: 0,
+      role: 'button',
+      'data-id': id,
+      'aria-label': node.t + ' — ' + node.s
+    }, svgEl);
+
+    createSvgElement('rect', {
+      x: node.x, y: node.y,
+      width: node.w, height: node.h, rx: 9
+    }, group);
+
+    const titleText = createSvgElement('text', {
+      class: 'nt',
+      x: node.x + node.w / 2, y: node.y + node.h / 2 - 4,
+      'text-anchor': 'middle'
+    }, group);
+    titleText.textContent = node.t;
+
+    const subtitleText = createSvgElement('text', {
+      class: 'ns',
+      x: node.x + node.w / 2, y: node.y + node.h / 2 + 14,
+      'text-anchor': 'middle'
+    }, group);
+    subtitleText.textContent = node.s;
+
+    nodeElements[id] = group;
+  }
+
+  /* --- Diagram state management --- */
+
+  let currentView = 'all';
+  let selectedNodeId = null;
+  let hoveredNodeId = null;
+
+  const DEFAULT_HINT =
+    '<p class="hint">Click any box to learn what it does, or hover to trace its connections.</p>';
+
+  /**
+   * Updates the visual state of all nodes and edges based on
+   * the current view, selection, and hover.
+   */
+  function updateDiagramState() {
+    let visibleNodes = null;
+    let visibleEdges = null;
+    const focusId = hoveredNodeId || selectedNodeId;
+
+    if (focusId) {
+      visibleNodes = new Set([focusId]);
+      visibleEdges = new Set();
+
+      EDGES.forEach((edge, idx) => {
+        if (edge.f === focusId || edge.t === focusId) {
+          visibleEdges.add(idx);
+          visibleNodes.add(edge.f);
+          visibleNodes.add(edge.t);
+        }
+      });
+    } else if (currentView !== 'all') {
+      visibleNodes = new Set(VIEWS[currentView].n);
+      visibleEdges = new Set(VIEWS[currentView].e);
+    }
+
+    for (const id in nodeElements) {
+      nodeElements[id].classList.toggle('dim', !!visibleNodes && !visibleNodes.has(id));
+      nodeElements[id].classList.toggle('sel', id === selectedNodeId);
+    }
+
+    edgeElements.forEach((path, idx) => {
+      const isVisible = visibleEdges ? visibleEdges.has(idx) : true;
+      path.classList.toggle('dim', !isVisible);
+      path.classList.toggle('hi', visibleEdges ? visibleEdges.has(idx) : EDGES[idx].k === 'hot');
+
+      const labelData = edgeLabelData[idx];
+      if (labelData) {
+        labelData.group.classList.toggle('dim', !isVisible);
+      }
+    });
+  }
+
+  /** Renders the detail panel for the selected node or current view. */
+  function renderNodeDetail() {
+    if (selectedNodeId) {
+      const node = NODES[selectedNodeId];
+      detailEl.innerHTML =
+        `<h4>${escapeHtml(node.t)} <code>${escapeHtml(node.file)}</code></h4>` +
+        `<p>${node.d}</p>` +
+        `<div class="rel">Read more: ${node.links.map(([label, goto]) =>
+          `<a href="#${goto.split(':')[1] || ''}" data-goto="${goto}">${escapeHtml(label)}</a>`
+        ).join('')}</div>`;
+    } else if (currentView !== 'all') {
+      detailEl.innerHTML = `<p class="hint">${VIEWS[currentView].hint}</p>`;
+    } else {
+      detailEl.innerHTML = DEFAULT_HINT;
+    }
+  }
+
+  /* --- Diagram event handlers --- */
+
+  for (const id in nodeElements) {
+    const group = nodeElements[id];
+
+    group.addEventListener('mouseenter', () => {
+      hoveredNodeId = id;
+      updateDiagramState();
+    });
+    group.addEventListener('mouseleave', () => {
+      hoveredNodeId = null;
+      updateDiagramState();
+    });
+    group.addEventListener('focus', () => {
+      hoveredNodeId = id;
+      updateDiagramState();
+    });
+    group.addEventListener('blur', () => {
+      hoveredNodeId = null;
+      updateDiagramState();
+    });
+    group.addEventListener('click', () => {
+      selectedNodeId = selectedNodeId === id ? null : id;
+      updateDiagramState();
+      renderNodeDetail();
+    });
+    group.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        group.click();
+      }
+    });
+  }
+
+  /* Click empty space to deselect */
+  svgEl.addEventListener('click', event => {
+    if (!event.target.closest('.node')) {
+      selectedNodeId = null;
+      updateDiagramState();
+      renderNodeDetail();
+    }
+  });
+
+  /* Escape to deselect */
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && selectedNodeId) {
+      selectedNodeId = null;
+      updateDiagramState();
+      renderNodeDetail();
+    }
+  });
+
+  /* View filter buttons */
+  selectAll('.vbtn').forEach(btn =>
+    btn.addEventListener('click', () => {
+      currentView = btn.dataset.view;
+      selectedNodeId = null;
+
+      selectAll('.vbtn').forEach(other =>
+        other.classList.toggle('on', other === btn)
+      );
+
+      updateDiagramState();
+      renderNodeDetail();
+    })
+  );
+
+  /* Initial render */
+  updateDiagramState();
+
+
+  /* ====================================================================
+     Scroll-loop demo
+     ==================================================================== */
+
+  const SEGMENT_HEIGHT = 700;
+  const CYCLE_LENGTH = 3500;
+  const DEST_IDS = [
+    'dest-home', 'dest-work', 'dest-about',
+    'dest-certifications', 'dest-contact'
+  ];
+
+  const scrollSlider = select('#ld-scroll');
+  const playhead = select('#ld-playhead');
+  const flashEl = select('#ld-flash');
+  const playButton = select('#ld-play');
+
+  const readoutY = select('#ld-y');
+  const readoutPos = select('#ld-pos');
+  const readoutActive = select('#ld-act');
+  const readoutWraps = select('#ld-wraps');
+  const trackSegments = selectAll('.ld-seg[data-i]');
+
+  let wrapCount = 0;
+  let isPlaying = false;
+  let animFrameId = 0;
+
+  /** Updates all demo visuals from the current slider value. */
+  function renderLoopDemo() {
+    let value = +scrollSlider.value;
+
+    /* The seam: when we cross the cycle, wrap back and flash */
+    if (value >= CYCLE_LENGTH) {
+      value -= CYCLE_LENGTH;
+      scrollSlider.value = value;
+      wrapCount++;
+      readoutWraps.textContent = wrapCount;
+
+      flashEl.classList.remove('go');
+      void flashEl.offsetWidth; /* force reflow for re-animation */
+      flashEl.classList.add('go');
+    }
+
+    const position = value / SEGMENT_HEIGHT;
+    const activeIndex = Math.floor(position + 0.5) % 5;
+
+    readoutY.textContent = Math.round(value);
+    readoutPos.textContent = position.toFixed(2);
+    readoutActive.textContent = DEST_IDS[activeIndex];
+
+    trackSegments.forEach(segment =>
+      segment.classList.toggle('act', +segment.dataset.i === activeIndex)
+    );
+
+    playhead.style.left = (value / (CYCLE_LENGTH + SEGMENT_HEIGHT) * 100) + '%';
+  }
+
+  scrollSlider.addEventListener('input', renderLoopDemo);
+
+  /** Animation step for auto-scroll mode. */
+  function autoScrollStep() {
+    scrollSlider.value = +scrollSlider.value + 4;
+    renderLoopDemo();
+    animFrameId = requestAnimationFrame(autoScrollStep);
+  }
+
+  playButton.addEventListener('click', () => {
+    isPlaying = !isPlaying;
+    playButton.textContent = isPlaying ? '⏸ Pause' : '▶ Auto-scroll';
+    playButton.setAttribute('aria-pressed', isPlaying);
+
+    if (isPlaying) {
+      autoScrollStep();
+    } else {
+      cancelAnimationFrame(animFrameId);
+    }
+  });
+
+  /* Hide auto-scroll for users who prefer reduced motion */
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    playButton.style.display = 'none';
+  }
+
+  /* Initial render */
+  renderLoopDemo();
 })();
 </script>
 </body>
