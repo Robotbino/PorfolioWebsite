@@ -1177,7 +1177,7 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
     <div class="tblwrap"><table>
       <tr><th>Selector</th><th>Location</th><th>What it does</th></tr>
       <tr><td><code>app-root</code></td><td><code>app/</code></td><td>The shell. Measures section anchors, feeds <code>ScrollLoopService</code>, applies the seam wrap, arms scroll reveals.</td></tr>
-      <tr><td><code>app-aurora</code></td><td><code>aurora/</code></td><td>Persistent WebGL backdrop (z-0). OGL + GLSL simplex noise; inputs <code>colorStops · blend · amplitude · speed</code>; CSS fallback when WebGL is unavailable. Under <code>prefers-reduced-motion</code> it paints a single static frame (still theme-reactive) and never joins the frame pulse — the global reduced-motion CSS rule can't reach a canvas.</td></tr>
+      <tr><td><code>app-aurora</code></td><td><code>aurora/</code></td><td>Persistent WebGL backdrop (z-0). OGL + GLSL simplex noise; inputs <code>colorStops · blend · amplitude · speed · lift</code>; CSS fallback when WebGL is unavailable. Under <code>prefers-reduced-motion</code> it paints a single static frame (still theme-reactive) and never joins the frame pulse — the global reduced-motion CSS rule can't reach a canvas.</td></tr>
       <tr><td><code>app-constellation</code></td><td><code>constellation/</code></td><td>Persistent SVG star-map (z-0). Reads <code>position()</code> each frame and interpolates between adjacent figures; lines cross-fade through the dim point.</td></tr>
       <tr><td><code>app-site-nav</code></td><td><code>layout/site-nav/</code></td><td>Persistent nav (z-100). Renders links from <code>DESTINATIONS</code>; mutes via a single <code>--nav-mute</code> custom property on the shared tick; underlines <code>activeDestination()</code>.</td></tr>
       <tr><td><code>app-landingpage</code></td><td><code>landingpage/</code></td><td>Home hero + CV download. <b>Rendered twice</b> — real Home and the inert loop clone — so keep it side-effect safe.</td></tr>
@@ -1307,15 +1307,16 @@ work: figure(<span class="c-str">'Orion'</span>, [
     <pre data-lang="typescript" data-copy><code><span class="c-cmt">// src/app/core/aurora-palette.ts</span>
 <span class="c-key">export function</span> auroraPalette(isDark: <span class="c-key">boolean</span>): AuroraPalette {
   <span class="c-key">return</span> isDark
-    ? { colorStops: [<span class="c-str">'#1E1C1A'</span>, <span class="c-str">'#3D312A'</span>, <span class="c-str">'#5A3D2B'</span>], blend: <span class="c-num">0.5</span>, amplitude: <span class="c-num">1.0</span>,  speed: <span class="c-num">0.5</span> }
-    : { colorStops: [<span class="c-str">'#FDFCFB'</span>, <span class="c-str">'#F5F2EE'</span>, <span class="c-str">'#FAF0E8'</span>], blend: <span class="c-num">1.0</span>, amplitude: <span class="c-num">0.25</span>, speed: <span class="c-num">0.5</span> };
+    ? { colorStops: [<span class="c-str">'#1E1C1A'</span>, <span class="c-str">'#3D312A'</span>, <span class="c-str">'#5A3D2B'</span>], blend: <span class="c-num">0.5</span>, amplitude: <span class="c-num">1.0</span>, speed: <span class="c-num">0.5</span>, lift: <span class="c-num">0</span> }
+    : { colorStops: [<span class="c-str">'#FBEAD9'</span>, <span class="c-str">'#F3D3AE'</span>, <span class="c-str">'#E8BC8C'</span>], blend: <span class="c-num">1.0</span>, amplitude: <span class="c-num">0.6</span>, speed: <span class="c-num">0.5</span>, lift: <span class="c-num">1</span> };
 }</code></pre>
     <div class="tblwrap"><table>
       <tr><th>Knob</th><th>What it controls</th></tr>
-      <tr><td><code>colorStops</code></td><td>Three-stop gradient the simplex noise flows through (left → right)</td></tr>
+      <tr><td><code>colorStops</code></td><td>Three-stop gradient the simplex noise flows through (left → right). Light mode is a warm dawn ramp — cream → peach → amber — deepening rightward into the hero's negative space</td></tr>
       <tr><td><code>blend</code></td><td>How softly the aurora blends into the page background (higher = softer)</td></tr>
-      <tr><td><code>amplitude</code></td><td>Vertical intensity of the waves — light mode keeps this low on purpose</td></tr>
+      <tr><td><code>amplitude</code></td><td>Vertical intensity of the waves — light mode stays calmer (0.6) than dark (1.0)</td></tr>
       <tr><td><code>speed</code></td><td>Flow speed of the noise field</td></tr>
+      <tr><td><code>lift</code></td><td>0 = the ramp is scaled by intensity (dark: colour darkens toward the edges); 1 = the ramp tints at full value so light mode's warm stops actually paint instead of resolving to a grey wash. Without lift, a near-white light ramp renders as neutral grey</td></tr>
     </table></div>
     <p>The shader itself (GLSL simplex noise via <a href="https://github.com/oframe/ogl">OGL</a>) is in <code>src/app/aurora/aurora.component.ts</code>. Change it only if the palette knobs above can't do what you need. If you do, make sure two alternate paths still work: the CSS gradient fallback (when WebGL isn't available) and the reduced-motion path (a single static frame). Both are covered by <code>aurora.component.spec.ts</code> — run <code>npm test</code> after editing.</p>
   </section>
@@ -1776,7 +1777,7 @@ work: figure(<span class="c-str">'Orion'</span>, [
       t: 'aurora-palette.ts',
       s: 'theme → shader tuning',
       file: 'src/app/core/aurora-palette.ts',
-      d: 'Translates the current theme into aurora shader settings — <code>colorStops</code>, <code>blend</code>, <code>amplitude</code>, <code>speed</code>. The aurora\'s look is a design decision, so the controls live here, not in the shader.',
+      d: 'Translates the current theme into aurora shader settings — <code>colorStops</code>, <code>blend</code>, <code>amplitude</code>, <code>speed</code>, <code>lift</code> (0 darkens the ramp by intensity for dark mode, 1 tints at full value so light mode\'s warm stops paint). The aurora\'s look is a design decision, so the controls live here, not in the shader.',
       links: [
         ['04.4 Tune the Aurora', 'mod:s-mod-aurora']
       ]

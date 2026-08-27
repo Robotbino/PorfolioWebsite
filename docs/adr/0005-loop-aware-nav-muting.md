@@ -13,6 +13,18 @@ removed — the nav is now *always* transparent, no toggle" consequence of
 > was already gated on reduced motion, so a hover-less visitor keeps the full,
 > operable nav. This enforces the operability clause rather than changing it.
 
+> **2026-08 amendment — legibility scrim.** The mute above is now off on touch and
+> under reduced motion, and it zeroes on hover — exactly when body copy is most
+> likely to be scrolling behind the transparent bar and colliding with the links.
+> So a *second*, independent signal was added: `--nav-travel` (same loop-aware
+> distance-from-Home math as `--nav-mute`, but written on **every** device and
+> never zeroed by hover) drives a gradient scrim behind the bar
+> (`.navigation-bar::before`, the site's `--scrim-rgb` boxless idiom — **no blur,
+> still no frosted backdrop**). It is suppressed while the mobile overlay or the
+> certificate spotlight supply their own scrim. This restores legibility without
+> touching the mute's declutter behaviour; the two properties are siblings written
+> in the same rAF tick.
+
 ## Context
 
 The hero nav is visually heavy while reading the lower destinations, working against the

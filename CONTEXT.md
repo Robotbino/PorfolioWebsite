@@ -113,7 +113,10 @@ While scrolled away from Home, the Work/About/Certifications/Contact links fade 
 focusable) and the Home (house) icon shrinks and mutes; full nav appears only at the Home
 _Destination_. Driven by loop-aware distance-from-Home (not raw `scrollY`), so it is symmetric
 around the _Seam_ and never pops there. Reveals to full on hover / focus; off under reduced
-motion. See [ADR-0005](adr/0005-loop-aware-nav-muting.md).
+motion. A sibling **legibility scrim** — a `--scrim-rgb` gradient behind the bar, driven by the
+same loop-aware distance but written on _every_ device and never zeroed by hover — keeps body
+copy readable behind the transparent nav where the fade can't (touch, reduced motion, hover).
+No blur, still no frosted backdrop. See [ADR-0005](adr/0005-loop-aware-nav-muting.md).
 
 **Icon at viewport centre**:
 The instant a card's icon crosses the vertical middle of the viewport — an `IntersectionObserver`
