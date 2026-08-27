@@ -288,7 +288,11 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-sm);
+  /* ≥44px touch target with no visual shift: pad the block axis out and pull it
+     back with an equal negative margin (the .hero-social idiom), so the button's
+     baseline in the marquee row is unchanged. */
+  padding: var(--space-md) var(--space-sm);
+  margin-block: calc(-1 * var(--space-md));
   background: none;
   border: none;
   cursor: pointer;
@@ -449,6 +453,12 @@
   letter-spacing: var(--tracking-tight);
   line-height: var(--line-height-tight);
   color: var(--color-text-primary);
+  /* ≥44px touch target on mobile (where the address shrinks to ~20px) without
+     moving the poster line — pad the block axis, pull it back (the .hero-social
+     idiom). The underline ::after is anchored to .marquee-address, not this
+     link, so it is unaffected. */
+  padding-block: var(--space-md);
+  margin-block: calc(-1 * var(--space-md));
   transition: color var(--transition-base);
 }
 

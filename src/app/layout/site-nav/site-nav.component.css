@@ -8,6 +8,36 @@
   padding-top: env(safe-area-inset-top);
 }
 
+/* Legibility scrim — the persistent bar is transparent, so while travelling
+   (away from Home) body copy scrolls straight into the links. This fades the
+   page colour up behind the bar so the nav always reads, on every device.
+   Reuses the site's own --scrim-rgb idiom (.role::before, .about-text::before)
+   — no surface, no glass. Driven by --nav-travel (0 at Home → 1 travelling),
+   which the rAF writes on every device (unlike the fine-pointer-only fade), so
+   it is legibility rather than motion. Sits inside the bar's z-100 stacking
+   context, above page content and below the nav's own children. */
+.navigation-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(100% + var(--space-2xl));
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--scrim-rgb), 0.9) 0%,
+    rgba(var(--scrim-rgb), 0.72) 45%,
+    rgba(var(--scrim-rgb), 0) 100%
+  );
+  opacity: var(--nav-travel, 0);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* The mobile overlay supplies its own full-screen scrim; drop this one so the
+   two never stack into a darker band behind the bar. */
+.navigation-bar.menu-open::before {
+  opacity: 0;
+}
+
 .navigation-content {
   display: flex;
   justify-content: space-between;

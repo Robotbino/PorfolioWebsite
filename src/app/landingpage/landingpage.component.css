@@ -14,7 +14,13 @@
 
 .hero {
   position: relative;
-  min-height: calc(100svh - var(--nav-height));
+  /* Fill the destination exactly. The old `- var(--nav-height)` left the hero
+     shorter than its 100svh .dest, so .dest's justify-content:center split the
+     slack top and bottom — pushing the content a half-nav down and hanging its
+     foot below the fold on short viewports. The nav-height is reclaimed as
+     .hero-frame's bottom padding instead, so the content centres in the band
+     BELOW the sticky nav rather than in the whole viewport. */
+  min-height: 100svh;
   display: flex;
   overflow: hidden;
 }
@@ -27,6 +33,9 @@
   max-width: var(--max-width-content);
   margin-inline: auto;
   padding-inline: var(--space-xl);
+  /* Offsets the persistent nav so the centred content sits in the visible band
+     below it, not in the full viewport (which would tuck it under the bar). */
+  padding-bottom: var(--nav-height);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -358,7 +367,10 @@
   .hero-frame {
     padding-inline: var(--space-md);
     justify-content: space-between;
-    padding-block: var(--space-xl) var(--space-2xl);
+    /* Bottom padding carries the nav-height (as on desktop) so the poster's
+       footer clears the fold on short phones; this overrides the base
+       padding-bottom, so the nav-height is folded back in here. */
+    padding-block: var(--space-xl) calc(var(--space-2xl) + var(--nav-height));
     gap: var(--space-lg);
   }
 
@@ -417,7 +429,9 @@
 
 @media (max-width: 480px) {
   .hero-frame {
-    padding-inline: var(--space-sm);
+    /* Match the nav logo's 16px gutter (--space-md); --space-sm left the hero
+       copy 8px from the edge, misaligned against the nav and .container. */
+    padding-inline: var(--space-md);
   }
 
   .hero-meta {

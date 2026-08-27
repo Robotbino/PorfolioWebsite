@@ -7,13 +7,17 @@ describe('auroraPalette', () => {
     expect(p.blend).toBe(0.5);
     expect(p.amplitude).toBe(1.0);
     expect(p.speed).toBe(0.5);
+    // Dark mode scales the ramp by intensity — no lift.
+    expect(p.lift).toBe(0);
   });
 
-  it('returns the cream light stops and calmer tuning for light mode', () => {
+  it('returns the warm dawn light stops and tuning for light mode', () => {
     const p = auroraPalette(false);
-    expect(p.colorStops).toEqual(['#FDFCFB', '#F5F2EE', '#FAF0E8']);
+    expect(p.colorStops).toEqual(['#FBEAD9', '#F3D3AE', '#E8BC8C']);
     expect(p.blend).toBe(1.0);
-    expect(p.amplitude).toBe(0.25);
+    expect(p.amplitude).toBe(0.6);
     expect(p.speed).toBe(0.5);
+    // Light mode tints at full value so the warm ramp actually paints.
+    expect(p.lift).toBe(1);
   });
 });

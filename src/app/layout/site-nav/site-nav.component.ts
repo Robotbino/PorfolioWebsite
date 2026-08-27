@@ -57,6 +57,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   private unsub: (() => void) | null = null;
   private lastMute = -1;
+  private lastTravel = -1;
   // The travel-fade only runs where its escape hatch exists. ADR-0005 makes
   // operability a condition of the mute: "the nav un-mutes on :hover or
   // :focus-within, so a keyboard / screen-reader user instantly gets the full,
@@ -99,6 +100,9 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
     this.unsub = this.pulse.onTick(() => {
       this.updateActiveLink();
+      // Legibility, not motion: the scrim behind the bar runs on every device,
+      // including touch and reduced-motion, where the travel FADE is suppressed.
+      this.updateTravel();
       if (this.muteAllowed) {
         this.updateMute();
       }
@@ -227,6 +231,26 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
       if (Math.abs(mute - this.lastMute) > 0.001) {
         this.lastMute = mute;
         this.el.nativeElement.style.setProperty('--nav-mute', mute.toFixed(3));
+      }
+    }
+  }
+
+  /**
+   * The legibility scrim behind the bar. Same loop-aware distance-from-Home as
+   * the travel fade (0 at Home, ramping to 1 as we travel), but ALWAYS written:
+   * the scrim keeps body copy readable behind the persistent nav on every
+   * device, whereas the fade is fine-pointer only. Symmetric around the seam,
+   * so it never pops at the wrap.
+   */
+  private updateTravel(): void {
+    const count = this.loop.cycleLength;
+    if (count > 0) {
+      const pos = this.loop.position();
+      const distance = Math.min(pos, count - pos);
+      const travel = Math.min(1, distance / SiteNavComponent.FADE_RANGE);
+      if (Math.abs(travel - this.lastTravel) > 0.001) {
+        this.lastTravel = travel;
+        this.el.nativeElement.style.setProperty('--nav-travel', travel.toFixed(3));
       }
     }
   }

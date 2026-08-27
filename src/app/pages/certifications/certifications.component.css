@@ -6,6 +6,19 @@
   min-height: 100svh;
 }
 
+/* Full-viewport poster: centre the ledger vertically like About/Contact so the
+   destination composes consistently, rather than the header hugging the top
+   with a tall dead band below. min-height (not height) lets a taller ledger
+   grow the section instead of clipping. */
+.section {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(var(--space-2xl), 8vh, var(--space-5xl));
+}
+
 /* ============================================
    CERTIFICATIONS — typographic ledger, no cards
    The Swiss-table idiom from Work's skills index: hairline rules and the grid
@@ -115,6 +128,9 @@
   line-height: var(--line-height-snug);
   letter-spacing: var(--tracking-normal);
   color: var(--color-text-primary);
+  /* Longest titles ("...Fundamentals") can't fit the narrow phone title column
+     beside the thumb chip — wrap rather than run under it. */
+  overflow-wrap: anywhere;
   /* Nudges toward the cursor preview on hover/focus — transform only. */
   transition: transform var(--transition-slow), color var(--transition-base);
 }
@@ -155,6 +171,10 @@
   display: inline-flex;
   align-items: baseline;
   gap: var(--space-xs);
+  /* Pad the block axis to a ~52px touch target. The row height is set by the
+     taller .certs-trigger, so this grows the hit area without moving the row —
+     the same padding-only tactic .hero-social uses. */
+  padding-block: var(--space-md);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-wider);
@@ -547,5 +567,32 @@
     aspect-ratio: 3 / 2;
     object-fit: cover;
     border-radius: var(--radius-sm);
+  }
+}
+
+/* Phones (≤600px): the numeral | title | thumb grid runs out of width and the
+   longest titles overlap the chip. Tighten every column and step the type down
+   one tier so the title cell widens from ~82px to ~170px — enough for the
+   longest single word. After the (hover: none) block so it wins on phones. */
+@media (max-width: 600px) {
+  .certs-trigger {
+    grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+    column-gap: var(--space-sm);
+  }
+
+  .certs-name {
+    font-size: var(--font-size-md);
+  }
+
+  .certs-issuer {
+    font-size: var(--font-size-sm);
+  }
+
+  .certs-thumb {
+    width: 3.25rem;
+  }
+
+  .certs-verify {
+    font-size: 0.6875rem;
   }
 }

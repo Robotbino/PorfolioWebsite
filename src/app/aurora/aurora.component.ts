@@ -27,6 +27,7 @@ uniform float uAmplitude;
 uniform vec3 uColorStops[3];
 uniform vec2 uResolution;
 uniform float uBlend;
+uniform float uLift;
 
 out vec4 fragColor;
 
@@ -112,7 +113,12 @@ void main() {
   float midPoint = 0.20;
   float auroraAlpha = smoothstep(midPoint - uBlend * 0.5, midPoint + uBlend * 0.5, intensity);
 
-  vec3 auroraColor = intensity * rampColor;
+  // uLift lets the ramp TINT the page instead of darkening it: at lift 0 the
+  // colour is scaled by intensity (the dark-mode aurora, unchanged); at lift 1
+  // the ramp paints at full value and only auroraAlpha below shapes the
+  // gradient — so the warm light-mode stops actually render as their colour
+  // rather than a mid-grey wash.
+  vec3 auroraColor = mix(intensity, 1.0, uLift) * rampColor;
 
   vec3 premultiplied = auroraColor * auroraAlpha;
 
@@ -146,6 +152,9 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() speed = 1.0;
   @Input() blend = 0.5;
   @Input() amplitude = 1.0;
+  // 0 = colour scaled by intensity (dark mode); 1 = colour paints at full value
+  // and only alpha shapes the gradient (light mode). See the FRAG note on uLift.
+  @Input() lift = 0;
 
   @ViewChild('container', { static: true }) containerRef!: ElementRef<HTMLDivElement>;
 
@@ -185,6 +194,7 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.program.uniforms.uColorStops.value = this.colorStopsVec;
       this.program.uniforms.uAmplitude.value = this.amplitude;
       this.program.uniforms.uBlend.value = this.blend;
+      this.program.uniforms.uLift.value = this.lift;
       // Under reduced motion nothing is repainting the canvas, so push the new
       // palette to the screen here or the flip would never become visible.
       this.renderStatic?.();
@@ -253,6 +263,7 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
         uColorStops: { value: this.colorStopsVec },
         uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uBlend: { value: this.blend },
+        uLift: { value: this.lift },
       },
     });
 

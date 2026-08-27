@@ -529,6 +529,13 @@ body.certs-spotlight-open .navigation-bar {
   pointer-events: none;
 }
 
+/* The spotlight scrim already darkens the whole viewport behind the nav, so the
+   bar's own legibility scrim (site-nav.component.css) would only double-tint the
+   corner. Drop it while a certificate is open. */
+body.certs-spotlight-open .navigation-bar::before {
+  opacity: 0;
+}
+
 /* visibility (not display): the hidden elements keep their flex slots, so
    nothing reflows toward the corner while the dialog is open; it also takes
    them out of the tab order. The discrete visibility transition flips at the
