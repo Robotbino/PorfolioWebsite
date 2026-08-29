@@ -1,8 +1,27 @@
 /* === LAYOUT === */
-/* Hero — editorial poster. A centred three-part stack (meta / headline / footer).
-   The shell vertically centres every section, so the hero leans into that: an
-   asymmetric, left-anchored headline with deliberate negative space to the right
-   where the constellation behind it can breathe. */
+/* Hero — editorial poster. Four parts distributed across the full viewport
+   height: meta at the top edge, headline dominant, statement under it, footer
+   anchoring the base. Left-anchored and measure-constrained, with deliberate
+   negative space to the right where the constellation behind it can breathe.
+
+   ── CONSTELLATION CLEARANCE (read before changing any size here) ────────────
+   The constellation is the design, not a backdrop, and it is VIEWPORT-CENTRED:
+   top:50% left:50% translate(-50%,-50%), a square clamp(280px, 42vw, 520px).
+   That puts it at roughly x 460–980 on a 1440px viewport and x 700–1220 on a
+   1920px one — straight through the middle of this frame. Below 600px it moves
+   itself to the upper right at 55% opacity, clear of the copy.
+
+   So the hero holds three lines it must not cross:
+     · the headline stays left-anchored (align-self: start) and does NOT grow.
+       "Hlongwana" at Black 900 measures ~5.2em; at the 7.5rem cap that is
+       ~624px from the gutter, which is tuned. At 10rem it would be ~832px and
+       would run through the figure.
+     · the statement keeps a tight measure (42ch) so the right-hand negative
+       space stays open.
+     · the ::before scrim below dims the figure behind the type — widening it
+       hides more of the constellation, so it stays as it is.
+   Display presence is bought by CONTRAST — the eyebrow shrank, the utility
+   voice changed face — never by growing type rightward. */
 
 #my-wrapper {
   position: relative;
@@ -17,9 +36,9 @@
   /* Fill the destination exactly. The old `- var(--nav-height)` left the hero
      shorter than its 100svh .dest, so .dest's justify-content:center split the
      slack top and bottom — pushing the content a half-nav down and hanging its
-     foot below the fold on short viewports. The nav-height is reclaimed as
-     .hero-frame's bottom padding instead, so the content centres in the band
-     BELOW the sticky nav rather than in the whole viewport. */
+     foot below the fold on short viewports. The nav-height is carried inside
+     .hero-frame's own padding instead (see there), so the poster occupies one
+     whole viewport and composes against the sticky bar rather than under it. */
   min-height: 100svh;
   display: flex;
   overflow: hidden;
@@ -33,24 +52,57 @@
   max-width: var(--max-width-content);
   margin-inline: auto;
   padding-inline: var(--space-xl);
-  /* Offsets the persistent nav so the centred content sits in the visible band
-     below it, not in the full viewport (which would tuck it under the bar). */
-  padding-bottom: var(--nav-height);
+  /* The nav-height stays on the BOTTOM. It is not clearance for the bar above —
+     .navigation-bar is `position: sticky` and therefore IN FLOW, so it already
+     pushes .starscroll (and every .dest with it) down by its own height. The
+     consequence is that a 100svh .dest starts at y=96 and its final 96px are
+     always past the fold. This padding is what absorbs that overhang, which is
+     why the footer band lands just above the fold instead of under it.
+     (Put the nav-height on top instead and it is counted twice: the meta drops
+     to 192px and the whole poster hangs 96px off the bottom of the screen.)
+     The insets around it are viewport-HEIGHT linked with a deliberately low
+     floor. They are the poster's breathing room at comfortable heights, but on
+     a short window every pixel they hold is a pixel the composition does not
+     have — and the nav-height above is already an unavoidable fixed cost. So
+     they yield first, before the type does. */
+  padding-top: clamp(var(--space-sm), 3vh, var(--space-2xl));
+  padding-bottom: calc(var(--nav-height) + clamp(var(--space-sm), 3vh, var(--space-2xl)));
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* The poster move. Centring clustered all four bands in the vertical middle —
+     which is both the weakest composition and the worst case for the star map,
+     since that is exactly where the constellation sits. Distributing pushes the
+     meta and footer out to the edges, giving the headline the middle to itself
+     and uncovering more of the figure than the old layout did.
+     The gap stays small deliberately: under space-between it is only a FLOOR
+     (the slack is distributed for us), so raising it would buy nothing at
+     comfortable heights and force overflow on a short laptop — a 1440×640
+     window has ~504px of band for ~456px of content. */
+  justify-content: space-between;
   gap: clamp(var(--space-md), 2.5vh, var(--space-xl));
 }
 
 /* ---- Top meta row ---- */
+/* Editorial annotation, not UI chrome: the utility face (Atkinson, via the base
+   --font-family) at regular weight, opened right out to --tracking-widest. The
+   TRACKING does the annotation work, which is what lets the size stay at 13px
+   instead of dropping to 11 — this has to stay comfortably readable, and
+   --color-text-tertiary is a shade darker than --color-text-muted, which the
+   token block records at ~6.1:1 on the aurora's warm highlight.
+   Weight is normal, not medium: Atkinson ships 400/700 only, so a 500 here
+   would silently resolve to 400 anyway. Say what actually renders. */
 .hero-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  /* Two anchored groups on one line at comfortable widths; wrap is the guard for
+     the narrow band above the ≤768 column stack, where the wide tracking makes
+     a long single row genuinely tight. */
+  flex-wrap: wrap;
   gap: var(--space-md);
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-wider);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   color: var(--color-text-tertiary);
 }
@@ -101,6 +153,11 @@
 }
 
 .hero-eyebrow {
+  /* Stated outright because this is a <p>, not a heading — the global h1–h6 rule
+     can't reach it, and the base --font-family is the utility face now. Display
+     scale demands the display face; without this line the eyebrow would quietly
+     drop into Atkinson while the name beside it stayed Nohemi. */
+  font-family: var(--font-family-display);
   font-size: var(--font-size-display-sm);
   font-weight: var(--font-weight-light);
   letter-spacing: var(--tracking-tight);
@@ -121,7 +178,17 @@
 
 .hero-name {
   display: block;
-  font-size: clamp(3rem, 8.5vw, 7.5rem);
+  /* The clamp is unchanged and stays that way — it is tuned against the
+     constellation (see the clearance note at the top of this file), so it is
+     NOT a candidate for the global display ramp.
+     The min() is a short-viewport guard. 16vh is inert above ~750px of viewport
+     height — every ordinary laptop renders at the full 120px cap, unchanged —
+     and below that it trades headline size for a footer that stays on screen.
+     Measured: it is what keeps 1366×640 (a very common laptop viewport) from
+     dropping the footer past the fold. Two lines of name is the largest single
+     block in this composition, so it is the only lever big enough to matter,
+     and shrinking it uncovers more of the star map as a side effect. */
+  font-size: min(clamp(3rem, 8.5vw, 7.5rem), 16vh);
   line-height: var(--line-height-none);
   letter-spacing: var(--tracking-tighter);
   color: var(--color-text-primary);
@@ -156,7 +223,11 @@
    clear of the negative space the constellation breathes into on the right. */
 .hero-statement {
   align-self: start;
-  max-width: 46ch;
+  /* 42ch, down from 46ch. `ch` is the width of the face's "0", and Atkinson's
+     is meaningfully wider than Nohemi's — holding 46ch through the face change
+     would have crept the measure ~7% to the right, into the negative space the
+     constellation breathes in. Same rendered width, honest unit. */
+  max-width: 42ch;
   font-size: var(--font-size-md);
   line-height: 1.6;
   /* Slight-opacity body colour drops it a tier below the bold lead + headings for
@@ -167,8 +238,13 @@
   color: var(--color-text-statement);
 }
 
+/* The value claim reads as a statement, not as supporting copy — so it takes the
+   display face while the sentences under it stay in the utility voice. That
+   split is the whole point of the two-family system; this is the second and last
+   non-heading element that has to ask for the display face by name. */
 .hero-statement-lead {
   display: block;
+  font-family: var(--font-family-display);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-tight);
@@ -191,7 +267,9 @@
   align-items: baseline;
   gap: var(--space-sm);
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
+  /* normal, not medium: Atkinson has no 500 face, so 500 resolved to 400
+     regardless. Same reasoning as .hero-meta above. */
+  font-weight: var(--font-weight-normal);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-text-secondary);
@@ -219,9 +297,11 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
+  /* Utility face by design — this is an interface control, not display type. */
   font-family: var(--font-family);
   font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
+  /* bold, not semibold: 600 already resolved to Atkinson Bold. Say so. */
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
   color: var(--color-background);
   background: var(--color-accent-vivid);
@@ -292,7 +372,7 @@
   padding: var(--space-md) var(--space-sm);
   margin: calc(-1 * var(--space-md)) calc(-1 * var(--space-sm));
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-normal);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--color-text-tertiary);
@@ -364,12 +444,15 @@
    derived sizing) and the Thin/Black weight contrast sharpens. */
 
 @media (max-width: 768px) {
+  /* justify-content is absent now: space-between became the base composition,
+     so the phone layout and the desktop layout finally agree. Only the insets
+     differ. */
   .hero-frame {
     padding-inline: var(--space-md);
-    justify-content: space-between;
-    /* Bottom padding carries the nav-height (as on desktop) so the poster's
-       footer clears the fold on short phones; this overrides the base
-       padding-bottom, so the nav-height is folded back in here. */
+    /* Phones run their own vertical insets: a tighter top (the mobile bar is
+       shorter than --nav-height) and a deep bottom that carries the nav-height
+       so the poster'''s footer clears the fold on short phones. The shorthand
+       overrides BOTH base paddings, which is the intent. */
     padding-block: var(--space-xl) calc(var(--space-2xl) + var(--nav-height));
     gap: var(--space-lg);
   }
@@ -391,8 +474,16 @@
     inset: -24% -36% -20% -20%;
   }
 
-  .hero-eyebrow {
-    font-size: clamp(1.5rem, 5vw, 2.5rem);
+  /* The meta stacks from 768 down, not 480. As a two-group space-between row at
+     --tracking-widest it needs real width; between 481 and 768 it had neither
+     the room nor the column fallback, so it was squeezing. Tracking steps back
+     to --tracking-wider here too — the wide setting is a desktop-composition
+     device, and stacked on a phone it just costs line length. */
+  .hero-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    letter-spacing: var(--tracking-wider);
+    gap: var(--space-xs);
   }
 
   .hero-footer {
@@ -434,12 +525,11 @@
     padding-inline: var(--space-md);
   }
 
+  /* Column direction and gap are inherited from the ≤768 block above; the only
+     narrow-phone concerns left are size and a tighter setting. */
   .hero-meta {
-    font-size: 0.6875rem;
+    font-size: var(--font-size-2xs);
     letter-spacing: var(--tracking-wide);
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-xs);
   }
 
   .hero-actions {

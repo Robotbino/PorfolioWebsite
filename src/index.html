@@ -39,8 +39,21 @@
    <link rel="preload" href="/assets/fonts/Nohemi-Black.woff2" as="font" type="font/woff2" crossorigin>
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <!-- Instrument Serif italic is the lone editorial accent; Nohemi (body + display) is self-hosted. -->
-   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+   <!-- Three faces, three roles (see the token block in styles.css):
+          Nohemi              — DISPLAY only. Self-hosted, preloaded above.
+          Atkinson Hyperlegible — UTILITY: body, metadata, labels, nav, controls.
+          Instrument Serif    — ACCENT: the italic editorial moment, nothing else.
+
+        One request, not two: `css2?family=A&family=B` costs a single round trip
+        on the connection the preconnects above already opened.
+
+        Atkinson ships 400 and 700 ONLY. CSS font matching resolves the in-between
+        tokens deterministically — --font-weight-medium (500) renders 400, and
+        --font-weight-semibold (600) renders 700; no synthetic weights are made.
+        Hero utility text therefore states 400/700 outright rather than asking for
+        a face that isn't there. Everything else snaps, which is fine and stable.
+        The display ladder is unaffected: Nohemi still carries all eight weights. -->
+   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
    <script>
      // Pre-paint theme guard: set the theme class before first paint so the
      // right palette is painted with no flash. Hand-written mirror of

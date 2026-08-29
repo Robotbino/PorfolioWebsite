@@ -51,11 +51,30 @@
    ============================================ */
 
 :root {
-  /* Typography — Nohemi leads everything; Instrument Serif is the italic accent only. */
-  --font-family: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Typography — THREE faces, THREE roles. Keep them apart.
+     These two used to resolve to the same Nohemi stack, which meant the system
+     had three names but only two voices: metadata and footer labels were the
+     headline's face at 13px, so they read as generic UI chrome rather than as
+     editorial annotation. Nohemi is a geometric display sans — circular bowls,
+     tight apertures — and small uppercase runs are exactly where that breaks
+     down. Atkinson Hyperlegible now carries the utility voice.
+
+       display — large type only: h1–h6, the hero eyebrow and statement lead,
+                 the logo, mobile nav links, poster numerals.
+       (base)  — everything else: body copy, metadata, labels, nav, controls.
+       accent  — a word or two of italic serif. Never a whole heading.
+
+     Anything at display scale must say `--font-family-display` OUT LOUD unless
+     it is an h1–h6 (which the global heading rule below covers). The one
+     non-heading offender, .hero-eyebrow, declares it in landingpage.component.css.
+
+     Atkinson has no 400<w<700 faces — see the note in index.html for how the
+     medium/semibold tokens resolve against it. */
+  --font-family: 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   --font-family-display: 'Nohemi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-family-accent: 'Instrument Serif', Georgia, 'Times New Roman', serif;
 
+  --font-size-2xs: 0.6875rem;
   --font-size-xs: 0.8125rem;
   --font-size-sm: 0.9375rem;
   --font-size-base: 1rem;
@@ -64,15 +83,37 @@
   --font-size-xl: 1.5rem;
   --font-size-2xl: 2rem;
   --font-size-3xl: 2.5rem;
+
+  /* 4xl and 6xl are deliberately LEFT ALONE as fixed rem with breakpoint steps.
+     A fluid rewrite was drafted and reverted: the case for it rested on the
+     section titles being close to overflowing above 768px, and measurement
+     killed that. At a 769px viewport "Certifications" at 6.2rem inks 605px into
+     705px of available width — 100px of headroom, not a few. There is a real
+     43px cliff at the 768 boundary, but it is only ever visible while dragging
+     a window across one pixel, and smoothing it cost 37% off four section
+     titles through the whole 769–1376px band. Not a trade worth making.
+
+     Display presence on this site is bought by making the SMALL rungs smaller
+     (see --font-size-display-sm) rather than the big ones bigger — big display
+     type pushes the left-anchored headlines rightward into the constellation.
+     See the clearance note in landingpage.component.css. */
   --font-size-4xl: 3rem;
-  --font-size-5xl: 4rem;
   --font-size-6xl: 6.2rem;
 
-  /* Fluid display step — poster-scale, breathes with the viewport without
-     per-breakpoint juggling. Used by the hero eyebrow. (The larger
-     --font-size-display was removed: the hero name sets its own clamp() and
-     nothing else ever consumed it.) */
-  --font-size-display-sm: clamp(2.25rem, 5vw, 4rem);
+  /* 5xl is the exception, and fluid on its own merits: its single consumer is
+     the About ledger's poster numeral — one digit, no wrap risk, no horizontal
+     reach — so it can scale with the viewport rather than stepping. The 3rem
+     minimum is exactly the value its old ≤768 override set, so phones are
+     unchanged and the step is gone. */
+  --font-size-5xl: clamp(3rem, 1.5rem + 4vw, 5rem);
+
+  /* Hero eyebrow ("Hello, I'm"). Deliberately reduced — pairing it against the
+     unchanged hero name widens the headline:eyebrow ratio from 1.88 to 2.50 at
+     desktop, so the name dominates by contrast rather than by growing into the
+     star map. (There is no matching --font-size-display: the hero name runs two
+     different curves, desktop and ≤768, both tuned for constellation clearance,
+     and one clamp can't express that. It stays hero-local.) */
+  --font-size-display-sm: clamp(1.6rem, 0.8rem + 3.1vw, 3rem);
 
   /* Full Nohemi weight ladder — the contrast engine of the system. */
   --font-weight-thin: 100;
@@ -158,7 +199,18 @@
   --gradient-overlay-full: light-dark(rgba(255, 255, 255, 1), rgba(18, 18, 18, 1));
   --scrim-rgb: 255, 255, 255;
 
-  /* Spacing Scale */
+  /* Spacing Scale.
+     The six low rungs carry ~160 consumers between them and are load-bearing —
+     leave them alone. The top of the scale is where the range was missing:
+     3xl→4xl was only a 1.25× step, so there was no rung that meant "this is a
+     deliberate silence" as opposed to "this is a gap".
+
+     --space-6xl was deleted. It had zero consumers, and its mobile override was
+     3rem — SMALLER than --space-3xl — so anything that had started using it
+     would have grown on desktop and collapsed on phones. Same reasoning that
+     retired --font-size-display and --font-weight-extrabold: a token with no
+     consumer is a promise nothing keeps. Re-add it with a consumer if a layout
+     ever wants that much air. */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
@@ -166,9 +218,8 @@
   --space-xl: 2rem;
   --space-2xl: 3rem;
   --space-3xl: 4rem;
-  --space-4xl: 5rem;
-  --space-5xl: 6.5rem;
-  --space-6xl: 10rem;
+  --space-4xl: 6rem;
+  --space-5xl: 8rem;
 
   /* Border Radius */
   --radius-sm: 0.5rem;
@@ -195,7 +246,15 @@
   /* Layout */
   --max-width-content: 1400px;
   --max-width-text: 65ch;
-  --section-spacing: var(--space-5xl);
+  /* Deliberately NOT a bare var(--space-5xl) any more. `.section` is used by all
+     four content destinations, each of which lives inside a min-height:100svh
+     .dest — so this value is paid twice per section against a fixed viewport
+     budget. Pinning it to 5xl meant raising that rung (6.5 → 8rem, above) would
+     have silently added ~48px to every section and pushed content toward the
+     fold on short laptops. The clamp scales with the viewport it is actually
+     spending, and is the same idiom About and Certifications already use for
+     their local padding-block. */
+  --section-spacing: clamp(var(--space-2xl), 8vh, var(--space-5xl));
 }
 
 /* ============================================
@@ -385,14 +444,16 @@ textarea:not([rows]) { min-height: 10em; }
    RESPONSIVE BREAKPOINTS
    ============================================ */
 
+/* --font-size-5xl is absent here on purpose: it is a clamp now, and has already
+   interpolated to its 3rem minimum — the exact value this block used to set —
+   by the time this width applies. Restating it would reintroduce the step the
+   clamp exists to remove. The rest still need one. */
 @media (max-width: 768px) {
   :root {
     --font-size-6xl: 3.5rem;
-    --font-size-5xl: 3rem;
     --font-size-4xl: 2.5rem;
     --font-size-3xl: 2rem;
     --space-5xl: 4rem;
-    --space-6xl: 3rem;
     --section-spacing: var(--space-3xl);
   }
 
