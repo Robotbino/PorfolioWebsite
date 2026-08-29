@@ -918,6 +918,7 @@ kbd {
     <a class="slink" data-tab="mod" href="#s-mod-certs">Update certifications</a>
     <a class="slink" data-tab="mod" href="#s-mod-constellation">Tweak the stars</a>
     <a class="slink" data-tab="mod" href="#s-mod-aurora">Tune the aurora</a>
+    <a class="slink" data-tab="mod" href="#s-mod-type">Typography</a>
     <a class="slink" data-tab="mod" href="#s-mod-tokens">Design tokens</a>
     <a class="slink" data-tab="mod" href="#s-mod-destination">Add a new section</a>
   </div>
@@ -1137,9 +1138,9 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
     <h2><span class="n">03.1</span>File Structure at a Glance</h2>
     <pre class="tree"><code><span class="d">src/</span>
 ├─ <span class="d">styles.css</span>              <span class="a">← ALL design tokens (CSS custom properties) + reset + view transitions</span>
-├─ index.html               <span class="a">← Instrument Serif font, pre-paint theme guard, hero-font preloads</span>
+├─ index.html               <span class="a">← Google Fonts (Atkinson + Instrument Serif), pre-paint theme guard, Nohemi preloads</span>
 ├─ main.ts                  <span class="a">← bootstraps AppModule (NgModule app, not standalone)</span>
-├─ assets/                  <span class="a">← Nohemi (.woff2), project screenshots + cert scans (.webp) — served at /assets/</span>
+├─ assets/                  <span class="a">← Nohemi (.woff2, the only self-hosted face), project screenshots + cert scans (.webp) — served at /assets/</span>
 └─ <span class="d">app/</span>
    ├─ app.module.ts         <span class="a">← the single NgModule — every component is declared here</span>
    ├─ app.component.*       <span class="a">← the shell: aurora + constellation + nav + 5 sections + clone</span>
@@ -1321,8 +1322,34 @@ work: figure(<span class="c-str">'Orion'</span>, [
     <p>The shader itself (GLSL simplex noise via <a href="https://github.com/oframe/ogl">OGL</a>) is in <code>src/app/aurora/aurora.component.ts</code>. Change it only if the palette knobs above can't do what you need. If you do, make sure two alternate paths still work: the CSS gradient fallback (when WebGL isn't available) and the reduced-motion path (a single static frame). Both are covered by <code>aurora.component.spec.ts</code> — run <code>npm test</code> after editing.</p>
   </section>
 
+  <section id="s-mod-type">
+    <h2><span class="n">04.5</span>Typography — Three Faces, Three Roles</h2>
+    <p class="lead">The type system runs <b>three faces, and each one has exactly one job</b>. They used to blur: <code>--font-family</code> and <code>--font-family-display</code> both resolved to Nohemi, so the system had three token names but only two voices — which is why hero metadata read as generic UI chrome. Nohemi is a geometric display sans (circular bowls, tight apertures) and small uppercase runs are precisely where that face gives up.</p>
+    <div class="tblwrap"><table>
+      <tr><th>Token</th><th>Face</th><th>Job</th></tr>
+      <tr><td><code>--font-family-display</code></td><td><b>Nohemi</b> — self-hosted <code>.woff2</code></td><td><b>Display only.</b> <code>h1</code>–<code>h6</code>, the hero eyebrow and statement lead, the logo, mobile nav links, poster numerals.</td></tr>
+      <tr><td><code>--font-family</code></td><td><b>Atkinson Hyperlegible</b> — Google Fonts</td><td><b>Utility / body.</b> Everything else: body copy, metadata, labels, nav, controls.</td></tr>
+      <tr><td><code>--font-family-accent</code></td><td><b>Instrument Serif</b> — Google Fonts</td><td><b>Accent.</b> A word or two of italic serif. Never a whole heading.</td></tr>
+    </table></div>
+    <ul>
+      <li><b>Anything at display scale must say <code>--font-family-display</code> out loud</b> unless it's an <code>h1</code>–<code>h6</code> (the global heading rule in <code>styles.css</code> covers those). The one non-heading exception, <code>.hero-eyebrow</code>, declares it in <code>landingpage.component.css</code>.</li>
+      <li><b>Atkinson ships 400 and 700 only.</b> CSS font matching resolves the in-between tokens deterministically — <code>--font-weight-medium</code> (500) renders 400, <code>--font-weight-semibold</code> (600) renders 700. No synthetic weights are made. Hero utility rules state <code>400</code>/<code>700</code> outright rather than asking for a face that isn't there; everything else snaps, which is stable and fine.</li>
+      <li><b>The Nohemi ladder is untouched by that</b> — it still carries all eight weights (100–700, 900) and remains the contrast engine for display type.</li>
+      <li><b>One Google Fonts request, not two.</b> <code>css2?family=Atkinson…&amp;family=Instrument…</code> costs a single round trip on the connection the <code>preconnect</code>s already opened. If you add a face, extend that URL — don't add a second <code>&lt;link&gt;</code>.</li>
+      <li><b>Only two Nohemi weights are preloaded</b> (ExtraLight and Black — what the hero paints first). The preload <code>href</code>s must match the <code>@font-face</code> <code>src</code> in <code>styles.css</code> <em>byte for byte</em>, or the browser fetches a second copy and warns the preload went unused. Both sides are root-absolute for that reason.</li>
+    </ul>
+    <h3>Hero clearance — the rule behind the sizes</h3>
+    <p>The constellation is <b>viewport-centred</b> (<code>top:50% left:50%</code>, a square <code>clamp(280px, 42vw, 520px)</code>), so it runs straight through the middle of the hero frame — roughly x&nbsp;460–980 on a 1440px viewport. It is the design, not a backdrop. The hero therefore holds three lines it must not cross:</p>
+    <ul>
+      <li>The headline stays <b>left-anchored and does not grow</b>. "Hlongwana" at Black 900 measures ~5.2em; at the 7.5rem cap that's ~624px from the gutter, which is tuned. At 10rem it would be ~832px and run through the figure.</li>
+      <li>The statement keeps a <b>tight measure (42ch)</b> so the right-hand negative space stays open. It tightened from 46ch purely to offset Atkinson's wider <code>ch</code>.</li>
+      <li>The <code>::before</code> scrim stays as it is — widening it hides more of the constellation.</li>
+    </ul>
+    <div class="warn"><b>Buy presence with contrast, never with width</b> Display dominance on this site comes from making the <em>small</em> rungs smaller and distributing vertically — not from growing type rightward. The hero eyebrow shrank to widen the headline:eyebrow ratio from 1.88 to 2.50, and <code>.hero-frame</code> uses <code>space-between</code> so meta pins to the top, the headline owns the middle, and the footer anchors the base. The full clearance note sits at the top of <code>landingpage.component.css</code> — read it before changing any size there.</div>
+  </section>
+
   <section id="s-mod-tokens">
-    <h2><span class="n">04.5</span>Update Design Tokens</h2>
+    <h2><span class="n">04.6</span>Update Design Tokens</h2>
     <div class="note"><b>Plain CSS, not SCSS</b> All tokens are CSS custom properties in <code>src/styles.css</code> under <code>:root</code>. That covers the type scale, font weights, colours, spacing, radii, shadows, easings, and layout widths.</div>
     <p>The one theming rule: <b>declare each colour once</b> using <code>light-dark()</code>, never as separate light/dark overrides:</p>
     <pre data-lang="css" data-copy><code><span class="c-cmt">/* src/styles.css — the pattern for every colour token */</span>
@@ -1338,12 +1365,16 @@ work: figure(<span class="c-str">'Orion'</span>, [
       <li><b>Never hardcode hex values in component CSS.</b> Always add a token in <code>styles.css</code> and reference it — otherwise one of the two themes breaks.</li>
       <li><b>Don't add overrides to <code>.light-mode</code>/<code>.dark-mode</code></b> — those classes only flip <code>color-scheme</code> (plus <code>--scrim-rgb</code>, the one documented exception).</li>
       <li><b>Use the house easing.</b> New animations should use <code>--ease-out-expo</code> / <code>--transition-slow</code> — long and calm is the pattern here.</li>
-      <li><b>Nohemi weights are the type system's contrast tool</b> — <code>--font-weight-thin</code> (100) through <code>--font-weight-black</code> (900). There's no weight 800 token — it had no use and was dropped. Re-add the token and its <code>@font-face</code> together if a future design needs it.</li>
+      <li><b>Some rungs are fluid, most step.</b> <code>--font-size-5xl</code> and <code>--font-size-display-sm</code> are <code>clamp()</code>s and must not get a <code>@media</code> override — that's what replaced their old breakpoint step. <code>--font-size-6xl</code> and <code>--font-size-4xl</code> stay stepped <b>on purpose</b>: a fluid rewrite was drafted and reverted because measurement showed the section titles aren't near overflow above 768px (Certifications inks 605px into 705px available), so smoothing the cliff would have cost 37% off four titles for a jump only visible while dragging a window.</li>
+      <li><b><code>--section-spacing</code> is no longer <code>var(--space-5xl)</code></b> — it's <code>clamp(var(--space-2xl), 8vh, var(--space-5xl))</code>. That decoupling is deliberate: <code>.section</code> is used by all four content sections, so raising that spacing rung for one thing used to silently inflate every one of them.</li>
+      <li><b>There is no <code>--space-6xl</code>.</b> It was deleted — zero consumers, and its mobile override was <em>smaller</em> than <code>--space-3xl</code>, so anything that started using it would have shrunk on phones. Don't reintroduce it; <code>--space-4xl</code>/<code>--space-5xl</code> were widened to cover the range.</li>
+      <li><b><code>--font-size-2xs</code> (11px)</b> exists to tokenise what used to be a one-off literal. Reach for it before hardcoding a small size.</li>
+      <li><b>The weight ladder belongs to Nohemi, the display face</b> — <code>--font-weight-thin</code> (100) through <code>--font-weight-black</code> (900). There's no weight 800 token — it had no use and was dropped. Re-add the token and its <code>@font-face</code> together if a future design needs it. Applied to body/utility text the ladder collapses, because Atkinson ships 400/700 only; see <b>04.5 Typography</b>.</li>
     </ul>
   </section>
 
   <section id="s-mod-destination">
-    <h2><span class="n">04.6</span>Add a Whole New Section</h2>
+    <h2><span class="n">04.7</span>Add a Whole New Section</h2>
     <p class="lead">This is less common, but here's the full checklist. The registry keeps the nav and constellation in sync automatically — you only need to touch the shell template and the module by hand.</p>
     <ol>
       <li><b><code>src/app/destinations.ts</code></b> — extend the <code>DestinationFigure</code> union and add the entry at its scroll position (order = array position):
@@ -1726,7 +1757,7 @@ work: figure(<span class="c-str">'Orion'</span>, [
       d: 'The single source of truth for all five sections. Nav links, section order, and constellation shapes all derive from this one array — nothing can get out of sync.',
       links: [
         ['03.5 Where the Content Lives', 'map:s-map-data'],
-        ['04.6 Add a New Section', 'mod:s-mod-destination']
+        ['04.7 Add a New Section', 'mod:s-mod-destination']
       ]
     },
     tok: {
@@ -1734,9 +1765,10 @@ work: figure(<span class="c-str">'Orion'</span>, [
       t: 'styles.css tokens',
       s: 'light-dark() + color-scheme',
       file: 'src/styles.css',
-      d: 'Every color is defined once using <code>light-dark()</code>. The theme toggle classes just flip <code>color-scheme</code>. This file also holds the type scale, Nohemi weight ladder, easings, and spacing.',
+      d: 'Every color is defined once using <code>light-dark()</code>. The theme toggle classes just flip <code>color-scheme</code>. This file also holds the type scale, the three type faces and Nohemi's weight ladder, easings, and spacing.',
       links: [
-        ['04.5 Design Tokens', 'mod:s-mod-tokens'],
+        ['04.6 Design Tokens', 'mod:s-mod-tokens'],
+        ['04.5 Typography', 'mod:s-mod-type'],
         ['02.5 How Theming Works', 'arch:s-arch-theme']
       ]
     },

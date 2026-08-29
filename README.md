@@ -113,16 +113,16 @@ that can be a pure function is one, precisely so it can be tested without a DOM.
 
 ## 🛠️ Tech Stack
 
-| Category       | Technologies                                      |
-|----------------|---------------------------------------------------|
-| Framework      | Angular 19 (NgModules + Signals)                  |
-| Language       | TypeScript 5.6                                    |
-| Graphics       | OGL (WebGL2 shader), SVG morphing                 |
-| Styling        | CSS3 (Custom Properties, Flexbox, Grid)           |
-| Typography     | Nohemi (self-hosted, preloaded), Instrument Serif |
-| Icons          | Font Awesome                                      |
-| Testing        | Jasmine + Karma                                   |
-| Hosting        | Netlify                                           |
+| Category   | Technologies                                                                 |
+|------------|------------------------------------------------------------------------------|
+| Framework  | Angular 19 (NgModules + Signals)                                             |
+| Language   | TypeScript 5.6                                                               |
+| Graphics   | OGL (WebGL2 shader), SVG morphing                                            |
+| Styling    | CSS3 (Custom Properties, Flexbox, Grid)                                      |
+| Typography | Nohemi (display), Atkinson Hyperlegible (body/UI), Instrument Serif (accent) |
+| Icons      | Font Awesome                                                                 |
+| Testing    | Jasmine + Karma                                                              |
+| Hosting    | Netlify                                                                      |
 
 Runtime dependencies are deliberately few: Angular, OGL, RxJS, and Font Awesome. No animation
 library, no GSAP, no UI kit — the motion is hand-rolled against the shared frame pulse.
