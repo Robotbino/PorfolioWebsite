@@ -51,12 +51,13 @@ export class NavTransitionService {
     if (!el) {
       return false;
     }
-    const delta = el.getBoundingClientRect().top;
+    const target = this.landingOffset(el);
+    const delta = target - window.scrollY;
     if (this.motion.reducedMotion()) {
       // Reduced motion: no scroll animation and no transition animation.
       this.jump(el);
     } else if (Math.abs(delta) <= SMOOTH_HOP_MAX_VH * window.innerHeight) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.scrollTo({ top: target, behavior: 'smooth' });
     } else if (options.suppressTransition || !('startViewTransition' in document)) {
       // Suppressed (mobile overlay owns the reveal) or unsupported browser:
       // a clean cut still beats a multi-thousand-pixel whip.
@@ -65,6 +66,29 @@ export class NavTransitionService {
       this.startTransition(el, delta > 0 ? 'down' : 'up');
     }
     return true;
+  }
+
+  /**
+   * The document offset a journey to `el` should land on.
+   *
+   * Normally that is the element's own top — but the first destination is a
+   * special case, because `.navigation-bar` is `position: sticky` and therefore
+   * IN FLOW: it sits above `<main>` and pushes every section down by its own
+   * height. Aligning Home's top to the viewport top (what `scrollIntoView`
+   * does) consequently stops one bar-height SHORT of the page top, and the bar
+   * then sticks over the hero's meta row — the poster is composed for scrollY 0,
+   * so it reads as landing mid-page. Home is the top of the page, so it lands
+   * on the top of the page.
+   *
+   * Derived, not hardcoded: anything sitting at the very start of the scrollable
+   * content has nothing above it but that in-flow bar, so it resolves to 0. The
+   * 1px tolerance absorbs sub-pixel rect rounding.
+   */
+  private landingOffset(el: HTMLElement): number {
+    const top = window.scrollY + el.getBoundingClientRect().top;
+    const content = el.closest('main');
+    const contentTop = content ? window.scrollY + content.getBoundingClientRect().top : 0;
+    return top - contentTop <= 1 ? 0 : top;
   }
 
   /**
@@ -117,9 +141,11 @@ export class NavTransitionService {
    * aborts any in-flight smooth scroll), so when this runs inside a view
    * transition's update callback the landing state — including the section
    * reveal and every teleport listener's repaint — is what gets captured.
+   * The offset is re-derived here rather than passed in, so a teleport measures
+   * the geometry it actually lands in (the old `scrollIntoView` did the same).
    */
   private jump(el: HTMLElement): void {
-    el.scrollIntoView({ behavior: 'instant', block: 'start' });
+    window.scrollTo({ top: this.landingOffset(el), behavior: 'instant' });
     // Don't capture the landing section mid-reveal: the IntersectionObserver
     // that adds this class only fires after the snapshot would be taken.
     el.closest('.dest')?.classList.add('is-visible');
