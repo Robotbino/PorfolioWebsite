@@ -70,7 +70,7 @@ export class FramePulseService implements OnDestroy {
   private tick = (now: number): void => {
     const dt = this.lastTime ? now - this.lastTime : 0;
     this.lastTime = now;
-    this.subs.forEach(fn => fn(now, dt));
+    this.subs.forEach((fn) => fn(now, dt));
 
     // Re-arm only if anyone is still listening. A subscriber that releases from
     // INSIDE its own tick (the certifications spotlight does exactly this) runs

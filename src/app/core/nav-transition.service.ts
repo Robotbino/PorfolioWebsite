@@ -99,14 +99,18 @@ export class NavTransitionService {
     this.zone.runOutsideAngular(() => {
       const t = document.startViewTransition(() => this.jump(el));
       this.activeTransition = t;
-      t.finished.catch(() => {}).finally(() => {
-        // Identity guard: a skipped predecessor's cleanup must not strip the
-        // successor's direction attribute.
-        if (this.activeTransition === t) {
-          this.activeTransition = null;
-          document.documentElement.removeAttribute('data-nav-transition');
-        }
-      });
+      // A skipped transition rejects `finished`; that is the normal path when a
+      // second jump interrupts the first, not an error worth surfacing.
+      t.finished
+        .catch(() => undefined)
+        .finally(() => {
+          // Identity guard: a skipped predecessor's cleanup must not strip the
+          // successor's direction attribute.
+          if (this.activeTransition === t) {
+            this.activeTransition = null;
+            document.documentElement.removeAttribute('data-nav-transition');
+          }
+        });
     });
   }
 

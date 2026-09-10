@@ -1,15 +1,24 @@
-import { ChangeDetectionStrategy, AfterViewInit, Component, ElementRef, OnDestroy, QueryList, ViewChildren, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  QueryList,
+  ViewChildren,
+  inject,
+} from '@angular/core';
 import { MotionSettingsService } from '../../core/motion-settings.service';
 import { InViewportService } from '../../core/in-viewport.service';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'app-about',
-    templateUrl: './about.component.html',
-    styleUrl: './about.component.css',
-    imports: [ScrollRevealDirective, IconComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-about',
+  templateUrl: './about.component.html',
+  styleUrl: './about.component.css',
+  imports: [ScrollRevealDirective, IconComponent],
 })
 export class AboutComponent implements AfterViewInit, OnDestroy {
   private motion = inject(MotionSettingsService);

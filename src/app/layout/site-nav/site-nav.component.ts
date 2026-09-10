@@ -42,11 +42,11 @@ import { ThemeToggleComponent } from '../../shared/theme-toggle/theme-toggle.com
  *   takes the highlight from Work (it is not a destination the loop knows about).
  */
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'app-site-nav',
-    templateUrl: './site-nav.component.html',
-    styleUrl: './site-nav.component.css',
-    imports: [ThemeToggleComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-site-nav',
+  templateUrl: './site-nav.component.html',
+  styleUrl: './site-nav.component.css',
+  imports: [ThemeToggleComponent],
 })
 export class SiteNavComponent implements AfterViewInit, OnDestroy {
   theme = inject(ThemeService);
@@ -145,6 +145,21 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
       });
     } else {
       this.releaseMenuLock();
+    }
+  }
+
+  /**
+   * Close only when the scrim ITSELF was clicked, not the menu panel inside it.
+   *
+   * This used to be a `$event.stopPropagation()` handler on the inner <nav>,
+   * which meant the panel carried a click listener that did nothing but block —
+   * enough for a11y tooling to treat a plain <nav> as an interactive element
+   * with no keyboard path. Comparing target to currentTarget says the same
+   * thing without giving the panel a handler at all.
+   */
+  onScrimClick(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.closeMenu();
     }
   }
 

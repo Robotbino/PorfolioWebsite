@@ -13,7 +13,6 @@ describe('interpolateConstellation', () => {
   const from = constellation('A', [star('a0', 0, 0), star('a1', 10, 20)]);
   const to = constellation('B', [star('b0', 100, 50), star('b1', 30, 0)]);
 
-
   it('clamps progress outside [0, 1]', () => {
     expect(interpolateConstellation(from, to, -1).stars[0].x).toBe(0);
     expect(interpolateConstellation(from, to, 2).stars[0].x).toBe(100);

@@ -1,9 +1,4 @@
-import {
-  easeOutCubic,
-  flipTransform,
-  maskScales,
-  tiltFromVelocity,
-} from './certifications.math';
+import { easeOutCubic, flipTransform, maskScales, tiltFromVelocity } from './certifications.math';
 
 describe('certifications.math', () => {
   describe('tiltFromVelocity', () => {

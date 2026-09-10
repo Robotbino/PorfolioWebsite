@@ -17,7 +17,6 @@ export interface MorphedFigure {
 
 const lerp = (from: number, to: number, t: number): number => from + (to - from) * t;
 
-
 export function interpolateConstellation(
   from: Constellation,
   to: Constellation,

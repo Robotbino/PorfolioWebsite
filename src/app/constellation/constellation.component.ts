@@ -1,4 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, QueryList, ViewChildren, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnDestroy,
+  QueryList,
+  ViewChildren,
+  inject,
+} from '@angular/core';
 import { Constellation, Link, Star } from './constellation.model';
 import { interpolateConstellation } from './constellation-morph';
 import { MAX_LINKS, R, STAR_COUNT, order } from './constellation.figures';
@@ -8,10 +17,10 @@ import { FramePulseService } from '../core/frame-pulse.service';
 import { MotionSettingsService } from '../core/motion-settings.service';
 
 @Component({
-    selector: 'app-constellation',
-    templateUrl: './constellation.component.html',
-    styleUrl: './constellation.component.css',
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-constellation',
+  templateUrl: './constellation.component.html',
+  styleUrl: './constellation.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConstellationComponent implements AfterViewInit, OnDestroy {
   private loop = inject(ScrollLoopService);

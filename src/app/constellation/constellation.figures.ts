@@ -24,7 +24,7 @@ export const PHY = [1.0, 2.2, 0.4, 1.7, 2.6, 0.9, 1.5, 3.0];
 /** Build a constellation from index-ordered coordinates + its own real links. */
 export function figure(
   name: string,
-  coords: ReadonlyArray<readonly [number, number]>,
+  coords: readonly (readonly [number, number])[],
   links: Link[],
 ): Constellation {
   const stars: Star[] = coords.map(([x, y], i) => ({

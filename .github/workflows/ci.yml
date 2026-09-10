@@ -1,0 +1,37 @@
+# Nothing gated a push before this: an unlinted, unformatted, untested commit
+# went straight to production, because Netlify builds whatever lands on main.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      # karma.conf.js launches ChromeHeadless with --no-sandbox, which is what
+      # makes this runnable in a container at all.
+      - name: Test
+        run: npm test -- --watch=false
+
+      # Also runs scripts/gen-headers.mjs, so a build that cannot produce the
+      # CSP fails here rather than silently shipping without one.
+      - name: Build
+        run: npm run build

@@ -26,7 +26,10 @@ describe('AuroraComponent — mobile CSS fallback recolour', () => {
     // Coarse pointer + no hover ⇒ MotionSettings.coarsePointer() is true ⇒ the
     // component takes the CSS fallback, not WebGL.
     window.matchMedia = ((q: string) =>
-      ({ matches: q.includes('coarse'), addEventListener() {} }) as unknown as MediaQueryList) as typeof window.matchMedia;
+      ({
+        matches: q.includes('coarse'),
+        addEventListener() {},
+      }) as unknown as MediaQueryList) as typeof window.matchMedia;
   });
 
   afterEach(() => {
@@ -53,10 +56,7 @@ describe('AuroraComponent — mobile CSS fallback recolour', () => {
     // configuring an already-instantiated testing module throws.
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      providers: [
-        { provide: FramePulseService, useValue: pulse },
-        MotionSettingsService,
-      ],
+      providers: [{ provide: FramePulseService, useValue: pulse }, MotionSettingsService],
     });
     const aurora = TestBed.runInInjectionContext(() => new AuroraComponent());
     const container = document.createElement('div');
@@ -164,7 +164,12 @@ describe('AuroraComponent — reduced motion', () => {
   it('never subscribes to the frame pulse on the WebGL path', () => {
     fakeMedia(false); // fine pointer ⇒ WebGL branch, reduce still on
     let ticks = 0;
-    const pulse = { onTick: () => { ticks++; return () => {}; } } as any;
+    const pulse = {
+      onTick: () => {
+        ticks++;
+        return () => {};
+      },
+    } as any;
     const aurora = makeAurora(pulse);
     const container = document.createElement('div');
     (aurora as any).containerRef = new ElementRef(container);

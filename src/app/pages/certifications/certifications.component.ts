@@ -1,4 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, ViewChild, signal, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  NgZone,
+  OnDestroy,
+  ViewChild,
+  signal,
+  inject,
+} from '@angular/core';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
 import { InViewportService } from '../../core/in-viewport.service';
@@ -7,12 +17,7 @@ import { ScrollLockService } from '../../core/scroll-lock.service';
 import { PageInertService } from '../../core/page-inert.service';
 import { smoothingK } from '../../motion.math';
 import { CERTIFICATIONS, Certification } from './certifications-data';
-import {
-  easeOutCubic,
-  flipTransform,
-  maskScales,
-  tiltFromVelocity,
-} from './certifications.math';
+import { easeOutCubic, flipTransform, maskScales, tiltFromVelocity } from './certifications.math';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 
 /**
@@ -31,11 +36,11 @@ import { ScrollRevealDirective } from '../../scroll-reveal.directive';
  * spotlight (tap to open) carries the full certificate instead.
  */
 @Component({
-    selector: 'app-certifications',
-    templateUrl: './certifications.component.html',
-    styleUrl: './certifications.component.css',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [ScrollRevealDirective],
+  selector: 'app-certifications',
+  templateUrl: './certifications.component.html',
+  styleUrl: './certifications.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ScrollRevealDirective],
 })
 export class CertificationsComponent implements AfterViewInit, OnDestroy {
   private zone = inject(NgZone);

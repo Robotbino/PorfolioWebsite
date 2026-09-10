@@ -27,11 +27,15 @@ if (!existsSync(indexPath)) {
 }
 
 const html = readFileSync(indexPath, 'utf8');
-const sha256 = (source) => `'sha256-${createHash('sha256').update(source, 'utf8').digest('base64')}'`;
+const sha256 = (source) =>
+  `'sha256-${createHash('sha256').update(source, 'utf8').digest('base64')}'`;
 
 /** Inline <script> bodies, skipping src= references and non-executable types (ld+json). */
 const scriptHashes = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)]
-  .filter(([, attrs, body]) => body.trim() && !/\bsrc=/.test(attrs) && !/type=["'](?!text\/javascript)/.test(attrs))
+  .filter(
+    ([, attrs, body]) =>
+      body.trim() && !/\bsrc=/.test(attrs) && !/type=["'](?!text\/javascript)/.test(attrs),
+  )
   .map(([, , body]) => sha256(body));
 
 /** Inline event-handler attributes, which need 'unsafe-hashes' alongside their hash. */

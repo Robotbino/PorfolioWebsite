@@ -1,5 +1,16 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, AfterViewInit, SimpleChanges, ViewChild, inject } from '@angular/core';
-import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  AfterViewInit,
+  SimpleChanges,
+  ViewChild,
+  inject,
+} from '@angular/core';
+import { Renderer, Program, Mesh, Color, Triangle, OGLRenderingContext } from 'ogl';
 import { FramePulseService } from '../core/frame-pulse.service';
 import { MotionSettingsService } from '../core/motion-settings.service';
 
@@ -126,17 +137,17 @@ void main() {
 let auroraFallbackId = 0;
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'app-aurora',
-    template: '<div #container class="aurora-container"></div>',
-    styles: [
-        `
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-aurora',
+  template: '<div #container class="aurora-container"></div>',
+  styles: [
+    `
       .aurora-container {
         width: 100%;
         height: 100%;
       }
     `,
-    ],
+  ],
 })
 export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   private pulse = inject(FramePulseService);
@@ -154,12 +165,12 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   private unsub: (() => void) | null = null;
   private resizeHandler: (() => void) | null = null;
-  private glContext: any = null;
+  private glContext: OGLRenderingContext | null = null;
   private fallbackAnimations: Animation[] = [];
   // The mobile CSS-fallback blob elements, kept so a theme flip can recolour
   // them — the fallback has no WebGL uniforms to push new stops to.
   private fallbackBlobs: HTMLElement[] = [];
-  private program: any = null;
+  private program: Program | null = null;
   // Colour stops converted to GPU vec3s, recomputed only when the `colorStops`
   // input changes (a theme flip) — never per frame.
   private colorStopsVec: number[][] = [];
@@ -180,10 +191,10 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
     // Once the program exists, a later input change (theme flip) pushes straight
     // to the uniforms; before init, ngAfterViewInit seeds them.
     if (this.program) {
-      this.program.uniforms.uColorStops.value = this.colorStopsVec;
-      this.program.uniforms.uAmplitude.value = this.amplitude;
-      this.program.uniforms.uBlend.value = this.blend;
-      this.program.uniforms.uLift.value = this.lift;
+      this.program.uniforms['uColorStops'].value = this.colorStopsVec;
+      this.program.uniforms['uAmplitude'].value = this.amplitude;
+      this.program.uniforms['uBlend'].value = this.blend;
+      this.program.uniforms['uLift'].value = this.lift;
       // Under reduced motion nothing is repainting the canvas, so push the new
       // palette to the screen here or the flip would never become visible.
       this.renderStatic?.();
@@ -222,7 +233,7 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
       const height = ctn.offsetHeight;
       renderer.setSize(width, height);
       if (this.program) {
-        this.program.uniforms.uResolution.value = [width, height];
+        this.program.uniforms['uResolution'].value = [width, height];
       }
       // Resizing reallocates (and clears) the drawing buffer. With the rAF
       // running the next tick redraws anyway; under reduced motion this is the
@@ -233,9 +244,10 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
     window.addEventListener('resize', resize);
 
     const geometry = new Triangle(gl);
-    if ((geometry as any).attributes.uv) {
-      delete (geometry as any).attributes.uv;
-    }
+    // Triangle ships a uv attribute this shader never reads; dropping it saves
+    // uploading a buffer per frame. OGL types `attributes` as a required map,
+    // so the delete goes through the index signature rather than a cast.
+    delete (geometry.attributes as Record<string, unknown>)['uv'];
 
     // Seeded by ngOnChanges (fires before AfterViewInit for the bound input);
     // fall back for the no-binding case so the array is never empty.
@@ -267,8 +279,9 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
       // paint ONE frame at a fixed uTime. The backdrop still reads as an aurora,
       // it just doesn't move. A theme flip repaints via renderStatic() from
       // ngOnChanges, so the palette stays live without a running loop.
+      const staticProgram = this.program;
       this.renderStatic = () => {
-        this.program.uniforms.uTime.value = 0;
+        staticProgram.uniforms['uTime'].value = 0;
         renderer.render({ scene: mesh });
       };
       resize(); // sizes the buffer, then paints via renderStatic
@@ -277,8 +290,12 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     // Only time advances per frame now; palette/amplitude/blend are pushed by
     // ngOnChanges on a theme flip, so there is no per-frame Color allocation.
+    // Captured rather than read off `this` each frame: it is the same object
+    // for the life of the loop, and the closure keeps the null-check from
+    // running sixty times a second for a value that cannot change.
+    const program = this.program;
     this.unsub = this.pulse.onTick((now) => {
-      this.program.uniforms.uTime.value = now * 0.01 * this.speed * 0.1;
+      program.uniforms['uTime'].value = now * 0.01 * this.speed * 0.1;
       renderer.render({ scene: mesh });
     });
 
@@ -294,12 +311,33 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   private buildFallbackBlobs(ctn: HTMLElement): void {
     const blobs = [
-      { w: '120%', h: '60%', t: '-30%', l: '-20%', dur: 12000,
-        a: 'translate3d(-5%,-8%,0) scale(1.1)', b: 'translate3d(8%,5%,0) scale(0.95)' },
-      { w: '100%', h: '50%', t: '-25%', l: '0%', dur: 15000,
-        a: 'translate3d(10%,-5%,0) scale(0.9)', b: 'translate3d(-8%,8%,0) scale(1.05)' },
-      { w: '110%', h: '55%', t: '-28%', l: '-10%', dur: 18000,
-        a: 'translate3d(-3%,5%,0) scale(1.05)', b: 'translate3d(5%,-10%,0) scale(1.1)' },
+      {
+        w: '120%',
+        h: '60%',
+        t: '-30%',
+        l: '-20%',
+        dur: 12000,
+        a: 'translate3d(-5%,-8%,0) scale(1.1)',
+        b: 'translate3d(8%,5%,0) scale(0.95)',
+      },
+      {
+        w: '100%',
+        h: '50%',
+        t: '-25%',
+        l: '0%',
+        dur: 15000,
+        a: 'translate3d(10%,-5%,0) scale(0.9)',
+        b: 'translate3d(-8%,8%,0) scale(1.05)',
+      },
+      {
+        w: '110%',
+        h: '55%',
+        t: '-28%',
+        l: '-10%',
+        dur: 18000,
+        a: 'translate3d(-3%,5%,0) scale(1.05)',
+        b: 'translate3d(5%,-10%,0) scale(1.1)',
+      },
     ];
 
     // Same reasoning as the WebGL path: these are Web Animations API objects, so
@@ -312,19 +350,27 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
       const c = blobs[i];
       const el = document.createElement('div');
       Object.assign(el.style, {
-        position: 'absolute', borderRadius: '50%',
+        position: 'absolute',
+        borderRadius: '50%',
         // will-change earns its keep only while something is actually animating;
         // holding a compositor layer for a static blob is pure cost.
         willChange: animate ? 'transform' : 'auto',
-        opacity: '0.6', width: c.w, height: c.h, top: c.t, left: c.l,
+        opacity: '0.6',
+        width: c.w,
+        height: c.h,
+        top: c.t,
+        left: c.l,
         background: this.blobGradient(hex),
       });
       if (animate) {
         this.fallbackAnimations.push(
-          el.animate(
-            [{ transform: c.a }, { transform: c.b }],
-            { duration: c.dur, easing: 'ease-in-out', iterations: Infinity, direction: 'alternate', fill: 'both' }
-          )
+          el.animate([{ transform: c.a }, { transform: c.b }], {
+            duration: c.dur,
+            easing: 'ease-in-out',
+            iterations: Infinity,
+            direction: 'alternate',
+            fill: 'both',
+          }),
         );
       } else {
         // Rest at the first keyframe so the composition still reads as intended.
@@ -352,8 +398,12 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
     Object.assign(svg.style, {
-      position: 'absolute', inset: '0', width: '100%', height: '100%',
-      opacity: '0.06', pointerEvents: 'none',
+      position: 'absolute',
+      inset: '0',
+      width: '100%',
+      height: '100%',
+      opacity: '0.06',
+      pointerEvents: 'none',
     });
     const fl = document.createElementNS(ns, 'filter');
     fl.setAttribute('id', fId);
@@ -377,7 +427,7 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.fallbackAnimations.forEach(a => a.cancel());
+    this.fallbackAnimations.forEach((a) => a.cancel());
     this.unsub?.();
     if (this.resizeHandler) {
       window.removeEventListener('resize', this.resizeHandler);

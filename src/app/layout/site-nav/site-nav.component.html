@@ -37,6 +37,11 @@
      by inerting everything outside this element while it is open. Without that
      the overlay is the last element in the document, so Tab from the last link
      walks straight into the page behind the scrim. -->
+<!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events --
+     Dismissing by clicking the scrim has a keyboard equivalent already: Escape,
+     handled on the component. The rule's suggested fix — a key handler on this
+     div — would need the div focusable, adding a phantom tab stop inside a
+     dialog whose whole point is a contained tab order. -->
 <div class="mobile-overlay" id="mobile-nav"
      #mobileOverlay
      role="dialog"
@@ -44,8 +49,8 @@
      aria-label="Site menu"
      [class.open]="menuOpen()"
      [attr.aria-hidden]="!menuOpen()"
-     (click)="closeMenu()">
-  <nav class="mobile-nav" aria-label="Mobile navigation" (click)="$event.stopPropagation()">
+     (click)="onScrimClick($event)">
+  <nav class="mobile-nav" aria-label="Mobile navigation">
     @for (d of destinations; track d.id) {
       <a [href]="'#' + d.id" (click)="scrollToSection(d.id, $event); closeMenu()" class="mobile-link">{{ d.label }}</a>
       <!-- Projects sub-anchor inside Work, kept explicit right after Experience. -->

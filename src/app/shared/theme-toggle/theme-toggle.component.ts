@@ -12,12 +12,11 @@ import { ThemeService } from '../../core/theme.service';
  * Usage: `<app-theme-toggle></app-theme-toggle>`
  */
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'app-theme-toggle',
-    templateUrl: './theme-toggle.component.html',
-    styleUrl: './theme-toggle.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-theme-toggle',
+  templateUrl: './theme-toggle.component.html',
+  styleUrl: './theme-toggle.component.css',
 })
 export class ThemeToggleComponent {
   theme = inject(ThemeService);
-
 }

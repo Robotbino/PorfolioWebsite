@@ -1,0 +1,21 @@
+# Build output and vendor
+dist
+.angular
+coverage
+node_modules
+package-lock.json
+
+# Assets and docs are not source
+src/assets
+public
+docs
+
+# Formatting in these is AUTHORED, not incidental, and Prettier undoes it:
+#   * styles.css keeps the eight @font-face rules as one aligned line each, so
+#     the weight ladder reads as a table;
+#   * the component templates use hand-set attribute columns that keep long
+#     bindings scannable;
+#   * index.html's head is grouped and commented by purpose.
+# ESLint still checks these for correctness — this is only about layout.
+*.css
+*.html

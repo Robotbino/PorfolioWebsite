@@ -70,12 +70,12 @@ Visit `http://localhost:4200`.
 
 ### Scripts
 
-| Script | What it does |
-|---|---|
-| `npm start` | Dev server with live reload on `:4200` |
+| Script          | What it does                                               |
+| --------------- | ---------------------------------------------------------- |
+| `npm start`     | Dev server with live reload on `:4200`                     |
 | `npm run build` | Production build into `dist/professional-porfolio/browser` |
-| `npm run watch` | Rebuilding development bundle, no server |
-| `npm test` | Unit tests in Karma + Jasmine |
+| `npm run watch` | Rebuilding development bundle, no server                   |
+| `npm test`      | Unit tests in Karma + Jasmine                              |
 
 ### Tests
 
@@ -116,16 +116,16 @@ that can be a pure function is one, precisely so it can be tested without a DOM.
 
 ## 🛠️ Tech Stack
 
-| Category       | Technologies                                      |
-|----------------|---------------------------------------------------|
-| Framework      | Angular 19 (NgModules + Signals)                  |
-| Language       | TypeScript 5.6                                    |
-| Graphics       | OGL (WebGL2 shader), SVG morphing                 |
-| Styling        | CSS3 (Custom Properties, Flexbox, Grid)           |
-| Typography     | Nohemi (self-hosted, preloaded), Instrument Serif |
-| Icons          | Font Awesome                                      |
-| Testing        | Jasmine + Karma                                   |
-| Hosting        | Netlify                                           |
+| Category   | Technologies                                      |
+| ---------- | ------------------------------------------------- |
+| Framework  | Angular 19 (NgModules + Signals)                  |
+| Language   | TypeScript 5.6                                    |
+| Graphics   | OGL (WebGL2 shader), SVG morphing                 |
+| Styling    | CSS3 (Custom Properties, Flexbox, Grid)           |
+| Typography | Nohemi (self-hosted, preloaded), Instrument Serif |
+| Icons      | Font Awesome                                      |
+| Testing    | Jasmine + Karma                                   |
+| Hosting    | Netlify                                           |
 
 Runtime dependencies are deliberately few: Angular, OGL, RxJS, and Font Awesome. No animation
 library, no GSAP, no UI kit — the motion is hand-rolled against the shared frame pulse.
@@ -195,16 +195,16 @@ CONTEXT.md                     # Design-language glossary
 Every significant design decision is recorded as an ADR — including the ones that were tried and
 rejected, because the trail is the point.
 
-| ADR | Decision | Status |
-|---|---|---|
-| [0001](docs/adr/0001-full-multipage-immersion-first.md) | Full multipage routing, immersion-first | accepted, superseded by 0003 |
-| [0002](docs/adr/0002-star-map-wayfinding-concept.md) | Star-map wayfinding as the unifying concept | accepted, revised by 0003 |
-| [0003](docs/adr/0003-looping-scroll-real-constellations.md) | Looping-scroll immersion with real constellations | accepted |
-| [0004](docs/adr/0004-seamless-loop-clone-wrap.md) | Seamless one-direction loop via a cloned Home buffer | accepted |
-| [0005](docs/adr/0005-loop-aware-nav-muting.md) | Loop-aware (Home-anchored) navigation muting | accepted |
-| [0006](docs/adr/0006-glass-card-surface.md) | Frosted-glass surface for content cards | **rejected** |
-| [0007](docs/adr/0007-deepen-cycle-module.md) | Deepen the Cycle into `ScrollLoopService` | accepted |
-| [0008](docs/adr/0008-projects-showcase-legibility.md) | Projects showcase — progress, focus, keyboard framing | accepted |
+| ADR                                                         | Decision                                              | Status                       |
+| ----------------------------------------------------------- | ----------------------------------------------------- | ---------------------------- |
+| [0001](docs/adr/0001-full-multipage-immersion-first.md)     | Full multipage routing, immersion-first               | accepted, superseded by 0003 |
+| [0002](docs/adr/0002-star-map-wayfinding-concept.md)        | Star-map wayfinding as the unifying concept           | accepted, revised by 0003    |
+| [0003](docs/adr/0003-looping-scroll-real-constellations.md) | Looping-scroll immersion with real constellations     | accepted                     |
+| [0004](docs/adr/0004-seamless-loop-clone-wrap.md)           | Seamless one-direction loop via a cloned Home buffer  | accepted                     |
+| [0005](docs/adr/0005-loop-aware-nav-muting.md)              | Loop-aware (Home-anchored) navigation muting          | accepted                     |
+| [0006](docs/adr/0006-glass-card-surface.md)                 | Frosted-glass surface for content cards               | **rejected**                 |
+| [0007](docs/adr/0007-deepen-cycle-module.md)                | Deepen the Cycle into `ScrollLoopService`             | accepted                     |
+| [0008](docs/adr/0008-projects-showcase-legibility.md)       | Projects showcase — progress, focus, keyboard framing | accepted                     |
 
 ---
 
@@ -228,9 +228,11 @@ via [netlify.toml](netlify.toml):
 <summary>Click to expand</summary>
 
 ### Dark Mode
+
 ![Portfolio in dark mode](src/assets/portfolio_dark_mode.webp)
 
 ### Light Mode
+
 ![Portfolio in light mode](src/assets/portfolio_light_mode.webp)
 
 </details>

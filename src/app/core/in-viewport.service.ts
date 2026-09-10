@@ -32,7 +32,11 @@ export class InViewportService {
   private readonly roots: (Element | Document | null)[] = [];
 
   /** Watch `target`; `onChange(visible)` fires on each crossing. Returns release. */
-  observe(target: Element, options: IntersectionObserverInit, onChange: InViewCallback): () => void {
+  observe(
+    target: Element,
+    options: IntersectionObserverInit,
+    onChange: InViewCallback,
+  ): () => void {
     const key = this.keyFor(options);
     let group = this.groups.get(key);
     if (!group) {

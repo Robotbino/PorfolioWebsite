@@ -12,9 +12,9 @@ import { ICONS, IconName } from './icons';
  * path takes `filter: drop-shadow()` instead (see the About ledger's glow).
  */
 @Component({
-    selector: 'app-icon',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    template: `<svg
+  selector: 'app-icon',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `<svg
     [attr.viewBox]="icon.viewBox"
     xmlns="http://www.w3.org/2000/svg"
     aria-hidden="true"
@@ -22,8 +22,8 @@ import { ICONS, IconName } from './icons';
   >
     <path [attr.d]="icon.path" />
   </svg>`,
-    styles: [
-        `
+  styles: [
+    `
       :host {
         display: inline-block;
         /* Match the optical baseline an icon font sits on, so swapping the
@@ -38,7 +38,7 @@ import { ICONS, IconName } from './icons';
         fill: currentColor;
       }
     `,
-    ],
+  ],
 })
 export class IconComponent {
   /** Which glyph to draw. Compile-checked against the ICONS map. */

@@ -1,4 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, ViewChild, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  NgZone,
+  OnDestroy,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
@@ -10,16 +19,16 @@ import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
-    selector: 'app-work',
-    templateUrl: './work.component.html',
-    // Two stylesheets, one component: the pinned horizontal gallery is a
-    // self-contained enhancement over the vertical card stack, and keeping it
-    // separate also puts each file back inside the anyComponentStyle budget.
-    // Encapsulation is per-component, not per-file, so :host(.showcase-on) in the
-    // second sheet still resolves against this host.
-    styleUrls: ['./work.component.css', './work.showcase.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [ScrollRevealDirective, IconComponent],
+  selector: 'app-work',
+  templateUrl: './work.component.html',
+  // Two stylesheets, one component: the pinned horizontal gallery is a
+  // self-contained enhancement over the vertical card stack, and keeping it
+  // separate also puts each file back inside the anyComponentStyle budget.
+  // Encapsulation is per-component, not per-file, so :host(.showcase-on) in the
+  // second sheet still resolves against this host.
+  styleUrls: ['./work.component.css', './work.showcase.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ScrollRevealDirective, IconComponent],
 })
 export class WorkComponent implements AfterViewInit, OnDestroy {
   private theme = inject(ThemeService);
@@ -152,7 +161,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
       if (this.trackRef) {
         this.trackRef.nativeElement.style.transform = '';
       }
-      this.cards.forEach(c => c.el.style.removeProperty('--card-focus'));
+      this.cards.forEach((c) => c.el.style.removeProperty('--card-focus'));
       this.stageRef?.nativeElement.style.removeProperty('--showcase-progress');
       if (this.viewportRef) {
         this.viewportRef.nativeElement.style.height = '';
@@ -176,7 +185,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     // Cache each card's centre in track-content coords. offsetLeft resolves
     // against the sticky stage (the nearest positioned ancestor), matching the
     // screen-centre math in tick().
-    this.cards = Array.from(track.querySelectorAll<HTMLElement>('.project-card')).map(el => ({
+    this.cards = Array.from(track.querySelectorAll<HTMLElement>('.project-card')).map((el) => ({
       el,
       center: el.offsetLeft + el.offsetWidth / 2,
     }));
@@ -279,11 +288,13 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     if (!this.active || this.stickRange <= 0) {
       return;
     }
-    const card = (event.target as HTMLElement | null)?.closest('.project-card') as HTMLElement | null;
+    const card = (event.target as HTMLElement | null)?.closest(
+      '.project-card',
+    ) as HTMLElement | null;
     if (!card) {
       return;
     }
-    const index = this.cards.findIndex(c => c.el === card);
+    const index = this.cards.findIndex((c) => c.el === card);
     if (index >= 0) {
       this.scrollCardIntoFrame(index);
     }

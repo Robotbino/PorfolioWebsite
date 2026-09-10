@@ -58,13 +58,17 @@ export class PageInertService {
     // the trigger).
     const onPath = new Set<Element>();
     for (const el of keep) {
-      for (let node: Element | null = el; node && node !== document.body; node = node.parentElement) {
+      for (
+        let node: Element | null = el;
+        node && node !== document.body;
+        node = node.parentElement
+      ) {
         onPath.add(node);
       }
     }
 
     for (const el of keep) {
-      for (let node: HTMLElement | null = el; node && node !== document.body; ) {
+      for (let node: HTMLElement | null = el; node && node !== document.body;) {
         const parent: HTMLElement | null = node.parentElement;
         if (!parent) {
           break;

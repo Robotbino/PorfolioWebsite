@@ -1,4 +1,3 @@
-import { NgZone } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ScrollLockService } from './scroll-lock.service';
 

@@ -55,12 +55,13 @@ export const EXPERIENCE_GROUPS: readonly ExperienceGroup[] = [
   },
   {
     label: 'Methodologies',
-    description: 'Agile, Waterfall, Systems Development Life Cycle, Design Patterns, Object-Oriented Programming',
+    description:
+      'Agile, Waterfall, Systems Development Life Cycle, Design Patterns, Object-Oriented Programming',
   },
   {
     label: 'Other Skills',
     description:
-    'Good Communication Skills, Teamwork, Problem Solving, Critical Thinking, Time Management, Adaptability',
+      'Good Communication Skills, Teamwork, Problem Solving, Critical Thinking, Time Management, Adaptability',
   },
 ] as const;
 

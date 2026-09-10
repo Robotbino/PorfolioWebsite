@@ -1,5 +1,4 @@
 import { FramePulseService } from './frame-pulse.service';
-import { NgZone } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 describe('FramePulseService', () => {
@@ -39,7 +38,7 @@ describe('FramePulseService', () => {
 
   function fireFrame(now: number): void {
     const pending = rafCallbacks.splice(0);
-    pending.forEach(cb => cb(now));
+    pending.forEach((cb) => cb(now));
   }
 
   function setHidden(hidden: boolean): void {

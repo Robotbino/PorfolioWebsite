@@ -30,7 +30,10 @@ describe('InViewportService', () => {
       this.observed.clear();
     }
     fire(entries: { target: Element; isIntersecting: boolean }[]): void {
-      this.cb(entries as unknown as IntersectionObserverEntry[], this as unknown as IntersectionObserver);
+      this.cb(
+        entries as unknown as IntersectionObserverEntry[],
+        this as unknown as IntersectionObserver,
+      );
     }
   }
 

@@ -3,11 +3,11 @@ import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'app-contact',
-    templateUrl: './contact.component.html',
-    styleUrl: './contact.component.css',
-    imports: [ScrollRevealDirective, IconComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-contact',
+  templateUrl: './contact.component.html',
+  styleUrl: './contact.component.css',
+  imports: [ScrollRevealDirective, IconComponent],
 })
 export class ContactComponent implements OnDestroy {
   // Signals, not plain fields: both change AFTER an await and again from a

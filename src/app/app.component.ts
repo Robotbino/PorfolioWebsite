@@ -1,4 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, QueryList, ViewChildren, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  NgZone,
+  OnDestroy,
+  QueryList,
+  ViewChildren,
+  inject,
+} from '@angular/core';
 import { ThemeService } from './core/theme.service';
 import { MotionSettingsService } from './core/motion-settings.service';
 import { InViewportService } from './core/in-viewport.service';

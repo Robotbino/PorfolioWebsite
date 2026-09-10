@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core
 import { LocalClockService } from '../core/local-clock.service';
 
 @Component({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    selector: 'app-landingpage',
-    templateUrl: './landingpage.component.html',
-    styleUrl: './landingpage.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-landingpage',
+  templateUrl: './landingpage.component.html',
+  styleUrl: './landingpage.component.css',
 })
 export class LandingpageComponent {
   clock = inject(LocalClockService);

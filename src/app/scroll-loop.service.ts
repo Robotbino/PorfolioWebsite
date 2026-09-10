@@ -34,7 +34,8 @@ export class ScrollLoopService {
    * frame — the rounding collapses a whole section of positions to one id.
    */
   readonly activeDestination = computed(
-    () => DESTINATIONS[activeIndexFor(this._position(), this.cycleLength)]?.id ?? DESTINATIONS[0].id,
+    () =>
+      DESTINATIONS[activeIndexFor(this._position(), this.cycleLength)]?.id ?? DESTINATIONS[0].id,
   );
 
   /** Real destinations (Home, Work, About, Contact) = measured sections − the clone. */
