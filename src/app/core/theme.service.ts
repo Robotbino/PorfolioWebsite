@@ -5,6 +5,13 @@ import { auroraPalette as auroraPaletteFor } from './aurora-palette';
 const STORAGE_KEY = 'theme';
 
 /**
+ * Browser-chrome tint per palette, matching `--color-background` in styles.css.
+ * The pre-paint guard in index.html hard-codes the same two values (it runs
+ * before any module loads) — change them together.
+ */
+const THEME_COLOR = { dark: '#121212', light: '#ffffff' } as const;
+
+/**
  * Owns the site's dark/light theme: the source of truth that was previously
  * trapped inside LandingpageComponent. Lives at the app shell so the persistent
  * background (aurora/constellation) and the nav can all react to one signal.
@@ -55,5 +62,12 @@ export class ThemeService {
     const root = document.documentElement;
     root.classList.toggle('dark-mode', this.isDark());
     root.classList.toggle('light-mode', !this.isDark());
+
+    // Mobile browser chrome follows the palette. This used to be two
+    // media-scoped <meta> tags, which only ever tracked the OS — a visitor who
+    // toggled away from their OS preference got chrome that fought the page.
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', this.isDark() ? THEME_COLOR.dark : THEME_COLOR.light);
   }
 }

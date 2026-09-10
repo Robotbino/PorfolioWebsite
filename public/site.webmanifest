@@ -1,0 +1,13 @@
+{
+  "name": "Bino Hlongwana — Full-Stack Developer",
+  "short_name": "Bino Hlongwana",
+  "description": "Enterprise software that holds up. Java EE case-management and workflow systems.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

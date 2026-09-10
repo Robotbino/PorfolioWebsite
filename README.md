@@ -65,6 +65,9 @@ cd PorfolioWebsite && npm install && npm start
 
 Visit `http://localhost:4200`.
 
+> The repo also carries `.claude/launch.json`, which starts the same server on
+> **4388** for the in-editor preview. Both are the same `npm start`.
+
 ### Scripts
 
 | Script | What it does |
@@ -210,9 +213,12 @@ rejected, because the trail is the point.
 Live at **[binohlongwana.netlify.app](https://binohlongwana.netlify.app/)**, deployed to **Netlify**
 via [netlify.toml](netlify.toml):
 
-- Build: `ng build --configuration production`
+- Build: `npm run build` (`ng build`, then `scripts/gen-headers.mjs`)
 - Publish directory: `dist/professional-porfolio/browser`
 - SPA fallback: `/* → /index.html 200` (also mirrored in `src/_redirects`)
+- Caching and security headers live in [netlify.toml](netlify.toml); the
+  Content-Security-Policy is generated into `_headers` after each build, because
+  it carries the hash of the pre-paint theme guard in `index.html`
 
 ---
 

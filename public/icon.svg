@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Bino Hlongwana">
+  <!-- The nav wordmark reduced to its monogram: the "B" of "Bino" plus the accent
+       dot that follows it (see layout/site-nav — `Bino` + `.logo-dot`). Drawn as
+       geometry, not text, so it renders identically without the Nohemi webfont.
+       Dark ground in both themes, matching the site's own identity. -->
+  <rect width="100" height="100" rx="22" fill="#121212"/>
+  <g fill="#e8e8e8">
+    <rect x="18" y="20" width="14" height="60"/>
+    <path d="M32 20 H46 A15 15 0 0 1 46 50 H32 Z"/>
+    <path d="M32 50 H48 A15 15 0 0 1 48 80 H32 Z"/>
+  </g>
+  <circle cx="76" cy="72" r="8" fill="#ff8c42"/>
+</svg>

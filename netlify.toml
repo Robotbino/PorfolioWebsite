@@ -1,8 +1,68 @@
+# Netlify build + edge configuration.
+#
+# Headers live in two places on purpose:
+#   * the static ones (caching, the security set that never changes) are here;
+#   * the Content-Security-Policy is GENERATED into `_headers` by
+#     scripts/gen-headers.mjs after each build, because it has to carry the
+#     SHA-256 of the pre-paint theme guard in index.html — hand-copying that
+#     hash means the theme silently breaks the first time the guard is edited.
+# Netlify merges both sources.
+
 [build]
-command = "ng build --configuration production"
+command = "npm run build"
 publish = "dist/professional-porfolio/browser"
 
 [[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200
+
+# ── Caching ────────────────────────────────────────────────────────────────
+# Everything the build fingerprints (outputHashing: "all") can be cached
+# forever: a change produces a new filename.
+[[headers]]
+for = "/*.js"
+  [headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.css"
+  [headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/media/*"
+  [headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"
+
+# The fonts are deliberately NOT build-processed (see the long note in
+# styles.css: the index.html preloads have to name a stable path). That trade
+# only works if they are cached hard here — the weight is in the filename, so a
+# new face is a new URL.
+[[headers]]
+for = "/assets/fonts/*"
+  [headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"
+
+# Images and the CV keep their names across edits, so they revalidate daily
+# rather than being frozen for a year.
+[[headers]]
+for = "/assets/*"
+  [headers.values]
+  Cache-Control = "public, max-age=86400, must-revalidate"
+
+[[headers]]
+for = "/index.html"
+  [headers.values]
+  Cache-Control = "public, max-age=0, must-revalidate"
+
+# ── Security ───────────────────────────────────────────────────────────────
+[[headers]]
+for = "/*"
+  [headers.values]
+  X-Content-Type-Options = "nosniff"
+  X-Frame-Options = "DENY"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+  Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+  Cross-Origin-Opener-Policy = "same-origin"

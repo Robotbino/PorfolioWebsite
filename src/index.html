@@ -1,30 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-ZA">
   <head>
     <meta charset="utf-8" />
     <title>Bino Hlongwana — Full-Stack Developer</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="icon" href="favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Document head — shared-link identity. The tab title, search snippet and
-         social card all read from here; the theme-color pair tints mobile
-         browser chrome to match each palette. -->
+         social card all read from here. theme-color is a SINGLE tag written by
+         the pre-paint guard below and kept current by ThemeService: the old
+         media-scoped pair only ever followed the OS, so a visitor who chose the
+         other palette got browser chrome that fought the page. -->
     <meta name="description" content="Bino Hlongwana — Pretoria-based full-stack developer. Three years building Java EE case-management and workflow systems for a national government client, now moving into consulting." />
     <link rel="canonical" href="https://binohlongwana.netlify.app/" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#121212" />
+    <meta name="author" content="Bino Hlongwana" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://binohlongwana.netlify.app/" />
     <meta property="og:title" content="Bino Hlongwana — Full-Stack Developer" />
     <meta property="og:description" content="Enterprise software that holds up. Three years of Java EE case-management and workflow systems, now moving into consulting." />
-    <meta property="og:image" content="https://binohlongwana.netlify.app/assets/portfolio_dark_mode.webp" />
+    <meta property="og:image" content="https://binohlongwana.netlify.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Bino Hlongwana — Full-Stack Developer. Enterprise software that holds up." />
+    <meta property="og:site_name" content="Bino Hlongwana" />
+    <meta property="og:locale" content="en_ZA" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Bino Hlongwana — Full-Stack Developer" />
     <meta name="twitter:description" content="Enterprise software that holds up. Three years of Java EE case-management and workflow systems, now moving into consulting." />
-    <meta name="twitter:image" content="https://binohlongwana.netlify.app/assets/portfolio_dark_mode.webp" />
+    <meta name="twitter:image" content="https://binohlongwana.netlify.app/og-image.png" />
+    <meta name="twitter:image:alt" content="Bino Hlongwana — Full-Stack Developer. Enterprise software that holds up." />
     <!-- Nohemi ExtraLight(200) + Black(900) are the hero headline's two weights —
         the LCP element. Preloading them means the first paint of "Bino
         Hlongwana" is already in the real face instead of painting in the
@@ -49,12 +60,44 @@
      // BOTH directions: a dark-OS visitor who chose light needs `.light-mode`
      // pre-paint to override the `@media (prefers-color-scheme: dark)` tokens,
      // otherwise they flash dark until Angular boots.
+     //
+     // The same decision drives theme-color, so mobile browser chrome matches
+     // the palette from the very first frame. ThemeService.applyTheme() writes
+     // the same two values on every later flip — keep the pair in sync.
      (function() {
        const saved = localStorage.getItem('theme');
        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
        const dark = saved === 'dark' || saved === 'light' ? saved === 'dark' : prefersDark;
        document.documentElement.classList.add(dark ? 'dark-mode' : 'light-mode');
+       const meta = document.querySelector('meta[name="theme-color"]');
+       if (meta) { meta.setAttribute('content', dark ? '#121212' : '#ffffff'); }
      })();
+   </script>
+   <!-- Structured data: the facts the copy already states, made machine-readable
+        so search results can show the role, the employer and the profiles. Keep
+        this in step with the hero, About and Contact copy — nothing here may
+        claim more than the page does. -->
+   <script type="application/ld+json">
+     {
+       "@context": "https://schema.org",
+       "@type": "Person",
+       "name": "Bino Hlongwana",
+       "url": "https://binohlongwana.netlify.app/",
+       "jobTitle": "Full-Stack Developer",
+       "email": "mailto:HlongwanaBino@gmail.com",
+       "address": {
+         "@type": "PostalAddress",
+         "addressLocality": "Pretoria",
+         "addressCountry": "ZA"
+       },
+       "worksFor": { "@type": "Organization", "name": "SITA" },
+       "alumniOf": { "@type": "CollegeOrUniversity", "name": "North-West University" },
+       "knowsAbout": ["Java EE", "Spring Framework", "Angular", "SQL", "Workflow automation"],
+       "sameAs": [
+         "https://github.com/Robotbino",
+         "https://www.linkedin.com/in/bino-hlongwana-162226272/"
+       ]
+     }
    </script>
   </head>
   <body>

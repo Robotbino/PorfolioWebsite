@@ -1,45 +1,29 @@
-<<<<<<< HEAD
-# Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
-.angular/
-
-# Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
-
-# Environment files
-/.env
-
-# Angular CLI and build artefacts
-/.angular-cli.json
-/.ng/
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-=======
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files
 
 # Compiled output
 /dist
 /tmp
 /out-tsc
 /bazel-out
+/e2e/test-output/
 
 # Node
 /node_modules
-npm-debug.log
-yarn-error.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Angular CLI and build artefacts
+/.angular/
+/.angular-cli.json
+/.ng/
+*.tsbuildinfo
+
+# Environment files
+/.env
+
+# Claude Code — machine-local approvals; launch.json IS tracked (shared dev-server config)
+.claude/settings.local.json
 
 # IDEs and editors
 .idea/
@@ -49,6 +33,7 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
+.history/*
 
 # Visual Studio Code
 .vscode/*
@@ -56,10 +41,8 @@ yarn-error.log
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.history/*
 
 # Miscellaneous
-/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
@@ -70,4 +53,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
->>>>>>> 33abb93 (initial commit)
