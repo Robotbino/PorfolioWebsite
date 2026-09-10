@@ -503,7 +503,12 @@
 
 /* Keyboard parity — the focused marquee gets the same lit state as hover. */
 .marquee-link:focus-visible {
-  outline: none;
+  /* Was `outline: none` — the only one on the site, on its single most
+     important call to action. The colour shift and the underline below still
+     do the expressive work; the ring is what makes it unmissable, and the
+     generous offset keeps it clear of the poster-scale type. */
+  outline: 2px solid var(--color-accent);
+  outline-offset: 8px;
   color: var(--color-accent-vivid);
 }
 

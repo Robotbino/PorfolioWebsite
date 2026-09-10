@@ -69,6 +69,17 @@ export class FramePulseService implements OnDestroy {
     const dt = this.lastTime ? now - this.lastTime : 0;
     this.lastTime = now;
     this.subs.forEach(fn => fn(now, dt));
+
+    // Re-arm only if anyone is still listening. A subscriber that releases from
+    // INSIDE its own tick (the certifications spotlight does exactly this) runs
+    // stop() while `rafId` still holds the id of the frame that is currently
+    // executing — cancelling that is a no-op — so an unconditional re-arm here
+    // left an empty loop running for the life of the page.
+    if (this.subs.size === 0) {
+      this.rafId = 0;
+      this.lastTime = 0;
+      return;
+    }
     this.rafId = requestAnimationFrame(this.tick);
   };
 

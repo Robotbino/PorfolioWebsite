@@ -33,7 +33,15 @@
   </nav>
 </header>
 
+<!-- A real modal: role + aria-modal say so, and PageInertService makes it true
+     by inerting everything outside this element while it is open. Without that
+     the overlay is the last element in the document, so Tab from the last link
+     walks straight into the page behind the scrim. -->
 <div class="mobile-overlay" id="mobile-nav"
+     #mobileOverlay
+     role="dialog"
+     aria-modal="true"
+     aria-label="Site menu"
      [class.open]="menuOpen"
      [attr.aria-hidden]="!menuOpen"
      (click)="closeMenu()">

@@ -52,7 +52,20 @@ body.reveal-ready .dest:not(.is-visible) > * {
 }
 
 /* The seam buffer (a Home clone) reuses .dest styling; it just must never be
-   hidden by the reveal rule, so it ships with .is-visible in the template. */
+   hidden by the reveal rule, so it ships with .is-visible in the template.
+
+   It sizes to the LARGE viewport, unlike every other destination. The wrap
+   fires when scrollY reaches the clone's top, and the furthest the page can
+   scroll is (clone top + clone height − innerHeight). At 100svh that is exactly
+   the clone's top on desktop — no tolerance at all — and strictly LESS than it
+   on a phone whose browser chrome has collapsed (innerHeight grows to lvh while
+   the clone stays at svh), so the seam becomes unreachable and the endless loop
+   dead-ends on the last screen. Sizing the buffer to lvh guarantees the wrap
+   point is always reachable, with a full chrome-height of slack on mobile. */
+.dest-clone {
+  min-height: 100vh;
+  min-height: 100lvh;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .dest > * {

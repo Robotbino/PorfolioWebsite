@@ -134,4 +134,34 @@ describe('FramePulseService', () => {
     setHidden(false);
     expect(window.requestAnimationFrame).not.toHaveBeenCalled();
   });
+
+  // The certifications spotlight releases its subscription from inside its own
+  // tick. At that moment `rafId` holds the id of the frame already executing, so
+  // cancelling it does nothing — the loop has to notice the empty set itself or
+  // it runs forever with no subscribers.
+  it('stops when the last subscriber unsubscribes from inside a tick', () => {
+    let unsub = () => {};
+    unsub = service.onTick(() => unsub());
+
+    fireFrame(1000);
+    (window.requestAnimationFrame as jasmine.Spy).calls.reset();
+    fireFrame(1016);
+
+    expect(window.requestAnimationFrame).not.toHaveBeenCalled();
+  });
+
+  it('restarts cleanly after unsubscribing from inside a tick', () => {
+    let unsub = () => {};
+    unsub = service.onTick(() => unsub());
+    fireFrame(1000);
+
+    const spy = jasmine.createSpy('tick');
+    service.onTick(spy);
+    fireFrame(2000);
+    fireFrame(2016);
+
+    // The clock restarted, so the first tick back reports dt 0, not a 1s spike.
+    expect(spy.calls.argsFor(0)).toEqual([2000, 0]);
+    expect(spy.calls.argsFor(1)).toEqual([2016, 16]);
+  });
 });

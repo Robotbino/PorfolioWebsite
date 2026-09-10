@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { LocalClockService } from '../core/local-clock.service';
 
 @Component({
   selector: 'app-landingpage',
@@ -6,42 +7,15 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
   templateUrl: './landingpage.component.html',
   styleUrl: './landingpage.component.css',
 })
-export class LandingpageComponent implements OnInit, OnDestroy {
-  private link = document.createElement('a');
+export class LandingpageComponent {
+  /**
+   * True for the loop's seam clone (app.component.html), which renders a second
+   * copy of this hero after Contact. The clone must look identical but must not
+   * repeat anything the document can only have once — chiefly the `id`s, which
+   * were duplicated into invalid HTML and made `aria-labelledby` on the clone
+   * resolve to the real hero's heading.
+   */
+  @Input() clone = false;
 
-  /** Bino's local wall-clock (SAST is fixed UTC+2, but the IANA zone keeps it
-   *  honest), riding the hero's coords so a visitor knows when to expect a reply. */
-  localTime = '';
-  private clockTimer: ReturnType<typeof setTimeout> | null = null;
-
-  ngOnInit(): void {
-    this.tickClock();
-  }
-
-  /** Minute-precision display, so wake exactly on the minute flip instead of
-   *  polling — one timer a minute is all the hero clock costs. */
-  private tickClock(): void {
-    this.localTime = new Intl.DateTimeFormat('en-GB', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      timeZone: 'Africa/Johannesburg',
-    }).format(new Date());
-    const msToNextMinute = 60_000 - (Date.now() % 60_000) + 250;
-    this.clockTimer = setTimeout(() => this.tickClock(), msToNextMinute);
-  }
-
-  ngOnDestroy(): void {
-    if (this.clockTimer) {
-      clearTimeout(this.clockTimer);
-    }
-  }
-
-  // ── CV Download ──────────────────────────────────────────────
-
-  public downloadCV(): void {
-    this.link.href = 'assets/Bino_Hlongwana_CV_2026.pdf';
-    this.link.download = 'Bino_Hlongwana_CV_2026.pdf';
-    this.link.click();
-  }
+  constructor(public clock: LocalClockService) {}
 }

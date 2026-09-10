@@ -1,3 +1,6 @@
+<!-- First tab stop: past the persistent nav, into the loop. -->
+<a class="skip-link" href="#dest-work">Skip to content</a>
+
 <!-- Persistent background layer (z-0): mounts once, morphs with scroll. -->
 <app-aurora
   class="aurora-bg"
@@ -35,6 +38,6 @@
     aria-hidden="true"
     inert
   >
-    <app-landingpage></app-landingpage>
+    <app-landingpage [clone]="true"></app-landingpage>
   </section>
 </main>

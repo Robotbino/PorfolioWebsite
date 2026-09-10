@@ -94,7 +94,7 @@ describe('activeIndexFor', () => {
 
 describe('wrapOffset', () => {
   it('returns null below the seam', () => {
-    expect(wrapOffset(3999, 4000)).toBeNull();
+    expect(wrapOffset(3990, 4000)).toBeNull();
   });
 
   it('preserves momentum overshoot at or past the seam', () => {
@@ -105,5 +105,21 @@ describe('wrapOffset', () => {
   it('returns null before measurement (wrapAt <= 0)', () => {
     expect(wrapOffset(5000, 0)).toBeNull();
     expect(wrapOffset(5000, -1)).toBeNull();
+  });
+
+  // scrollY is fractional under browser zoom and on a non-integer DPR, while
+  // offsetTop is rounded — so the page bottom can settle a hair short of the
+  // seam. A strict >= there means the loop silently never closes.
+  it('still wraps a sub-pixel short of the seam', () => {
+    expect(wrapOffset(3999.4, 4000)).toBe(0);
+    expect(wrapOffset(3999.99, 4000)).toBe(0);
+  });
+
+  it('does not wrap more than the tolerance short of the seam', () => {
+    expect(wrapOffset(3998.9, 4000)).toBeNull();
+  });
+
+  it('never hands back a negative offset', () => {
+    expect(wrapOffset(3999.5, 4000)).toBe(0);
   });
 });

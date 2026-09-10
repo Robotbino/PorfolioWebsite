@@ -13,6 +13,7 @@ import { MotionSettingsService } from '../../core/motion-settings.service';
 import { NavTransitionService } from '../../core/nav-transition.service';
 import { InViewportService } from '../../core/in-viewport.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
+import { PageInertService } from '../../core/page-inert.service';
 import { DESTINATIONS } from '../../destinations';
 
 /**
@@ -54,6 +55,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   menuOpen = false;
 
   @ViewChild('menuTrigger') private menuTrigger?: ElementRef<HTMLButtonElement>;
+  @ViewChild('mobileOverlay') private mobileOverlay?: ElementRef<HTMLElement>;
 
   private unsub: (() => void) | null = null;
   private lastMute = -1;
@@ -81,6 +83,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   // Held while the mobile menu is open; releasing it lets the shared lock go.
   private menuLockRelease: (() => void) | null = null;
+  private menuInertRelease: (() => void) | null = null;
 
   constructor(
     public theme: ThemeService,
@@ -88,6 +91,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     private el: ElementRef<HTMLElement>,
     private pulse: FramePulseService,
     private scrollLock: ScrollLockService,
+    private pageInert: PageInertService,
     private motion: MotionSettingsService,
     private navTransition: NavTransitionService,
     private inView: InViewportService,
@@ -119,6 +123,15 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     this.menuOpen = !this.menuOpen;
     if (this.menuOpen) {
       this.menuLockRelease = this.scrollLock.acquire();
+      if (this.mobileOverlay) {
+        // The trigger is protected alongside the overlay: it lives in the
+        // header and morphs into this menu's close button, so inerting the bar
+        // wholesale would strand the visible way out.
+        this.menuInertRelease = this.pageInert.isolate(
+          this.mobileOverlay.nativeElement,
+          ...(this.menuTrigger ? [this.menuTrigger.nativeElement] : []),
+        );
+      }
       // Next frame, once the overlay's `visibility` has flipped, move focus in.
       requestAnimationFrame(() => {
         this.el.nativeElement.querySelector<HTMLElement>('.mobile-link')?.focus();
@@ -137,10 +150,12 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     this.menuTrigger?.nativeElement.focus();
   }
 
-  /** Release this component's hold on the shared scroll lock, if it has one. */
+  /** Release this component's holds on the shared scroll lock and page inerting. */
   private releaseMenuLock(): void {
     this.menuLockRelease?.();
     this.menuLockRelease = null;
+    this.menuInertRelease?.();
+    this.menuInertRelease = null;
   }
 
   @HostListener('document:keydown.escape')

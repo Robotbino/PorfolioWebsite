@@ -4,7 +4,7 @@
    asymmetric, left-anchored headline with deliberate negative space to the right
    where the constellation behind it can breathe. */
 
-#my-wrapper {
+.hero-wrapper {
   position: relative;
   z-index: 1;
   width: 100%;

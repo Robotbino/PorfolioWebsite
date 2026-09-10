@@ -63,15 +63,31 @@ export function activeIndexFor(position: number, cycleLength: number): number {
 }
 
 /**
+ * How close to the seam still counts as reaching it, in CSS pixels.
+ *
+ * `scrollY` is fractional on a non-integer device pixel ratio and under browser
+ * zoom, and `offsetTop` is rounded — so the bottom of the page can settle a
+ * fraction of a pixel short of `wrapAt` and never satisfy a strict `>=`. One
+ * pixel of slack is far below the seam's visual tolerance (the clone is
+ * pixel-identical to Home for a whole viewport around this point) and turns a
+ * loop that could silently dead-end into one that always closes.
+ */
+const SEAM_EPSILON = 1;
+
+/**
  * The seamless one-direction wrap. At/past the clone's top — one cycle down,
  * where the clone is pixel-identical to real Home — return the offset the shell
  * should `scrollTo`: `scrollY - wrapAt`, which preserves any momentum overshoot
  * (N px past the seam lands N px into the real Home). Below the seam, or before
  * the shell has measured (`wrapAt <= 0`), return null (no wrap).
+ *
+ * The clamp is deliberately NOT applied to the returned offset: overshoot is
+ * real scroll distance and must survive the wrap, while a sub-pixel undershoot
+ * lands within a pixel of Home's top, which is indistinguishable.
  */
 export function wrapOffset(scrollY: number, wrapAt: number): number | null {
-  if (wrapAt > 0 && scrollY >= wrapAt) {
-    return scrollY - wrapAt;
+  if (wrapAt > 0 && scrollY >= wrapAt - SEAM_EPSILON) {
+    return Math.max(0, scrollY - wrapAt);
   }
   return null;
 }

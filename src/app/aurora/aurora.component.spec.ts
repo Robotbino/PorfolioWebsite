@@ -1,6 +1,7 @@
 import { ElementRef, SimpleChange, SimpleChanges } from '@angular/core';
 import { AuroraComponent } from './aurora.component';
 import { MotionSettingsService } from '../core/motion-settings.service';
+import { auroraPalette } from '../core/aurora-palette';
 
 /**
  * The mobile CSS fallback (coarse pointer, no WebGL) is the regression surface:
@@ -10,8 +11,11 @@ import { MotionSettingsService } from '../core/motion-settings.service';
  * the fallback branch; the test asserts the blob gradients follow the palette.
  */
 describe('AuroraComponent — mobile CSS fallback recolour', () => {
-  const DARK: [string, string, string] = ['#1E1C1A', '#3D312A', '#5A3D2B'];
-  const LIGHT: [string, string, string] = ['#FDFCFB', '#F5F2EE', '#FAF0E8'];
+  // The real shipped ramps, taken from core/aurora-palette.ts rather than
+  // hand-copied: the LIGHT fixture here used to be the pre-polish near-white
+  // ramp, which passed happily while implying a palette the site no longer has.
+  const DARK = auroraPalette(true).colorStops;
+  const LIGHT = auroraPalette(false).colorStops;
 
   let originalMatchMedia: typeof window.matchMedia;
 

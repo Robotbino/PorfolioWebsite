@@ -86,6 +86,9 @@
           <app-icon class="channel-copy-icon" [name]="copied ? 'check' : 'copy'"></app-icon>
           <span class="channel-copy-text">{{ copied ? 'Copied' : 'Copy' }}</span>
         </button>
+        <!-- The colour change and icon swap are sighted-only feedback; this is
+             the same news for everyone else, including when the copy fails. -->
+        <span class="sr-only" role="status" aria-live="polite">{{ copyStatus }}</span>
       </div>
     </div>
 

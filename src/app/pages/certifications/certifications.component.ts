@@ -13,6 +13,7 @@ import { MotionSettingsService } from '../../core/motion-settings.service';
 import { InViewportService } from '../../core/in-viewport.service';
 import { NavTransitionService } from '../../core/nav-transition.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
+import { PageInertService } from '../../core/page-inert.service';
 import { smoothingK } from '../../motion.math';
 import { CERTIFICATIONS, Certification } from './certifications-data';
 import {
@@ -95,6 +96,7 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
 
   // Held while the spotlight is open; releasing it lets the shared lock go.
   private spotlockRelease: (() => void) | null = null;
+  private spotInertRelease: (() => void) | null = null;
 
   // Nav clicks travel elsewhere — the spotlight must not stay covering the trip.
   private navRelease: (() => void) | null = null;
@@ -110,6 +112,7 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     private pulse: FramePulseService,
     private host: ElementRef<HTMLElement>,
     private scrollLock: ScrollLockService,
+    private pageInert: PageInertService,
     private motion: MotionSettingsService,
     private inView: InViewportService,
     private navTransition: NavTransitionService,
@@ -244,6 +247,10 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     document.body.classList.add(CertificationsComponent.BODY_OPEN_CLASS);
     // Acquire the shared scroll lock; release it when closing.
     this.spotlockRelease = this.scrollLock.acquire();
+    // ...and make aria-modal true. The Tab wrap below only fires while focus is
+    // already inside the dialog, so clicking the (unfocusable) certificate image
+    // dropped focus to <body> and the next Tab escaped into the page behind.
+    this.spotInertRelease = this.pageInert.isolate(root);
     this.zone.runOutsideAngular(() => {
       document.addEventListener('keydown', this.onSpotlightDocKeydown);
     });
@@ -292,6 +299,8 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     document.removeEventListener('keydown', this.onSpotlightDocKeydown);
     this.spotlockRelease?.();
     this.spotlockRelease = null;
+    this.spotInertRelease?.();
+    this.spotInertRelease = null;
 
     // Let the exit fade finish before hiding, then clear the inline styles so
     // the next open starts clean.
@@ -450,10 +459,13 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     if (this.spotTimer !== null) {
       clearTimeout(this.spotTimer);
     }
-    // If destroyed with the spotlight open, release its hold on the scroll lock
-    // and drop the body flag the nav styles key off.
+    // If destroyed with the spotlight open, release its holds on the scroll lock
+    // and the page inerting, and drop the body flag the nav styles key off —
+    // otherwise the page stays locked and untabbable with no dialog on screen.
     document.body.classList.remove(CertificationsComponent.BODY_OPEN_CLASS);
     this.spotlockRelease?.();
     this.spotlockRelease = null;
+    this.spotInertRelease?.();
+    this.spotInertRelease = null;
   }
 }

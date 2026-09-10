@@ -1,6 +1,6 @@
-<div id="my-wrapper">
+<div class="hero-wrapper">
 
-  <section class="hero" id="hero" aria-labelledby="hero-name">
+  <section class="hero" [attr.aria-labelledby]="clone ? null : 'hero-name'">
     <div class="hero-frame">
 
       <!-- Top meta — editorial poster framing pinned to the viewport edge.
@@ -13,14 +13,14 @@
         </span>
         <span class="hero-coords">
           Pretoria&nbsp;&middot; South&nbsp;Africa
-          <span class="hero-time">&middot;&nbsp;{{ localTime }}&nbsp;SAST</span>
+          <span class="hero-time">&middot;&nbsp;{{ clock.localTime() }}&nbsp;SAST</span>
         </span>
       </div>
 
       <!-- Headline — the one fixed point the whole layout balances against. -->
       <div class="hero-headline">
         <p class="hero-eyebrow">Hello, <em class="accent">I&rsquo;m</em></p>
-        <h1 class="hero-name" id="hero-name">
+        <h1 class="hero-name" [attr.id]="clone ? null : 'hero-name'">
           <span class="sr-only">Bino Hlongwana</span>
           <span class="hero-name-line" aria-hidden="true"><span class="hero-name-first">Bino</span></span>
           <span class="hero-name-line" aria-hidden="true"><span class="hero-name-last">Hlongwana</span></span>
@@ -39,21 +39,32 @@
         <p class="hero-role"><span class="hero-role-index">01</span> Full-Stack Developer</p>
 
         <div class="hero-actions">
-          <button class="hero-cta" aria-label="Download CV" (click)="downloadCV()">
+          <!-- A link, not a scripted button: right-click-save, middle-click,
+               "open in new tab" and a no-JS visit all work, and it needs no
+               detached <a> built in the component. -->
+          <a class="hero-cta" href="assets/Bino_Hlongwana_CV_2026.pdf" download>
             <span class="hero-cta-label">Download CV</span>
             <span class="hero-cta-arrow" aria-hidden="true">&#8595;</span>
-          </button>
+          </a>
 
-          <div class="hero-socials" role="list" aria-label="Social media links">
-            <a href="https://github.com/Robotbino" class="hero-social" role="listitem"
-               aria-label="GitHub profile" target="_blank" rel="noopener noreferrer">
-              GitHub <span class="hero-social-arrow" aria-hidden="true">&#8599;</span>
-            </a>
-            <a href="https://www.linkedin.com/in/bino-hlongwana-162226272/" class="hero-social" role="listitem"
-               aria-label="LinkedIn profile" target="_blank" rel="noopener noreferrer">
-              LinkedIn <span class="hero-social-arrow" aria-hidden="true">&#8599;</span>
-            </a>
-          </div>
+          <!-- role="listitem" used to sit on the anchors themselves, which
+               OVERRIDES their implicit link role: the two most important
+               outbound links in the hero announced as list items and dropped out
+               of the screen-reader links list. Real <li> wrappers instead. -->
+          <ul class="hero-socials" role="list" aria-label="Social media links">
+            <li>
+              <a href="https://github.com/Robotbino" class="hero-social"
+                 aria-label="GitHub profile" target="_blank" rel="noopener noreferrer">
+                GitHub <span class="hero-social-arrow" aria-hidden="true">&#8599;</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.linkedin.com/in/bino-hlongwana-162226272/" class="hero-social"
+                 aria-label="LinkedIn profile" target="_blank" rel="noopener noreferrer">
+                LinkedIn <span class="hero-social-arrow" aria-hidden="true">&#8599;</span>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
 
