@@ -3,11 +3,6 @@
   position: relative;
   min-height: 100vh;
   min-height: 100svh;
-
-  /* Overshoot ("back out") curve — the transform springs past its target and
-     settles back, giving the icons a tactile bounce the standard eases can't.
-     Scoped to this component so it doesn't disturb the global tokens. */
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ============================================
@@ -54,9 +49,7 @@
   line-height: var(--line-height-none);
   letter-spacing: var(--tracking-tighter);
 }
-/*fLAIR*/
 .contact-title-soft {
-
   font-weight: var(--font-weight-extralight);
 }
 
@@ -531,9 +524,9 @@
 
 /* ============================================
    COLOPHON — the loop's sign-off
-   One quiet strip in the ledger's micro-type: © | loop hint | coords + local
-   clock. The coords bookend the hero's "Pretoria · South Africa"; the clock
-   makes the site feel inhabited.
+   One quiet strip in the ledger's micro-type: © | coords. The coords bookend
+   the hero's "Pretoria · South Africa", which is where the live clock lives —
+   an earlier draft repeated the clock and a loop hint here and both were cut.
    ============================================ */
 
 .contact-colophon {

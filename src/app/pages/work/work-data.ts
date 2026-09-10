@@ -116,8 +116,8 @@ export const PROJECTS: readonly Project[] = [
     img: {
       dark: '/assets/gameStore.webp',
       light: '/assets/gameStore.webp',
-      width: 1920,
-      height: 1080,
+      width: 1440,
+      height: 810,
       alt: {
         dark: 'Game Store storefront showing a featured game hero and the available games grid',
         light: 'Game Store storefront showing a featured game hero and the available games grid',

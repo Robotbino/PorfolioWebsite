@@ -36,22 +36,24 @@
     <meta name="twitter:description" content="Enterprise software that holds up. Three years of Java EE case-management and workflow systems, now moving into consulting." />
     <meta name="twitter:image" content="https://binohlongwana.netlify.app/og-image.png" />
     <meta name="twitter:image:alt" content="Bino Hlongwana — Full-Stack Developer. Enterprise software that holds up." />
-    <!-- Nohemi ExtraLight(200) + Black(900) are the hero headline's two weights —
-        the LCP element. Preloading them means the first paint of "Bino
-        Hlongwana" is already in the real face instead of painting in the
-        fallback and reflowing once font-display:swap resolves. Only these two:
-        preloading the whole ladder would compete with them for bandwidth.
+    <!-- The hero headline is the LCP element, and it is set in TWO weights: the
+        Black(900) surname everywhere, above a first name that is
+        ExtraLight(200) on desktop but Thin(100) at <=768px (see the
+        landingpage media query). Preloading only 200/900 meant phones — the
+        device class that needs it most — preloaded a weight that paints
+        nothing above the fold while the weight that DOES paint arrived late
+        and reflowed. The media attribute on each preload mirrors that
+        breakpoint, so exactly two faces are fetched either way. Keep the three
+        in step: this pair, the CSS media query, and the ladder below.
+        Preloading the whole ladder would just make them compete for bandwidth.
 
         These hrefs must match the @font-face src in styles.css BYTE FOR BYTE, or
         the browser fetches a second copy and warns that the preload went unused.
         Both sides are root-absolute for that reason — see the long note in
         styles.css for why the fonts are deliberately not build-processed. -->
-   <link rel="preload" href="/assets/fonts/Nohemi-ExtraLight.woff2" as="font" type="font/woff2" crossorigin>
+   <link rel="preload" href="/assets/fonts/Nohemi-ExtraLight.woff2" as="font" type="font/woff2" crossorigin media="(min-width: 769px)">
+   <link rel="preload" href="/assets/fonts/Nohemi-Thin.woff2" as="font" type="font/woff2" crossorigin media="(max-width: 768px)">
    <link rel="preload" href="/assets/fonts/Nohemi-Black.woff2" as="font" type="font/woff2" crossorigin>
-   <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <!-- Instrument Serif italic is the lone editorial accent; Nohemi (body + display) is self-hosted. -->
-   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
    <script>
      // Pre-paint theme guard: set the theme class before first paint so the
      // right palette is painted with no flash. Hand-written mirror of

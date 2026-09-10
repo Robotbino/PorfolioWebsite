@@ -1,13 +1,3 @@
-/* Font Awesome icons (installed as npm package for reliability).
-   Core + the two families this site actually uses, NOT all.min.css: the site
-   references 16 glyphs across `fa-solid` and `fa-brands` only, and `all` also
-   pulls the `fa-regular` (18.9 kB) and `fa-v4compatibility` (4.0 kB) webfonts,
-   which no class here has ever referenced. Add a family back here if a design
-   starts using it. */
-@import '@fortawesome/fontawesome-free/css/fontawesome.min.css';
-@import '@fortawesome/fontawesome-free/css/solid.min.css';
-@import '@fortawesome/fontawesome-free/css/brands.min.css';
-
 /* ============================================
    NOHEMI — primary typeface (self-hosted)
    Geometric display sans. Drives every headline, label and body run. Instrument
@@ -47,6 +37,23 @@
 @font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-Black.woff2')      format('woff2'); font-weight: 900; font-style: normal; font-display: swap; }
 
 /* ============================================
+   INSTRUMENT SERIF — the italic accent (self-hosted)
+   The lone editorial serif: the hero's "I'm" and the About credo, and nothing
+   else. It used to arrive from Google Fonts, which cost a render-blocking
+   cross-origin stylesheet plus two DNS+TLS handshakes on the critical path —
+   for two rendered strings — and pulled BOTH the roman and the italic when
+   every consumer hard-sets font-style: italic.
+
+   Self-hosting it drops the roman, removes the last third-party origin (which
+   is what lets the CSP name no external host at all), and puts the face on the
+   same immutable cache header as the Nohemi ladder. Same root-absolute URL rule
+   as above: the build must leave this path alone.
+
+   Latin subset only, matching what the Google stylesheet served this site.
+   ============================================ */
+@font-face { font-family: 'Instrument Serif'; src: url('/assets/fonts/InstrumentSerif-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+
+/* ============================================
    DESIGN SYSTEM - CSS CUSTOM PROPERTIES
    ============================================ */
 
@@ -64,7 +71,6 @@
   --font-size-xl: 1.5rem;
   --font-size-2xl: 2rem;
   --font-size-3xl: 2.5rem;
-  --font-size-4xl: 3rem;
   --font-size-5xl: 4rem;
   --font-size-6xl: 6.2rem;
 
@@ -95,7 +101,6 @@
   --tracking-normal: 0;
   --tracking-wide: 0.08em;
   --tracking-wider: 0.18em;
-  --tracking-widest: 0.34em;
 
   --line-height-none: 0.92;
   --line-height-tight: 1.05;
@@ -128,10 +133,7 @@
   /* Hairline dividers, dark enough to register against the aurora's highlights. */
   --color-border: light-dark(#9a9080, #333333);
   --color-border-dark: light-dark(#7d7462, #444444);
-  --color-card-bg: light-dark(#ffffff, #1e1e1e);
   --color-tag-bg: light-dark(#e9e4da, #2a2a2a);
-  --color-tag-hover: light-dark(#ddd5c7, #333333);
-  --color-linkedin: light-dark(#0A66C2, #2D8FF7);
   /* About ledger glow glyphs — darkened on light to register on the warm field. */
   --color-glow-bulb: light-dark(#b45309, #f5a623);
   --color-glow-code: light-dark(#1d6fd1, #3d9bf5);
@@ -168,17 +170,13 @@
   --space-3xl: 4rem;
   --space-4xl: 5rem;
   --space-5xl: 6.5rem;
-  --space-6xl: 10rem;
 
   /* Border Radius */
   --radius-sm: 0.5rem;
-  --radius-md: 1rem;
   --radius-lg: 1.5rem;
-  --radius-xl: 2rem;
   --radius-full: 9999px;
 
   /* Shadows — deeper on dark; only the alpha differs, via light-dark(). */
-  --shadow-sm: 0 1px 3px light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.2));
   --shadow-md: 0 4px 12px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
   --shadow-lg: 0 10px 30px light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.4));
   --shadow-hover: 0 12px 35px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.5));
@@ -188,7 +186,6 @@
   --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Transitions */
-  --transition-fast: 150ms var(--ease-out-quart);
   --transition-base: 250ms var(--ease-out-quart);
   --transition-slow: 400ms var(--ease-out-expo);
 
@@ -389,10 +386,8 @@ textarea:not([rows]) { min-height: 10em; }
   :root {
     --font-size-6xl: 3.5rem;
     --font-size-5xl: 3rem;
-    --font-size-4xl: 2.5rem;
     --font-size-3xl: 2rem;
     --space-5xl: 4rem;
-    --space-6xl: 3rem;
     --section-spacing: var(--space-3xl);
   }
 

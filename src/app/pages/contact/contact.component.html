@@ -43,7 +43,7 @@
         <li class="channel" appScrollReveal>
           <a class="channel-link" href="https://github.com/Robotbino" target="_blank" rel="noopener noreferrer">
             <span class="channel-index" aria-hidden="true">02</span>
-            <i class="fa-brands fa-github channel-icon" aria-hidden="true"></i>
+            <app-icon name="github" class="channel-icon"></app-icon>
             <span class="channel-meta">
               <span class="channel-label">GitHub</span>
               <span class="channel-value">Robotbino</span>
@@ -55,7 +55,7 @@
           <a class="channel-link" href="https://www.linkedin.com/in/bino-hlongwana-162226272/" target="_blank"
             rel="noopener noreferrer">
             <span class="channel-index" aria-hidden="true">03</span>
-            <i class="fa-brands fa-linkedin channel-icon" aria-hidden="true"></i>
+            <app-icon name="linkedin" class="channel-icon"></app-icon>
             <span class="channel-meta">
               <span class="channel-label">LinkedIn</span>
               <span class="channel-value">RobotBino</span>
@@ -83,8 +83,7 @@
         <button class="channel-copy" type="button" [class.is-copied]="copied"
           (click)="copyEmail('HlongwanaBino@gmail.com')"
           [attr.aria-label]="copied ? 'Email address copied to clipboard' : 'Copy email address'">
-          <i class="channel-copy-icon fa-solid" [class.fa-copy]="!copied" [class.fa-check]="copied"
-            aria-hidden="true"></i>
+          <app-icon class="channel-copy-icon" [name]="copied ? 'check' : 'copy'"></app-icon>
           <span class="channel-copy-text">{{ copied ? 'Copied' : 'Copy' }}</span>
         </button>
       </div>

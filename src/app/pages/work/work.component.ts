@@ -13,6 +13,7 @@ import { MotionSettingsService } from '../../core/motion-settings.service';
 import { NavTransitionService } from '../../core/nav-transition.service';
 import { smoothingK } from '../../motion.math';
 import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-data';
+import { IconName } from '../../shared/icon/icons';
 
 @Component({
   selector: 'app-work',
@@ -69,26 +70,26 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     private navTransition: NavTransitionService,
   ) {}
 
-  // Maps a tech-stack label to a Font Awesome class pair (the project's existing
-  // icon library, loaded globally in styles.css). Brand marks where one exists;
-  // a representative solid glyph otherwise (Spring's leaf, MySQL's database, a
-  // key for JWT tokens, a cube for WebGL's 3D). The pills render these greyscale.
-  private static readonly TECH_ICONS: Readonly<Record<string, string>> = {
-    Angular: 'fa-brands fa-angular',
-    React: 'fa-brands fa-react',
-    JavaScript: 'fa-brands fa-js',
-    CSS3: 'fa-brands fa-css3-alt',
-    HTML5: 'fa-brands fa-html5',
-    TypeScript: 'fa-brands fa-typescript',
-    'Spring Boot': 'fa-solid fa-leaf',
-    MySQL: 'fa-solid fa-database',
-    JWT: 'fa-solid fa-key',
-    WebGL: 'fa-solid fa-cube',
+  // Maps a tech-stack label to one of the inline glyphs in shared/icon. Brand
+  // marks where one exists; a representative solid glyph otherwise (Spring's
+  // leaf, MySQL's database, a key for JWT tokens, a cube for WebGL's 3D). The
+  // pills render these greyscale.
+  private static readonly TECH_ICONS: Readonly<Record<string, IconName>> = {
+    Angular: 'angular',
+    React: 'react',
+    JavaScript: 'js',
+    CSS3: 'css3',
+    HTML5: 'html5',
+    TypeScript: 'typescript',
+    'Spring Boot': 'leaf',
+    MySQL: 'database',
+    JWT: 'key',
+    WebGL: 'cube',
   };
 
-  /** Font Awesome class pair for a tech label; a generic code glyph if unmapped. */
-  techIcon(name: string): string {
-    return WorkComponent.TECH_ICONS[name] ?? 'fa-solid fa-code';
+  /** Icon name for a tech label; a generic code glyph if unmapped. */
+  techIcon(name: string): IconName {
+    return WorkComponent.TECH_ICONS[name] ?? 'code';
   }
 
   projectImg(p: Project): string {

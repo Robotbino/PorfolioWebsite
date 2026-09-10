@@ -18,6 +18,7 @@ import { ContactComponent } from './pages/contact/contact.component';
 import { SiteNavComponent } from './layout/site-nav/site-nav.component';
 import { ScrollRevealDirective } from './scroll-reveal.directive';
 import { ThemeToggleComponent } from './shared/theme-toggle/theme-toggle.component';
+import { IconComponent } from './shared/icon/icon.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { ThemeToggleComponent } from './shared/theme-toggle/theme-toggle.compone
     ContactComponent,
     SiteNavComponent,
     ScrollRevealDirective,
-    ThemeToggleComponent
+    ThemeToggleComponent,
+    IconComponent
   ],
   imports: [
     BrowserModule

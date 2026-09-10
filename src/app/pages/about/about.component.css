@@ -219,28 +219,31 @@
    and breathes with a slow glow loop so the eye is drawn to them. The pulse is
    stopped for reduced-motion users by the global rule, which pins the animation
    to its final (brightest) frame, so the icons still glow, just statically. */
+/* The glow is a drop-shadow, not a text-shadow: these are drawn glyphs (inline
+   SVG paths in <app-icon>) since the Font Awesome webfont was dropped, and
+   text-shadow has no effect on a path. drop-shadow takes the same
+   offset/blur/colour triples, so the light reads identically. */
 .ledger-icon {
   font-size: var(--font-size-lg);
   line-height: 1;
   transition:
     transform var(--transition-base),
-    text-shadow var(--transition-slow),
     filter var(--transition-slow);
 }
 
 .ledger-icon-bulb {
   color: var(--color-glow-bulb);
-  text-shadow:
-    0 0 4px rgba(245, 166, 35, 0.55),
-    0 0 12px rgba(245, 166, 35, 0.3);
+  filter:
+    drop-shadow(0 0 4px rgba(245, 166, 35, 0.55))
+    drop-shadow(0 0 12px rgba(245, 166, 35, 0.3));
   animation: bulbGlow 3s ease-in-out infinite alternate;
 }
 
 .ledger-icon-code {
   color: var(--color-glow-code);
-  text-shadow:
-    0 0 4px rgba(61, 155, 245, 0.55),
-    0 0 12px rgba(61, 155, 245, 0.3);
+  filter:
+    drop-shadow(0 0 4px rgba(61, 155, 245, 0.55))
+    drop-shadow(0 0 12px rgba(61, 155, 245, 0.3));
   animation: codeGlow 3s ease-in-out infinite alternate;
   /* Offset so the two icons don't pulse in lockstep. */
   animation-delay: 0.9s;
@@ -254,44 +257,44 @@
 }
 
 .ledger-numeral.is-centered ~ .ledger-meta .ledger-icon-bulb {
-  text-shadow:
-    0 0 8px rgba(255, 215, 128, 0.75),
-    0 0 20px rgba(245, 166, 35, 0.5);
+  filter:
+    drop-shadow(0 0 8px rgba(255, 215, 128, 0.75))
+    drop-shadow(0 0 20px rgba(245, 166, 35, 0.5));
 }
 
 .ledger-numeral.is-centered ~ .ledger-meta .ledger-icon-code {
-  text-shadow:
-    0 0 8px rgba(103, 198, 249, 0.75),
-    0 0 20px rgba(61, 155, 245, 0.5);
+  filter:
+    drop-shadow(0 0 8px rgba(103, 198, 249, 0.75))
+    drop-shadow(0 0 20px rgba(61, 155, 245, 0.5));
 }
 
 @keyframes bulbGlow {
   0% {
-    text-shadow:
-      0 0 3px rgba(245, 166, 35, 0.45),
-      0 0 9px rgba(245, 166, 35, 0.22);
-    filter: brightness(0.95);
+    filter:
+      drop-shadow(0 0 3px rgba(245, 166, 35, 0.45))
+      drop-shadow(0 0 9px rgba(245, 166, 35, 0.22))
+      brightness(0.95);
   }
   100% {
-    text-shadow:
-      0 0 6px rgba(255, 215, 128, 0.7),
-      0 0 16px rgba(245, 166, 35, 0.4);
-    filter: brightness(1.12);
+    filter:
+      drop-shadow(0 0 6px rgba(255, 215, 128, 0.7))
+      drop-shadow(0 0 16px rgba(245, 166, 35, 0.4))
+      brightness(1.12);
   }
 }
 
 @keyframes codeGlow {
   0% {
-    text-shadow:
-      0 0 3px rgba(61, 155, 245, 0.45),
-      0 0 9px rgba(61, 155, 245, 0.22);
-    filter: brightness(0.95);
+    filter:
+      drop-shadow(0 0 3px rgba(61, 155, 245, 0.45))
+      drop-shadow(0 0 9px rgba(61, 155, 245, 0.22))
+      brightness(0.95);
   }
   100% {
-    text-shadow:
-      0 0 6px rgba(103, 198, 249, 0.7),
-      0 0 16px rgba(61, 155, 245, 0.4);
-    filter: brightness(1.12);
+    filter:
+      drop-shadow(0 0 6px rgba(103, 198, 249, 0.7))
+      drop-shadow(0 0 16px rgba(61, 155, 245, 0.4))
+      brightness(1.12);
   }
 }
 

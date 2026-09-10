@@ -135,7 +135,7 @@
                   <span class="tech-tag" role="listitem" *ngFor="let t of project.tech">
                     <!-- Greyscale mark from the global Font Awesome set; decorative,
                      the label carries the meaning. -->
-                    <i class="tech-tag-icon" [ngClass]="techIcon(t)" aria-hidden="true"></i>{{ t }}
+                    <app-icon class="tech-tag-icon" [name]="techIcon(t)"></app-icon>{{ t }}
                   </span>
                 </div>
                 <div class="project-links">
@@ -156,7 +156,7 @@
                    layout — it just stops the shell's body ResizeObserver being
                    woken by a decode that changes nothing. -->
               <div class="project-image">
-                <img [src]="projectImg(project)" [alt]="projectAlt(project)" loading="lazy"
+                <img [src]="projectImg(project)" [alt]="projectAlt(project)" loading="lazy" decoding="async"
                   [attr.width]="project.img.width" [attr.height]="project.img.height">
               </div>
             </div>
