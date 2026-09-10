@@ -481,6 +481,12 @@
   text-transform: uppercase;
   color: var(--color-accent-vivid);
   transition: color var(--transition-base);
+  /* >=44px touch target with no visual shift: pad the block axis out and pull
+     it back with an equal negative margin (the .hero-social idiom). The label
+     is 20px of uppercase micro-type, so without this it is a tenth of a
+     thumb's width inside a dialog that has only two controls. */
+  padding-block: var(--space-md);
+  margin-block: calc(var(--space-xs) - var(--space-md)) calc(-1 * var(--space-md));
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -495,10 +501,14 @@
 
 .certs-spotlight-close {
   position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
-  width: 2.75rem;
-  height: 2.75rem;
+  /* Clear of the notch/rounded corner in landscape, like .navigation-bar. */
+  top: calc(1.25rem + env(safe-area-inset-top, 0px));
+  right: calc(1.25rem + env(safe-area-inset-right, 0px));
+  /* 2.75rem = 44px at the default root size; below that the browser's own
+     minimum applies, so state it in px to keep the target honest at any
+     user font size. */
+  width: max(2.75rem, 44px);
+  height: max(2.75rem, 44px);
   display: grid;
   place-items: center;
   color: var(--color-text-primary);

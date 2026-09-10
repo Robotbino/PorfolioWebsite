@@ -27,8 +27,19 @@ if (!existsSync(indexPath)) {
 }
 
 const html = readFileSync(indexPath, 'utf8');
+
+/**
+ * Hash the way the BROWSER will.
+ *
+ * The HTML tokenizer normalises CRLF (and a lone CR) to LF before a script's
+ * text ever reaches the CSP check. So a file written with Windows line endings
+ * hashes differently on disk than it does in the parser, and the policy then
+ * blocks the very script it was generated from. The symptom is quiet — one
+ * console message and the theme flash the guard exists to prevent — which is
+ * exactly why this is computed rather than hand-copied.
+ */
 const sha256 = (source) =>
-  `'sha256-${createHash('sha256').update(source, 'utf8').digest('base64')}'`;
+  `'sha256-${createHash('sha256').update(source.replace(/\r\n?/g, '\n'), 'utf8').digest('base64')}'`;
 
 /** Inline <script> bodies, skipping src= references and non-executable types (ld+json). */
 const scriptHashes = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)]

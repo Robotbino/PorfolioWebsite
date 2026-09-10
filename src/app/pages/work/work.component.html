@@ -133,11 +133,16 @@
     <div class="projects-viewport" #projectsViewport>
       <div class="projects-stage" #projectsStage>
         <!-- role="list" gives assistive tech an explicit item count for the
-        gallery; each card stays a self-contained listitem. -->
+        gallery ("Recent projects, list, 4 items"), which is the useful framing
+        here. The card is a plain div rather than an <article> because
+        role="listitem" is NOT allowed on <article> — axe flags it, and an
+        invalid role is worse than no role. A wrapping <li> would be the other
+        way to do it, but it would insert a box between the track and the cards
+        and move the offsetLeft the showcase's pin geometry is measured from. -->
         <div class="projects-container" #projectsTrack role="list" aria-label="Recent projects">
 
           @for (project of projects; track project; let i = $index) {
-            <article class="project-card" role="listitem">
+            <div class="project-card" role="listitem">
               <div class="project-content">
                 <div class="project-text">
                   <!-- Index numeral + hairline — the site-wide wayfinding idiom
@@ -152,7 +157,7 @@
                   <div class="project-tech" role="list" aria-label="Technologies used">
                     @for (t of project.tech; track t) {
                       <span class="tech-tag" role="listitem">
-                        <!-- Greyscale mark from the global Font Awesome set; decorative,
+                        <!-- Greyscale mark from the inline icon set; decorative,
                         the label carries the meaning. -->
                         <app-icon class="tech-tag-icon" [name]="techIcon(t)"></app-icon>{{ t }}
                       </span>
@@ -180,10 +185,10 @@
                 <div class="project-image">
                   <img [src]="projectImg(project)" [alt]="projectAlt(project)" loading="lazy" decoding="async"
                     [attr.width]="project.img.width" [attr.height]="project.img.height">
-                  </div>
                 </div>
-              </article>
-            }
+              </div>
+            </div>
+          }
           </div>
 
           <!-- Pinned wayfinding, shown only in showcase mode (see .showcase-hud in

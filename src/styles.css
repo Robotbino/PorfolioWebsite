@@ -388,6 +388,11 @@ textarea:not([rows]) { min-height: 10em; }
   top: var(--space-md);
   left: var(--space-md);
   z-index: 200;
+  /* A real 44px target: this is the first thing a keyboard or switch user
+     reaches, so it should not be the smallest control on the page. */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   padding: var(--space-sm) var(--space-lg);
   border-radius: var(--radius-full);
   background: var(--color-accent-vivid);
