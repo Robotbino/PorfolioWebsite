@@ -1,8 +1,8 @@
 <section class="section" aria-labelledby="experience-title">
   <div class="container">
     <!-- Editorial header — flush-left poster headline (mirrors About, Certifications
-         and Contact). Every section now writes its own header this way; the old
-         shared centred heading component was removed once nothing used it. -->
+    and Contact). Every section now writes its own header this way; the old
+    shared centred heading component was removed once nothing used it. -->
     <header class="experience-header" appScrollReveal>
       <p class="experience-kicker">
         <span class="experience-kicker-index" aria-hidden="true">02</span>
@@ -12,16 +12,16 @@
     </header>
 
     <!-- Lead role — the SITA work as an editorial split: role title anchors the
-         left column, the accomplishments read down the right. A single hairline
-         and the grid do the framing that the old glass card used to. Copy is
-         unchanged. -->
+    left column, the accomplishments read down the right. A single hairline
+    and the grid do the framing that the old glass card used to. Copy is
+    unchanged. -->
     <article class="role" appScrollReveal>
       <!-- Weight-contrast lockup (hero-name idiom): the org anchors at black,
-           the platform descriptor drops a tier. Copy is unchanged — the spans
-           only stack what was one uniform run. -->
+      the platform descriptor drops a tier. Copy is unchanged — the spans
+      only stack what was one uniform run. -->
       <!-- Trailing space lives INSIDE the org span: Angular's default
-           whitespace stripping would otherwise drop it and fuse the heading's
-           accessible name into "SITA—Java EE…". -->
+      whitespace stripping would otherwise drop it and fuse the heading's
+      accessible name into "SITA—Java EE…". -->
       <h3 class="role-title">
         <span class="role-title-org">SITA </span>
         <span class="role-title-desc">&mdash; Java EE case management &amp; workflow platform</span>
@@ -46,27 +46,29 @@
     </article>
 
     <!-- Skills index — the old Technologies / Non-Technical cards flattened into
-         two typographic ledgers on a staggered 12-col grid; the offset bottoms
-         leave negative space for the constellation. Copy is unchanged; the index
-         numerals are decorative wayfinding, hence aria-hidden.
+    two typographic ledgers on a staggered 12-col grid; the offset bottoms
+    leave negative space for the constellation. Copy is unchanged; the index
+    numerals are decorative wayfinding, hence aria-hidden.
 
-         .index-term is a <span>, not a heading. These rows are ledger entries —
-         "Analytical Thinker" is an item in a list, not a section of the document.
-         As <h4> they put ten stops into the heading outline (25 headings total,
-         ten of them list entries), which turns heading navigation — a primary
-         screen-reader mode — into list-reading. The <ul role="list"> + <li>
-         already carry the item semantics; the block <h3> above is the real
-         heading. Styling is unaffected: .index-term sets its own type. -->
+    .index-term is a <span>, not a heading. These rows are ledger entries —
+    "Analytical Thinker" is an item in a list, not a section of the document.
+    As <h4> they put ten stops into the heading outline (25 headings total,
+    ten of them list entries), which turns heading navigation — a primary
+    screen-reader mode — into list-reading. The <ul role="list"> + <li>
+    already carry the item semantics; the block <h3> above is the real
+    heading. Styling is unaffected: .index-term sets its own type. -->
     <div class="experience-index">
       <article class="index-block index-tech" appScrollReveal>
         <h3 class="index-label">Technologies</h3>
         <ul class="index-list" role="list">
           <!-- --row-i drives the cascade's per-row transition delay in CSS. -->
-          <li class="index-row" *ngFor="let group of experienceGroups; let i = index" [style.--row-i]="i">
-            <span class="index-num" aria-hidden="true">0{{ i + 1 }}</span>
-            <span class="index-term">{{ group.label }}</span>
-            <p class="index-desc">{{ group.description }}</p>
-          </li>
+          @for (group of experienceGroups; track group; let i = $index) {
+            <li class="index-row" [style.--row-i]="i">
+              <span class="index-num" aria-hidden="true">0{{ i + 1 }}</span>
+              <span class="index-term">{{ group.label }}</span>
+              <p class="index-desc">{{ group.description }}</p>
+            </li>
+          }
         </ul>
       </article>
 
@@ -99,8 +101,8 @@
 <section class="section" id="projects" aria-labelledby="projects-title">
   <div class="container">
     <!-- Editorial header — flush-left poster headline, matching the Experience
-         header above and About's pattern. No destination-index numeral here since
-         Projects is a subsection of Work, not a separate loop destination. -->
+    header above and About's pattern. No destination-index numeral here since
+    Projects is a subsection of Work, not a separate loop destination. -->
     <header class="projects-header" appScrollReveal>
       <p class="projects-kicker">
         <span>Browse My Recent</span>
@@ -109,82 +111,90 @@
     </header>
 
     <!-- Horizontal showcase. #projectsViewport supplies the scroll distance, the
-         sticky #projectsStage frames the cards, and WorkComponent translates
-         #projectsTrack on scroll. Without the host's .showcase-on class (no-JS,
-         reduced motion, or narrow screens) these are plain blocks and the cards
-         fall back to the vertical stack. -->
+    sticky #projectsStage frames the cards, and WorkComponent translates
+    #projectsTrack on scroll. Without the host's .showcase-on class (no-JS,
+    reduced motion, or narrow screens) these are plain blocks and the cards
+    fall back to the vertical stack. -->
     <div class="projects-viewport" #projectsViewport>
       <div class="projects-stage" #projectsStage>
         <!-- role="list" gives assistive tech an explicit item count for the
-             gallery; each card stays a self-contained listitem. -->
+        gallery; each card stays a self-contained listitem. -->
         <div class="projects-container" #projectsTrack role="list" aria-label="Recent projects">
 
-          <article class="project-card" *ngFor="let project of projects; let i = index" role="listitem">
-            <div class="project-content">
-              <div class="project-text">
-                <!-- Index numeral + hairline — the site-wide wayfinding idiom
-                     (certs rows, contact channels). In the vertical fallback,
-                     where the HUD counter never renders, it is the only
-                     numbering. Decorative, hence aria-hidden. -->
-                <p class="project-kicker" aria-hidden="true">
-                  <span class="project-kicker-index">0{{ i + 1 }}</span>
-                </p>
-                <h3 class="project-title">{{ project.title }}</h3>
-                <p class="project-description">{{ project.description }}</p>
-                <div class="project-tech" role="list" aria-label="Technologies used">
-                  <span class="tech-tag" role="listitem" *ngFor="let t of project.tech">
-                    <!-- Greyscale mark from the global Font Awesome set; decorative,
-                     the label carries the meaning. -->
-                    <app-icon class="tech-tag-icon" [name]="techIcon(t)"></app-icon>{{ t }}
-                  </span>
+          @for (project of projects; track project; let i = $index) {
+            <article class="project-card" role="listitem">
+              <div class="project-content">
+                <div class="project-text">
+                  <!-- Index numeral + hairline — the site-wide wayfinding idiom
+                  (certs rows, contact channels). In the vertical fallback,
+                  where the HUD counter never renders, it is the only
+                  numbering. Decorative, hence aria-hidden. -->
+                  <p class="project-kicker" aria-hidden="true">
+                    <span class="project-kicker-index">0{{ i + 1 }}</span>
+                  </p>
+                  <h3 class="project-title">{{ project.title }}</h3>
+                  <p class="project-description">{{ project.description }}</p>
+                  <div class="project-tech" role="list" aria-label="Technologies used">
+                    @for (t of project.tech; track t) {
+                      <span class="tech-tag" role="listitem">
+                        <!-- Greyscale mark from the global Font Awesome set; decorative,
+                        the label carries the meaning. -->
+                        <app-icon class="tech-tag-icon" [name]="techIcon(t)"></app-icon>{{ t }}
+                      </span>
+                    }
+                  </div>
+                  <div class="project-links">
+                    <a [href]="project.href" class="project-link" target="_blank" rel="noopener noreferrer"
+                      [attr.aria-label]="'View ' + project.title + ' on GitHub (opens in a new tab)'">
+                      GitHub <span class="project-link-arrow" aria-hidden="true">&#8599;</span>
+                    </a>
+                    @if (project.demoHref) {
+                      <a [href]="project.demoHref" class="project-link" target="_blank"
+                        rel="noopener noreferrer"
+                        [attr.aria-label]="'Open the ' + project.title + ' live demo (opens in a new tab)'">
+                        Live Demo <span class="project-link-arrow" aria-hidden="true">&#8599;</span>
+                      </a>
+                    }
+                  </div>
                 </div>
-                <div class="project-links">
-                  <a [href]="project.href" class="project-link" target="_blank" rel="noopener noreferrer"
-                    [attr.aria-label]="'View ' + project.title + ' on GitHub (opens in a new tab)'">
-                    GitHub <span class="project-link-arrow" aria-hidden="true">&#8599;</span>
-                  </a>
-                  <a *ngIf="project.demoHref" [href]="project.demoHref" class="project-link" target="_blank"
-                    rel="noopener noreferrer"
-                    [attr.aria-label]="'Open the ' + project.title + ' live demo (opens in a new tab)'">
-                    Live Demo <span class="project-link-arrow" aria-hidden="true">&#8599;</span>
-                  </a>
+                <!-- width/height give the browser the intrinsic ratio before the
+                lazy image lands. The grid and .project-content's min-height
+                already fix the card's box, so this isn't load-bearing for
+                layout — it just stops the shell's body ResizeObserver being
+                woken by a decode that changes nothing. -->
+                <div class="project-image">
+                  <img [src]="projectImg(project)" [alt]="projectAlt(project)" loading="lazy" decoding="async"
+                    [attr.width]="project.img.width" [attr.height]="project.img.height">
+                  </div>
                 </div>
-              </div>
-              <!-- width/height give the browser the intrinsic ratio before the
-                   lazy image lands. The grid and .project-content's min-height
-                   already fix the card's box, so this isn't load-bearing for
-                   layout — it just stops the shell's body ResizeObserver being
-                   woken by a decode that changes nothing. -->
-              <div class="project-image">
-                <img [src]="projectImg(project)" [alt]="projectAlt(project)" loading="lazy" decoding="async"
-                  [attr.width]="project.img.width" [attr.height]="project.img.height">
-              </div>
-            </div>
-          </article>
-        </div>
-
-        <!-- Pinned wayfinding, shown only in showcase mode (see .showcase-hud in
-             CSS). Purely decorative orientation that duplicates the scroll, so the
-             whole cluster is aria-hidden and non-interactive; the accessible path
-             through the projects is the card links themselves, kept in-frame by
-             WorkComponent's focus handler. -->
-        <div class="showcase-hud" aria-hidden="true">
-          <p class="showcase-counter">
-            <span class="showcase-counter-current" #showcaseCurrent>01</span>
-            <span class="showcase-counter-sep">/</span>
-            <span class="showcase-counter-total">0{{ projects.length }}</span>
-          </p>
-          <div class="showcase-rail">
-            <span class="showcase-rail-fill"></span>
-            <span class="showcase-rail-tick" *ngFor="let project of projects; let i = index"
-              [style.left.%]="projects.length > 1 ? (i / (projects.length - 1)) * 100 : 0"></span>
+              </article>
+            }
           </div>
-          <p class="showcase-hint">
-            Scroll to explore
-            <span class="showcase-hint-arrow">&rarr;</span>
-          </p>
+
+          <!-- Pinned wayfinding, shown only in showcase mode (see .showcase-hud in
+          CSS). Purely decorative orientation that duplicates the scroll, so the
+          whole cluster is aria-hidden and non-interactive; the accessible path
+          through the projects is the card links themselves, kept in-frame by
+          WorkComponent's focus handler. -->
+          <div class="showcase-hud" aria-hidden="true">
+            <p class="showcase-counter">
+              <span class="showcase-counter-current" #showcaseCurrent>01</span>
+              <span class="showcase-counter-sep">/</span>
+              <span class="showcase-counter-total">0{{ projects.length }}</span>
+            </p>
+            <div class="showcase-rail">
+              <span class="showcase-rail-fill"></span>
+              @for (project of projects; track project; let i = $index) {
+                <span class="showcase-rail-tick"
+                [style.left.%]="projects.length > 1 ? (i / (projects.length - 1)) * 100 : 0"></span>
+              }
+            </div>
+            <p class="showcase-hint">
+              Scroll to explore
+              <span class="showcase-hint-arrow">&rarr;</span>
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>

@@ -1,7 +1,7 @@
 <!-- A fixed 8-star skeleton whose positions morph 1:1 with scroll between real
-     constellations. Each figure keeps its own asterism lines, so two line layers
-     cross-fade (outgoing → incoming) through each transition. Positions, link
-     endpoints and opacities are all set imperatively (see renderAt). -->
+constellations. Each figure keeps its own asterism lines, so two line layers
+cross-fade (outgoing → incoming) through each transition. Positions, link
+endpoints and opacities are all set imperatively (see renderAt). -->
 <div class="cluster">
   <svg
     class="constellation"
@@ -9,24 +9,29 @@
     preserveAspectRatio="xMidYMid meet"
     aria-hidden="true"
     focusable="false"
-  >
+    >
     <g class="links">
-      <line *ngFor="let s of linkSlots" #lineFrom [style.animation-delay]="0.3 + s * 0.08 + 's'" />
+      @for (s of linkSlots; track s) {
+        <line #lineFrom [style.animation-delay]="0.3 + s * 0.08 + 's'" />
+      }
     </g>
     <g class="links">
-      <line *ngFor="let s of linkSlots" #lineTo />
+      @for (s of linkSlots; track s) {
+        <line #lineTo />
+      }
     </g>
 
     <g class="nodes">
-      <g
-        class="star"
-        *ngFor="let i of starIndices"
-        #starEl
-        [style.animation-delay]="i * 0.07 + 's'"
-      >
-        <circle class="halo" [attr.r]="radii[i] * 4" />
-        <circle class="core" [attr.r]="radii[i]" />
-      </g>
+      @for (i of starIndices; track i) {
+        <g
+          class="star"
+          #starEl
+          [style.animation-delay]="i * 0.07 + 's'"
+          >
+          <circle class="halo" [attr.r]="radii[i] * 4" />
+          <circle class="core" [attr.r]="radii[i]" />
+        </g>
+      }
     </g>
   </svg>
 </div>
