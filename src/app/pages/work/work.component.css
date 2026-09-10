@@ -116,6 +116,23 @@
   color: var(--color-text-secondary);
 }
 
+/* Job title and dates — the ledger's micro-type, under the lockup, so they read
+   as the role's metadata rather than competing with the org name. Rendered only
+   when work-data.ts has them (see the @if in the template). */
+.role-meta {
+  grid-column: 1 / 6;
+  margin-top: var(--space-md);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
 .role-points {
   grid-column: 7 / 13;
   display: flex;

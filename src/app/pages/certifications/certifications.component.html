@@ -37,7 +37,13 @@
             >
             <span class="certs-num" aria-hidden="true">0{{ i + 1 }}</span>
             <span class="certs-name">{{ cert.title }}</span>
-            <span class="certs-issuer">{{ cert.issuer }}</span>
+            <span class="certs-issuer">
+              {{ cert.issuer }}
+              <!-- Renders only once certifications-data.ts carries a real date. -->
+              @if (cert.issued) {
+                <span class="certs-issued">{{ cert.issued }}</span>
+              }
+            </span>
             <span class="certs-view-hint" aria-hidden="true">
               View <span class="certs-view-arrow">&#8599;</span>
             </span>

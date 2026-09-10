@@ -36,9 +36,37 @@ export interface Project {
   readonly img: ProjectImage;
 }
 
+/**
+ * The one role, as data rather than markup.
+ *
+ * `title` and `period` are the two facts a hiring reviewer looks for first and
+ * the site has never stated: the hero claims three years, but nothing says
+ * which three, or what Bino was called while doing it. They are null rather
+ * than invented, and the template renders each only when it is filled in — so
+ * the page is honest today and complete the moment they are.
+ */
+export interface Role {
+  readonly org: string;
+  readonly descriptor: string;
+  /** e.g. 'Software Developer'. TODO(Bino): fill in your actual job title. */
+  readonly title: string | null;
+  /** e.g. 'Feb 2023 — present'. TODO(Bino): fill in your employment dates. */
+  readonly period: string | null;
+}
+
+export const ROLE: Role = {
+  org: 'SITA',
+  descriptor: 'Java EE case management & workflow platform',
+  title: null,
+  period: null,
+};
+
 export const EXPERIENCE_GROUPS: readonly ExperienceGroup[] = [
   {
-    label: 'Programming Languages',
+    // Was "Programming Languages", which listed React and Angular among them.
+    // The label changed, not the list — renaming is accurate; editing the list
+    // would be claiming something different about the skills.
+    label: 'Languages & Frameworks',
     description: 'Java, JavaScript, React, Angular',
   },
   {
@@ -50,7 +78,9 @@ export const EXPERIENCE_GROUPS: readonly ExperienceGroup[] = [
     description: 'Spring Framework, Java EE, API Development and Testing',
   },
   {
-    label: 'Tools and IDEs',
+    // Was "Tools and IDEs", but GitHub is neither. TODO(Bino): "Visual Studio"
+    // is almost certainly meant to be "Visual Studio Code" — confirm and fix.
+    label: 'Tools',
     description: 'Eclipse, Visual Studio, GitHub, IntelliJ IDEA',
   },
   {

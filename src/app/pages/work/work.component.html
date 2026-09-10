@@ -23,9 +23,24 @@
       whitespace stripping would otherwise drop it and fuse the heading's
       accessible name into "SITA—Java EE…". -->
       <h3 class="role-title">
-        <span class="role-title-org">SITA </span>
-        <span class="role-title-desc">&mdash; Java EE case management &amp; workflow platform</span>
+        <span class="role-title-org">{{ role.org }} </span>
+        <span class="role-title-desc">&mdash; {{ role.descriptor }}</span>
       </h3>
+      <!-- Job title and dates render only once they exist in work-data.ts, so
+      the heading never carries an empty dash or a placeholder. -->
+      @if (role.title || role.period) {
+        <p class="role-meta">
+          @if (role.title) {
+            <span class="role-meta-title">{{ role.title }}</span>
+          }
+          @if (role.title && role.period) {
+            <span class="role-meta-sep" aria-hidden="true">&middot;</span>
+          }
+          @if (role.period) {
+            <span class="role-meta-period">{{ role.period }}</span>
+          }
+        </p>
+      }
       <ul class="role-points" role="list">
         <li>
           Consolidated attachment-handling logic that had been copied across several

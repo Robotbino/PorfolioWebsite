@@ -10,6 +10,9 @@ import { IconComponent } from '../../shared/icon/icon.component';
   imports: [ScrollRevealDirective, IconComponent],
 })
 export class ContactComponent implements OnDestroy {
+  /** The colophon's copyright year, read from the clock rather than hard-coded. */
+  readonly year = new Date().getFullYear();
+
   // Signals, not plain fields: both change AFTER an await and again from a
   // timeout, neither of which is an event on this component's own template. A
   // signal read in the template marks the view dirty itself, which is what makes

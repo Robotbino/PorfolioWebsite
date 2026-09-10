@@ -13,7 +13,7 @@ import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
 import { NavTransitionService } from '../../core/nav-transition.service';
 import { smoothingK } from '../../motion.math';
-import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-data';
+import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project, ROLE, Role } from './work-data';
 import { IconName } from '../../shared/icon/icons';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -45,6 +45,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   // rAF loop never triggers Angular change detection.
   @ViewChild('showcaseCurrent') private currentRef?: ElementRef<HTMLElement>;
 
+  readonly role: Role = ROLE;
   readonly experienceGroups: readonly ExperienceGroup[] = EXPERIENCE_GROUPS;
   readonly projects: readonly Project[] = PROJECTS;
 

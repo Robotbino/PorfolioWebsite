@@ -142,6 +142,16 @@
   color: var(--color-text-tertiary);
 }
 
+/* Issue date, when the data has one — a tier quieter than the issuer, on its
+   own line so a long issuer never pushes it out of the column. */
+.certs-issued {
+  display: block;
+  margin-top: 0.15em;
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
 /* "View" affordance inside the trigger — hidden until hover/focus reveals it.
    Opacity/transform only. */
 .certs-view-hint {
