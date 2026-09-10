@@ -1,4 +1,5 @@
 import { NgZone } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { InViewportService } from './in-viewport.service';
 
 /**
@@ -41,8 +42,14 @@ describe('InViewportService', () => {
     FakeIO.instances = [];
     original = window.IntersectionObserver;
     window.IntersectionObserver = FakeIO as unknown as typeof IntersectionObserver;
-    zone = { runOutsideAngular: (fn: () => unknown) => fn() } as NgZone;
-    service = new InViewportService(zone);
+    // The service takes NgZone via inject(), so it comes from an injector now.
+    // TestBed's REAL NgZone is used rather than the old hand-rolled stub:
+    // overriding the provider replaces the zone the framework itself runs on,
+    // and runOutsideAngular already invokes its callback synchronously, which
+    // is all these specs needed the stub for.
+    TestBed.resetTestingModule();
+    zone = TestBed.inject(NgZone);
+    service = TestBed.inject(InViewportService);
   });
 
   afterEach(() => {

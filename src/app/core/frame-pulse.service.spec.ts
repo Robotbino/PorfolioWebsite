@@ -1,5 +1,6 @@
 import { FramePulseService } from './frame-pulse.service';
 import { NgZone } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 
 describe('FramePulseService', () => {
   let service: FramePulseService;
@@ -23,8 +24,13 @@ describe('FramePulseService', () => {
       cancelledIds.add(id);
     });
 
-    const zone = { runOutsideAngular: (fn: () => void) => fn() } as NgZone;
-    service = new FramePulseService(zone);
+    // The service takes NgZone via inject(), so it comes from an injector now.
+    // TestBed's REAL NgZone is used rather than the old hand-rolled stub:
+    // overriding the provider replaces the zone the framework itself runs on,
+    // and runOutsideAngular already invokes its callback synchronously, which
+    // is all these specs needed the stub for.
+    TestBed.resetTestingModule();
+    service = TestBed.inject(FramePulseService);
   });
 
   afterEach(() => {

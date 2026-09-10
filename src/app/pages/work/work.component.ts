@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  NgZone,
-  OnDestroy,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, ViewChild, inject } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
@@ -14,20 +6,29 @@ import { NavTransitionService } from '../../core/nav-transition.service';
 import { smoothingK } from '../../motion.math';
 import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project } from './work-data';
 import { IconName } from '../../shared/icon/icons';
+import { ScrollRevealDirective } from '../../scroll-reveal.directive';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
-  selector: 'app-work',
-  standalone: false,
-  templateUrl: './work.component.html',
-  // Two stylesheets, one component: the pinned horizontal gallery is a
-  // self-contained enhancement over the vertical card stack, and keeping it
-  // separate also puts each file back inside the anyComponentStyle budget.
-  // Encapsulation is per-component, not per-file, so :host(.showcase-on) in the
-  // second sheet still resolves against this host.
-  styleUrls: ['./work.component.css', './work.showcase.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-work',
+    templateUrl: './work.component.html',
+    // Two stylesheets, one component: the pinned horizontal gallery is a
+    // self-contained enhancement over the vertical card stack, and keeping it
+    // separate also puts each file back inside the anyComponentStyle budget.
+    // Encapsulation is per-component, not per-file, so :host(.showcase-on) in the
+    // second sheet still resolves against this host.
+    styleUrls: ['./work.component.css', './work.showcase.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [ScrollRevealDirective, IconComponent],
 })
 export class WorkComponent implements AfterViewInit, OnDestroy {
+  private theme = inject(ThemeService);
+  private pulse = inject(FramePulseService);
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private motion = inject(MotionSettingsService);
+  private navTransition = inject(NavTransitionService);
+  private zone = inject(NgZone);
+
   @ViewChild('projectsViewport') private viewportRef?: ElementRef<HTMLElement>;
   @ViewChild('projectsStage') private stageRef?: ElementRef<HTMLElement>;
   @ViewChild('projectsTrack') private trackRef?: ElementRef<HTMLElement>;
@@ -66,15 +67,6 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   private cards: { el: HTMLElement; center: number }[] = [];
   private activeIndex = -1;
   private resizeRelease: (() => void) | null = null;
-
-  constructor(
-    private theme: ThemeService,
-    private pulse: FramePulseService,
-    private host: ElementRef<HTMLElement>,
-    private motion: MotionSettingsService,
-    private navTransition: NavTransitionService,
-    private zone: NgZone,
-  ) {}
 
   // Maps a tech-stack label to one of the inline glyphs in shared/icon. Brand
   // marks where one exists; a representative solid glyph otherwise (Spring's

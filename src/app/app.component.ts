@@ -1,23 +1,31 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  NgZone,
-  OnDestroy,
-  QueryList,
-  ViewChildren,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, QueryList, ViewChildren, inject } from '@angular/core';
 import { ThemeService } from './core/theme.service';
 import { MotionSettingsService } from './core/motion-settings.service';
 import { InViewportService } from './core/in-viewport.service';
 import { ScrollLoopService } from './scroll-loop.service';
+import { AuroraComponent } from './aurora/aurora.component';
+import { ConstellationComponent } from './constellation/constellation.component';
+import { SiteNavComponent } from './layout/site-nav/site-nav.component';
+import { LandingpageComponent } from './landingpage/landingpage.component';
+import { WorkComponent } from './pages/work/work.component';
+import { AboutComponent } from './pages/about/about.component';
+import { CertificationsComponent } from './pages/certifications/certifications.component';
+import { ContactComponent } from './pages/contact/contact.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  standalone: false,
   styleUrl: './app.component.css',
+  imports: [
+    AuroraComponent,
+    ConstellationComponent,
+    SiteNavComponent,
+    LandingpageComponent,
+    WorkComponent,
+    AboutComponent,
+    CertificationsComponent,
+    ContactComponent,
+  ],
   // The shell's own template is static (the aurora's inputs change only on a
   // theme flip, which is a signal read). Nothing here needs to be re-checked on
   // an unrelated event, and the scroll/resize listeners below deliberately run
@@ -25,6 +33,12 @@ import { ScrollLoopService } from './scroll-loop.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements AfterViewInit, OnDestroy {
+  theme = inject(ThemeService);
+  private loop = inject(ScrollLoopService);
+  private motion = inject(MotionSettingsService);
+  private inView = inject(InViewportService);
+  private zone = inject(NgZone);
+
   @ViewChildren('dest') private dests!: QueryList<ElementRef<HTMLElement>>;
 
   private reduce = false;
@@ -35,15 +49,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   private revealReleases: (() => void)[] = [];
   private teardown: (() => void)[] = [];
   private measureFrame = 0;
-
-  // Public so the persistent background layer can bind to the theme signal.
-  constructor(
-    public theme: ThemeService,
-    private loop: ScrollLoopService,
-    private motion: MotionSettingsService,
-    private inView: InViewportService,
-    private zone: NgZone,
-  ) {}
 
   ngAfterViewInit(): void {
     this.reduce = this.motion.reducedMotion();

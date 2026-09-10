@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 
 /**
  * Single owner of the page scroll lock used by full-screen overlays (the mobile
@@ -17,9 +17,9 @@ import { Injectable, NgZone } from '@angular/core';
  */
 @Injectable({ providedIn: 'root' })
 export class ScrollLockService {
-  private count = 0;
+  private zone = inject(NgZone);
 
-  constructor(private zone: NgZone) {}
+  private count = 0;
 
   /** Lock the page (if not already locked); returns an idempotent release handle. */
   acquire(): () => void {

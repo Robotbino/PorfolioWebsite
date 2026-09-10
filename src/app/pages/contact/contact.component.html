@@ -80,15 +80,15 @@
           <span class="marquee-address">HlongwanaBino&#64;gmail.com</span>
           <span class="marquee-arrow" aria-hidden="true">&#8599;</span>
         </a>
-        <button class="channel-copy" type="button" [class.is-copied]="copied"
+        <button class="channel-copy" type="button" [class.is-copied]="copied()"
           (click)="copyEmail('HlongwanaBino@gmail.com')"
-          [attr.aria-label]="copied ? 'Email address copied to clipboard' : 'Copy email address'">
-          <app-icon class="channel-copy-icon" [name]="copied ? 'check' : 'copy'"></app-icon>
-          <span class="channel-copy-text">{{ copied ? 'Copied' : 'Copy' }}</span>
+          [attr.aria-label]="copied() ? 'Email address copied to clipboard' : 'Copy email address'">
+          <app-icon class="channel-copy-icon" [name]="copied() ? 'check' : 'copy'"></app-icon>
+          <span class="channel-copy-text">{{ copied() ? 'Copied' : 'Copy' }}</span>
         </button>
         <!-- The colour change and icon swap are sighted-only feedback; this is
              the same news for everyone else, including when the copy fails. -->
-        <span class="sr-only" role="status" aria-live="polite">{{ copyStatus }}</span>
+        <span class="sr-only" role="status" aria-live="polite">{{ copyStatus() }}</span>
       </div>
     </div>
 

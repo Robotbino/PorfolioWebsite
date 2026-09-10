@@ -1,6 +1,8 @@
 import { ElementRef, SimpleChange, SimpleChanges } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { AuroraComponent } from './aurora.component';
 import { MotionSettingsService } from '../core/motion-settings.service';
+import { FramePulseService } from '../core/frame-pulse.service';
 import { auroraPalette } from '../core/aurora-palette';
 
 /**
@@ -43,8 +45,20 @@ describe('AuroraComponent — mobile CSS fallback recolour', () => {
 
   function build(): { aurora: AuroraComponent; blobs: HTMLElement[] } {
     const pulse = { onTick: () => () => {} } as any;
-    // Real MotionSettingsService reads window.matchMedia (faked above).
-    const aurora = new AuroraComponent(pulse, new MotionSettingsService());
+    // The component takes its dependencies via inject(), so they come from an
+    // injector rather than constructor arguments. The real
+    // MotionSettingsService is used deliberately — it reads window.matchMedia,
+    // which the fake above controls, and that IS the branch under test.
+    // Reset first: build() can run more than once in a single spec, and
+    // configuring an already-instantiated testing module throws.
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: FramePulseService, useValue: pulse },
+        MotionSettingsService,
+      ],
+    });
+    const aurora = TestBed.runInInjectionContext(() => new AuroraComponent());
     const container = document.createElement('div');
     (aurora as any).containerRef = new ElementRef(container);
     aurora.colorStops = DARK;
@@ -110,10 +124,25 @@ describe('AuroraComponent — reduced motion', () => {
       }) as unknown as MediaQueryList) as typeof window.matchMedia;
   }
 
+  /**
+   * Builds a component with the given pulse double. The component takes its
+   * dependencies via inject(), so they come from an injector rather than
+   * constructor arguments; the real MotionSettingsService is used deliberately,
+   * because it reads the faked window.matchMedia that selects the branch under
+   * test.
+   */
+  function makeAurora(pulse: unknown): AuroraComponent {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [{ provide: FramePulseService, useValue: pulse }, MotionSettingsService],
+    });
+    return TestBed.runInInjectionContext(() => new AuroraComponent());
+  }
+
   it('builds the fallback blobs without animating them (coarse pointer)', () => {
     fakeMedia(true);
     const pulse = { onTick: () => () => {} } as any;
-    const aurora = new AuroraComponent(pulse, new MotionSettingsService());
+    const aurora = makeAurora(pulse);
     const container = document.createElement('div');
     (aurora as any).containerRef = new ElementRef(container);
     aurora.colorStops = DARK;
@@ -136,7 +165,7 @@ describe('AuroraComponent — reduced motion', () => {
     fakeMedia(false); // fine pointer ⇒ WebGL branch, reduce still on
     let ticks = 0;
     const pulse = { onTick: () => { ticks++; return () => {}; } } as any;
-    const aurora = new AuroraComponent(pulse, new MotionSettingsService());
+    const aurora = makeAurora(pulse);
     const container = document.createElement('div');
     (aurora as any).containerRef = new ElementRef(container);
     aurora.colorStops = DARK;

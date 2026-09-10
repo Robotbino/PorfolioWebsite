@@ -1,10 +1,13 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   HostListener,
   OnDestroy,
   ViewChild,
+  inject,
+  signal,
 } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
 import { ScrollLoopService } from '../../scroll-loop.service';
@@ -15,6 +18,7 @@ import { InViewportService } from '../../core/in-viewport.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
 import { PageInertService } from '../../core/page-inert.service';
 import { DESTINATIONS } from '../../destinations';
+import { ThemeToggleComponent } from '../../shared/theme-toggle/theme-toggle.component';
 
 /**
  * Persistent top navigation. Lives in the app shell so it survives scrolling.
@@ -38,12 +42,23 @@ import { DESTINATIONS } from '../../destinations';
  *   takes the highlight from Work (it is not a destination the loop knows about).
  */
 @Component({
-  selector: 'app-site-nav',
-  standalone: false,
-  templateUrl: './site-nav.component.html',
-  styleUrl: './site-nav.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-site-nav',
+    templateUrl: './site-nav.component.html',
+    styleUrl: './site-nav.component.css',
+    imports: [ThemeToggleComponent],
 })
 export class SiteNavComponent implements AfterViewInit, OnDestroy {
+  theme = inject(ThemeService);
+  private loop = inject(ScrollLoopService);
+  private el = inject<ElementRef<HTMLElement>>(ElementRef);
+  private pulse = inject(FramePulseService);
+  private scrollLock = inject(ScrollLockService);
+  private pageInert = inject(PageInertService);
+  private motion = inject(MotionSettingsService);
+  private navTransition = inject(NavTransitionService);
+  private inView = inject(InViewportService);
+
   // Travel fraction (in destination units) over which the nav fully fades.
   private static readonly FADE_RANGE = 0.5;
 
@@ -52,7 +67,10 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   // exceptions in the template (they aren't destinations). See destinations.ts.
   readonly destinations = DESTINATIONS;
 
-  menuOpen = false;
+  // A signal because it flips from a document-level Escape handler as well as
+  // from this template's own clicks; the template read keeps the view honest
+  // under OnPush either way.
+  readonly menuOpen = signal(false);
 
   @ViewChild('menuTrigger') private menuTrigger?: ElementRef<HTMLButtonElement>;
   @ViewChild('mobileOverlay') private mobileOverlay?: ElementRef<HTMLElement>;
@@ -90,18 +108,6 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   private menuLockRelease: (() => void) | null = null;
   private menuInertRelease: (() => void) | null = null;
 
-  constructor(
-    public theme: ThemeService,
-    private loop: ScrollLoopService,
-    private el: ElementRef<HTMLElement>,
-    private pulse: FramePulseService,
-    private scrollLock: ScrollLockService,
-    private pageInert: PageInertService,
-    private motion: MotionSettingsService,
-    private navTransition: NavTransitionService,
-    private inView: InViewportService,
-  ) {}
-
   ngAfterViewInit(): void {
     this.collectLinks();
     this.observeProjects();
@@ -121,8 +127,8 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   }
 
   toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
-    if (this.menuOpen) {
+    this.menuOpen.set(!this.menuOpen());
+    if (this.menuOpen()) {
       this.menuLockRelease = this.scrollLock.acquire();
       if (this.mobileOverlay) {
         // The trigger is protected alongside the overlay: it lives in the
@@ -143,10 +149,10 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   }
 
   closeMenu(): void {
-    if (!this.menuOpen) {
+    if (!this.menuOpen()) {
       return;
     }
-    this.menuOpen = false;
+    this.menuOpen.set(false);
     this.releaseMenuLock();
     this.menuTrigger?.nativeElement.focus();
   }
@@ -161,7 +167,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
-    if (this.menuOpen) {
+    if (this.menuOpen()) {
       this.closeMenu();
     }
   }
@@ -170,7 +176,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     // While the mobile overlay is open the transition is suppressed: the jump
     // lands instantly behind the scrim, and closeMenu()'s overlay fade is the
     // reveal — two stacked animations would fight each other.
-    if (this.navTransition.navigateTo(id, { suppressTransition: this.menuOpen })) {
+    if (this.navTransition.navigateTo(id, { suppressTransition: this.menuOpen() })) {
       event.preventDefault();
     }
   }

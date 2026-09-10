@@ -1,4 +1,5 @@
 import { NgZone } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { ScrollLockService } from './scroll-lock.service';
 
 /**
@@ -11,9 +12,13 @@ describe('ScrollLockService', () => {
   let lock: ScrollLockService;
 
   beforeEach(() => {
-    // Minimal zone: run the callback synchronously, no Angular bootstrap needed.
-    const zone = { runOutsideAngular: (fn: () => unknown) => fn() } as NgZone;
-    lock = new ScrollLockService(zone);
+    // The service takes NgZone via inject(), so it comes from an injector now.
+    // TestBed's REAL NgZone is used rather than the old hand-rolled stub:
+    // overriding the provider replaces the zone the framework itself runs on,
+    // and runOutsideAngular already invokes its callback synchronously, which
+    // is all these specs needed the stub for.
+    TestBed.resetTestingModule();
+    lock = TestBed.inject(ScrollLockService);
     root.style.overflowY = '';
   });
 

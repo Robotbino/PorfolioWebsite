@@ -1,13 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  NgZone,
-  OnDestroy,
-  ViewChild,
-  signal,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, ViewChild, signal, inject } from '@angular/core';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
 import { InViewportService } from '../../core/in-viewport.service';
@@ -22,6 +13,7 @@ import {
   maskScales,
   tiltFromVelocity,
 } from './certifications.math';
+import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 
 /**
  * Certifications — the loop's fifth destination. A typographic ledger (the
@@ -39,13 +31,22 @@ import {
  * spotlight (tap to open) carries the full certificate instead.
  */
 @Component({
-  selector: 'app-certifications',
-  standalone: false,
-  templateUrl: './certifications.component.html',
-  styleUrl: './certifications.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-certifications',
+    templateUrl: './certifications.component.html',
+    styleUrl: './certifications.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [ScrollRevealDirective],
 })
 export class CertificationsComponent implements AfterViewInit, OnDestroy {
+  private zone = inject(NgZone);
+  private pulse = inject(FramePulseService);
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private scrollLock = inject(ScrollLockService);
+  private pageInert = inject(PageInertService);
+  private motion = inject(MotionSettingsService);
+  private inView = inject(InViewportService);
+  private navTransition = inject(NavTransitionService);
+
   @ViewChild('preview') private previewRef?: ElementRef<HTMLElement>;
   @ViewChild('tilt') private tiltRef?: ElementRef<HTMLElement>;
   @ViewChild('mask') private maskRef?: ElementRef<HTMLElement>;
@@ -106,17 +107,6 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
    *  intercepting clicks over the dialog and its action cluster yields the
    *  top-right corner to the Close button. */
   private static readonly BODY_OPEN_CLASS = 'certs-spotlight-open';
-
-  constructor(
-    private zone: NgZone,
-    private pulse: FramePulseService,
-    private host: ElementRef<HTMLElement>,
-    private scrollLock: ScrollLockService,
-    private pageInert: PageInertService,
-    private motion: MotionSettingsService,
-    private inView: InViewportService,
-    private navTransition: NavTransitionService,
-  ) {}
 
   ngAfterViewInit(): void {
     const reduce = this.motion.reducedMotion();

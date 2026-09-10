@@ -1,12 +1,14 @@
-import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class FramePulseService implements OnDestroy {
+  private zone = inject(NgZone);
+
   private readonly subs = new Set<(now: number, dt: number) => void>();
   private rafId = 0;
   private lastTime = 0;
 
-  constructor(private zone: NgZone) {
+  constructor() {
     // A hidden tab parks rAF anyway, but two things still need handling: stop the
     // loop deterministically (don't lean on the browser), and — the real defect —
     // reset the clock on return so the first tick back isn't handed the whole

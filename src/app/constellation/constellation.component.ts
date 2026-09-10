@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnDestroy,
-  QueryList,
-  ViewChildren,
-} from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, QueryList, ViewChildren, inject } from '@angular/core';
 import { Constellation, Link, Star } from './constellation.model';
 import { interpolateConstellation } from './constellation-morph';
 import { MAX_LINKS, R, STAR_COUNT, order } from './constellation.figures';
@@ -16,13 +8,16 @@ import { FramePulseService } from '../core/frame-pulse.service';
 import { MotionSettingsService } from '../core/motion-settings.service';
 
 @Component({
-  selector: 'app-constellation',
-  standalone: false,
-  templateUrl: './constellation.component.html',
-  styleUrl: './constellation.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-constellation',
+    templateUrl: './constellation.component.html',
+    styleUrl: './constellation.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConstellationComponent implements AfterViewInit, OnDestroy {
+  private loop = inject(ScrollLoopService);
+  private pulse = inject(FramePulseService);
+  private motion = inject(MotionSettingsService);
+
   // The morph cycles through these in scroll order; figure data lives in
   // constellation.figures.ts so this file stays focused on driving the morph.
   private readonly order: Constellation[] = order;
@@ -49,12 +44,6 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
   private groups: SVGGElement[] = [];
   private fromSegs: SVGLineElement[] = [];
   private toSegs: SVGLineElement[] = [];
-
-  constructor(
-    private loop: ScrollLoopService,
-    private pulse: FramePulseService,
-    private motion: MotionSettingsService,
-  ) {}
 
   ngAfterViewInit(): void {
     this.groups = this.starEls.map((el) => el.nativeElement);

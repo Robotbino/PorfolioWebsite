@@ -1,13 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  AfterViewInit,
-  SimpleChanges,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, OnDestroy, AfterViewInit, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { FramePulseService } from '../core/frame-pulse.service';
 import { MotionSettingsService } from '../core/motion-settings.service';
@@ -135,19 +126,22 @@ void main() {
 let auroraFallbackId = 0;
 
 @Component({
-  selector: 'app-aurora',
-  standalone: false,
-  template: '<div #container class="aurora-container"></div>',
-  styles: [
-    `
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-aurora',
+    template: '<div #container class="aurora-container"></div>',
+    styles: [
+        `
       .aurora-container {
         width: 100%;
         height: 100%;
       }
     `,
-  ],
+    ],
 })
 export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
+  private pulse = inject(FramePulseService);
+  private motion = inject(MotionSettingsService);
+
   @Input() colorStops: [string, string, string] = ['#3A29FF', '#FF94B4', '#FF3232'];
   @Input() speed = 1.0;
   @Input() blend = 0.5;
@@ -174,11 +168,6 @@ export class AuroraComponent implements AfterViewInit, OnChanges, OnDestroy {
   // flip pushing new uniforms, a resize clearing it) calls this to paint the one
   // static frame again. Null whenever the rAF is driving.
   private renderStatic: (() => void) | null = null;
-
-  constructor(
-    private pulse: FramePulseService,
-    private motion: MotionSettingsService,
-  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['colorStops']) {

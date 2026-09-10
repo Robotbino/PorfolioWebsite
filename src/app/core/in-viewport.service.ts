@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 
 /** Notified with whether the target currently intersects the viewport. */
 export type InViewCallback = (visible: boolean) => void;
@@ -21,6 +21,8 @@ export type InViewCallback = (visible: boolean) => void;
  */
 @Injectable({ providedIn: 'root' })
 export class InViewportService {
+  private zone = inject(NgZone);
+
   private readonly groups = new Map<
     string,
     { observer: IntersectionObserver; callbacks: Map<Element, InViewCallback> }
@@ -28,8 +30,6 @@ export class InViewportService {
 
   /** Observer roots seen so far; the index is that root's identity in a key. */
   private readonly roots: (Element | Document | null)[] = [];
-
-  constructor(private zone: NgZone) {}
 
   /** Watch `target`; `onChange(visible)` fires on each crossing. Returns release. */
   observe(target: Element, options: IntersectionObserverInit, onChange: InViewCallback): () => void {

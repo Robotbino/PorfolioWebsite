@@ -1,13 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
 import { LocalClockService } from '../core/local-clock.service';
 
 @Component({
-  selector: 'app-landingpage',
-  standalone: false,
-  templateUrl: './landingpage.component.html',
-  styleUrl: './landingpage.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-landingpage',
+    templateUrl: './landingpage.component.html',
+    styleUrl: './landingpage.component.css',
 })
 export class LandingpageComponent {
+  clock = inject(LocalClockService);
+
   /**
    * True for the loop's seam clone (app.component.html), which renders a second
    * copy of this hero after Contact. The clone must look identical but must not
@@ -16,6 +18,4 @@ export class LandingpageComponent {
    * resolve to the real hero's heading.
    */
   @Input() clone = false;
-
-  constructor(public clock: LocalClockService) {}
 }

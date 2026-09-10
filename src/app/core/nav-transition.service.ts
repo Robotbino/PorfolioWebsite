@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { MotionSettingsService } from './motion-settings.service';
 
 /** Hops ≤ this many viewport-heights keep native smooth scroll; longer ones
@@ -22,14 +22,12 @@ const SMOOTH_HOP_MAX_VH = 1.75;
  */
 @Injectable({ providedIn: 'root' })
 export class NavTransitionService {
+  private zone = inject(NgZone);
+  private motion = inject(MotionSettingsService);
+
   private activeTransition: ViewTransition | null = null;
   private readonly teleportListeners = new Set<() => void>();
   private readonly navigateListeners = new Set<() => void>();
-
-  constructor(
-    private zone: NgZone,
-    private motion: MotionSettingsService,
-  ) {}
 
   /**
    * Scroll destination `id` into view, choosing the least jarring vehicle.

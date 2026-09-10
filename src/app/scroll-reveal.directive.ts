@@ -1,17 +1,12 @@
-import { Directive, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, OnInit, OnDestroy, inject } from '@angular/core';
 import { InViewportService } from './core/in-viewport.service';
 
-@Directive({
-  selector: '[appScrollReveal]',
-  standalone: false,
-})
+@Directive({ selector: '[appScrollReveal]', })
 export class ScrollRevealDirective implements OnInit, OnDestroy {
-  private release?: () => void;
+  private el = inject<ElementRef<HTMLElement>>(ElementRef);
+  private inView = inject(InViewportService);
 
-  constructor(
-    private el: ElementRef<HTMLElement>,
-    private inView: InViewportService,
-  ) {}
+  private release?: () => void;
 
   ngOnInit(): void {
     const host = this.el.nativeElement;
