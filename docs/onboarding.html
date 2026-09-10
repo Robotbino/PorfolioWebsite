@@ -868,7 +868,7 @@ kbd {
   <div class="hwrap">
     <div class="brand" style="align-items:center">
       <h1><b>★</b> Star-Map Portfolio — A Developer's Guide</h1>
-      <span>Angular 19 · TypeScript · WebGL · infinite scroll</span>
+      <span>Angular 21 · TypeScript · WebGL · infinite scroll</span>
       <div class="search">
         <input id="q" type="search" placeholder="Search… (press /)" aria-label="Search the guide" autocomplete="off">
         <div id="qr" class="qr" role="listbox"></div>
@@ -935,10 +935,10 @@ kbd {
 
   <section id="s-qs-prereq">
     <h2><span class="n">01.1</span>What You Need</h2>
-    <p class="lead">This is a plain Angular 19 app — no backend, no database, nothing to configure. You only need two things to run it:</p>
+    <p class="lead">This is a plain Angular 21 app — no backend, no database, nothing to configure. You only need two things to run it:</p>
     <div class="tblwrap"><table>
       <tr><th>Tool</th><th>Version</th><th>Why</th></tr>
-      <tr><td><b>Node.js</b></td><td><code>^18.19.1</code>, <code>^20.11.1</code> or <code>^22.x</code></td><td>Angular 19 requires one of these</td></tr>
+      <tr><td><b>Node.js</b></td><td><code>^20.19</code>, <code>^22.12</code> or <code>&gt;=24</code></td><td>Angular 21 requires one of these</td></tr>
       <tr><td><b>npm</b></td><td>comes with Node</td><td>The Angular CLI is already in the project — <code>npm start</code> runs it for you</td></tr>
     </table></div>
   </section>
@@ -967,7 +967,7 @@ $env:CHROME_BIN = <span class="c-str">"C:\Program Files (x86)\Microsoft\Edge\App
     <div class="tblwrap"><table>
       <tr><th>Command</th><th>What it does</th></tr>
       <tr><td><code>npm start</code></td><td><code>ng serve</code> — dev server on <code>http://localhost:4200</code>, HMR-style live reload</td></tr>
-      <tr><td><code>npm run build</code></td><td><code>ng build</code> — production bundle to <code>dist/professional-porfolio/</code></td></tr>
+      <tr><td><code>npm run build</code></td><td><code>ng build</code> — production bundle to <code>dist/professional-porfolio/browser/</code></td></tr>
       <tr><td><code>npm run watch</code></td><td>Development-config build that rebuilds on every file change</td></tr>
       <tr><td><code>npm test</code></td><td><code>ng test</code> — Karma + Jasmine, watches specs</td></tr>
     </table></div>
@@ -1138,10 +1138,9 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
     <pre class="tree"><code><span class="d">src/</span>
 ├─ <span class="d">styles.css</span>              <span class="a">← ALL design tokens (CSS custom properties) + reset + view transitions</span>
 ├─ index.html               <span class="a">← Instrument Serif font, pre-paint theme guard, hero-font preloads</span>
-├─ main.ts                  <span class="a">← bootstraps AppModule (NgModule app, not standalone)</span>
+├─ main.ts                  <span class="a">← bootstrapApplication(AppComponent) — standalone, no NgModule</span>
 ├─ assets/                  <span class="a">← Nohemi (.woff2), project screenshots + cert scans (.webp) — served at /assets/</span>
 └─ <span class="d">app/</span>
-   ├─ app.module.ts         <span class="a">← the single NgModule — every component is declared here</span>
    ├─ app.component.*       <span class="a">← the shell: aurora + constellation + nav + 5 sections + clone</span>
    ├─ <span class="d">destinations.ts</span>       <span class="a">← ★ single source of truth for the five sections</span>
    ├─ scroll-loop.service.ts<span class="a">  ← cycle position state + seam wrap</span>
@@ -1188,7 +1187,7 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
       <tr><td><code>app-theme-toggle</code></td><td><code>shared/</code></td><td>Dark/light switch bound to <code>ThemeService</code>.</td></tr>
       <tr><td><code>[appScrollReveal]</code></td><td><code>app/</code></td><td>Directive: fade-up on first intersection (adds <code>.revealed</code>).</td></tr>
     </table></div>
-    <div class="note"><b>One place to register</b> This is an NgModule app, so any new component or directive needs to be added to the <code>declarations</code> array in <code>app.module.ts</code>. If you skip this step, Angular won't recognize the new tag in templates.</div>
+    <div class="note"><b>One place to register</b> This is a standalone app — there is no NgModule. A new component or directive is added to the <code>imports</code> array of whichever component's template uses it (for a whole new section, that is <code>app.component.ts</code>). If you skip this step, Angular won't recognize the new tag in that template.</div>
   </section>
 
   <section id="s-map-services">
@@ -1353,7 +1352,7 @@ work: figure(<span class="c-str">'Orion'</span>, [
       <li><b><code>constellation.figures.ts</code></b> — add a <code>lab:</code> figure to <code>byRoute</code> with exactly 8 stars (the <code>destinations.spec.ts</code> guard fails the build-time tests if the key doesn't resolve).</li>
       <li><b><code>app.component.html</code></b> — add the section in scroll order, <em>before</em> the Home clone (the clone must stay last — it is the seam):
       <pre data-lang="html" data-copy><code>&lt;section #dest id="dest-lab" class="dest"&gt;&lt;app-lab&gt;&lt;/app-lab&gt;&lt;/section&gt;</code></pre></li>
-      <li><b>Create the component</b> under <code>src/app/pages/lab/</code> and declare it in <code>app.module.ts</code>. Write the section header inline in the editorial pattern every other section uses — a kicker (<code>aria-hidden</code> destination numeral + a short hairline rule) above a poster title in the Nohemi weight ladder; copy the markup from <code>about.component.html</code> and give it the next index (<code>06</code>). Put the section's copy in a <code>lab-data.ts</code>, matching the house pattern.</li>
+      <li><b>Create the component</b> under <code>src/app/pages/lab/</code> as a standalone component, and add it to the <code>imports</code> array in <code>app.component.ts</code>. Write the section header inline in the editorial pattern every other section uses — a kicker (<code>aria-hidden</code> destination numeral + a short hairline rule) above a poster title in the Nohemi weight ladder; copy the markup from <code>about.component.html</code> and give it the next index (<code>06</code>). Put the section's copy in a <code>lab-data.ts</code>, matching the house pattern.</li>
       <li><b>Verify:</b> <code>npm test</code> (registry + figure guards), then scroll a full loop in the browser — check the new morph both in and out, the nav underline, and the seam still wrapping invisibly.</li>
     </ol>
     <div class="warn"><b>Leave the clone alone</b> The last <code>&lt;section&gt;</code> is a hidden copy of Home. It must stay last and look exactly like the real Home — the seamless loop depends on it being pixel-identical. See ADR-0004 for the reasoning.</div>

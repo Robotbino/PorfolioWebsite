@@ -24,7 +24,7 @@ export class AboutComponent implements AfterViewInit, OnDestroy {
   private motion = inject(MotionSettingsService);
   private inView = inject(InViewportService);
 
-  @ViewChildren('cardIcon') private icons!: QueryList<ElementRef<HTMLElement>>;
+  @ViewChildren('ledgerNumeral') private numerals!: QueryList<ElementRef<HTMLElement>>;
   private releases: (() => void)[] = [];
 
   ngAfterViewInit(): void {
@@ -32,12 +32,16 @@ export class AboutComponent implements AfterViewInit, OnDestroy {
     if (this.motion.reducedMotion()) {
       return;
     }
-    // Fire when an icon crosses the viewport's vertical middle: the negative
-    // top/bottom margins collapse the observer root to a 1px line at centre.
-    // Toggling the class (not (un)observing) re-arms it on each crossing. The
-    // seam runs the callback outside Angular, so the toggle never trips CD.
-    this.icons.forEach((i) => {
-      const el = i.nativeElement;
+    // Fire when a ledger NUMERAL crosses the viewport's vertical middle: the
+    // negative top/bottom margins collapse the observer root to a 1px line at
+    // centre. The numeral takes the accent, and its icon follows through a
+    // sibling selector in the stylesheet. (The refs were named `cardIcon` after
+    // the card design the editorial rebuild deleted, which read as though the
+    // icon itself were observed.) Toggling the class (not (un)observing)
+    // re-arms it on each crossing. The seam runs the callback outside Angular,
+    // so the toggle never trips change detection.
+    this.numerals.forEach((numeral) => {
+      const el = numeral.nativeElement;
       this.releases.push(
         this.inView.observe(el, { rootMargin: '-50% 0px -50% 0px', threshold: 0 }, (visible) =>
           el.classList.toggle('is-centered', visible),

@@ -52,9 +52,24 @@ Make the wrap **seamless in one direction (downward only)** by replacing the bla
   always match the clone; otherwise, looping back would catch it in its scrolled-away hidden state
   and fade the hero in on every loop (IO re-reveals asynchronously, too late for the seam frame).
   Side benefit: an instantly-visible hero is better for LCP. Only Work/About/Contact scroll-reveal.
-- The clone duplicates `landingpage`'s internal `id`s (`my-wrapper`, `hero`, `hero-greeting`).
-  Tolerated because the clone is out of the a11y tree and nothing queries those `id`s; the nav
-  targets the `dest-*` `id`s on the section wrappers, which the clone deliberately does **not** carry.
+- The clone **used to duplicate** `landingpage`'s internal `id`s. That was tolerated on the grounds
+  that the clone is out of the a11y tree and nothing queried them — but it was invalid HTML, and
+  the clone's own `aria-labelledby` resolved to the REAL hero's heading rather than its own.
+  Amended 2026-09-10: `LandingpageComponent` takes a `clone` input; the wrapper's `id` became a
+  class (its only consumer was a CSS selector), the unused `id="hero"` was dropped, and the
+  headline's `id` and `aria-labelledby` render only on the real hero. The nav still targets the
+  `dest-*` `id`s on the section wrappers, which the clone deliberately does not carry.
+- The same amendment moved the hero clock into `LocalClockService`. Mounting the hero twice ran two
+  minute-timers for one displayed time, the second inside an inert subtree nobody can read — and,
+  worse for the seam, two independent timers can tick on either side of a minute boundary, so the
+  two copies could disagree by a minute at the exact moment the wrap swaps one for the other.
+- Amended 2026-09-10: the clone is sized `min-height: 100lvh` while every other destination uses
+  `100svh`. The wrap fires when `scrollY` reaches the clone's top, and the furthest the page can
+  scroll is `clone top + clone height − innerHeight`. At `svh` that equals the clone's top exactly
+  on desktop — no tolerance for the fractional `scrollY` you get under zoom or a non-integer DPR —
+  and is strictly LESS than it on a phone whose browser chrome has collapsed, where `innerHeight`
+  grows to `lvh` while the clone stays at `svh`. The seam became unreachable and the endless loop
+  dead-ended on the last screen. `wrapOffset` also takes a one-pixel tolerance.
 - The nav's `.scrolled` frosted backdrop was driven by raw `scrollY > 24`, which **faded the nav white
   on every loop** (the seam lands back at `scrollY 0`, so it re-faded in each cycle). Fix: the
   scroll-driven backdrop was **removed entirely — the nav is now always transparent**. No toggle, no

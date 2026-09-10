@@ -70,12 +70,14 @@ Visit `http://localhost:4200`.
 
 ### Scripts
 
-| Script          | What it does                                               |
-| --------------- | ---------------------------------------------------------- |
-| `npm start`     | Dev server with live reload on `:4200`                     |
-| `npm run build` | Production build into `dist/professional-porfolio/browser` |
-| `npm run watch` | Rebuilding development bundle, no server                   |
-| `npm test`      | Unit tests in Karma + Jasmine                              |
+| Script           | What it does                                                                                       |
+| ---------------- | -------------------------------------------------------------------------------------------------- |
+| `npm start`      | Dev server with live reload on `:4200`                                                             |
+| `npm run build`  | Production build into `dist/professional-porfolio/browser`, then generates the CSP into `_headers` |
+| `npm run watch`  | Rebuilding development bundle, no server                                                           |
+| `npm test`       | Unit tests in Karma + Jasmine (headless)                                                           |
+| `npm run lint`   | ESLint over TypeScript and templates                                                               |
+| `npm run format` | Prettier over TypeScript and config                                                                |
 
 ### Tests
 
@@ -85,11 +87,13 @@ npm test
 
 The pure logic lives in unit-tested modules with colocated `.spec.ts` files — scroll math, the
 constellation morph and its driver, the frame pulse, theme decisions, certifications math,
-destinations, the aurora palette, in-viewport observation, scroll lock, and motion math. Anything
-that can be a pure function is one, precisely so it can be tested without a DOM.
+destinations, the aurora palette, in-viewport observation, scroll lock, motion math, and the
+page-inert isolation behind both overlays. Anything that can be a pure function is one, precisely
+so it can be tested without a DOM.
 
-> **No Chrome installed?** Karma launches Chrome by default. Point it at another Chromium build
-> first — for example, on Windows:
+Karma runs headless via [karma.conf.js](karma.conf.js), so this works in CI and in a container.
+
+> **No Chrome installed?** Point Karma at another Chromium build — for example, on Windows:
 >
 > ```bash
 > CHROME_BIN="C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" npm test
@@ -118,17 +122,18 @@ that can be a pure function is one, precisely so it can be tested without a DOM.
 
 | Category   | Technologies                                      |
 | ---------- | ------------------------------------------------- |
-| Framework  | Angular 19 (NgModules + Signals)                  |
+| Framework  | Angular 21 (standalone components + signals)      |
 | Language   | TypeScript 5.6                                    |
 | Graphics   | OGL (WebGL2 shader), SVG morphing                 |
 | Styling    | CSS3 (Custom Properties, Flexbox, Grid)           |
 | Typography | Nohemi (self-hosted, preloaded), Instrument Serif |
-| Icons      | Font Awesome                                      |
+| Icons      | Inline SVG (`shared/icon`)                        |
 | Testing    | Jasmine + Karma                                   |
 | Hosting    | Netlify                                           |
 
-Runtime dependencies are deliberately few: Angular, OGL, RxJS, and Font Awesome. No animation
-library, no GSAP, no UI kit — the motion is hand-rolled against the shared frame pulse.
+Runtime dependencies are deliberately few: Angular, OGL and RxJS. No animation library, no GSAP,
+no UI kit, and no icon font — the motion is hand-rolled against the shared frame pulse, and the
+sixteen icons ship as path data rather than the 299 kB Font Awesome cost to draw them.
 
 ---
 
@@ -150,10 +155,14 @@ Three rules keep that hot path honest:
 3. **Pure math, testable.** Anything that can be a function of numbers is one: `scroll-loop.math.ts`,
    `motion.math.ts`, `certifications.math.ts`, `constellation-morph.ts`, `theme.decision.ts`.
 
-There is deliberately **no Angular Router**: the five destinations are defined once in
+There is deliberately **no Angular Router** and no NgModule: the app bootstraps through
+`bootstrapApplication`, and the five destinations are defined once in
 `src/app/destinations.ts` and composed into a single looping page by the app shell. Adding a
 destination means adding an entry there — the nav, the constellation, and the loop arithmetic all
 derive from that list.
+
+Every component is `OnPush`, which the lint config enforces: with one shared frame loop driving
+the animation, a default-strategy component would be re-checked on every event it never needs.
 
 ---
 
@@ -172,7 +181,9 @@ src/app/
 │   ├── about/
 │   ├── certifications/        # Spotlight overlay (certifications-data.ts, certifications.math.ts)
 │   └── contact/               # Marquee email, channels, colophon with live SAST clock
-├── shared/theme-toggle/
+├── shared/
+│   ├── icon/                  # Inline SVG icon set (path data + <app-icon>)
+│   └── theme-toggle/
 ├── destinations.ts            # Single source of truth for the five destinations
 ├── scroll-loop.service.ts     # Scroll cycle state + seam wrap
 ├── scroll-loop.math.ts        # Pure scroll math (unit-tested)
@@ -180,8 +191,11 @@ src/app/
 └── scroll-reveal.directive.ts # Fade-in-on-scroll behavior
 src/
 ├── assets/                    # CV, project shots, certificate images, self-hosted fonts
-├── index.html                 # Font preloads + pre-paint theme guard
+├── index.html                 # Font preloads, pre-paint theme guard, JSON-LD
 └── styles.css                 # Design tokens, @font-face, global type scale
+public/                        # robots.txt, sitemap, manifest, icons, share card
+scripts/gen-headers.mjs        # Generates the CSP into the built _headers
+.github/workflows/ci.yml       # Lint, format, test, build on every push
 docs/
 ├── onboarding.html            # ⭐ Interactive engineering onboarding guide — start here
 └── adr/                       # Architecture Decision Records
@@ -205,6 +219,8 @@ rejected, because the trail is the point.
 | [0006](docs/adr/0006-glass-card-surface.md)                 | Frosted-glass surface for content cards               | **rejected**                 |
 | [0007](docs/adr/0007-deepen-cycle-module.md)                | Deepen the Cycle into `ScrollLoopService`             | accepted                     |
 | [0008](docs/adr/0008-projects-showcase-legibility.md)       | Projects showcase — progress, focus, keyboard framing | accepted                     |
+| [0009](docs/adr/0009-inline-svg-icons.md)                   | Inline SVG icon set instead of an icon font           | accepted                     |
+| [0010](docs/adr/0010-standalone-angular-21.md)              | Standalone components on Angular 21                   | accepted                     |
 
 ---
 

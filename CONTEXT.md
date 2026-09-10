@@ -119,13 +119,22 @@ copy readable behind the transparent nav where the fade can't (touch, reduced mo
 No blur, still no frosted backdrop. See [ADR-0005](adr/0005-loop-aware-nav-muting.md).
 
 **Icon at viewport centre**:
-The instant a card's icon crosses the vertical middle of the viewport — an `IntersectionObserver`
-with `rootMargin: -50% 0 -50% 0`. It triggers the icon glow.
+The instant an About ledger's **numeral** crosses the vertical middle of the viewport — an
+`IntersectionObserver` with `rootMargin: -50% 0 -50% 0`. It lights the numeral, and its icon
+reacts through a sibling selector. (The name is from the card design the editorial rebuild
+deleted; the observed element has been the numeral since.) It triggers the icon glow.
 
 **Icon glow on centre**:
 The one-shot icon animation played each time an icon reaches viewport centre — a small `scale`
 pop with the glow ramping on, then settling back. Replaces the old hover-only infinite glow
 (hover still works). Re-arms on exit, so it recurs each loop. Off under reduced motion.
+
+**Inline icon**:
+One of sixteen glyphs drawn from path data in `shared/icon`, rendered `1em` square in
+`currentColor` by `<app-icon>`. Replaced the Font Awesome webfonts (~299 kB for those sixteen
+shapes) — see [ADR-0009](adr/0009-inline-svg-icons.md). Because it is a path and not text, it takes
+`filter: drop-shadow()`, never `text-shadow`.
+_Avoid_: "icon font" (there isn't one any more)
 
 **Glass card** _(rejected — not in the codebase)_:
 A frosted content-card surface (warm tint + `backdrop-filter` blur, hairline + top highlight,
