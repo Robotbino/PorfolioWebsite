@@ -29,6 +29,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   private reduce = false;
   private ro?: ResizeObserver;
+  // innerHeight is a layout-flushing read and only changes on resize, but
+  // update() ran on every scroll event and read it each time.
+  private viewportHeight = 0;
   private revealReleases: (() => void)[] = [];
   private teardown: (() => void)[] = [];
   private measureFrame = 0;
@@ -44,6 +47,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.reduce = this.motion.reducedMotion();
+    this.viewportHeight = window.innerHeight;
     this.measure();
     this.update();
 
@@ -56,6 +60,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     this.zone.runOutsideAngular(() => {
       const onScroll = () => this.onScroll();
       const onResize = () => {
+        this.viewportHeight = window.innerHeight;
         this.measure();
         this.update();
       };
@@ -113,6 +118,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     }
     this.measureFrame = requestAnimationFrame(() => {
       this.measureFrame = 0;
+      // Refreshed here too, not just on `resize`: mobile browser chrome
+      // collapsing changes innerHeight, and this coalesced reflow pass is the
+      // one place that is cheap enough to re-read it outside a resize event.
+      this.viewportHeight = window.innerHeight;
       this.measure();
       this.update();
     });
@@ -126,7 +135,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   }
 
   private update(): void {
-    this.loop.update(window.scrollY, window.innerHeight);
+    this.loop.update(window.scrollY, this.viewportHeight);
   }
 
   ngOnDestroy(): void {

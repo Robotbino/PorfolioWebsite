@@ -1,16 +1,18 @@
 import { Constellation, Star } from './constellation.model';
 
-export interface Segment {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-}
-
-
-export interface MorphFrame {
+/**
+ * The interpolated figure at one point in a morph. Named for what it is rather
+ * than `MorphFrame`, which is also the name of MorphDriver's per-frame output —
+ * two exported interfaces with one name in the same folder.
+ *
+ * It used to carry a `segments: Segment[]` built from the links on every call.
+ * Nothing rendered it: the component draws its own lines in `drawLinks`, from
+ * the star positions AFTER drift is applied, which these segments could not
+ * account for. Only a spec ever read them, so the array was pure allocation on
+ * the 60fps path.
+ */
+export interface MorphedFigure {
   stars: Star[];
-  segments: Segment[];
 }
 
 const lerp = (from: number, to: number, t: number): number => from + (to - from) * t;
@@ -20,7 +22,7 @@ export function interpolateConstellation(
   from: Constellation,
   to: Constellation,
   t: number,
-): MorphFrame {
+): MorphedFigure {
   if (from.stars.length !== to.stars.length) {
     throw new Error(
       `Constellation morph requires equal star counts: ` +
@@ -43,12 +45,5 @@ export function interpolateConstellation(
     };
   });
 
-  const segments: Segment[] = from.links.map((l) => ({
-    x1: stars[l.a].x,
-    y1: stars[l.a].y,
-    x2: stars[l.b].x,
-    y2: stars[l.b].y,
-  }));
-
-  return { stars, segments };
+  return { stars };
 }

@@ -3,7 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  HostListener,
+  NgZone,
   OnDestroy,
   ViewChild,
 } from '@angular/core';
@@ -47,7 +47,11 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   private static readonly SCROLL_FACTOR = 1.2;
 
   private readonly mqWide = window.matchMedia('(min-width: 900px)');
-  private reduce = false;
+  // Live, not snapshotted at init: applyMode() re-runs on resize and on a
+  // preference flip, so the showcase now arms and disarms with the setting.
+  private get reduce(): boolean {
+    return this.motion.reducedMotion();
+  }
   private active = false;
 
   private unsub: (() => void) | null = null;
@@ -61,6 +65,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   private stageWidth = 0;
   private cards: { el: HTMLElement; center: number }[] = [];
   private activeIndex = -1;
+  private resizeRelease: (() => void) | null = null;
 
   constructor(
     private theme: ThemeService,
@@ -68,6 +73,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     private host: ElementRef<HTMLElement>,
     private motion: MotionSettingsService,
     private navTransition: NavTransitionService,
+    private zone: NgZone,
   ) {}
 
   // Maps a tech-stack label to one of the inline glyphs in shared/icon. Brand
@@ -101,7 +107,6 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.reduce = this.motion.reducedMotion();
     this.applyMode();
     // A nav teleport lands the viewport somewhere new in one frame; the
     // exponentially-smoothed track would otherwise chase the new target with a
@@ -109,11 +114,21 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     // inside the view transition's update callback — so the captured snapshot
     // and the first live frames are already final.
     this.teleportRelease = this.navTransition.onTeleport(() => this.snapToTarget());
+    this.listenForResize();
   }
 
-  @HostListener('window:resize')
-  onResize(): void {
-    this.applyMode();
+  /**
+   * Registered by hand outside the zone, matching AppComponent's scroll/resize
+   * pair. As a @HostListener every resize event ticked the zone and ran a full
+   * change-detection pass over the tree before doing the work below — which is
+   * pure DOM measurement and style writes and needs no re-check at all.
+   */
+  private listenForResize(): void {
+    this.zone.runOutsideAngular(() => {
+      const onResize = () => this.applyMode();
+      window.addEventListener('resize', onResize);
+      this.resizeRelease = () => window.removeEventListener('resize', onResize);
+    });
   }
 
   /** Idempotent: arm or disarm the horizontal showcase for the current viewport. */
@@ -181,7 +196,17 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  /** Pin progress (0→1) from live geometry, or null when the showcase isn't runnable. */
+  /**
+   * Pin progress (0→1) from live geometry, or null when the showcase isn't
+   * runnable.
+   *
+   * This is the one layout read left on the frame path, and it stays live on
+   * purpose: everything else here is measured once and cached, but the pin's
+   * position depends on the height of everything above it, which moves as lazy
+   * images below the fold resolve. A cached top would silently drift out of step
+   * with the scroll after any such reflow, and the failure mode — a showcase
+   * that tracks slightly wrong — is far worse than one rect read.
+   */
   private progress(): number | null {
     const viewport = this.viewportRef?.nativeElement;
     if (!viewport || !this.stageRef || !this.trackRef || this.stickRange <= 0 || this.maxX <= 0) {
@@ -297,6 +322,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsub?.();
     this.teleportRelease?.();
+    this.resizeRelease?.();
     this.trackRef?.nativeElement.removeEventListener('focusin', this.onFocusIn);
   }
 }

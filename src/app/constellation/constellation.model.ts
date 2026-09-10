@@ -10,7 +10,7 @@ export interface Star {
   r: number;
   phx: number; // phase offset for x drift
   phy: number; // phase offset for y drift
-  amp: number; // drift radius (local viewBox units)
+  amp: number; // drift radius (local SVG user units)
 }
 
 export interface Link {
@@ -20,8 +20,6 @@ export interface Link {
 
 export interface Constellation {
   name: string;
-  side: 'left' | 'right';
-  viewBox: string;
   stars: Star[];
   links: Link[];
 }

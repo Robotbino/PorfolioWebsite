@@ -36,7 +36,7 @@ export function figure(
     phy: PHY[i],
     amp: AMP[i],
   }));
-  return { name, side: 'left', viewBox: '0 0 300 300', stars, links };
+  return { name, stars, links };
 }
 
 // Five real constellations (8 stars each), in a 300×300 viewBox. Stars are

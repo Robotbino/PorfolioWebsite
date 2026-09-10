@@ -38,7 +38,14 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
 
   private readonly driver = new MorphDriver();
   private unsub: (() => void) | null = null;
-  private reduceMotion = false;
+  // Live, not snapshotted at init: flipping the OS reduced-motion switch
+  // mid-session used to leave the drift running until reload. Read inside the
+  // out-of-zone rAF, so it schedules no change detection.
+  private get reduceMotion(): boolean {
+    return this.motion.reducedMotion();
+  }
+  /** Last figure drawn on the reduced-motion path; -1 before the first render. */
+  private reducedFigure = -1;
   private groups: SVGGElement[] = [];
   private fromSegs: SVGLineElement[] = [];
   private toSegs: SVGLineElement[] = [];
@@ -53,7 +60,6 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
     this.groups = this.starEls.map((el) => el.nativeElement);
     this.fromSegs = this.lineFromEls.map((el) => el.nativeElement);
     this.toSegs = this.lineToEls.map((el) => el.nativeElement);
-    this.reduceMotion = this.motion.reducedMotion();
 
     this.renderAt(performance.now());
     this.unsub = this.pulse.onTick((now) => this.renderAt(now));
@@ -68,6 +74,22 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
     const count = this.loop.cycleLength || this.order.length;
     const target = this.loop.position();
     const frame = this.driver.advance(target, count, this.reduceMotion);
+
+    // Under reduced motion there is no drift and no eased transit: the driver
+    // snaps to the nearest whole figure, so the output is a function of
+    // `fromIndex` alone. It still has to follow the scroll — the morph IS the
+    // wayfinding, and rendering once would freeze the map on Home — but between
+    // destinations every frame would rewrite forty identical attribute strings.
+    if (this.reduceMotion) {
+      if (frame.fromIndex === this.reducedFigure) {
+        return;
+      }
+      this.reducedFigure = frame.fromIndex;
+    } else {
+      // Re-arm, so turning the preference back off resumes drift immediately
+      // rather than after the next destination change.
+      this.reducedFigure = -1;
+    }
 
     const from = this.order[frame.fromIndex];
     const to = this.order[frame.toIndex];

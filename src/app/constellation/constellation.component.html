@@ -22,7 +22,6 @@
         class="star"
         *ngFor="let i of starIndices"
         #starEl
-        [style.--i]="i"
         [style.animation-delay]="i * 0.07 + 's'"
       >
         <circle class="halo" [attr.r]="radii[i] * 4" />

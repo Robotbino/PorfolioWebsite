@@ -58,8 +58,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   @ViewChild('mobileOverlay') private mobileOverlay?: ElementRef<HTMLElement>;
 
   private unsub: (() => void) | null = null;
-  private lastMute = -1;
-  private lastTravel = -1;
+  private lastDistance = -1;
   // The travel-fade only runs where its escape hatch exists. ADR-0005 makes
   // operability a condition of the mute: "the nav un-mutes on :hover or
   // :focus-within, so a keyboard / screen-reader user instantly gets the full,
@@ -68,7 +67,13 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   // neither hover nor focus to trigger it, and no hamburger either — so the links
   // sat at opacity 0.12 with no way back. Same shape as the reduced-motion gate
   // the ADR already specifies: when the declutter can't be undone, don't apply it.
-  private muteAllowed = false;
+  // Read live rather than snapshotted at init: docking a mouse or flipping the
+  // OS reduced-motion switch mid-session used to change nothing until reload.
+  // A signal read inside the out-of-zone rAF has no reactive consumer, so it
+  // costs a property access and schedules no change detection.
+  private get muteAllowed(): boolean {
+    return !this.motion.reducedMotion() && this.motion.finePointer();
+  }
 
   // Every in-page link grouped by the destination id it targets, so desktop,
   // mobile and the logo all light up together for the active destination.
@@ -98,7 +103,6 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   ) {}
 
   ngAfterViewInit(): void {
-    this.muteAllowed = !this.motion.reducedMotion() && this.motion.finePointer();
     this.collectLinks();
     this.observeProjects();
 
@@ -106,10 +110,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
       this.updateActiveLink();
       // Legibility, not motion: the scrim behind the bar runs on every device,
       // including touch and reduced-motion, where the travel FADE is suppressed.
-      this.updateTravel();
-      if (this.muteAllowed) {
-        this.updateMute();
-      }
+      this.updateNavDistance();
     });
   }
 
@@ -237,36 +238,44 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     this.activeId = active;
   }
 
-  private updateMute(): void {
-    const count = this.loop.cycleLength;
-    if (count > 0) {
-      const pos = this.loop.position();
-      const distance = Math.min(pos, count - pos);
-      const mute = Math.min(1, distance / SiteNavComponent.FADE_RANGE);
-      if (Math.abs(mute - this.lastMute) > 0.001) {
-        this.lastMute = mute;
-        this.el.nativeElement.style.setProperty('--nav-mute', mute.toFixed(3));
-      }
-    }
-  }
-
   /**
-   * The legibility scrim behind the bar. Same loop-aware distance-from-Home as
-   * the travel fade (0 at Home, ramping to 1 as we travel), but ALWAYS written:
-   * the scrim keeps body copy readable behind the persistent nav on every
-   * device, whereas the fade is fine-pointer only. Symmetric around the seam,
-   * so it never pops at the wrap.
+   * Writes both loop-aware custom properties from one distance-from-Home.
+   *
+   * `--nav-travel` drives the legibility scrim behind the bar and is ALWAYS
+   * written: it keeps body copy readable behind the persistent nav on every
+   * device. `--nav-mute` drives the travel FADE and is written only where that
+   * fade is allowed (fine pointer, no reduced-motion preference). Both are the
+   * same number — this was two methods computing identical arithmetic into two
+   * caches, sixty times a second.
+   *
+   * Symmetric around the seam, so neither pops at the wrap.
    */
-  private updateTravel(): void {
+  private updateNavDistance(): void {
     const count = this.loop.cycleLength;
-    if (count > 0) {
-      const pos = this.loop.position();
-      const distance = Math.min(pos, count - pos);
-      const travel = Math.min(1, distance / SiteNavComponent.FADE_RANGE);
-      if (Math.abs(travel - this.lastTravel) > 0.001) {
-        this.lastTravel = travel;
-        this.el.nativeElement.style.setProperty('--nav-travel', travel.toFixed(3));
-      }
+    if (count <= 0) {
+      return;
+    }
+    const pos = this.loop.position();
+    const distance = Math.min(pos, count - pos);
+    const value = Math.min(1, distance / SiteNavComponent.FADE_RANGE);
+
+    // A frame that moved the value by less than a thousandth would write a
+    // string the browser parses to the same number — skip the style write.
+    if (Math.abs(value - this.lastDistance) <= 0.001) {
+      return;
+    }
+    this.lastDistance = value;
+
+    const style = this.el.nativeElement.style;
+    const text = value.toFixed(3);
+    style.setProperty('--nav-travel', text);
+    if (this.muteAllowed) {
+      style.setProperty('--nav-mute', text);
+    } else {
+      // The gate can close mid-session (mouse unplugged, reduced-motion turned
+      // on). Clear the property rather than leaving the bar stuck at the last
+      // mute it wrote, which would strand the links faded with no way back.
+      style.removeProperty('--nav-mute');
     }
   }
 }

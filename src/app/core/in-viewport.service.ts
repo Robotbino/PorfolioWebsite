@@ -26,6 +26,9 @@ export class InViewportService {
     { observer: IntersectionObserver; callbacks: Map<Element, InViewCallback> }
   >();
 
+  /** Observer roots seen so far; the index is that root's identity in a key. */
+  private readonly roots: (Element | Document | null)[] = [];
+
   constructor(private zone: NgZone) {}
 
   /** Watch `target`; `onChange(visible)` fires on each crossing. Returns release. */
@@ -45,6 +48,13 @@ export class InViewportService {
       group = { observer, callbacks };
       this.groups.set(key, group);
     }
+    if (group.callbacks.has(target)) {
+      // Two callers watching one element with the same options would share a
+      // slot: the second silently replaces the first, and whichever releases
+      // first unobserves the element out from under the other. Nothing does
+      // this today; say so loudly if anything starts.
+      console.warn('InViewportService: target already observed with these options.', target);
+    }
     group.callbacks.set(target, onChange);
     group.observer.observe(target);
 
@@ -62,9 +72,21 @@ export class InViewportService {
     };
   }
 
-  /** Shareable identity of an observer. Root is always the viewport here. */
+  /**
+   * Shareable identity of an observer. Every caller uses the viewport root
+   * today, but `root` is part of what makes two observers interchangeable — it
+   * was left out of the key, so the first caller to pass a scroll container
+   * would have been handed a viewport-rooted observer instead. Roots are
+   * elements, not values, so they are identified by index in `roots`.
+   */
   private keyFor(options: IntersectionObserverInit): string {
+    const root = options.root ?? null;
+    let rootId = this.roots.indexOf(root);
+    if (rootId === -1) {
+      rootId = this.roots.push(root) - 1;
+    }
     return JSON.stringify({
+      root: rootId,
       rootMargin: options.rootMargin ?? '',
       threshold: options.threshold ?? 0,
     });
