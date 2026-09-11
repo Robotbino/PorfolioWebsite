@@ -136,6 +136,15 @@ shapes) — see [ADR-0009](adr/0009-inline-svg-icons.md). Because it is a path a
 `filter: drop-shadow()`, never `text-shadow`.
 _Avoid_: "icon font" (there isn't one any more)
 
+**Portrait plate** (Plate 00):
+The one photograph on the site: a square studio portrait in the About _Destination_, set as the
+facts ledger's first entry — the ledger's column, its hairline rule, the plate, then the
+Experience and Education rules. It hangs out of flow from the header's grid into the empty band
+right of "About Me", so it adds no height on desktop; its size is coupled to the header by design.
+No mask, tint or frame in either theme. It develops in (blur → sharp) after the type lands, and
+its rule lights on the same centre crossing as the ledger numerals.
+_Avoid_: "avatar", "headshot card" (both imply a chip or a surface — this is a print on the page)
+
 **Glass card** _(rejected — not in the codebase)_:
 A frosted content-card surface (warm tint + `backdrop-filter` blur, hairline + top highlight,
 depth shadow) proposed in [ADR-0006](adr/0006-glass-card-surface.md) but never implemented — the

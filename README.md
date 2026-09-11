@@ -190,7 +190,7 @@ src/app/
 ├── motion.math.ts             # Frame-rate-independent smoothing (unit-tested)
 └── scroll-reveal.directive.ts # Fade-in-on-scroll behavior
 src/
-├── assets/                    # CV, project shots, certificate images, self-hosted fonts
+├── assets/                    # CV, portrait, project shots, certificate images, self-hosted fonts
 ├── index.html                 # Font preloads, pre-paint theme guard, JSON-LD
 └── styles.css                 # Design tokens, @font-face, global type scale
 public/                        # robots.txt, sitemap, manifest, icons, share card

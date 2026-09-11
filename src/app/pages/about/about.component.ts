@@ -5,6 +5,7 @@ import {
   ElementRef,
   OnDestroy,
   QueryList,
+  ViewChild,
   ViewChildren,
   inject,
 } from '@angular/core';
@@ -25,6 +26,8 @@ export class AboutComponent implements AfterViewInit, OnDestroy {
   private inView = inject(InViewportService);
 
   @ViewChildren('ledgerNumeral') private numerals!: QueryList<ElementRef<HTMLElement>>;
+  /** Plate 00 — the portrait. Its rule lights on the same crossing as the numerals. */
+  @ViewChild('portraitPlate') private plate!: ElementRef<HTMLElement>;
   private releases: (() => void)[] = [];
 
   ngAfterViewInit(): void {
@@ -40,8 +43,15 @@ export class AboutComponent implements AfterViewInit, OnDestroy {
     // icon itself were observed.) Toggling the class (not (un)observing)
     // re-arms it on each crossing. The seam runs the callback outside Angular,
     // so the toggle never trips change detection.
-    this.numerals.forEach((numeral) => {
-      const el = numeral.nativeElement;
+    //
+    // The portrait rides the same observer rather than owning one: the class
+    // lands on the image, and the stylesheet lights the rule above it through
+    // :has(), so the photo joins the ledger's beat instead of adding a second.
+    const targets = [
+      ...this.numerals.map((numeral) => numeral.nativeElement),
+      this.plate.nativeElement,
+    ];
+    targets.forEach((el) => {
       this.releases.push(
         this.inView.observe(el, { rootMargin: '-50% 0px -50% 0px', threshold: 0 }, (visible) =>
           el.classList.toggle('is-centered', visible),

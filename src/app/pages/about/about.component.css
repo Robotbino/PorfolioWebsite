@@ -33,6 +33,23 @@
 
 .about-header {
   margin-bottom: var(--space-4xl);
+  /* The same twelve columns as .about-spread below, so the portrait plate can
+     take the ledger's column (9–12) while the kicker and title keep the
+     reading column. No row-gap: the kicker's own margin-bottom spaces the
+     two rows, exactly as it did when they were plain blocks. */
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-xl);
+  /* How far the plate hangs below the header's own box: through this
+     margin-bottom and the ledger's dropped baseline (its margin-top), stopping
+     one --space-lg short of the Experience rule. It restates those two values
+     on purpose — move either and move this with it. */
+  --plate-hang: calc(var(--space-4xl) + var(--space-2xl) - var(--space-lg));
+}
+
+.about-kicker,
+.about-title {
+  grid-column: 1 / 9;
 }
 
 .about-kicker {
@@ -76,6 +93,75 @@
 .about-title-strong {
   font-weight: var(--font-weight-black);
   letter-spacing: var(--tracking-tightest);
+}
+
+/* ============================================
+   PLATE 00 — THE PORTRAIT
+   The one photograph on the site, and it is the facts ledger's first entry,
+   not a hero shot: it takes the ledger's column, sits under the ledger's
+   hairline rule, and reads straight down into Experience and Education.
+   It is placed in the HEADER's grid purely so it can fill the empty band to
+   the right of the title — which is why it adds no height on desktop. The
+   wrapper spans the header's two rows in flow; the image is positioned out
+   of flow from the top of that wrapper down to one --space-lg above the
+   Experience rule (--plate-hang), and takes its width from the ratio.
+
+   So its size is COUPLED to the header — the kicker, the title's line box,
+   the header's margin-bottom and the ledger's dropped baseline. That is the
+   point: it can never be taller than the space that already exists, so it can
+   never push the ledger down or collide with it. Measured at 1440×900: a
+   221px square at x 964, its foot 24px above the Experience rule. The
+   constellation (viewport-centred, 520px) reaches x 980 there, so the plate
+   overlaps its right edge by ~16px — the ledger rules already sit on that
+   edge, and the map runs under the whole spread; it is not something a plate
+   has to steer around.
+
+   No mask, no tint, no frame, in either theme: on dark the photo's own dark
+   ground sinks toward the page; on light it is a crisp print on the warm
+   field. The only drawn thing is the rule.
+   ============================================ */
+
+.about-plate {
+  grid-column: 9 / 13;
+  grid-row: 1 / 3;
+  position: relative;
+  /* Sets the rule on the kicker's own hairline (its ::after, centred in one
+     --font-size-xs line at --line-height-relaxed), so the two read as a single
+     interrupted line across the top of the header. */
+  margin-top: calc((var(--line-height-relaxed) * var(--font-size-xs) - 1px) / 2);
+  border-top: 1px solid var(--color-border-dark);
+  padding-top: var(--space-md);
+  transition: border-color var(--transition-slow);
+}
+
+/* Centre-crossing focus, transposed from the ledger numerals: AboutComponent's
+   observer toggles .is-centered on the IMAGE while it straddles the viewport
+   middle, and the rule above it catches the accent for that beat. Reduced
+   motion never gets the class (the observer is skipped), so the rule rests. */
+.about-plate:has(.about-plate-img.is-centered) {
+  border-color: var(--color-accent-vivid);
+}
+
+.about-plate-img {
+  position: absolute;
+  top: var(--space-md);
+  left: 0;
+  /* Height from the wrapper's rows plus the hang; width follows from the
+     ratio. 100% is the wrapper's padding box, so its padding-top comes off
+     again here. */
+  height: calc(100% - var(--space-md) + var(--plate-hang));
+  width: auto;
+  aspect-ratio: 1;
+  display: block;
+  object-fit: cover;
+  /* Blur-up placeholder: the same photograph at 24px, inlined so the first
+     frame is never an empty plate while the lazy image is in flight. The
+     loaded image paints over it. ~0.9 kB, half of it Chrome's ICC chunk. */
+  background: url("data:image/webp;base64,UklGRqACAABXRUJQVlA4WAoAAAAgAAAAFwAAFwAASUNDUMgBAAAAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADZWUDggsgAAAJAFAJ0BKhgAGAA+wVahS6ekoyGwGAgA8BgJZQC+SYyob5r0d8RIcXbazCYXPjkbtqytIR4AAP7yol8rXfsh+5kvl8V3BRWgJ3eu9w9/7GeXgNWSEZ5S21ZvlIshNqJgx7LI71SEPRuH0TyaD4+CMdCRnl2cSaGHqMy8HZHH7db1/CPtFIu+X72vaendGmOK6YoJZoTQijAqqneZUu0JuMZUEYNxNHC/X5n/I0rUnceAAAA=") center / cover no-repeat;
+  transition:
+    opacity 0.9s var(--ease-out-expo) 120ms,
+    filter 1.2s var(--ease-out-expo) 120ms,
+    transform 1.2s var(--ease-out-expo) 120ms;
 }
 
 /* ============================================
@@ -332,11 +418,45 @@
   transition-delay: 180ms;
 }
 
+/* The plate develops after the type lands: the header rises as one block
+   (the rule with it), then the photograph comes into focus inside — opacity,
+   a 14px blur and a hair of depth, on the long expo curve and a beat later,
+   so it is the last thing in the section to settle. Fail-open like every
+   reveal here: the hidden state exists only under .scroll-reveal, which the
+   directive adds, so with no JS the plate is simply there. */
+.about-header.scroll-reveal .about-plate-img {
+  opacity: 0;
+  filter: blur(14px);
+  transform: scale(1.03);
+}
+
+.about-header.revealed .about-plate-img {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-header.scroll-reveal .about-plate-img {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* ============================================
    RESPONSIVE
    ============================================ */
 
 @media (max-width: 968px) {
+  /* Single column from here: the ledger moves under the bio, so the plate
+     hangs only through the header's margin — still one --space-lg clear of
+     the text that now starts there. */
+  .about-header {
+    --plate-hang: calc(var(--space-4xl) - var(--space-lg));
+  }
+
   .about-spread {
     grid-template-columns: 1fr;
     gap: var(--space-2xl);
@@ -358,8 +478,42 @@
 }
 
 @media (max-width: 768px) {
+  /* Twelve 32px-gapped columns cannot fit a phone. The header becomes a
+     lockup instead: the kicker runs the full width on its own row, then the
+     title and the plate share the next — the title's foot on the plate's
+     foot, the plate back in the flow at a fixed size. Big enough to be a
+     face, never so wide that "About Me" has to wrap: the title is 170px at
+     2.5rem, and a 320px phone leaves 176px beside a 6rem plate. Height is
+     no longer coupled here; the row simply grows to the plate.
+     (The plate must NOT span both rows here as it does above: an in-flow
+     item's height is shared out across the rows it spans, which stretched
+     the kicker and dropped its hairline under the text.) */
   .about-header {
     margin-bottom: var(--space-2xl);
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-md);
+  }
+
+  .about-kicker {
+    grid-column: 1 / -1;
+  }
+
+  .about-title {
+    grid-column: 1;
+    align-self: end;
+  }
+
+  .about-plate {
+    grid-column: 2;
+    grid-row: 2;
+    /* Under the kicker now, not beside it: nothing for the rule to sit on. */
+    margin-top: 0;
+  }
+
+  .about-plate-img {
+    position: static;
+    width: clamp(6rem, 30vw, 10rem);
+    height: auto;
   }
 
   .about-text {
