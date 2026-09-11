@@ -163,6 +163,12 @@
   --tracking-normal: 0;
   --tracking-wide: 0.08em;
   --tracking-wider: 0.18em;
+  /* The hero meta row's annotation tracking (landingpage.component.css) — its
+     only consumer, added by the Aug 29 poster rebuild. It was retired as
+     consumerless on a base that predated that file, and a three-way merge
+     cannot see a consumer in one file and a definition in another: the row
+     silently fell back to letter-spacing: normal on desktop. */
+  --tracking-widest: 0.34em;
 
   --line-height-none: 0.92;
   --line-height-tight: 1.05;
