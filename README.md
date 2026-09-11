@@ -120,16 +120,16 @@ Karma runs headless via [karma.conf.js](karma.conf.js), so this works in CI and 
 
 ## 🛠️ Tech Stack
 
-| Category   | Technologies                                      |
-| ---------- | ------------------------------------------------- |
-| Framework  | Angular 21 (standalone components + signals)      |
-| Language   | TypeScript 5.6                                    |
-| Graphics   | OGL (WebGL2 shader), SVG morphing                 |
-| Styling    | CSS3 (Custom Properties, Flexbox, Grid)           |
-| Typography | Nohemi (self-hosted, preloaded), Instrument Serif |
-| Icons      | Inline SVG (`shared/icon`)                        |
-| Testing    | Jasmine + Karma                                   |
-| Hosting    | Netlify                                           |
+| Category   | Technologies                                                                                   |
+| ---------- | ---------------------------------------------------------------------------------------------- |
+| Framework  | Angular 21 (standalone components + signals)                                                   |
+| Language   | TypeScript 5.6                                                                                 |
+| Graphics   | OGL (WebGL2 shader), SVG morphing                                                              |
+| Styling    | CSS3 (Custom Properties, Flexbox, Grid)                                                        |
+| Typography | Nohemi (display), Atkinson Hyperlegible (body/UI), Instrument Serif (accent) — all self-hosted |
+| Icons      | Inline SVG (`shared/icon`)                                                                     |
+| Testing    | Jasmine + Karma                                                                                |
+| Hosting    | Netlify                                                                                        |
 
 Runtime dependencies are deliberately few: Angular, OGL and RxJS. No animation library, no GSAP,
 no UI kit, and no icon font — the motion is hand-rolled against the shared frame pulse, and the

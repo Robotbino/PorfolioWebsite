@@ -54,6 +54,20 @@
    <link rel="preload" href="/assets/fonts/Nohemi-ExtraLight.woff2" as="font" type="font/woff2" crossorigin media="(min-width: 769px)">
    <link rel="preload" href="/assets/fonts/Nohemi-Thin.woff2" as="font" type="font/woff2" crossorigin media="(max-width: 768px)">
    <link rel="preload" href="/assets/fonts/Nohemi-Black.woff2" as="font" type="font/woff2" crossorigin>
+   <!-- Three faces, three roles (see the token block in styles.css):
+          Nohemi                — DISPLAY only. Self-hosted, preloaded above.
+          Atkinson Hyperlegible — UTILITY: body, metadata, labels, nav, controls.
+          Instrument Serif      — ACCENT: the italic editorial moment, nothing else.
+
+        All three are self-hosted @font-face declarations in styles.css now, so
+        there is nothing to link here. This used to be a preconnect pair plus a
+        render-blocking `css2?family=A&family=B` stylesheet; it came out when the
+        CSP was locked to `font-src 'self'` / `style-src 'self'`, which names no
+        external host and would have blocked the lot. Self-hosting also puts all
+        three on the same immutable cache header and off the critical path.
+
+        Weight-matching note for Atkinson (400/700 only) lives with its
+        @font-face block in styles.css, next to the faces it describes. -->
    <script>
      // Pre-paint theme guard: set the theme class before first paint so the
      // right palette is painted with no flash. Hand-written mirror of
