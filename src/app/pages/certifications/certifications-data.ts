@@ -11,11 +11,14 @@ export interface Certification {
   readonly issuer: string;
   /**
    * When it was issued, already formatted for display (e.g. 'March 2025').
-   * Every credential here is currently undated, which leaves a reviewer unable
-   * to tell a recent certificate from an old one. Null rather than guessed —
-   * the row renders the date only when it is real.
+   * Null rather than guessed — the row renders the date only when it is real.
    *
-   * TODO(Bino): fill these in from the verify links; each one shows its date.
+   * The dated entries were read off the certificate scans in src/assets/certs.
+   * Two carry no date of their own: the IBM entry's asset is a Credly badge,
+   * and the Claude 101 certificate predates the "Issued:" line its Claude Code
+   * counterpart has.
+   *
+   * TODO(Bino): both dates are on their verify links if you want them shown.
    */
   readonly issued: string | null;
   readonly href: string;
@@ -35,7 +38,7 @@ export const CERTIFICATIONS: readonly Certification[] = [
   {
     title: 'JavaScript',
     issuer: 'Scrimba',
-    issued: null,
+    issued: 'December 2025',
     href: 'https://scrimba.com/u42ef1c4:certs;cert24zAwPPowS2rZVEfEZ2kSBedSKFrfvEXo19z4',
     img: '/assets/certs/scrimba-javascript.webp',
     alt: 'Learn JavaScript certificate from Scrimba',
@@ -43,7 +46,7 @@ export const CERTIFICATIONS: readonly Certification[] = [
   {
     title: 'HTML and CSS Fundamentals',
     issuer: 'Scrimba',
-    issued: null,
+    issued: 'December 2025',
     href: 'https://scrimba.com/u42ef1c4:certs;cert24zAwPPowS2rZVEfEZ2kSBd99ByKWBUFmmm1J',
     img: '/assets/certs/scrimba-html-css.webp',
     alt: 'Learn HTML and CSS certificate from Scrimba',
@@ -59,7 +62,7 @@ export const CERTIFICATIONS: readonly Certification[] = [
   {
     title: 'Claude Code 101',
     issuer: 'Anthropic Academy',
-    issued: null,
+    issued: 'April 2026',
     href: 'https://verify.skilljar.com/c/5zfaiayuzaeq',
     img: '/assets/certs/anthropic-claude-code-101.webp',
     alt: 'Claude Code 101 certificate of completion from Anthropic',
