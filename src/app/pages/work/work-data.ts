@@ -39,26 +39,21 @@ export interface Project {
 /**
  * The one role, as data rather than markup.
  *
- * `title` and `period` are the two facts a hiring reviewer looks for first and
- * the site has never stated: the hero claims three years, but nothing says
- * which three, or what Bino was called while doing it. They are null rather
- * than invented, and the template renders each only when it is filled in — so
- * the page is honest today and complete the moment they are.
+ * `title` and `period` stay nullable: the template renders each only when it is
+ * filled in, so an unknown fact is omitted rather than guessed at.
  */
 export interface Role {
   readonly org: string;
   readonly descriptor: string;
-  /** e.g. 'Software Developer'. TODO(Bino): fill in your actual job title. */
   readonly title: string | null;
-  /** e.g. 'Feb 2023 — present'. TODO(Bino): fill in your employment dates. */
   readonly period: string | null;
 }
 
 export const ROLE: Role = {
   org: 'SITA',
   descriptor: 'Java EE case management & workflow platform',
-  title: null,
-  period: null,
+  title: 'Full-Stack Developer',
+  period: 'June 2023 — present',
 };
 
 export const EXPERIENCE_GROUPS: readonly ExperienceGroup[] = [
