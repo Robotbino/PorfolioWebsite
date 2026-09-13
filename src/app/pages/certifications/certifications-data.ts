@@ -1,12 +1,9 @@
 /**
  * Static copy that drives the Certifications page, mirroring work-data.ts.
- * Render this list verbatim — titles, issuers and verify URLs are credentials
- * and must never be embellished or extended here.
  *
- * `img`/`alt` are presentation assets only (the scan of the certificate shown
- * in the hover preview and spotlight). They carry no credential claim of their
- * own, so adding them does not touch the "verbatim" rule above: the title,
- * issuer and href are unchanged.
+ * Titles, issuers and verify URLs are credentials: they reproduce the issuer's
+ * record verbatim and must not be embellished. `img`/`alt` are presentation
+ * only — a scan of the certificate for the preview and spotlight.
  */
 
 export interface Certification {

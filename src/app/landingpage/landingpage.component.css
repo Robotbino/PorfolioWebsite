@@ -1,27 +1,22 @@
-/* === LAYOUT === */
 /* Hero — editorial poster. Four parts distributed across the full viewport
    height: meta at the top edge, headline dominant, statement under it, footer
    anchoring the base. Left-anchored and measure-constrained, with deliberate
    negative space to the right where the constellation behind it can breathe.
 
-   ── CONSTELLATION CLEARANCE (read before changing any size here) ────────────
-   The constellation is the design, not a backdrop, and it is VIEWPORT-CENTRED:
-   top:50% left:50% translate(-50%,-50%), a square clamp(280px, 42vw, 520px).
-   That puts it at roughly x 460–980 on a 1440px viewport and x 700–1220 on a
-   1920px one — straight through the middle of this frame. Below 600px it moves
-   itself to the upper right at 55% opacity, clear of the copy.
-
-   So the hero holds three lines it must not cross:
-     · the headline stays left-anchored (align-self: start) and does NOT grow.
-       "Hlongwana" at Black 900 measures ~5.2em; at the 7.5rem cap that is
-       ~624px from the gutter, which is tuned. At 10rem it would be ~832px and
-       would run through the figure.
-     · the statement keeps a tight measure (42ch) so the right-hand negative
+   CONSTELLATION CLEARANCE — read before changing any size here. The
+   constellation is viewport-CENTRED (a clamp(280px, 42vw, 520px) square at
+   50%/50%), so it runs straight through the middle of this frame: roughly
+   x 460-980 at 1440px wide. Below 600px it moves itself clear of the copy.
+   Three lines the hero must not cross:
+     - the headline stays left-anchored (align-self: start) and does NOT grow.
+       "Hlongwana" at Black 900 measures ~5.2em, so the 7.5rem cap puts it
+       ~624px from the gutter; at 10rem it would be ~832px and run through
+       the figure.
+     - the statement keeps a tight measure (42ch) so the right-hand negative
        space stays open.
-     · the ::before scrim below dims the figure behind the type — widening it
-       hides more of the constellation, so it stays as it is.
-   Display presence is bought by CONTRAST — the eyebrow shrank, the utility
-   voice changed face — never by growing type rightward. */
+     - the ::before scrim dims the figure behind the type; widening it hides
+       more of the constellation.
+   Buy display presence with CONTRAST, never by growing type rightward. */
 
 .hero-wrapper {
   position: relative;
@@ -33,10 +28,11 @@
 
 .hero {
   position: relative;
-  /* Fill the destination exactly. The old `- var(--nav-height)` left the hero
-     shorter than its 100svh .dest, so .dest's justify-content:center split the
-     slack top and bottom — pushing the content a half-nav down and hanging its
-     foot below the fold on short viewports. The nav-height is carried inside
+  /* Fill the destination exactly — do NOT subtract var(--nav-height) here. That
+     leaves the hero shorter than its 100svh .dest, so .dest's
+     justify-content:center splits the slack top and bottom, pushing the content
+     a half-nav down and hanging its foot below the fold on short viewports.
+     The nav-height is carried inside
      .hero-frame's own padding instead (see there), so the poster occupies one
      whole viewport and composes against the sticky bar rather than under it. */
   min-height: 100svh;
@@ -69,11 +65,10 @@
   padding-bottom: calc(var(--nav-height) + clamp(var(--space-sm), 3vh, var(--space-2xl)));
   display: flex;
   flex-direction: column;
-  /* The poster move. Centring clustered all four bands in the vertical middle —
-     which is both the weakest composition and the worst case for the star map,
-     since that is exactly where the constellation sits. Distributing pushes the
-     meta and footer out to the edges, giving the headline the middle to itself
-     and uncovering more of the figure than the old layout did.
+  /* Distributed, not centred: centring clusters all four bands in the vertical
+     middle, which is exactly where the constellation sits. Pushing the meta and
+     footer to the edges gives the headline the middle to itself and uncovers
+     more of the figure.
      The gap stays small deliberately: under space-between it is only a FLOOR
      (the slack is distributed for us), so raising it would buy nothing at
      comfortable heights and force overflow on a short laptop — a 1440×640
@@ -119,8 +114,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Static marker (not a pulsing "available" indicator) — just a typographic
-   bullet in the accent hue before the current-role line. */
+/* Deliberately static, not a pulsing "available" indicator. */
 .hero-status-dot {
   width: 0.5rem;
   height: 0.5rem;
@@ -205,7 +199,7 @@
 }
 
 .hero-name-first {
-  font-weight: var(--font-weight-extralight); /* 200 — airy top note */
+  font-weight: var(--font-weight-extralight);
   letter-spacing: var(--tracking-tight);
 }
 
@@ -230,11 +224,9 @@
   max-width: 42ch;
   font-size: var(--font-size-md);
   line-height: 1.6;
-  /* Slight-opacity body colour drops it a tier below the bold lead + headings for
-     clearer hierarchy. One token, resolved by light-dark() off `color-scheme` like
-     every other colour in the system — this used to be a hard-coded rgba() plus a
-     @media (prefers-color-scheme) block plus two :host-context() rules, all
-     restating what the token block already decides. */
+  /* Slight-opacity body colour, a tier below the bold lead and headings. One
+     token, resolved by light-dark() off `color-scheme` like every other colour
+     here — don't re-derive the theme locally. */
   color: var(--color-text-statement);
 }
 
@@ -286,8 +278,6 @@
   flex-wrap: wrap;
   gap: var(--space-lg) var(--space-2xl);
 }
-
-/* === CTA + SOCIALS === */
 
 /* Primary action — filled accent pill. Sized and weighted to unambiguously
    outrank the social links beside it: the hero's one dominant interactive
@@ -409,7 +399,6 @@
   }
 }
 
-/* === ENTRANCE === */
 /* Fail-open: every piece RESTS in its final, fully readable state; the keyframe
    only adds a one-shot rise. The `from` state is already legible (opacity 0.5,
    faint blur), so if the animation never advances — the documented behaviour
@@ -437,21 +426,17 @@
 .hero-meta       { animation-delay: 0.30s; }
 .hero-footer     { animation-delay: 0.38s; }
 
-/* === RESPONSIVE === */
 /* Mobile poster hero: on narrow viewports the hero becomes a full-bleed editorial
    poster — meta pins to the top, headline centres, footer anchors to the bottom.
    The name type scales aggressively (60px at 375px, ~40% larger than desktop-
    derived sizing) and the Thin/Black weight contrast sharpens. */
 
 @media (max-width: 768px) {
-  /* justify-content is absent now: space-between became the base composition,
-     so the phone layout and the desktop layout finally agree. Only the insets
-     differ. */
   .hero-frame {
     padding-inline: var(--space-md);
     /* Phones run their own vertical insets: a tighter top (the mobile bar is
        shorter than --nav-height) and a deep bottom that carries the nav-height
-       so the poster'''s footer clears the fold on short phones. The shorthand
+       so the poster's footer clears the fold on short phones. The shorthand
        overrides BOTH base paddings, which is the intent. */
     padding-block: var(--space-xl) calc(var(--space-2xl) + var(--nav-height));
     gap: var(--space-lg);

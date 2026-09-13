@@ -5,11 +5,10 @@ import { Constellation, Star } from './constellation.model';
  * than `MorphFrame`, which is also the name of MorphDriver's per-frame output —
  * two exported interfaces with one name in the same folder.
  *
- * It used to carry a `segments: Segment[]` built from the links on every call.
- * Nothing rendered it: the component draws its own lines in `drawLinks`, from
- * the star positions AFTER drift is applied, which these segments could not
- * account for. Only a spec ever read them, so the array was pure allocation on
- * the 60fps path.
+ * Deliberately carries no precomputed link segments: the component draws its
+ * own lines in `drawLinks` from the star positions AFTER drift is applied, which
+ * a segment array built here could not account for. Building one would be pure
+ * allocation on the 60fps path.
  */
 export interface MorphedFigure {
   stars: Star[];

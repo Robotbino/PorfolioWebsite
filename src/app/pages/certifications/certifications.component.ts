@@ -120,12 +120,9 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
 
     // Any navigation away closes the spotlight (releasing its scroll lock) so the
     // journey can't end up hidden behind a stale modal. No focus restore: focus
-    // belongs with the navigation, not the ledger row.
-    //
-    // Defensive rather than reachable today: the dialog is a true modal, so
-    // styles.css hides the nav (opacity + visibility, out of the tab order) while
-    // it is open and no nav link can be clicked or focused. This keeps the
-    // invariant honest for any future programmatic navigateTo() call.
+    // belongs with the navigation, not the ledger row. Unreachable while the nav
+    // is hidden by styles.css, but keeps the invariant true for a future
+    // programmatic navigateTo().
     this.navRelease = this.navTransition.onNavigate(() =>
       this.closeSpotlight({ restoreFocus: false }),
     );
@@ -145,7 +142,6 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     );
 
     if (this.enabled) {
-      // Coordinates only — the tick does every style write.
       this.zone.runOutsideAngular(() => {
         this.host.nativeElement.addEventListener('pointermove', this.onPointerMove, {
           passive: true,
@@ -234,13 +230,11 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     const srcEl = this.shown && tiltEl ? tiltEl : chip && chip.offsetParent !== null ? chip : null;
     const srcRect = srcEl?.getBoundingClientRect();
 
-    // The tease has done its job — shut it behind the spotlight.
     this.close();
 
     root.classList.add('is-open');
     root.setAttribute('aria-hidden', 'false');
     document.body.classList.add(CertificationsComponent.BODY_OPEN_CLASS);
-    // Acquire the shared scroll lock; release it when closing.
     this.spotlockRelease = this.scrollLock.acquire();
     // ...and make aria-modal true. The Tab wrap below only fires while focus is
     // already inside the dialog, so clicking the (unfocusable) certificate image

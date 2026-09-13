@@ -21,7 +21,6 @@ export class ThemeService {
   private readonly mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   private hasManualOverride = false;
 
-  /** True when dark mode is active. Read in templates as `theme.isDark()`. */
   readonly isDark = signal<boolean>(false);
 
   /**
@@ -53,7 +52,6 @@ export class ThemeService {
     this.applyTheme();
   }
 
-  /** Pick the asset path that matches the current theme. */
   themeAsset(darkPath: string, lightPath: string): string {
     return this.isDark() ? darkPath : lightPath;
   }
@@ -63,9 +61,9 @@ export class ThemeService {
     root.classList.toggle('dark-mode', this.isDark());
     root.classList.toggle('light-mode', !this.isDark());
 
-    // Mobile browser chrome follows the palette. This used to be two
-    // media-scoped <meta> tags, which only ever tracked the OS — a visitor who
-    // toggled away from their OS preference got chrome that fought the page.
+    // Mobile browser chrome follows the palette. One tag written here, not a
+    // media-scoped pair: those track only the OS, so a visitor who toggles away
+    // from their OS preference gets chrome that fights the page.
     document
       .querySelector('meta[name="theme-color"]')
       ?.setAttribute('content', this.isDark() ? THEME_COLOR.dark : THEME_COLOR.light);

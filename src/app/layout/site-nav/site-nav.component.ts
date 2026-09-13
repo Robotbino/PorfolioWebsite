@@ -85,10 +85,10 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   // neither hover nor focus to trigger it, and no hamburger either — so the links
   // sat at opacity 0.12 with no way back. Same shape as the reduced-motion gate
   // the ADR already specifies: when the declutter can't be undone, don't apply it.
-  // Read live rather than snapshotted at init: docking a mouse or flipping the
-  // OS reduced-motion switch mid-session used to change nothing until reload.
-  // A signal read inside the out-of-zone rAF has no reactive consumer, so it
-  // costs a property access and schedules no change detection.
+  // Read live rather than snapshotted at init, so docking a mouse or flipping
+  // the OS reduced-motion switch takes effect without a reload. A signal read
+  // inside the out-of-zone rAF has no reactive consumer, so it costs a property
+  // access and schedules no change detection.
   private get muteAllowed(): boolean {
     return !this.motion.reducedMotion() && this.motion.finePointer();
   }
@@ -151,11 +151,10 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
   /**
    * Close only when the scrim ITSELF was clicked, not the menu panel inside it.
    *
-   * This used to be a `$event.stopPropagation()` handler on the inner <nav>,
-   * which meant the panel carried a click listener that did nothing but block —
-   * enough for a11y tooling to treat a plain <nav> as an interactive element
-   * with no keyboard path. Comparing target to currentTarget says the same
-   * thing without giving the panel a handler at all.
+   * Comparing target to currentTarget rather than stopping propagation on the
+   * inner <nav>: a listener there would do nothing but block, and it is enough
+   * for a11y tooling to treat a plain <nav> as an interactive element with no
+   * keyboard path.
    */
   onScrimClick(event: MouseEvent): void {
     if (event.target === event.currentTarget) {
@@ -172,7 +171,6 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     this.menuTrigger?.nativeElement.focus();
   }
 
-  /** Release this component's holds on the shared scroll lock and page inerting. */
   private releaseMenuLock(): void {
     this.menuLockRelease?.();
     this.menuLockRelease = null;
@@ -235,8 +233,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
    * Reflect the loop's single active-destination answer onto the links. Reading
    * the computed here (out of zone, like `position()`) schedules no change
    * detection, and it only changes value ~once per destination, so the class
-   * writes are rare. Replaces the old midpoint probe + section-tops cache +
-   * ResizeObserver + clone check — the loop owns "where am I" now.
+   * writes are rare. The loop owns "where am I"; the nav keeps no geometry.
    */
   private updateActiveLink(): void {
     let active = this.loop.activeDestination();

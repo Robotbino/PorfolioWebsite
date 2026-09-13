@@ -1,16 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
 
-/**
- * Drop-in theme toggle button; reads/writes ThemeService.
- *
- * No inputs or outputs — the component is fully self-contained. It binds to the
- * existing `ThemeService.isDark` signal for label/icon state and calls
- * `ThemeService.toggle()` on click, so any consumer renders the same button
- * shape and behaviour by dropping the selector in.
- *
- * Usage: `<app-theme-toggle></app-theme-toggle>`
- */
+/** Drop-in theme toggle button; reads and writes ThemeService directly. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-theme-toggle',

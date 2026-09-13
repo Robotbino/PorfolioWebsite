@@ -1,8 +1,5 @@
 <section class="section" aria-labelledby="experience-title">
   <div class="container">
-    <!-- Editorial header — flush-left poster headline (mirrors About, Certifications
-    and Contact). Every section now writes its own header this way; the old
-    shared centred heading component was removed once nothing used it. -->
     <header class="experience-header" appScrollReveal>
       <p class="experience-kicker">
         <span class="experience-kicker-index" aria-hidden="true">02</span>
@@ -11,14 +8,7 @@
       <h2 class="experience-title" id="experience-title">Experience</h2>
     </header>
 
-    <!-- Lead role — the SITA work as an editorial split: role title anchors the
-    left column, the accomplishments read down the right. A single hairline
-    and the grid do the framing that the old glass card used to. Copy is
-    unchanged. -->
     <article class="role" appScrollReveal>
-      <!-- Weight-contrast lockup (hero-name idiom): the org anchors at black,
-      the platform descriptor drops a tier. Copy is unchanged — the spans
-      only stack what was one uniform run. -->
       <!-- Trailing space lives INSIDE the org span: Angular's default
       whitespace stripping would otherwise drop it and fuse the heading's
       accessible name into "SITA—Java EE…". -->
@@ -60,12 +50,7 @@
       </ul>
     </article>
 
-    <!-- Skills index — the old Technologies / Non-Technical cards flattened into
-    two typographic ledgers on a staggered 12-col grid; the offset bottoms
-    leave negative space for the constellation. Copy is unchanged; the index
-    numerals are decorative wayfinding, hence aria-hidden.
-
-    .index-term is a <span>, not a heading. These rows are ledger entries —
+    <!-- .index-term is a <span>, not a heading. These rows are ledger entries —
     "Analytical Thinker" is an item in a list, not a section of the document.
     As <h4> they put ten stops into the heading outline (25 headings total,
     ten of them list entries), which turns heading navigation — a primary
@@ -115,9 +100,8 @@
 
 <section class="section" id="projects" aria-labelledby="projects-title">
   <div class="container">
-    <!-- Editorial header — flush-left poster headline, matching the Experience
-    header above and About's pattern. No destination-index numeral here since
-    Projects is a subsection of Work, not a separate loop destination. -->
+    <!-- No destination-index numeral here: Projects is a subsection of Work,
+    not a loop destination of its own. -->
     <header class="projects-header" appScrollReveal>
       <p class="projects-kicker">
         <span>Browse My Recent</span>
@@ -145,10 +129,8 @@
             <div class="project-card" role="listitem">
               <div class="project-content">
                 <div class="project-text">
-                  <!-- Index numeral + hairline — the site-wide wayfinding idiom
-                  (certs rows, contact channels). In the vertical fallback,
-                  where the HUD counter never renders, it is the only
-                  numbering. Decorative, hence aria-hidden. -->
+                  <!-- The card's own numeral: in the vertical fallback, where
+                  the HUD counter never renders, it is the only numbering. -->
                   <p class="project-kicker" aria-hidden="true">
                     <span class="project-kicker-index">0{{ i + 1 }}</span>
                   </p>

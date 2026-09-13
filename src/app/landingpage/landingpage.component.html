@@ -3,9 +3,8 @@
   <section class="hero" [attr.aria-labelledby]="clone ? null : 'hero-name'">
     <div class="hero-frame">
 
-      <!-- Top meta — editorial poster framing pinned to the viewport edge.
-           The local clock rides the coords cluster (place, then its time),
-           so the meta stays two anchored groups: status left, locale right. -->
+      <!-- The clock rides the coords cluster (place, then its time) so the meta
+           row stays two anchored groups: status left, locale right. -->
       <div class="hero-meta">
         <span class="hero-status">
           <span class="hero-status-dot" aria-hidden="true"></span>
@@ -17,7 +16,6 @@
         </span>
       </div>
 
-      <!-- Headline — the one fixed point the whole layout balances against. -->
       <div class="hero-headline">
         <p class="hero-eyebrow">Hello, <em class="accent">I&rsquo;m</em></p>
         <h1 class="hero-name" [attr.id]="clone ? null : 'hero-name'">
@@ -27,14 +25,12 @@
         </h1>
       </div>
 
-      <!-- Statement — the value claim and the public-sector → consulting pivot. -->
       <p class="hero-statement">
         <span class="hero-statement-lead">Enterprise software that holds up.</span>
         Three years building case-management and workflow systems for a national
         government client. Now bringing that to consulting.
       </p>
 
-      <!-- Footer — role, primary action and links distributed along the base. -->
       <div class="hero-footer">
         <p class="hero-role"><span class="hero-role-index">01</span> Full-Stack Developer</p>
 
@@ -47,10 +43,10 @@
             <span class="hero-cta-arrow" aria-hidden="true">&#8595;</span>
           </a>
 
-          <!-- role="listitem" used to sit on the anchors themselves, which
-               OVERRIDES their implicit link role: the two most important
-               outbound links in the hero announced as list items and dropped out
-               of the screen-reader links list. Real <li> wrappers instead. -->
+          <!-- Real <li> wrappers, NOT role="listitem" on the anchors: that
+               overrides their implicit link role, so the hero's two outbound
+               links announce as list items and drop out of the screen-reader
+               links list. -->
           <ul class="hero-socials" role="list" aria-label="Social media links">
             <li>
               <a href="https://github.com/Robotbino" class="hero-social"

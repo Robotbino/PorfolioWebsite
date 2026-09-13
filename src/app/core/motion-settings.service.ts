@@ -1,25 +1,19 @@
 import { Injectable, Signal, WritableSignal, signal } from '@angular/core';
 
 /**
- * One place that answers "may I animate, and how does the visitor point?" Every
- * renderer used to re-read matchMedia privately (reduced-motion across seven
- * call sites, pointer capability across two), so the "may I animate" decision
- * was reimplemented in isolation all over the app. They now read one of these
- * signals instead.
+ * One place that answers "may I animate, and how does the visitor point?", so
+ * no renderer reimplements that decision against matchMedia privately.
  *
- * The signals track live preference changes via the media query's `change`
+ * Each signal tracks live preference changes via its media query's `change`
  * event — the same pattern ThemeService uses for colour-scheme — so a consumer
- * can react to a mid-session flip. Reading a signal once at init stays
- * value-identical to the old direct matchMedia read, so adopting it is safe
- * even for consumers that don't (yet) react live.
+ * can react to a mid-session flip.
  *
- * `finePointer` and `coarsePointer` are kept as separate signals rather than
- * one negated flag: they test non-complementary conditions (a hybrid
- * touch-laptop can satisfy neither), so each consumer keeps its exact question.
+ * `finePointer` and `coarsePointer` are separate signals rather than one negated
+ * flag: they test non-complementary conditions (a hybrid touch-laptop can
+ * satisfy neither), so each consumer keeps its exact question.
  */
 @Injectable({ providedIn: 'root' })
 export class MotionSettingsService {
-  /** True when the visitor asked the OS to reduce motion. */
   readonly reducedMotion: Signal<boolean>;
   /** True for a precise, hovering pointer (mouse / trackpad). */
   readonly finePointer: Signal<boolean>;

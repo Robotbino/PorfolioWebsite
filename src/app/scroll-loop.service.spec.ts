@@ -3,9 +3,9 @@ import { ScrollLoopService } from './scroll-loop.service';
 /**
  * The service is the stateful seam over the pure cycle math: feed it section
  * offsets + a scroll position, read back the truth. `activeDestination` is the
- * interface C3 adds — one answer to "which destination is in view" — so its
- * test surface is: feed a scrollY, read the id. No DOM; the shell's geometry is
- * passed in as plain numbers, exactly as the real shell does.
+ * one answer to "which destination is in view", so its test surface is: feed a
+ * scrollY, read the id. No DOM; the shell's geometry is passed in as plain
+ * numbers, exactly as the real shell does.
  */
 describe('ScrollLoopService.activeDestination', () => {
   // Home, Work, About, Certifications, Contact, Loop clone — even 1000px gaps.

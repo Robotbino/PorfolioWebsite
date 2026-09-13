@@ -78,10 +78,8 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   private activeIndex = -1;
   private resizeRelease: (() => void) | null = null;
 
-  // Maps a tech-stack label to one of the inline glyphs in shared/icon. Brand
-  // marks where one exists; a representative solid glyph otherwise (Spring's
-  // leaf, MySQL's database, a key for JWT tokens, a cube for WebGL's 3D). The
-  // pills render these greyscale.
+  // Brand marks where one exists, a representative solid glyph otherwise.
+  // Unmapped labels fall back to a generic code glyph.
   private static readonly TECH_ICONS: Readonly<Record<string, IconName>> = {
     Angular: 'angular',
     React: 'react',
@@ -95,7 +93,6 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     WebGL: 'cube',
   };
 
-  /** Icon name for a tech label; a generic code glyph if unmapped. */
   techIcon(name: string): IconName {
     return WorkComponent.TECH_ICONS[name] ?? 'code';
   }
@@ -217,7 +214,6 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     return Math.min(1, Math.max(0, -viewport.getBoundingClientRect().top / this.stickRange));
   }
 
-  /** Every per-frame DOM write for progress `p` at the current `rendered` offset. */
   private paint(p: number): void {
     const stage = this.stageRef?.nativeElement;
     const track = this.trackRef?.nativeElement;
@@ -284,7 +280,6 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     this.paint(p);
   }
 
-  /** Bring the card that just received focus into the pinned frame. */
   private onFocusIn = (event: FocusEvent): void => {
     if (!this.active || this.stickRange <= 0) {
       return;

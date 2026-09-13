@@ -19,17 +19,7 @@
   padding-block: clamp(var(--space-2xl), 8vh, var(--space-5xl));
 }
 
-/* ============================================
-   CERTIFICATIONS — typographic ledger, no cards
-   The Swiss-table idiom from Work's skills index: hairline rules and the grid
-   do the framing so the constellation breathes through the negative space.
-   Each row's title cluster is a button that opens the certificate spotlight
-   (and tethers a cursor preview on a fine pointer); the Verify link sits
-   beside it as a second, separate action.
-   ============================================ */
-
-/* ---- Poster header (mirrors Experience/About; kept per-component under
-   Angular view encapsulation) ---- */
+/* Poster header — per-component by necessity (view encapsulation). */
 
 .certs-header {
   margin-bottom: var(--space-3xl);
@@ -47,15 +37,11 @@
   color: var(--color-text-muted);
 }
 
-/* Destination index (04 = Certifications, the fourth loop destination; Contact
-   follows at 05) — the one vivid hue, echoing the hero's status dot. Decorative,
-   so aria-hidden in the template. */
 .certs-kicker-index {
   font-variant-numeric: tabular-nums;
   color: var(--color-accent-vivid);
 }
 
-/* Short hairline continuing the kicker — a quiet Swiss rule. */
 .certs-kicker::after {
   content: '';
   align-self: center;
@@ -70,8 +56,6 @@
   line-height: var(--line-height-none);
   letter-spacing: var(--tracking-tightest);
 }
-
-/* ---- Ledger rows ---- */
 
 .certs-list {
   list-style: none;
@@ -152,8 +136,6 @@
   color: var(--color-text-muted);
 }
 
-/* "View" affordance inside the trigger — hidden until hover/focus reveals it.
-   Opacity/transform only. */
 .certs-view-hint {
   grid-column: 2;
   justify-self: start;
@@ -198,8 +180,7 @@
   transition: transform var(--transition-base);
 }
 
-/* Touch thumbnail chip — the tap affordance where there's no cursor preview.
-   Off by default (and never fetched on hover devices); the touch media query
+/* Off by default, so hover devices never fetch it; the touch media query
    turns it on. */
 .certs-thumb {
   display: none;
@@ -223,8 +204,6 @@
     justify-self: end;
   }
 }
-
-/* ---- Hover / focus choreography (fine pointer) ---- */
 
 @media (hover: hover) and (pointer: fine) {
   /* Sibling dim: the hovered row holds, the rest recede — the list reads as an
@@ -290,8 +269,6 @@
   opacity: 1;
   transform: translateX(0);
 }
-
-/* ---- Reveal cadence (existing appScrollReveal machinery, per row) ---- */
 
 .certs-row.scroll-reveal:nth-child(1) { transition-delay: 60ms; }
 .certs-row.scroll-reveal:nth-child(2) { transition-delay: 130ms; }
@@ -372,12 +349,10 @@
 .certs-spotlight {
   position: fixed;
   inset: 0;
-  /* Top of the PAGE stacking context only: .starscroll (z:1) traps this, so the
-     root-level sticky nav (z:100) still paints above the scrim — intentionally.
-     Its links stay clickable while a certificate is open (a nav click closes
-     the spotlight and travels); styles.css `body.certs-spotlight-open` rules
-     stop the transparent header strip from shadowing the Close button and hide
-     the theme-toggle/hamburger cluster that shares its corner. */
+  /* Top of the PAGE stacking context only: .starscroll (z:1) traps this, so
+     the root-level sticky nav (z:100) still paints above the scrim. The nav is
+     therefore made inert and hidden from here — see the
+     `body.certs-spotlight-open` rules in styles.css. */
   z-index: 150;
   display: grid;
   place-items: center;
@@ -446,7 +421,6 @@
   transition: opacity 280ms var(--ease-out-quart), transform 280ms var(--ease-out-quart);
 }
 
-/* Caption lands a beat after the frame settles. */
 .certs-spotlight.is-open .certs-spotlight-caption {
   opacity: 1;
   transform: translateY(0);

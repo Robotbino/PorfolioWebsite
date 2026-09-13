@@ -38,7 +38,7 @@ export class ScrollLoopService {
       DESTINATIONS[activeIndexFor(this._position(), this.cycleLength)]?.id ?? DESTINATIONS[0].id,
   );
 
-  /** Real destinations (Home, Work, About, Contact) = measured sections − the clone. */
+  /** Real destinations = measured sections − the Home clone. */
   cycleLength = 0;
 
   private anchors: readonly number[] = [];
@@ -52,7 +52,6 @@ export class ScrollLoopService {
     this.wrapAt = offsets.length ? offsets[offsets.length - 1] : 0;
   }
 
-  /** Recompute the position from a fresh scroll offset + viewport height. */
   update(scrollY: number, viewportHeight: number): void {
     this._position.set(positionFor(scrollY, this.anchors, viewportHeight));
   }

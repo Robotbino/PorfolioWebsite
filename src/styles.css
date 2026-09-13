@@ -39,15 +39,13 @@
 /* ============================================
    INSTRUMENT SERIF — the italic accent (self-hosted)
    The lone editorial serif: the hero's "I'm" and the About credo, and nothing
-   else. It used to arrive from Google Fonts, which cost a render-blocking
-   cross-origin stylesheet plus two DNS+TLS handshakes on the critical path —
-   for two rendered strings — and pulled BOTH the roman and the italic when
-   every consumer hard-sets font-style: italic.
-
-   Self-hosting it drops the roman, removes the last third-party origin (which
-   is what lets the CSP name no external host at all), and puts the face on the
-   same immutable cache header as the Nohemi ladder. Same root-absolute URL rule
-   as above: the build must leave this path alone.
+   else. Self-hosted rather than fetched from Google Fonts: that cost a
+   render-blocking cross-origin stylesheet and two DNS+TLS handshakes on the
+   critical path for two rendered strings, and pulled the roman as well as the
+   italic when every consumer hard-sets font-style: italic. Dropping it also
+   removes the last third-party origin, which is what lets the CSP name no
+   external host at all. Same root-absolute URL rule as above: the build must
+   leave this path alone.
 
    Latin subset only, matching what the Google stylesheet served this site.
    ============================================ */
@@ -73,18 +71,12 @@
 @font-face { font-family: 'Atkinson Hyperlegible'; src: url('/assets/fonts/AtkinsonHyperlegible-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Atkinson Hyperlegible'; src: url('/assets/fonts/AtkinsonHyperlegible-Bold.woff2')    format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
 
-/* ============================================
-   DESIGN SYSTEM - CSS CUSTOM PROPERTIES
-   ============================================ */
-
 :root {
   /* Typography — THREE faces, THREE roles. Keep them apart.
-     These two used to resolve to the same Nohemi stack, which meant the system
-     had three names but only two voices: metadata and footer labels were the
-     headline's face at 13px, so they read as generic UI chrome rather than as
-     editorial annotation. Nohemi is a geometric display sans — circular bowls,
-     tight apertures — and small uppercase runs are exactly where that breaks
-     down. Atkinson Hyperlegible now carries the utility voice.
+     Nohemi is a geometric display sans (circular bowls, tight apertures), which
+     breaks down in small uppercase runs — metadata and footer labels at 13px
+     read as generic UI chrome. Atkinson Hyperlegible carries the utility voice
+     so the system has three voices, not three names for two.
 
        display — large type only: h1–h6, the hero eyebrow and statement lead,
                  the logo, mobile nav links, poster numerals.
@@ -111,19 +103,16 @@
   --font-size-2xl: 2rem;
   --font-size-3xl: 2.5rem;
 
-  /* 4xl and 6xl are deliberately LEFT ALONE as fixed rem with breakpoint steps.
-     A fluid rewrite was drafted and reverted: the case for it rested on the
-     section titles being close to overflowing above 768px, and measurement
-     killed that. At a 769px viewport "Certifications" at 6.2rem inks 605px into
-     705px of available width — 100px of headroom, not a few. There is a real
-     43px cliff at the 768 boundary, but it is only ever visible while dragging
-     a window across one pixel, and smoothing it cost 37% off four section
-     titles through the whole 769–1376px band. Not a trade worth making.
+  /* Fixed rem with breakpoint steps, deliberately NOT fluid. These titles are
+     not close to overflowing: at a 769px viewport "Certifications" at 6.2rem
+     inks 605px into 705px of available width. Smoothing the 43px cliff at the
+     768 boundary costs 37% off four section titles across the whole 769–1376px
+     band, for a step only visible while dragging a window one pixel.
 
-     Display presence on this site is bought by making the SMALL rungs smaller
-     (see --font-size-display-sm) rather than the big ones bigger — big display
-     type pushes the left-anchored headlines rightward into the constellation.
-     See the clearance note in landingpage.component.css. */
+     Display presence here is bought by making the SMALL rungs smaller (see
+     --font-size-display-sm), not the big ones bigger — big display type pushes
+     the left-anchored headlines rightward into the constellation. See the
+     clearance note in landingpage.component.css. */
   --font-size-4xl: 3rem;
   --font-size-6xl: 6.2rem;
 
@@ -190,9 +179,8 @@
      against the aurora, not paper-white. The number that matters is the ratio
      on the aurora's DARKEST stop (#E8BC8C in aurora-palette.ts) — that is the
      worst case any label can land on, and the section kickers sit outside every
-     scrim, straight on that band. An earlier comment here cited 6.1:1 against
-     #FAF0E8, a colour the light-aurora polish pass replaced; the real figure for
-     the old #5f5a54 was 3.90:1, under the 4.5:1 floor. */
+     scrim, straight on that band. Measure against that stop, not against the
+     page: #5f5a54 looks safe on white but is 3.90:1 there, under the floor. */
   --color-text-secondary: light-dark(#3d3a36, #b0b0b0);
   --color-text-tertiary: light-dark(#4f4b46, #999999);
   /* Dimmest label tier: 4.78:1 on the darkest aurora stop, 8.36:1 on white. */
@@ -217,10 +205,9 @@
   --color-glow-code: light-dark(#1d6fd1, #3d9bf5);
   /* Hero statement — a tier below text-primary, expressed as alpha over the page
      rather than a flat grey so it sits on the aurora rather than on top of it.
-     Lives here rather than in landingpage.component.css, which used to hard-code
-     both values and re-derive the theme with a @media query plus two
-     :host-context() rules — three encodings of a decision light-dark() already
-     makes once. */
+     Lives here rather than in landingpage.component.css so the light/dark
+     choice is encoded once, by light-dark(), instead of being re-derived with a
+     @media query and :host-context() rules at the point of use. */
   --color-text-statement: light-dark(rgba(26, 26, 26, 0.72), rgba(255, 255, 255, 0.7));
 
   /* Mobile nav overlay. Deliberately NOT light-dark(): the overlay is a near-black
@@ -260,7 +247,6 @@
   --space-4xl: 6rem;
   --space-5xl: 8rem;
 
-  /* Border Radius */
   --radius-sm: 0.5rem;
   --radius-lg: 1.5rem;
   --radius-full: 9999px;
@@ -270,15 +256,12 @@
   --shadow-lg: 0 10px 30px light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.4));
   --shadow-hover: 0 12px 35px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.5));
 
-  /* Easing curves */
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Transitions */
   --transition-base: 250ms var(--ease-out-quart);
   --transition-slow: 400ms var(--ease-out-expo);
 
-  /* Layout */
   --max-width-content: 1400px;
   --max-width-text: 65ch;
   /* Deliberately NOT a bare var(--space-5xl) any more. `.section` is used by all
@@ -308,10 +291,6 @@
   --scrim-rgb: 18, 18, 18;
 }
 
-/* ============================================
-   BASE RESET & DEFAULTS
-   ============================================ */
-
 *,
 *::before,
 *::after {
@@ -336,13 +315,12 @@ html {
   overflow-x: hidden;
   overflow-x: clip;
 
-  /* Hide scrollbar while maintaining scroll functionality */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 html::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
 
 body {
@@ -362,18 +340,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--transition-slow), color var(--transition-slow);
 
-  /* Hide scrollbar while maintaining scroll functionality */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
-
-/* ============================================
-   TYPOGRAPHY
-   ============================================ */
 
 h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd {
   margin: 0;
@@ -406,10 +379,6 @@ em.accent {
   font-weight: var(--font-weight-normal);
   letter-spacing: var(--tracking-normal);
 }
-
-/* ============================================
-   LISTS, LINKS, MEDIA, FORM ELEMENTS
-   ============================================ */
 
 ul[role='list'], ol[role='list'] { list-style: none; margin: 0; padding: 0; }
 
@@ -449,10 +418,6 @@ textarea:not([rows]) { min-height: 10em; }
   background-color: var(--color-accent);
   color: var(--color-background);
 }
-
-/* ============================================
-   UTILITIES
-   ============================================ */
 
 .sr-only {
   position: absolute;
@@ -506,10 +471,6 @@ textarea:not([rows]) { min-height: 10em; }
 
 .section { padding-block: var(--section-spacing); }
 
-/* ============================================
-   RESPONSIVE BREAKPOINTS
-   ============================================ */
-
 /* --font-size-5xl is absent here on purpose: it is a clamp now, and has already
    interpolated to its 3rem minimum — the exact value this block used to set —
    by the time this width applies. Restating it would reintroduce the step the
@@ -532,10 +493,6 @@ textarea:not([rows]) { min-height: 10em; }
     --section-spacing: var(--space-3xl);
   }
 }
-
-/* ============================================
-   REDUCED MOTION
-   ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
   * {

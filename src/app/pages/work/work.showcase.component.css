@@ -8,7 +8,6 @@
    work.component.css.
    ============================================ */
 
-/* === HORIZONTAL SHOWCASE — driven by WorkComponent rAF === */
 /* Armed by WorkComponent (`.showcase-on` on the host) only on wide screens with
    motion allowed. The wrappers below are inert blocks otherwise, so the cards
    keep the vertical-stack layout above as a fail-open fallback. */
@@ -84,7 +83,6 @@
   line-height: var(--line-height-normal);
 }
 
-/* ---- Constellation scrim ---- */
 /* The star-map is position:fixed and keeps morphing site-wide. Behind the pinned
    cards it competes with the copy, so dim it locally toward the page colour (same
    background-scrim idiom as .role::before) — no surface, theme-aware via
@@ -103,7 +101,6 @@
   pointer-events: none;
 }
 
-/* ---- Card elevation + centre focus ---- */
 /* The hairline border darkens a step on the pinned stage and a shadow lifts
    each opaque card off the star-map (not floating ambiguously on it), which is
    also what lets the hover lift below actually pop. --card-focus (1 = centred)
@@ -122,7 +119,6 @@
   }
 }
 
-/* ---- Pinned wayfinding HUD ---- */
 /* Hidden by default so the vertical-stack fallback (no-JS / reduced motion /
    narrow) stays clean; revealed only when the showcase is armed. */
 .showcase-hud {
@@ -155,7 +151,6 @@
   color: var(--color-text-muted);
 }
 
-/* The current index takes the one vivid hue, echoing the section kicker. */
 .showcase-counter-current {
   color: var(--color-accent-vivid);
 }
@@ -183,7 +178,6 @@
   border-radius: inherit;
 }
 
-/* One notch per project — a static count marker the fill sweeps past. */
 .showcase-rail-tick {
   position: absolute;
   top: 50%;
@@ -204,8 +198,7 @@
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--color-text-muted);
-  /* Guidance when it's needed, gone the moment the sweep starts. */
-  opacity: clamp(0, calc(1 - var(--showcase-progress, 0) * 10), 1);
+    opacity: clamp(0, calc(1 - var(--showcase-progress, 0) * 10), 1);
   transition: opacity var(--transition-base);
 }
 

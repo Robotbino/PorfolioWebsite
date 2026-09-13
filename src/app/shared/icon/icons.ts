@@ -1,11 +1,11 @@
 /**
  * The site's whole icon set, as path data.
  *
- * These sixteen glyphs used to arrive as Font Awesome: three stylesheets and two
- * webfonts, ~299 kB, to draw sixteen shapes — more bytes than the entire Nohemi
- * ladder that sets every word on the site. The paths below are the same shapes,
- * lifted from the Font Awesome Free SVGs at build-authoring time, and cost ~9 kB
- * inside the JS bundle with no extra request at all.
+ * Inlined rather than loaded as an icon font: Font Awesome costs three
+ * stylesheets and two webfonts, ~299 kB, to draw these sixteen shapes — more
+ * bytes than the entire Nohemi ladder that sets every word on the site. The
+ * paths below are the same shapes, lifted from the Font Awesome Free SVGs at
+ * authoring time, and cost ~9 kB in the JS bundle with no extra request.
  *
  * Icons: Font Awesome Free 7.x, CC BY 4.0 (https://fontawesome.com/license/free).
  * Only the icon artwork is used; no Font Awesome code ships.

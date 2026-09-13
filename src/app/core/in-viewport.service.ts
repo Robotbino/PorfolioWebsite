@@ -4,10 +4,9 @@ import { Injectable, NgZone, inject } from '@angular/core';
 export type InViewCallback = (visible: boolean) => void;
 
 /**
- * One place that owns "is this element in the viewport?" Five call sites each
- * used to `new IntersectionObserver`, wire up entry routing, and disconnect in
- * their own ngOnDestroy — with an inconsistent story about the Angular zone.
- * They now call `observe()` and keep the release handle.
+ * One place that owns "is this element in the viewport?", so no caller builds
+ * its own IntersectionObserver, entry routing and teardown — and the zone story
+ * is told once.
  *
  * Observers are shared by their option set: every caller uses the viewport
  * root, so `rootMargin` + `threshold` fully identify a reusable observer, and

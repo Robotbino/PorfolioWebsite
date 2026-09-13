@@ -20,7 +20,6 @@
   pointer-events: none;
 }
 
-/* The looping star-map: destinations stack above the fixed background. */
 .starscroll {
   position: relative;
   z-index: 1;

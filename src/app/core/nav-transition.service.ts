@@ -7,13 +7,11 @@ const SMOOTH_HOP_MAX_VH = 1.75;
 
 /**
  * One place that answers "how does a nav click travel?" Short hops keep the
- * native smooth scroll — the destination is already in reach and watching the
- * page glide there reads as continuity. Long hops used to smooth-scroll too,
- * which dragged the viewport through the pinned Projects showcase (cards
- * whipping sideways, HUD flashing) on every cross-page jump. Those now
- * teleport instantly inside a View Transition: the browser cross-fades a
- * snapshot of the old viewport into the new one with a slight directional
- * drift, so the journey is implied without replaying the terrain in between.
+ * native smooth scroll: the destination is in reach and watching the page glide
+ * there reads as continuity. Long hops teleport instead, inside a View
+ * Transition — smooth-scrolling them drags the viewport through the pinned
+ * Projects showcase (cards whipping sideways, HUD flashing), whereas the
+ * cross-fade implies the journey without replaying the terrain between.
  *
  * Anything that renders from scroll position with its own smoothing (the
  * showcase track) goes stale on a teleport — `onTeleport` lets those renderers
@@ -31,8 +29,8 @@ export class NavTransitionService {
 
   /**
    * Scroll destination `id` into view, choosing the least jarring vehicle.
-   * Returns false when the element doesn't exist (caller keeps the browser's
-   * default anchor behaviour, matching the old inline handler's semantics).
+   * Returns false when the element doesn't exist, leaving the caller with the
+   * browser's default anchor behaviour.
    */
   navigateTo(id: string, options: { suppressTransition?: boolean } = {}): boolean {
     // Overlays first: a full-screen overlay (the certifications spotlight)
@@ -144,7 +142,7 @@ export class NavTransitionService {
    * transition's update callback the landing state — including the section
    * reveal and every teleport listener's repaint — is what gets captured.
    * The offset is re-derived here rather than passed in, so a teleport measures
-   * the geometry it actually lands in (the old `scrollIntoView` did the same).
+   * the geometry it actually lands in.
    */
   private jump(el: HTMLElement): void {
     window.scrollTo({ top: this.landingOffset(el), behavior: 'instant' });

@@ -68,10 +68,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
     // Scroll and resize are the app's hottest events and neither needs change
     // detection: the loop is a plain service the out-of-zone rAF consumers read
-    // with a non-reactive `position()`, and the seam wrap is a scrollTo. Running
-    // them through @HostListener meant every scroll event ticked the zone and
-    // re-checked the whole default-strategy tree. Registered by hand outside the
-    // zone instead, matching FramePulseService and InViewportService.
+    // with a non-reactive `position()`, and the seam wrap is a scrollTo. A
+    // @HostListener would tick the zone on every scroll event, so these are
+    // registered by hand outside it — as FramePulseService and InViewportService
+    // are.
     this.zone.runOutsideAngular(() => {
       const onScroll = () => this.onScroll();
       const onResize = () => {
@@ -147,21 +147,17 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     // derives the cycle length + wrap point. DOM read stays here; math is the
     // loop's.
     //
-    // These are `offsetTop` against a POSITIONED <main>, so they are main-
-    // relative, not document-relative — main sits one --nav-height down the page
-    // because `.navigation-bar` is `position: sticky` and therefore in flow.
-    // That is deliberate: main-relative IS the scroll-position frame. A section
-    // rests where its top clears the bar, i.e. at `scrollY === offsetTop`, which
-    // is why every destination frames identically (its top at viewport y =
-    // nav-height) and why Home rests at scrollY 0.
+    // These `offsetTop`s are main-relative, not document-relative, because
+    // `.navigation-bar` is `position: sticky` and therefore in flow above
+    // <main>. That frame is deliberate: a section rests at `scrollY ===
+    // offsetTop`, which is why Home rests at scrollY 0.
     //
-    // Do NOT "correct" these to document space (`scrollY + rect.top`). Both
+    // Do NOT "correct" them to document space (`scrollY + rect.top`). Both
     // consumers use the anchors as DIFFERENCES, so the uniform nav-height
-    // cancels — and re-adding it breaks the seam: `wrapOffset` subtracts
-    // `wrapAt` from `scrollY`, which is only continuous while
-    // `wrapAt === cloneTop - homeTop`. Home's anchor is 0, so the raw clone
-    // offsetTop already IS that span; a document-space `wrapAt` would overshoot
-    // it by a nav-height and pop the wrap ADR-0004 promises is invisible.
+    // cancels — and re-adding it breaks the seam: `wrapOffset` is only
+    // continuous while `wrapAt === cloneTop - homeTop`, which the raw clone
+    // offsetTop already is. A document-space `wrapAt` overshoots by a
+    // nav-height and pops the wrap ADR-0004 promises is invisible.
     this.loop.setAnchors(this.dests.map((d) => d.nativeElement.offsetTop));
   }
 

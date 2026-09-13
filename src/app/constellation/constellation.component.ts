@@ -42,9 +42,9 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
 
   private readonly driver = new MorphDriver();
   private unsub: (() => void) | null = null;
-  // Live, not snapshotted at init: flipping the OS reduced-motion switch
-  // mid-session used to leave the drift running until reload. Read inside the
-  // out-of-zone rAF, so it schedules no change detection.
+  // Live, not snapshotted at init, so flipping the OS reduced-motion switch
+  // stops the drift without a reload. Read inside the out-of-zone rAF, so it
+  // schedules no change detection.
   private get reduceMotion(): boolean {
     return this.motion.reducedMotion();
   }

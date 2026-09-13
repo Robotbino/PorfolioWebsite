@@ -23,13 +23,8 @@
   padding-block: clamp(var(--space-2xl), 8vh, var(--space-5xl));
 }
 
-/* ============================================
-   EDITORIAL HEADER
-   Flush-left poster headline. The weight-contrast pair mirrors the hero name
-   (extralight "About" against black "Me") — typography does the framing that
-   the old glass cards used to do. Pattern is mirrored in Work's Experience
-   header; kept per-component under Angular view encapsulation.
-   ============================================ */
+/* Poster header. Every destination repeats this pattern rather than sharing it:
+   view encapsulation scopes these rules to their own host. */
 
 .about-header {
   margin-bottom: var(--space-4xl);
@@ -64,14 +59,11 @@
   color: var(--color-text-muted);
 }
 
-/* Destination index (03 = About in the loop order) — the one vivid hue,
-   echoing the hero's status dot. Decorative, so aria-hidden in the template. */
 .about-kicker-index {
   font-variant-numeric: tabular-nums;
   color: var(--color-accent-vivid);
 }
 
-/* Short hairline continuing the kicker — a quiet Swiss rule. */
 .about-kicker::after {
   content: '';
   align-self: center;
@@ -192,9 +184,8 @@
   color: var(--color-text-secondary);
 }
 
-/* Boxless legibility: soft background-coloured radial scrim (hero-headline
-   idiom) fades the star map toward the page colour under the body copy —
-   no surface, no border, works in both themes via --scrim-rgb. */
+/* Fades the star map toward the page colour under the copy — no surface, no
+   border, theme-aware via --scrim-rgb. */
 .about-text::before {
   content: '';
   position: absolute;
@@ -219,12 +210,6 @@
   letter-spacing: var(--tracking-normal);
   color: var(--color-text-primary);
 }
-
-/* ============================================
-   FACTS LEDGER
-   Qualifications / Education as a typographic index: hairline rules,
-   uppercase micro-labels, thin poster numerals. No surfaces.
-   ============================================ */
 
 .about-ledger {
   grid-column: 9 / 13;
@@ -268,8 +253,6 @@
   gap: var(--space-sm);
 }
 
-/* Small stacked cluster to the right of the numeral: the restored glow icon
-   sits directly on top of the "Years" unit. */
 .ledger-meta {
   display: inline-flex;
   flex-direction: column;
@@ -297,18 +280,13 @@
   color: var(--color-accent-vivid);
 }
 
-/* ---- Restored glow icons ----
-   The site's earlier iteration had a glowing lightbulb (Qualifications) and a
-   glowing </> glyph (Education). They were dropped in the editorial rebuild;
-   here they return at a smaller scale, perched above each "Years" unit. Each
-   keeps its signature hue — warm amber for the bulb, cool blue for the code —
-   and breathes with a slow glow loop so the eye is drawn to them. The pulse is
-   stopped for reduced-motion users by the global rule, which pins the animation
-   to its final (brightest) frame, so the icons still glow, just statically. */
+/* Each icon keeps its signature hue — warm amber for the bulb, cool blue for
+   the code — and breathes on a slow glow loop. Under reduced motion the global
+   rule pins that animation to its final (brightest) frame, so the icons still
+   glow, just statically. */
 /* The glow is a drop-shadow, not a text-shadow: these are drawn glyphs (inline
-   SVG paths in <app-icon>) since the Font Awesome webfont was dropped, and
-   text-shadow has no effect on a path. drop-shadow takes the same
-   offset/blur/colour triples, so the light reads identically. */
+   SVG paths in <app-icon>), and text-shadow has no effect on a path.
+   drop-shadow takes the same offset/blur/colour triples. */
 .ledger-icon {
   font-size: var(--font-size-lg);
   line-height: 1;
@@ -403,12 +381,8 @@
   line-height: var(--line-height-normal);
 }
 
-/* ============================================
-   REVEAL CADENCE
-   Blocks use the existing appScrollReveal (IntersectionObserver) machinery;
-   the delays below stagger siblings that enter together — bio first, ledger
-   a beat behind. Reduced-motion collapses everything via the global rule.
-   ============================================ */
+/* Delay only — the transition itself is the global .scroll-reveal's, which
+   reduced motion collapses. Staggers siblings that enter together. */
 
 .about-text.scroll-reveal {
   transition-delay: 80ms;
@@ -445,9 +419,6 @@
   }
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
 
 @media (max-width: 968px) {
   /* Single column from here: the ledger moves under the bio, so the plate

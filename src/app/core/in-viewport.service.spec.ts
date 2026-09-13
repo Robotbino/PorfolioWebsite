@@ -46,10 +46,9 @@ describe('InViewportService', () => {
     original = window.IntersectionObserver;
     window.IntersectionObserver = FakeIO as unknown as typeof IntersectionObserver;
     // The service takes NgZone via inject(), so it comes from an injector now.
-    // TestBed's REAL NgZone is used rather than the old hand-rolled stub:
-    // overriding the provider replaces the zone the framework itself runs on,
-    // and runOutsideAngular already invokes its callback synchronously, which
-    // is all these specs needed the stub for.
+    // Use TestBed's real NgZone, never a stub: overriding the provider replaces
+    // the zone the framework itself runs on, and runOutsideAngular already
+    // invokes its callback synchronously, which is all these specs need.
     TestBed.resetTestingModule();
     zone = TestBed.inject(NgZone);
     service = TestBed.inject(InViewportService);

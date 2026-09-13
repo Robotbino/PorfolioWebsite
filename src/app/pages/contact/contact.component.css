@@ -5,12 +5,7 @@
   min-height: 100svh;
 }
 
-/* ============================================
-   EDITORIAL HEADER
-   Flush-left poster headline. Mirrors About ("About Me") and Work
-   ("Experience") so Contact speaks the same language; kept per-component under
-   Angular view encapsulation.
-   ============================================ */
+/* Poster header — per-component by necessity (view encapsulation). */
 
 .contact-header {
   margin-bottom: var(--space-4xl);
@@ -28,14 +23,11 @@
   color: var(--color-text-muted);
 }
 
-/* Destination index (05 = Contact, the fifth and last loop destination) — the one
-   vivid hue, echoing the hero's status dot. Decorative, so aria-hidden. */
 .contact-kicker-index {
   font-variant-numeric: tabular-nums;
   color: var(--color-accent-vivid);
 }
 
-/* Short hairline continuing the kicker — a quiet Swiss rule. */
 .contact-kicker::after {
   content: '';
   align-self: center;
@@ -58,13 +50,8 @@
   letter-spacing: var(--tracking-tightest);
 }
 
-/* ============================================
-   SPREAD — asymmetric 12-col editorial grid
-   Lead takes the reading column (1–7); the channels ledger hangs right (8–13)
-   on a dropped baseline, matching About's bio/ledger spread. Column gaps and
-   the ragged bottoms leave the constellation real negative space.
-   ============================================ */
-
+/* The ragged bottoms and the column gap leave the constellation behind real
+   negative space, so the two blocks are deliberately not contiguous. */
 .contact-spread {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -107,9 +94,8 @@
   background: var(--color-accent-vivid);
 }
 
-/* Boxless legibility: soft background-coloured radial scrim (hero-headline
-   idiom) fades the star map toward the page colour under the lead — no
-   surface, no border, theme-aware via --scrim-rgb. */
+/* Fades the star map toward the page colour under the copy — no surface, no
+   border, theme-aware via --scrim-rgb. */
 .contact-lead::before {
   content: '';
   position: absolute;
@@ -137,12 +123,6 @@
   color: var(--color-text-primary);
 }
 
-/* ============================================
-   CHANNELS LEDGER
-   Email / LinkedIn as a typographic index: hairline rules, uppercase micro-
-   labels, index numerals. No surfaces — same idiom as About's facts ledger.
-   ============================================ */
-
 .contact-channels {
   grid-column: 8 / 13;
   /* Dropped baseline so the ledger tops don't tie with the lead — the same
@@ -156,9 +136,7 @@
   border-top: 1px solid var(--color-border-dark);
 }
 
-/* Staggered reveal — each row lands on its own beat (the certifications
-   ledger cadence). Delay only; the transition itself is the global
-   .scroll-reveal's. */
+/* Delay only; the transition itself is the global .scroll-reveal's. */
 .channel.scroll-reveal:nth-child(1) { transition-delay: 60ms; }
 .channel.scroll-reveal:nth-child(2) { transition-delay: 130ms; }
 
@@ -180,8 +158,6 @@
   transition: color var(--transition-base);
 }
 
-/* The icon is the interaction's focal point. A radial halo sits behind it
-   (::before) and blooms on hover — a star coming into focus. */
 .channel-icon {
   position: relative;
   font-size: var(--font-size-2xl);
@@ -216,7 +192,6 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  /* Push the arrow to the far edge of the row. */
   margin-right: auto;
 }
 
@@ -238,7 +213,6 @@
   transition: color var(--transition-base);
 }
 
-/* Underline draws in from the left on hover (the site's link idiom). */
 .channel-value::after {
   content: '';
   position: absolute;
@@ -255,7 +229,6 @@
 .channel-arrow {
   font-size: var(--font-size-lg);
   color: var(--color-text-muted);
-  /* Tucked in and hidden until hover, then it slides out. */
   transform: translateX(-6px);
   opacity: 0;
   transition:
@@ -319,7 +292,6 @@
   outline-offset: 3px;
 }
 
-/* ---- Micro-interactions (pointer devices) ---- */
 @media (hover: hover) and (pointer: fine) {
   .channel-link:hover .channel-icon {
     transform: translateY(-3px) scale(1.14);
@@ -352,7 +324,6 @@
   }
 }
 
-/* Keyboard parity — the focused link gets the same lit state as hover. */
 .channel-link:focus-visible .channel-icon {
   color: var(--color-accent-vivid);
   transform: translateY(-3px) scale(1.14);
@@ -364,7 +335,6 @@
   color: var(--color-accent-vivid);
 }
 
-/* Touch feedback — no hover, so the tap lights the icon and reveals the arrow. */
 .channel-link:active .channel-icon {
   color: var(--color-accent-vivid);
   transform: scale(0.94);
@@ -388,18 +358,10 @@
   }
 }
 
-/* ============================================
-   MARQUEE — the terminal email beat
-   The address itself at poster scale: the lead promises "email is the fastest
-   way" and this is the payoff. Same grammar as everything else — kicker-style
-   micro-label, underline-draw, arrow nudge — just louder.
-   ============================================ */
-
 .contact-marquee {
   margin-top: var(--space-3xl);
 }
 
-/* Micro-label above the address — the kicker idiom (index + label + hairline). */
 .marquee-label {
   display: flex;
   align-items: baseline;
@@ -501,7 +463,6 @@
   }
 }
 
-/* Keyboard parity — the focused marquee gets the same lit state as hover. */
 .marquee-link:focus-visible {
   /* Was `outline: none` — the only one on the site, on its single most
      important call to action. The colour shift and the underline below still
@@ -522,18 +483,12 @@
   color: var(--color-accent-vivid);
 }
 
-/* Touch feedback — the tap lights the address the way hover would. */
 .marquee-link:active {
   color: var(--color-accent-vivid);
 }
 
-/* ============================================
-   COLOPHON — the loop's sign-off
-   One quiet strip in the ledger's micro-type: © | coords. The coords bookend
-   the hero's "Pretoria · South Africa", which is where the live clock lives —
-   an earlier draft repeated the clock and a loop hint here and both were cut.
-   ============================================ */
-
+/* The coords deliberately bookend the hero's "Pretoria · South Africa"; the
+   live clock stays up there and is not repeated here. */
 .contact-colophon {
   display: flex;
   align-items: baseline;
@@ -553,10 +508,6 @@
 .colophon-item {
   margin: 0;
 }
-
-/* ============================================
-   RESPONSIVE
-   ============================================ */
 
 @media (max-width: 968px) {
   .contact-spread {
@@ -591,17 +542,10 @@
     font-size: var(--font-size-xl);
   }
 
-  /* (The .channel-arrow reveal used to be repeated here too. Width is the wrong
-     axis for a hover question — the `@media (hover: none)` rule above already
-     covers every hover-less device, including touch tablets wider than this.) */
-
-  /* The marquee owns a full-width beat now, so the copy button keeps its
-     label — no need for the old icon-only squeeze. */
   .contact-marquee {
     margin-top: var(--space-2xl);
   }
 
-  /* Single quiet column; the sign-off reads top-to-bottom like the ledger. */
   .contact-colophon {
     flex-direction: column;
     align-items: flex-start;

@@ -7,15 +7,14 @@ import { auroraPalette } from '../core/aurora-palette';
 
 /**
  * The mobile CSS fallback (coarse pointer, no WebGL) is the regression surface:
- * its blobs used to bake the page-load palette and never react to a theme flip,
- * stranding a brown aurora in light mode / a white one in dark. The fix routes
- * the flip through ngOnChanges like the shader path. A fake matchMedia forces
- * the fallback branch; the test asserts the blob gradients follow the palette.
+ * its blobs have no shader uniforms, so a theme flip has to reach them through
+ * ngOnChanges or they strand on the page-load palette — a brown aurora in light
+ * mode, a white one in dark. A fake matchMedia forces the fallback branch; the
+ * test asserts the blob gradients follow the palette.
  */
 describe('AuroraComponent — mobile CSS fallback recolour', () => {
-  // The real shipped ramps, taken from core/aurora-palette.ts rather than
-  // hand-copied: the LIGHT fixture here used to be the pre-polish near-white
-  // ramp, which passed happily while implying a palette the site no longer has.
+  // Taken from core/aurora-palette.ts rather than hand-copied: a pasted fixture
+  // keeps passing while implying a palette the site no longer ships.
   const DARK = auroraPalette(true).colorStops;
   const LIGHT = auroraPalette(false).colorStops;
 
@@ -86,17 +85,15 @@ describe('AuroraComponent — mobile CSS fallback recolour', () => {
 });
 
 /**
- * Reduced motion is the other regression surface, and the one the audit caught:
- * the aurora is the largest moving surface on the page, and NEITHER of its two
- * renderers is reachable by the global `@media (prefers-reduced-motion)` rule in
- * styles.css — that rule clamps CSS animations only, never a WebGL canvas or a
- * Web Animations API object. So the gate has to live in the component, and it has
- * to be asserted here rather than in a browser: a headless preview can't advance
- * these animations, so "it looks still" proves nothing.
+ * Reduced motion is the other regression surface. Neither aurora renderer is
+ * reachable by the global `@media (prefers-reduced-motion)` rule in styles.css —
+ * that rule clamps CSS animations only, never a WebGL canvas or a Web Animations
+ * API object — so the gate lives in the component, and it has to be asserted
+ * here rather than in a browser: a headless preview can't advance these
+ * animations, so "it looks still" proves nothing.
  *
- * Both branches are covered: the coarse-pointer CSS fallback (no `el.animate`,
- * blobs resting at their first keyframe, no speculative compositor layer) and the
- * WebGL path (never subscribes to the shared frame pulse).
+ * Both branches are covered: the coarse-pointer CSS fallback and the WebGL path
+ * (which never subscribes to the shared frame pulse).
  */
 describe('AuroraComponent — reduced motion', () => {
   const DARK: [string, string, string] = ['#1E1C1A', '#3D312A', '#5A3D2B'];

@@ -8,15 +8,12 @@
 
 /* ============================================
    EXPERIENCE — editorial layout, no cards
-   The old frosted-glass cards blurred out the very constellation the site is
-   built around. Here typography and hairline rules do the framing: a flush-
-   left poster header, an asymmetric role split, and two typographic skill
-   ledgers on a staggered 12-col grid. All surfaces removed so the star map
-   breathes through the negative space.
+   Surfaces are deliberately absent: a frosted-glass card here blurs out the
+   very constellation the site is built around. Typography and hairline rules
+   do the framing instead, so the star map breathes through the negative space.
    ============================================ */
 
-/* ---- Poster header (mirrors About; kept per-component under Angular view
-   encapsulation) ---- */
+/* Poster header — per-component by necessity (view encapsulation). */
 
 .experience-header {
   margin-bottom: var(--space-3xl);
@@ -34,14 +31,11 @@
   color: var(--color-text-muted);
 }
 
-/* Destination index (02 = Work in the loop order) — the one vivid hue,
-   echoing the hero's status dot. Decorative, so aria-hidden in the template. */
 .experience-kicker-index {
   font-variant-numeric: tabular-nums;
   color: var(--color-accent-vivid);
 }
 
-/* Short hairline continuing the kicker — a quiet Swiss rule. */
 .experience-kicker::after {
   content: '';
   align-self: center;
@@ -57,10 +51,6 @@
   letter-spacing: var(--tracking-tightest);
 }
 
-/* ---- Lead role — asymmetric editorial split ---- */
-/* Title column left (1–6), accomplishments right (7–13); a single hairline
-   above stands in for the old card edge. */
-
 .role {
   position: relative;
   padding-top: var(--space-xl);
@@ -71,9 +61,8 @@
   align-items: start;
 }
 
-/* Boxless legibility: soft background-coloured radial scrim (hero-headline
-   idiom) fades the star map toward the page colour under the accomplishment
-   copy — no surface, no border, theme-aware via --scrim-rgb. */
+/* Fades the star map toward the page colour under the copy — no surface, no
+   border, theme-aware via --scrim-rgb. */
 .role::before {
   content: '';
   position: absolute;
@@ -97,10 +86,6 @@
   color: var(--color-text-primary);
 }
 
-/* Weight-contrast lockup (hero-name idiom: extralight "Bino" / black
-   "Hlongwana"). The org sits at black; the descriptor drops a size and a
-   weight tier into the secondary colour, so the eye lands on SITA first and
-   reads the platform second. */
 .role-title-org {
   display: block;
   font-weight: var(--font-weight-black);
@@ -153,8 +138,8 @@
   transition: transform var(--transition-base), color var(--transition-base);
 }
 
-/* Accent bullet set on the cap height. It twinkles faintly, tying the bullets
-   to the constellation motif; the global reduced-motion rule stops the loop. */
+/* Set on the cap height. The faint twinkle ties the bullets to the
+   constellation motif; the global reduced-motion rule stops the loop. */
 .role-points li::before {
   content: '';
   position: absolute;
@@ -191,9 +176,8 @@
   }
 }
 
-/* ---- Skills index — two typographic ledgers, staggered ---- */
-/* Technologies takes the wide column (1–8); Non-Technical hangs right (9–13)
-   on a dropped baseline. The offset bottoms are deliberate negative space. */
+/* The two ledgers' offset bottoms are deliberate negative space for the
+   constellation behind them. */
 
 .experience-index {
   margin-top: var(--space-5xl);
@@ -265,7 +249,6 @@
   transition: background-color var(--transition-base);
 }
 
-/* First row sits directly under the label's heavier rule. */
 .index-row:first-child::before {
   content: none;
 }
@@ -335,9 +318,8 @@
   }
 }
 
-/* ---- Reveal cadence ---- */
-/* Existing appScrollReveal machinery; delays stagger blocks that enter
-   together. Reduced-motion collapses via the global rule. */
+/* Delays stagger blocks that enter together; the transition itself is the
+   global .scroll-reveal's, which reduced motion collapses. */
 
 .role.scroll-reveal {
   transition-delay: 80ms;
@@ -434,7 +416,6 @@
   color: var(--color-text-muted);
 }
 
-/* Short hairline continuing the kicker — a quiet Swiss rule. */
 .projects-kicker::after {
   content: '';
   align-self: center;
@@ -487,8 +468,6 @@
   gap: var(--space-lg);
 }
 
-/* Card index — the site-wide numeral wayfinding (certs rows, contact
-   channels), here as the card's kicker: vivid tabular numeral + hairline. */
 .project-kicker {
   display: flex;
   align-items: center;
@@ -526,10 +505,6 @@
   color: var(--color-text-secondary);
 }
 
-/* Tech stack as a typographic meta row — the pills' surfaces removed the same
-   way the skills cards became ledgers. Uppercase micro-labels, icon marks,
-   whitespace instead of chrome. Static: these aren't links, so they don't
-   perform (less but better). */
 .project-tech {
   display: flex;
   flex-wrap: wrap;
@@ -547,8 +522,7 @@
   color: var(--color-text-tertiary);
 }
 
-/* Greyscale by design: a muted mark that keeps the icons reading as one
-   consistent set rather than a row of brand colours. */
+/* Greyscale by design: brand colours would turn the row into a logo wall. */
 .tech-tag-icon {
   flex-shrink: 0;
   font-size: 1.1em;
@@ -557,11 +531,8 @@
   filter: grayscale(1);
 }
 
-/* Card actions — real buttons, not quiet links: the cards exist to get
-   visitors INTO the repos and demos, so the affordance must read as pressable
-   at a glance. A refined chip chassis (hairline pill, uppercase micro-label,
-   vivid arrow) rather than the old 2px-accent border; hover inverts to a
-   solid accent fill with a lift, echoing the hero CTA at secondary volume. */
+/* Real buttons, not quiet links: the cards exist to get visitors INTO the repos
+   and demos, so the affordance has to read as pressable at a glance. */
 .project-links {
   display: flex;
   align-items: center;
@@ -589,7 +560,6 @@
               transform var(--transition-base);
 }
 
-/* The arrow keeps the one vivid spark at rest, then rides the inverted fill. */
 .project-link-arrow {
   display: inline-block;
   color: var(--color-accent-vivid);
@@ -648,10 +618,6 @@
   pointer-events: none;
 }
 
-/* ============================================
-  RESPONSIVE
-  ============================================ */
-
 @media (max-width: 968px) {
   /* Single column: the role split and the staggered ledgers stack; the
      dropped baselines no longer apply. */
@@ -688,7 +654,6 @@
     box-shadow: var(--shadow-lg);
   }
 
-  /* Slow push-in on the card image — depth without a layout shift. */
   .project-card:hover .project-image img {
     transform: scale(1.05);
   }

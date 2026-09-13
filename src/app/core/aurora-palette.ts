@@ -29,7 +29,7 @@ export function auroraPalette(isDark: boolean): AuroraPalette {
       // right so the strongest amber falls in the negative space the hero leaves
       // clear, while the lighter left stop keeps the reading column's text at AA.
       // Amplitude lifted from a near-flat 0.25 so the bands actually move and
-      // glow. See the offscreen-render contrast check in the polish pass.
+      // glow.
       {
         colorStops: ['#FBEAD9', '#F3D3AE', '#E8BC8C'],
         blend: 1.0,

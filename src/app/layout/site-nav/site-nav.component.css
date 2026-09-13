@@ -1,5 +1,3 @@
-/* Migrated verbatim from landingpage.component.css when the nav was hoisted
-   into the app shell as a persistent component. */
 .navigation-bar {
   position: sticky;
   top: 0;
@@ -156,9 +154,6 @@
   }
 }
 
-/* ============================================
-   NAV ACTIONS (hamburger + theme toggle group)
-   ============================================ */
 
 .nav-actions {
   display: flex;

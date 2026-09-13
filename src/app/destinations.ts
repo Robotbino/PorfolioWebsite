@@ -4,7 +4,7 @@
  * constellation figure each shows. The shell sections, the nav links, and the
  * constellation `order` all derive from this one list instead of hand-syncing
  * three parallel copies, so adding a destination is one edit and the ids can't
- * drift. See docs/adr/0007 and the C2 Decision Document.
+ * drift. See docs/adr/0007.
  *
  * Deliberately imports nothing from the constellation: the figure key is a plain
  * string union so the dependency runs one way (constellation.figures consumes
@@ -24,11 +24,10 @@ export interface Destination {
   id: string;
   /** Visible nav-link text (not always the capitalised id — Work is "Experience"). */
   label: string;
-  /** Which constellation figure this destination shows (key into `byRoute`). */
   figure: DestinationFigure;
 }
 
-/** The five destinations, in scroll order. Order = position in this array. */
+/** In scroll order — the index is the destination's position in the loop. */
 export const DESTINATIONS: readonly Destination[] = [
   { id: 'dest-home', label: 'Home', figure: 'home' },
   { id: 'dest-work', label: 'Experience', figure: 'work' },

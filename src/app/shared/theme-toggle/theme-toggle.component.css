@@ -41,7 +41,6 @@
     transform: scale(1.08);
   }
 
-  /* Sun spins a touch, moon tips back — tiny, but it rewards the pointer. */
   .theme-toggle:hover .dark-icon {
     transform: rotate(40deg);
     transition: transform var(--transition-base);
