@@ -58,9 +58,8 @@ export const ROLE: Role = {
 
 export const EXPERIENCE_GROUPS: readonly ExperienceGroup[] = [
   {
-    // Was "Programming Languages", which listed React and Angular among them.
-    // The label changed, not the list — renaming is accurate; editing the list
-    // would be claiming something different about the skills.
+    // If a label is wrong, fix the LABEL, not the list: these are claimed
+    // skills, so editing the list to suit a label claims something different.
     label: 'Languages & Frameworks',
     description: 'Java, JavaScript, React, Angular',
   },
@@ -73,10 +72,8 @@ export const EXPERIENCE_GROUPS: readonly ExperienceGroup[] = [
     description: 'Spring Framework, Java EE, API Development and Testing',
   },
   {
-    // Was "Tools and IDEs", but GitHub is neither. TODO(Bino): "Visual Studio"
-    // is almost certainly meant to be "Visual Studio Code" — confirm and fix.
     label: 'Tools',
-    description: 'Eclipse, Visual Studio, GitHub, IntelliJ IDEA',
+    description: 'Eclipse, Visual Studio Code, GitHub, IntelliJ IDEA',
   },
   {
     label: 'Methodologies',
