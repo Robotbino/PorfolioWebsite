@@ -117,10 +117,10 @@ export const PROJECTS: readonly Project[] = [
     tech: ['Spring Boot', 'Angular', 'MySQL', 'JWT'],
     href: 'https://github.com/Robotbino/EmployeeManager-Application.git',
     img: {
-      dark: '/assets/EmployeeManagerInterface.webp',
-      light: '/assets/EmployeeManagerInterface.webp',
-      width: 1600,
-      height: 900,
+      dark: '/assets/EmployeeManagerInterface.png',
+      light: '/assets/EmployeeManagerInterface.png',
+      width: 1918,
+      height: 888,
       alt: {
         dark: 'Employee Management System dashboard interface',
         light: 'Employee Management System dashboard interface',
