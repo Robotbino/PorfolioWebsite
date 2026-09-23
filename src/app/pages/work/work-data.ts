@@ -133,14 +133,16 @@ export const PROJECTS: readonly Project[] = [
     href: 'https://github.com/Robotbino/EmployeeManager-Application.git',
     screenshots: [
       {
-        dark: '/assets/EmployeeManagerInterface.png',
-        light: '/assets/EmployeeManagerInterface.png',
-        width: 1918,
-        height: 888,
+        dark: '/assets/employee-manager-dark.webp',
+        light: '/assets/employee-manager-light.webp',
+        width: 1920,
+        height: 1080,
         alt: {
-          dark: 'Employee Management System dashboard interface',
-          light: 'Employee Management System dashboard interface',
+          dark: 'Employee Management System in dark mode: the employee table with names, job titles, emails, phone numbers and employee codes',
+          light: 'Employee Management System in light mode: the employee table with names, job titles, emails, phone numbers and employee codes',
         },
+        // The names and job titles sit left of centre; a centred crop cuts them.
+        position: '30% 50%',
       },
     ],
   },
@@ -153,16 +155,51 @@ export const PROJECTS: readonly Project[] = [
       'portal with full CRUD backed by MySQL.',
     tech: ['React', 'TypeScript', 'Spring Boot', 'MySQL'],
     href: 'https://github.com/Robotbino/gameStore.git',
+    // The store is dark-only, so each screenshot serves both site themes.
     screenshots: [
       {
-        dark: '/assets/gameStore.webp',
-        light: '/assets/gameStore.webp',
-        width: 1440,
-        height: 810,
+        dark: '/assets/gamestore-details.webp',
+        light: '/assets/gamestore-details.webp',
+        width: 1920,
+        height: 1080,
         alt: {
-          dark: 'Game Store storefront showing a featured game hero and the available games grid',
-          light: 'Game Store storefront showing a featured game hero and the available games grid',
+          dark: "Game Store details page for Marvel's Spider-Man Remastered, with full-bleed hero art, genre chips, a star rating and Add to Cart",
+          light: "Game Store details page for Marvel's Spider-Man Remastered, with full-bleed hero art, genre chips, a star rating and Add to Cart",
         },
+        label: 'Game details',
+      },
+      {
+        dark: '/assets/gamestore-home.webp',
+        light: '/assets/gamestore-home.webp',
+        width: 1920,
+        height: 1080,
+        alt: {
+          dark: 'Game Store home page with The Witcher 3 in the featured hero above a row of game cards',
+          light: 'Game Store home page with The Witcher 3 in the featured hero above a row of game cards',
+        },
+        label: 'Store',
+      },
+      {
+        dark: '/assets/gamestore-wishlist.webp',
+        light: '/assets/gamestore-wishlist.webp',
+        width: 1920,
+        height: 1080,
+        alt: {
+          dark: 'Game Store wishlist with four saved games, each card carrying a filled heart',
+          light: 'Game Store wishlist with four saved games, each card carrying a filled heart',
+        },
+        label: 'Wishlist',
+      },
+      {
+        dark: '/assets/gamestore-checkout.webp',
+        light: '/assets/gamestore-checkout.webp',
+        width: 1920,
+        height: 1080,
+        alt: {
+          dark: 'Game Store checkout on the payment step, with card, Stripe and Payflex options and a live card preview',
+          light: 'Game Store checkout on the payment step, with card, Stripe and Payflex options and a live card preview',
+        },
+        label: 'Checkout',
       },
     ],
   },
