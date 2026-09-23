@@ -29,7 +29,9 @@ describe('ProjectScreenshotsComponent', () => {
 
   const THREE = [shot('Store'), shot('Game details'), shot('Checkout')];
 
-  function build(screenshots: readonly ProjectImage[]): ComponentFixture<ProjectScreenshotsComponent> {
+  function build(
+    screenshots: readonly ProjectImage[],
+  ): ComponentFixture<ProjectScreenshotsComponent> {
     TestBed.configureTestingModule({
       imports: [ProjectScreenshotsComponent],
       providers: [
@@ -118,7 +120,9 @@ describe('ProjectScreenshotsComponent', () => {
     expect(shown(f)).toBe(2);
     expect(caption(f)).toBe('Checkout');
     expect(fills(f).some((fill) => fill.classList.contains('is-running'))).toBeFalse();
-    expect(f.nativeElement.querySelector('.shots-caption').getAttribute('aria-live')).toBe('polite');
+    expect(f.nativeElement.querySelector('.shots-caption').getAttribute('aria-live')).toBe(
+      'polite',
+    );
 
     // A bar ending after the choice (the animation it had begun) must not
     // take the screenshot away from them.
