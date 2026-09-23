@@ -159,15 +159,14 @@
                     }
                   </div>
                 </div>
-                <!-- width/height give the browser the intrinsic ratio before the
-                lazy image lands. The grid and .project-content's min-height
-                already fix the card's box, so this isn't load-bearing for
-                layout — it just stops the shell's body ResizeObserver being
-                woken by a decode that changes nothing. -->
-                <div class="project-image">
-                  <img [src]="projectImg(project)" [alt]="projectAlt(project)" loading="lazy" decoding="async"
-                    [attr.width]="project.img.width" [attr.height]="project.img.height">
-                </div>
+                <!-- The component renders each screenshot with its width/height,
+                which give the browser the intrinsic ratio before the lazy image
+                lands. The grid and .project-content's min-height already fix
+                the card's box, so this isn't load-bearing for layout — it just
+                stops the shell's body ResizeObserver being woken by a decode
+                that changes nothing. -->
+                <app-project-screenshots class="project-image" [screenshots]="project.screenshots"
+                  [projectTitle]="project.title"></app-project-screenshots>
               </div>
             </div>
           }

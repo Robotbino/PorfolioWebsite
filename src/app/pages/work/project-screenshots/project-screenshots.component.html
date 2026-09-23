@@ -1,0 +1,31 @@
+<!-- Every screenshot is in the DOM from the start, stacked, so the next one has
+already loaded by the time the crossfade reaches it. Only the one on show is
+exposed to assistive tech; the rest are hidden, not just transparent. -->
+@for (shot of screenshots(); track shot; let i = $index) {
+  <img class="shot" [class.is-active]="i === active()" [src]="src(shot)" [alt]="alt(shot)"
+    [attr.aria-hidden]="i === active() ? null : 'true'" [attr.width]="shot.width"
+    [attr.height]="shot.height" [style.object-position]="shot.position" loading="lazy"
+    decoding="async">
+}
+
+@if (isSlideshow()) {
+  <div class="shots-controls" role="group" [attr.aria-label]="projectTitle() + ' screenshots'">
+    <!-- Announced only once the visitor is choosing screenshots; while the
+    slideshow runs by itself, a live caption would talk over the page. -->
+    <p class="shots-caption" [attr.aria-live]="autoplay() ? 'off' : 'polite'">
+      {{ label(screenshots()[active()], active()) }}
+    </p>
+    <div class="shots-bars">
+      @for (shot of screenshots(); track shot; let i = $index) {
+        <button type="button" class="shots-bar" [class.is-active]="i === active()"
+          [attr.aria-current]="i === active() ? 'true' : null"
+          [attr.aria-label]="'Show ' + label(shot, i)" (click)="show(i)">
+          <span class="shots-bar-track">
+            <span class="shots-bar-fill" [class.is-running]="autoplay() && i === active()"
+              (animationend)="advance(i)"></span>
+          </span>
+        </button>
+      }
+    </div>
+  </div>
+}

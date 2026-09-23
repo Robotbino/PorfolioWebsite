@@ -590,18 +590,14 @@
   transform: scale(0.97);
 }
 
+/* The box around a card's screenshots. The screenshots themselves, the hover
+   zoom and the slideshow controls are styled by ProjectScreenshotsComponent,
+   whose host carries this class. */
 .project-image {
   position: relative;
   height: 100%;
   overflow: hidden;
   background-color: var(--color-tag-bg);
-}
-
-.project-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s var(--ease-out-quart);
 }
 
 .project-image::after {
@@ -652,10 +648,6 @@
     transform: translateY(-2px);
     border-color: var(--color-border-dark);
     box-shadow: var(--shadow-lg);
-  }
-
-  .project-card:hover .project-image img {
-    transform: scale(1.05);
   }
 }
 

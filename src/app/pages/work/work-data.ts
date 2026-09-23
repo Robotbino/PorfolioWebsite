@@ -24,6 +24,18 @@ export interface ProjectImage {
     readonly dark: string;
     readonly light: string;
   };
+  /**
+   * The page this shows, in a few words ("Game details"). Read only when a
+   * project has more than one screenshot: it captions the slideshow and names
+   * the button that brings this screenshot up.
+   */
+  readonly label?: string;
+  /**
+   * Which part stays in view when the card crops the screenshot (a CSS
+   * `object-position`, e.g. '30% 50%'). Centred when left out. On the desktop
+   * layouts the image box is tall, so a wide screenshot shows only a slice.
+   */
+  readonly position?: string;
 }
 
 export interface Project {
@@ -33,7 +45,8 @@ export interface Project {
   readonly href: string;
   /** Live deployment, when one exists. Renders a second "Live Demo" link. */
   readonly demoHref?: string;
-  readonly img: ProjectImage;
+  /** The first is the cover; any more turn the card's image into a slideshow. */
+  readonly screenshots: readonly [ProjectImage, ...ProjectImage[]];
 }
 
 /**
@@ -97,16 +110,18 @@ export const PROJECTS: readonly Project[] = [
     tech: ['Angular', 'JavaScript', 'CSS3', 'HTML5'],
     href: 'https://github.com/Robotbino/CodePairs.git',
     demoHref: 'https://codepairsgame.netlify.app/',
-    img: {
-      dark: '/assets/CodePairsDemo1.webp',
-      light: '/assets/CodePairsDemo1.webp',
-      width: 1920,
-      height: 1080,
-      alt: {
-        dark: 'Memory Leak game showing card matching interface',
-        light: 'Memory Leak game showing card matching interface',
+    screenshots: [
+      {
+        dark: '/assets/CodePairsDemo1.webp',
+        light: '/assets/CodePairsDemo1.webp',
+        width: 1920,
+        height: 1080,
+        alt: {
+          dark: 'Memory Leak game showing card matching interface',
+          light: 'Memory Leak game showing card matching interface',
+        },
       },
-    },
+    ],
   },
   {
     title: 'Employee Management System',
@@ -116,16 +131,18 @@ export const PROJECTS: readonly Project[] = [
       'and full CRUD functionality over a MySQL database for secure data handling.',
     tech: ['Spring Boot', 'Angular', 'MySQL', 'JWT'],
     href: 'https://github.com/Robotbino/EmployeeManager-Application.git',
-    img: {
-      dark: '/assets/EmployeeManagerInterface.png',
-      light: '/assets/EmployeeManagerInterface.png',
-      width: 1918,
-      height: 888,
-      alt: {
-        dark: 'Employee Management System dashboard interface',
-        light: 'Employee Management System dashboard interface',
+    screenshots: [
+      {
+        dark: '/assets/EmployeeManagerInterface.png',
+        light: '/assets/EmployeeManagerInterface.png',
+        width: 1918,
+        height: 888,
+        alt: {
+          dark: 'Employee Management System dashboard interface',
+          light: 'Employee Management System dashboard interface',
+        },
       },
-    },
+    ],
   },
   {
     title: 'Game Store',
@@ -136,16 +153,18 @@ export const PROJECTS: readonly Project[] = [
       'portal with full CRUD backed by MySQL.',
     tech: ['React', 'TypeScript', 'Spring Boot', 'MySQL'],
     href: 'https://github.com/Robotbino/gameStore.git',
-    img: {
-      dark: '/assets/gameStore.webp',
-      light: '/assets/gameStore.webp',
-      width: 1440,
-      height: 810,
-      alt: {
-        dark: 'Game Store storefront showing a featured game hero and the available games grid',
-        light: 'Game Store storefront showing a featured game hero and the available games grid',
+    screenshots: [
+      {
+        dark: '/assets/gameStore.webp',
+        light: '/assets/gameStore.webp',
+        width: 1440,
+        height: 810,
+        alt: {
+          dark: 'Game Store storefront showing a featured game hero and the available games grid',
+          light: 'Game Store storefront showing a featured game hero and the available games grid',
+        },
       },
-    },
+    ],
   },
   {
     title: 'Portfolio Website',
@@ -156,15 +175,17 @@ export const PROJECTS: readonly Project[] = [
       'theming throughout.',
     tech: ['Angular', 'TypeScript', 'WebGL', 'CSS3'],
     href: 'https://github.com/Robotbino/PorfolioWebsite.git',
-    img: {
-      dark: '/assets/portfolio_dark_mode.webp',
-      light: '/assets/portfolio_light_mode.webp',
-      width: 1726,
-      height: 873,
-      alt: {
-        dark: 'Portfolio website in dark mode',
-        light: 'Portfolio website in light mode',
+    screenshots: [
+      {
+        dark: '/assets/portfolio_dark_mode.webp',
+        light: '/assets/portfolio_light_mode.webp',
+        width: 1726,
+        height: 873,
+        alt: {
+          dark: 'Portfolio website in dark mode',
+          light: 'Portfolio website in light mode',
+        },
       },
-    },
+    ],
   },
 ] as const;

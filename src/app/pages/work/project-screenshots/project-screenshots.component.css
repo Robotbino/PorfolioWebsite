@@ -1,0 +1,129 @@
+/* The box itself (.project-image on the host: size, clipping, and the fade
+   toward the text column) belongs to the Work page's stylesheet. This sheet
+   styles what sits inside it. */
+:host {
+  display: block;
+}
+
+.shot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-out-quart), transform 0.5s var(--ease-out-quart);
+}
+
+/* The first screenshot stays in flow so the box keeps the height a single
+   image gave it (on narrow screens its ratio sets that height); the rest
+   stack on top of it. */
+.shot:not(:first-of-type) {
+  position: absolute;
+  inset: 0;
+}
+
+.shot.is-active {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :host-context(.project-card:hover) .shot {
+    transform: scale(1.05);
+  }
+}
+
+/* Bottom right: the fade toward the text column is weakest on this side, so
+   the controls sit over the clearest part of the screenshot. z-index lifts
+   them above that fade (the host's ::after). */
+.shots-controls {
+  position: absolute;
+  right: var(--space-md);
+  bottom: var(--space-md);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-xs) 0 var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: rgba(var(--scrim-rgb), 0.8);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.shots-caption {
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+.shots-bars {
+  display: flex;
+}
+
+/* The hit area is the whole 32×24 button; the 2px bar inside is only its
+   visible part (WCAG 2.5.8 target size). */
+.shots-bar {
+  display: flex;
+  align-items: center;
+  width: 2rem;
+  height: 1.5rem;
+  padding: 0 0.3rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.shots-bar-track {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--color-border-dark);
+  transition: background-color var(--transition-base);
+}
+
+.shots-bar-fill {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: var(--color-accent-vivid);
+}
+
+/* Full while the slideshow is still, filling while it runs: the running bar's
+   animation overrides this until it ends, then `both` holds it full. */
+.shots-bar.is-active .shots-bar-fill {
+  transform: scaleX(1);
+}
+
+.shots-bar-fill.is-running {
+  animation: shotsProgress 5s linear both;
+}
+
+:host(:hover) .shots-bar-fill,
+:host(:focus-within) .shots-bar-fill,
+:host(.is-offscreen) .shots-bar-fill {
+  animation-play-state: paused;
+}
+
+@keyframes shotsProgress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .shots-bar:hover .shots-bar-track {
+    background: var(--color-text-tertiary);
+  }
+}
+
+.shots-bar:focus-visible {
+  outline: 2px solid var(--color-accent-vivid);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

@@ -8,7 +8,6 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import { ThemeService } from '../../core/theme.service';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
 import { NavTransitionService } from '../../core/nav-transition.service';
@@ -17,6 +16,7 @@ import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project, ROLE, Role } fro
 import { IconName } from '../../shared/icon/icons';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { ProjectScreenshotsComponent } from './project-screenshots/project-screenshots.component';
 
 @Component({
   selector: 'app-work',
@@ -28,10 +28,9 @@ import { IconComponent } from '../../shared/icon/icon.component';
   // second sheet still resolves against this host.
   styleUrls: ['./work.component.css', './work.showcase.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ScrollRevealDirective, IconComponent],
+  imports: [ScrollRevealDirective, IconComponent, ProjectScreenshotsComponent],
 })
 export class WorkComponent implements AfterViewInit, OnDestroy {
-  private theme = inject(ThemeService);
   private pulse = inject(FramePulseService);
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
   private motion = inject(MotionSettingsService);
@@ -95,14 +94,6 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
 
   techIcon(name: string): IconName {
     return WorkComponent.TECH_ICONS[name] ?? 'code';
-  }
-
-  projectImg(p: Project): string {
-    return this.theme.themeAsset(p.img.dark, p.img.light);
-  }
-
-  projectAlt(p: Project): string {
-    return this.theme.themeAsset(p.img.alt.dark, p.img.alt.light);
   }
 
   ngAfterViewInit(): void {
