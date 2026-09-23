@@ -131,18 +131,33 @@ export const PROJECTS: readonly Project[] = [
       'and full CRUD functionality over a MySQL database for secure data handling.',
     tech: ['Spring Boot', 'Angular', 'MySQL', 'JWT'],
     href: 'https://github.com/Robotbino/EmployeeManager-Application.git',
+    // The app's own light/dark theme is the point here, so the card shows
+    // both whatever theme the site is in, rather than matching one to it.
+    // The names and job titles sit left of centre; a centred crop cuts them.
     screenshots: [
       {
-        dark: '/assets/employee-manager-dark.webp',
-        light: '/assets/employee-manager-light.webp',
+        dark: '/assets/employee-manager-table-dark.webp',
+        light: '/assets/employee-manager-table-dark.webp',
         width: 1920,
-        height: 1080,
+        height: 888,
         alt: {
           dark: 'Employee Management System in dark mode: the employee table with names, job titles, emails, phone numbers and employee codes',
-          light: 'Employee Management System in light mode: the employee table with names, job titles, emails, phone numbers and employee codes',
+          light: 'Employee Management System in dark mode: the employee table with names, job titles, emails, phone numbers and employee codes',
         },
-        // The names and job titles sit left of centre; a centred crop cuts them.
-        position: '30% 50%',
+        label: 'Dark mode',
+        position: '15% 50%',
+      },
+      {
+        dark: '/assets/employee-manager-table-light.webp',
+        light: '/assets/employee-manager-table-light.webp',
+        width: 1920,
+        height: 888,
+        alt: {
+          dark: 'Employee Management System in light mode: the same employee table',
+          light: 'Employee Management System in light mode: the same employee table',
+        },
+        label: 'Light mode',
+        position: '15% 50%',
       },
     ],
   },
