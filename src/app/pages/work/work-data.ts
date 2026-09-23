@@ -104,22 +104,63 @@ export const PROJECTS: readonly Project[] = [
   {
     title: 'Memory Leak',
     description:
-      'A card-matching memory game built with Angular and deployed live. Players ' +
-      'flip themed cards to find pairs within a limited number of attempts, with ' +
-      'score tracking and game logic handled entirely on the front end.',
-    tech: ['Angular', 'JavaScript', 'CSS3', 'HTML5'],
+      'A code-themed memory game built with Angular 19 standalone components and a ' +
+      'Signals-based game engine, deployed live. Players race the clock and chain ' +
+      'matches into combo multipliers for S-to-C ranks, in a neo-brutalist design ' +
+      'with keyboard, screen-reader and reduced-motion support.',
+    tech: ['Angular', 'TypeScript', 'Signals', 'SCSS'],
     href: 'https://github.com/Robotbino/CodePairs.git',
     demoHref: 'https://codepairsgame.netlify.app/',
+    // The game has a single light theme, so each screenshot serves both site
+    // themes. Every screen is centred, so the default crop keeps it in view.
     screenshots: [
       {
-        dark: '/assets/CodePairsDemo1.webp',
-        light: '/assets/CodePairsDemo1.webp',
+        dark: '/assets/codepairs-board.webp',
+        light: '/assets/codepairs-board.webp',
         width: 1920,
         height: 1080,
         alt: {
-          dark: 'Memory Leak game showing card matching interface',
-          light: 'Memory Leak game showing card matching interface',
+          dark: 'A Hard game in progress: matched pairs in their own colours with green tick stickers, a wrong pair with red shadows and cross stickers, and the face-down cards dimmed while the board is locked',
+          light:
+            'A Hard game in progress: matched pairs in their own colours with green tick stickers, a wrong pair with red shadows and cross stickers, and the face-down cards dimmed while the board is locked',
         },
+        label: 'Game board',
+      },
+      {
+        dark: '/assets/codepairs-results.webp',
+        light: '/assets/codepairs-results.webp',
+        width: 1920,
+        height: 1080,
+        alt: {
+          dark: 'Win screen with a yellow S rank stamp, a score of 1101 in 14.83 seconds at 100% accuracy, and a New best sticker',
+          light:
+            'Win screen with a yellow S rank stamp, a score of 1101 in 14.83 seconds at 100% accuracy, and a New best sticker',
+        },
+        label: 'Results',
+      },
+      {
+        dark: '/assets/codepairs-home.webp',
+        light: '/assets/codepairs-home.webp',
+        width: 1920,
+        height: 1080,
+        alt: {
+          dark: 'Home screen: the CODE PAIRS title on a tilted pink slab, a yellow Play button and a high-score table for Easy, Medium and Hard',
+          light:
+            'Home screen: the CODE PAIRS title on a tilted pink slab, a yellow Play button and a high-score table for Easy, Medium and Hard',
+        },
+        label: 'Home',
+      },
+      {
+        dark: '/assets/codepairs-levels.webp',
+        light: '/assets/codepairs-levels.webp',
+        width: 1920,
+        height: 1080,
+        alt: {
+          dark: 'Difficulty picker with mint Easy, sky-blue Medium and pink Hard tiles, each showing its grid size, pairs and lives',
+          light:
+            'Difficulty picker with mint Easy, sky-blue Medium and pink Hard tiles, each showing its grid size, pairs and lives',
+        },
+        label: 'Levels',
       },
     ],
   },
@@ -142,7 +183,8 @@ export const PROJECTS: readonly Project[] = [
         height: 888,
         alt: {
           dark: 'Employee Management System in dark mode: the employee table with names, job titles, emails, phone numbers and employee codes',
-          light: 'Employee Management System in dark mode: the employee table with names, job titles, emails, phone numbers and employee codes',
+          light:
+            'Employee Management System in dark mode: the employee table with names, job titles, emails, phone numbers and employee codes',
         },
         label: 'Dark mode',
         position: '15% 50%',
@@ -179,7 +221,8 @@ export const PROJECTS: readonly Project[] = [
         height: 1080,
         alt: {
           dark: "Game Store details page for Marvel's Spider-Man Remastered, with full-bleed hero art, genre chips, a star rating and Add to Cart",
-          light: "Game Store details page for Marvel's Spider-Man Remastered, with full-bleed hero art, genre chips, a star rating and Add to Cart",
+          light:
+            "Game Store details page for Marvel's Spider-Man Remastered, with full-bleed hero art, genre chips, a star rating and Add to Cart",
         },
         label: 'Game details',
       },
@@ -190,7 +233,8 @@ export const PROJECTS: readonly Project[] = [
         height: 1080,
         alt: {
           dark: 'Game Store home page with The Witcher 3 in the featured hero above a row of game cards',
-          light: 'Game Store home page with The Witcher 3 in the featured hero above a row of game cards',
+          light:
+            'Game Store home page with The Witcher 3 in the featured hero above a row of game cards',
         },
         label: 'Store',
       },
@@ -212,7 +256,8 @@ export const PROJECTS: readonly Project[] = [
         height: 1080,
         alt: {
           dark: 'Game Store checkout on the payment step, with card, Stripe and Payflex options and a live card preview',
-          light: 'Game Store checkout on the payment step, with card, Stripe and Payflex options and a live card preview',
+          light:
+            'Game Store checkout on the payment step, with card, Stripe and Payflex options and a live card preview',
         },
         label: 'Checkout',
       },
