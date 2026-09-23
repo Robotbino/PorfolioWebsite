@@ -102,7 +102,7 @@ export const EXPERIENCE_GROUPS: readonly ExperienceGroup[] = [
 
 export const PROJECTS: readonly Project[] = [
   {
-    title: 'Memory Leak',
+    title: 'Code Pairs',
     description:
       'A code-themed memory game built with Angular 19 standalone components and a ' +
       'Signals-based game engine, deployed live. Players race the clock and chain ' +
