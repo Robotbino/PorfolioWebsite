@@ -1182,6 +1182,7 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
       <tr><td><code>app-site-nav</code></td><td><code>layout/site-nav/</code></td><td>Persistent nav (z-100). Renders links from <code>DESTINATIONS</code>; mutes via a single <code>--nav-mute</code> custom property on the shared tick; underlines <code>activeDestination()</code>.</td></tr>
       <tr><td><code>app-landingpage</code></td><td><code>landingpage/</code></td><td>Home hero + CV download. <b>Rendered twice</b> — real Home and the inert loop clone — so keep it side-effect safe.</td></tr>
       <tr><td><code>app-work</code></td><td><code>pages/work/</code></td><td>Experience groups + sticky projects showcase. Pure renderer of <code>work-data.ts</code>.</td></tr>
+      <tr><td><code>app-project-screenshots</code></td><td><code>pages/work/project-screenshots/</code></td><td>A project card's image. One screenshot renders as a plain image; several become a crossfading slideshow. Its timer is the progress bar's own CSS animation, paused off screen, on hover and on focus, and never started under reduced motion.</td></tr>
       <tr><td><code>app-about</code></td><td><code>pages/about/</code></td><td>About copy, the portrait plate (the ledger's entry 00, positioned out of flow in the header's grid so it adds no height) + the glowing ledger glyphs. The plate and the numerals share one centre-crossing observer.</td></tr>
       <tr><td><code>app-certifications</code></td><td><code>pages/certifications/</code></td><td>Ledger of certs + full-screen spotlight (a true modal: <code>aria-modal</code>, a focus trap, and <code>body.certs-spotlight-open</code> makes the whole nav recede). The cursor-preview image stack is gated on a fine pointer, so touch never fetches it.</td></tr>
       <tr><td><code>app-contact</code></td><td><code>pages/contact/</code></td><td>Marquee email finale + colophon with a live SAST clock.</td></tr>
@@ -1199,7 +1200,7 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
       <tr><td><code>FramePulseService</code></td><td>The one shared rAF, outside NgZone. <code>onTick(fn)</code> → unsubscribe fn. Handles hidden-tab pause + clock reset.</td></tr>
       <tr><td><code>ThemeService</code></td><td>Signals-based theme state; OS detection + <code>localStorage</code>; exposes the memoized <code>auroraPalette()</code>. Pure decision logic lives in <code>theme.decision.ts</code>.</td></tr>
       <tr><td><code>MotionSettingsService</code></td><td>One answer for <code>prefers-reduced-motion</code> — check it before starting any animation.</td></tr>
-      <tr><td><code>InViewportService</code></td><td>IntersectionObserver wrapper (section reveals, icon-at-centre glow, the <code>#projects</code> highlight).</td></tr>
+      <tr><td><code>InViewportService</code></td><td>IntersectionObserver wrapper (section reveals, icon-at-centre glow, the <code>#projects</code> highlight, pausing a project slideshow off screen).</td></tr>
       <tr><td><code>ScrollLockService</code></td><td>Shared scroll lock, held by the mobile menu and the certificate spotlight.</td></tr>
       <tr><td><code>NavTransitionService</code></td><td>Long nav jumps: instant teleport wrapped in a View Transition; closes the cert spotlight on navigate; no-ops under reduced motion.</td></tr>
     </table></div>
@@ -1232,7 +1233,7 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
     <h2><span class="n">04.1</span>Add a New Project</h2>
     <p class="lead">Two steps, no template changes — the Work page renders whatever is in <code>PROJECTS</code>.</p>
     <ol>
-      <li>Add a screenshot to <code>src/assets/</code> as <b>WebP</b> (the project's standard image format — typically ~90% smaller than PNG). If the screenshot looks different in dark and light mode, provide both versions; otherwise reuse the same path for both.</li>
+      <li>Add one or more screenshots to <code>src/assets/</code> as <b>WebP</b> (the project's standard image format — typically ~90% smaller than PNG). If a screenshot looks different in dark and light mode, provide both versions; otherwise reuse the same path for both.</li>
       <li>Append an entry to <code>PROJECTS</code> in <code>src/app/pages/work/work-data.ts</code>:</li>
     </ol>
     <pre data-lang="typescript" data-copy><code><span class="c-cmt">// src/app/pages/work/work-data.ts — append inside PROJECTS</span>
@@ -1244,18 +1245,24 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
   tech: [<span class="c-str">'Angular'</span>, <span class="c-str">'TypeScript'</span>, <span class="c-str">'Spring Boot'</span>],
   href: <span class="c-str">'https://github.com/Robotbino/my-new-project'</span>,
   demoHref: <span class="c-str">'https://my-new-project.netlify.app/'</span>, <span class="c-cmt">// optional — renders a "Live Demo" link</span>
-  img: {
-    dark:   <span class="c-str">'/assets/my-project.webp'</span>,  <span class="c-cmt">// shown in dark mode</span>
-    light:  <span class="c-str">'/assets/my-project.webp'</span>, <span class="c-cmt">// shown in light mode</span>
-    width:  <span class="c-num">1920</span>,             <span class="c-cmt">// intrinsic px — REQUIRED; rendered as the &lt;img&gt; width/height</span>
-    height: <span class="c-num">1080</span>,             <span class="c-cmt">//   so the browser reserves the box before the lazy image lands</span>
-    alt: {
-      dark:  <span class="c-str">'My New Project dashboard in dark mode'</span>,
-      light: <span class="c-str">'My New Project dashboard in light mode'</span>,
+  screenshots: [                  <span class="c-cmt">// at least one; the first is the cover</span>
+    {
+      dark:   <span class="c-str">'/assets/my-project.webp'</span>,  <span class="c-cmt">// shown in dark mode</span>
+      light:  <span class="c-str">'/assets/my-project.webp'</span>, <span class="c-cmt">// shown in light mode</span>
+      width:  <span class="c-num">1920</span>,             <span class="c-cmt">// intrinsic px — REQUIRED; rendered as the &lt;img&gt; width/height</span>
+      height: <span class="c-num">1080</span>,             <span class="c-cmt">//   so the browser reserves the box before the lazy image lands</span>
+      alt: {
+        dark:  <span class="c-str">'My New Project dashboard in dark mode'</span>,
+        light: <span class="c-str">'My New Project dashboard in light mode'</span>,
+      },
+      label:    <span class="c-str">'Dashboard'</span>, <span class="c-cmt">// optional — names this page in a slideshow</span>
+      position: <span class="c-str">'30% 50%'</span>,   <span class="c-cmt">// optional — which part stays in view when the card crops it</span>
     },
-  },
+  ],
 },</code></pre>
     <div class="note"><b>Dimensions are required</b> TypeScript enforces <code>width</code> and <code>height</code> (in pixels) — the project won't build without them. If your dark and light screenshots differ slightly, just use the dark one's dimensions. The card uses <code>object-fit: cover</code>, so small ratio differences won't show.</div>
+    <div class="note"><b>More than one screenshot makes a slideshow</b> The card crossfades to the next screenshot every five seconds while it's on screen, pauses on hover or keyboard focus, and stops once a visitor picks one with its buttons. Under reduced motion it stays on the cover. Give each screenshot a <code>label</code>: it captions the slideshow and names its buttons for screen readers. The Game Store card is the working example.</div>
+    <div class="note"><b>Cropping</b> On desktop the image box is taller than a 16:9 screenshot, so the card shows a slice of it, centred by default. If the important part sits off-centre, set <code>position</code> (a CSS <code>object-position</code>); the Employee Management card uses <code>'30% 50%'</code> to keep its names column in view.</div>
     <p>Skills copy works the same way — edit <code>EXPERIENCE_GROUPS</code> in the same file.</p>
   </section>
 
