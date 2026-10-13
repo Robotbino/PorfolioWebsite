@@ -1,6 +1,7 @@
 # Projects showcase — progress, focus, and keyboard framing
 
-**Status:** accepted (2026-07-02). Refines the horizontal projects showcase in
+**Status:** accepted (2026-07-02); centre-focus emphasis (`--card-focus`) replaced by
+[ADR-0011](0011-projects-showcase-3d-cards.md). Refines the horizontal projects showcase in
 `WorkComponent` (`.projects-viewport` / `.projects-stage` / `.projects-container`).
 Builds on the shared rAF pulse (`FramePulseService`) and the sticky-pin transform
 pattern; adjacent to the looping scroll of [ADR-0003](0003-looping-scroll-real-constellations.md)

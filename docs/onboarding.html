@@ -995,7 +995,7 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
     <p class="lead">These three files explain the decisions behind the code. Skim them first — they make everything else click:</p>
     <div class="cards">
       <div class="card"><h4>CONTEXT.md</h4><p>The glossary. The codebase uses its own vocabulary — <b>Cycle</b>, <b>Seam</b>, <b>Travel</b>, <b>Destination</b>, <b>Loop clone</b> — and this file defines each term.</p></div>
-      <div class="card"><h4>docs/adr/</h4><p>Eight Architecture Decision Records. Every "why is it built this way?" is answered in one of these short documents.</p></div>
+      <div class="card"><h4>docs/adr/</h4><p>Eleven Architecture Decision Records. Every "why is it built this way?" is answered in one of these short documents.</p></div>
       <div class="card"><h4>src/app/destinations.ts</h4><p>The single source of truth for the five sections. Start reading here — almost everything else in the project derives from this file.</p></div>
     </div>
   </section>
@@ -1088,7 +1088,7 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
 
   <section id="s-arch-hotpath">
     <h2><span class="n">02.4</span>Staying Smooth at 60 fps</h2>
-    <p>All animations share <b>one</b> <code>requestAnimationFrame</code> loop — <code>FramePulseService</code> — running outside Angular's zone. The constellation morph and nav fade both write directly to the DOM from that loop. Two rules keep Angular's change detection out of the way:</p>
+    <p>All animations share <b>one</b> <code>requestAnimationFrame</code> loop — <code>FramePulseService</code> — running outside Angular's zone. The constellation morph, the nav fade and the Projects showcase all write directly to the DOM from that loop. Two rules keep Angular's change detection out of the way:</p>
     <ul>
       <li><b><code>position</code> is the fast signal — never bind it in a template.</b> It's read ~60 times a second from animation callbacks. Binding it in a template would force Angular to re-check the whole component tree on every frame.</li>
       <li><b><code>activeDestination</code> is the template-safe signal.</b> It only changes when you cross from one section to the next (not on every pixel of scroll), so it's fine for the nav underline and <code>aria-current</code>.</li>
@@ -1119,7 +1119,10 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
       <tr><td><code>0005</code></td><td><b>Accepted.</b> Loop-aware nav muting (distance-from-Home, symmetric around the seam). Amended: the mute is gated on a fine pointer so a hover-less tablet keeps a fully operable nav.</td></tr>
       <tr><td><code>0006</code></td><td><b>Rejected — never implemented.</b> A frosted glass-card surface was proposed, but the editorial rebuild replaced every card with boxless hairline ledgers; its <code>--glass-*</code> tokens have been removed. Kept as the trail for why glassmorphism was dropped.</td></tr>
       <tr><td><code>0007</code></td><td>Deepened cycle module — shell does DOM I/O, service holds state, math is pure</td></tr>
-      <tr><td><code>0008</code></td><td>Projects showcase legibility</td></tr>
+      <tr><td><code>0008</code></td><td>Projects showcase legibility. Its centre-focus dimming is replaced by 0011.</td></tr>
+      <tr><td><code>0009</code></td><td>Inline SVG icon set instead of an icon font</td></tr>
+      <tr><td><code>0010</code></td><td>Standalone components on Angular 21</td></tr>
+      <tr><td><code>0011</code></td><td>Projects showcase cards in 3D space — perspective tilt, depth, shadow and sheen driven by one <code>--card-offset</code> per card; the whole card is one link; no idle float</td></tr>
     </table></div>
     <p>All live in <code>docs/adr/</code>. Each carries a <b>status</b> (accepted / rejected / superseded). If you're about to reverse a decision, read its ADR first — several list rejected alternatives and why.</p>
   </section>
@@ -1181,8 +1184,8 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
       <tr><td><code>app-constellation</code></td><td><code>constellation/</code></td><td>Persistent SVG star-map (z-0). Reads <code>position()</code> each frame and interpolates between adjacent figures; lines cross-fade through the dim point.</td></tr>
       <tr><td><code>app-site-nav</code></td><td><code>layout/site-nav/</code></td><td>Persistent nav (z-100). Renders links from <code>DESTINATIONS</code>; mutes via a single <code>--nav-mute</code> custom property on the shared tick; underlines <code>activeDestination()</code>.</td></tr>
       <tr><td><code>app-landingpage</code></td><td><code>landingpage/</code></td><td>Home hero + CV download. <b>Rendered twice</b> — real Home and the inert loop clone — so keep it side-effect safe.</td></tr>
-      <tr><td><code>app-work</code></td><td><code>pages/work/</code></td><td>Experience groups + sticky projects showcase. Pure renderer of <code>work-data.ts</code>.</td></tr>
-      <tr><td><code>app-project-screenshots</code></td><td><code>pages/work/project-screenshots/</code></td><td>A project card's image. One screenshot renders as a plain image; several become a crossfading slideshow. Its timer is the progress bar's own CSS animation, paused off screen, on hover and on focus, and never started under reduced motion.</td></tr>
+      <tr><td><code>app-work</code></td><td><code>pages/work/</code></td><td>Experience groups + sticky projects showcase. Pure renderer of <code>work-data.ts</code>. On wide screens (with motion allowed) the shared tick slides the card track and writes four numbers per card, only when they change: <code>--card-offset</code> (−1 to 1, distance from the stage centre), <code>--card-lift</code> (hover or keyboard focus) and <code>--pointer-x/-y</code>. CSS turns those into the perspective tilt, depth, fade, shadow and sheen, using only transform and opacity. Each card's main link (the live demo, or GitHub) stretches over the whole card.</td></tr>
+      <tr><td><code>app-project-screenshots</code></td><td><code>pages/work/project-screenshots/</code></td><td>A project card's image. One screenshot renders as a plain image; several become a crossfading slideshow. Its timer is the progress bar's own CSS animation, paused off screen, while the pointer is on its controls and on focus, and never started under reduced motion. Hovering the card itself leaves it running.</td></tr>
       <tr><td><code>app-about</code></td><td><code>pages/about/</code></td><td>About copy, the portrait plate (the ledger's entry 00, positioned out of flow in the header's grid so it adds no height) + the glowing ledger glyphs. The plate and the numerals share one centre-crossing observer.</td></tr>
       <tr><td><code>app-certifications</code></td><td><code>pages/certifications/</code></td><td>Ledger of certs + full-screen spotlight (a true modal: <code>aria-modal</code>, a focus trap, and <code>body.certs-spotlight-open</code> makes the whole nav recede). The cursor-preview image stack is gated on a fine pointer, so touch never fetches it.</td></tr>
       <tr><td><code>app-contact</code></td><td><code>pages/contact/</code></td><td>Marquee email finale + colophon with a live SAST clock.</td></tr>
