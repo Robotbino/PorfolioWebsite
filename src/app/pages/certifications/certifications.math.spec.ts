@@ -1,4 +1,4 @@
-import { easeOutCubic, flipTransform, maskScales, tiltFromVelocity } from './certifications.math';
+import { easeOutCubic, flipFromCentre, maskScales, tiltFromVelocity } from './certifications.math';
 
 describe('certifications.math', () => {
   describe('tiltFromVelocity', () => {
@@ -36,24 +36,32 @@ describe('certifications.math', () => {
     });
   });
 
-  describe('flipTransform', () => {
+  describe('flipFromCentre', () => {
     it('is identity when source and destination coincide', () => {
-      const r = { x: 10, y: 20, w: 300, h: 200 };
-      expect(flipTransform(r, r)).toEqual({ tx: 0, ty: 0, sx: 1, sy: 1 });
+      const dst = { x: 10, y: 20, w: 300, h: 200 };
+      const src = { cx: 160, cy: 120, w: 300, h: 200 };
+      expect(flipFromCentre(src, dst)).toEqual({ tx: 0, ty: 0, sx: 1, sy: 1 });
     });
 
-    it('scales down and translates toward a smaller offset source', () => {
-      const src = { x: 100, y: 50, w: 150, h: 100 };
-      const dst = { x: 400, y: 250, w: 600, h: 400 };
-      expect(flipTransform(src, dst)).toEqual({ tx: -300, ty: -200, sx: 0.25, sy: 0.25 });
+    it('moves the destination centre onto the source centre and scales to it', () => {
+      const dst = { x: 400, y: 250, w: 600, h: 400 }; // centre (700, 450)
+      const src = { cx: 175, cy: 100, w: 150, h: 100 };
+      expect(flipFromCentre(src, dst)).toEqual({ tx: -525, ty: -350, sx: 0.25, sy: 0.25 });
     });
 
-    it('falls back to identity scale for degenerate rects (never Infinity)', () => {
-      const src = { x: 0, y: 0, w: 0, h: 100 };
+    it('falls back to identity scale for degenerate boxes (never Infinity)', () => {
+      const src = { cx: 0, cy: 0, w: 0, h: 100 };
       const dst = { x: 0, y: 0, w: 600, h: 0 };
-      const { sx, sy } = flipTransform(src, dst);
+      const { sx, sy } = flipFromCentre(src, dst);
       expect(sx).toBe(1);
       expect(sy).toBe(1);
+    });
+  });
+
+  describe('tiltFromVelocity as the preview turn', () => {
+    it("clamps at the drum cards' pointer response of 6deg", () => {
+      expect(tiltFromVelocity(100, 6, 6)).toBe(6);
+      expect(tiltFromVelocity(-100, 6, 6)).toBe(-6);
     });
   });
 

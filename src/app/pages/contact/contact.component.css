@@ -5,35 +5,21 @@
   min-height: 100svh;
 }
 
-/* Poster header — per-component by necessity (view encapsulation). */
+/* Full-viewport poster, centred like About and Certifications, so every
+   destination composes the same way. */
+.section {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Poster header — the shared kicker/title motion lives in styles.css
+   (SECTION HEADERS); only this header's spacing is local. */
 
 .contact-header {
-  margin-bottom: var(--space-4xl);
-}
-
-.contact-kicker {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.contact-kicker-index {
-  font-variant-numeric: tabular-nums;
-  color: var(--color-accent-vivid);
-}
-
-.contact-kicker::after {
-  content: '';
-  align-self: center;
-  width: var(--space-2xl);
-  height: 1px;
-  background: var(--color-border-dark);
+  margin-bottom: var(--space-3xl);
 }
 
 .contact-title {
@@ -47,7 +33,7 @@
 
 .contact-title-strong {
   font-weight: var(--font-weight-black);
-  letter-spacing: var(--tracking-tightest);
+  letter-spacing: var(--tracking-display);
 }
 
 /* The ragged bottoms and the column gap leave the constellation behind real
@@ -81,7 +67,7 @@
   gap: var(--space-sm);
   margin-bottom: var(--space-lg);
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-normal);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-text-secondary);
@@ -132,13 +118,19 @@
   flex-direction: column;
 }
 
+/* Drawn rules (.rule, styles.css) in the ledger hierarchy: a heavier opening
+   rule, a light one between rows. */
 .channel {
-  border-top: 1px solid var(--color-border-dark);
+  --rule-color: var(--color-border);
+}
+
+.channel:first-child {
+  --rule-color: var(--color-border-dark);
 }
 
 /* Delay only; the transition itself is the global .scroll-reveal's. */
-.channel.scroll-reveal:nth-child(1) { transition-delay: 60ms; }
-.channel.scroll-reveal:nth-child(2) { transition-delay: 130ms; }
+.channel.scroll-reveal:nth-child(1) { transition-delay: 60ms;  --rule-delay: 120ms; }
+.channel.scroll-reveal:nth-child(2) { transition-delay: 130ms; --rule-delay: 190ms; }
 
 .channel-link {
   position: relative;
@@ -164,8 +156,7 @@
   color: var(--color-text-tertiary);
   transition:
     transform var(--transition-base),
-    color var(--transition-base),
-    filter var(--transition-base);
+    color var(--transition-base);
 }
 
 .channel-icon::before {
@@ -197,7 +188,7 @@
 
 .channel-label {
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-text-muted);
@@ -229,7 +220,7 @@
 .channel-arrow {
   font-size: var(--font-size-lg);
   color: var(--color-text-muted);
-  transform: translateX(-6px);
+  transform: translate(-0.15em, 0.15em);
   opacity: 0;
   transition:
     transform var(--transition-base),
@@ -287,18 +278,37 @@
   }
 }
 
-.channel-copy:focus-visible {
-  outline: 2px solid var(--color-accent-vivid);
-  outline-offset: 3px;
+.channel-copy:active,
+.marquee-link:active {
+  opacity: 0.7;
+}
+
+/* Sibling dim, as in the other ledgers. On the links rather than the rows:
+   the rows keep their staggered reveal delays, which would hold the dim back. */
+.channel-link {
+  transition: opacity var(--transition-base);
+}
+
+.contact-channels:has(.channel-link:focus-visible) .channel-link {
+  opacity: 0.65;
+}
+
+.contact-channels:has(.channel-link:focus-visible) .channel-link:focus-visible {
+  opacity: 1;
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .contact-channels:hover .channel-link {
+    opacity: 0.65;
+  }
+
+  .contact-channels .channel-link:hover {
+    opacity: 1;
+  }
+
   .channel-link:hover .channel-icon {
-    transform: translateY(-3px) scale(1.14);
+    transform: translateY(-3px);
     color: var(--color-accent-vivid);
-    filter:
-      drop-shadow(0 0 6px color-mix(in srgb, var(--color-accent-vivid) 55%, transparent))
-      drop-shadow(0 0 14px color-mix(in srgb, var(--color-accent-vivid) 30%, transparent));
   }
 
   .channel-link:hover .channel-icon::before {
@@ -318,19 +328,36 @@
   }
 
   .channel-link:hover .channel-arrow {
-    transform: translateX(0);
+    transform: none;
     opacity: 1;
     color: var(--color-accent-vivid);
   }
 }
 
+/* Keyboard gets the whole hover choreography, not just the icon. */
 .channel-link:focus-visible .channel-icon {
   color: var(--color-accent-vivid);
-  transform: translateY(-3px) scale(1.14);
+  transform: translateY(-3px);
+}
+
+.channel-link:focus-visible .channel-icon::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.channel-link:focus-visible .channel-index,
+.channel-link:focus-visible .channel-label,
+.channel-link:focus-visible .channel-value {
+  color: var(--color-accent-vivid);
+}
+
+.channel-link:focus-visible .channel-value::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .channel-link:focus-visible .channel-arrow {
-  transform: translateX(0);
+  transform: none;
   opacity: 1;
   color: var(--color-accent-vivid);
 }
@@ -362,29 +389,26 @@
   margin-top: var(--space-3xl);
 }
 
+/* A kicker (styles.css) a step closer to its line. The index reads like the
+   channel indexes beside it: muted, lit when the address is pointed at. */
 .marquee-label {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
   margin-bottom: var(--space-sm);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
 }
 
 .marquee-index {
   font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  transition: color var(--transition-base);
+}
+
+.contact-marquee:has(.marquee-link:focus-visible) .marquee-index {
   color: var(--color-accent-vivid);
 }
 
-.marquee-label::after {
-  content: '';
-  align-self: center;
-  width: var(--space-2xl);
-  height: 1px;
-  background: var(--color-border-dark);
+@media (hover: hover) and (pointer: fine) {
+  .contact-marquee:has(.marquee-link:hover) .marquee-index {
+    color: var(--color-accent-vivid);
+  }
 }
 
 .marquee-row {
@@ -464,11 +488,9 @@
 }
 
 .marquee-link:focus-visible {
-  /* Was `outline: none` — the only one on the site, on its single most
-     important call to action. The colour shift and the underline below still
-     do the expressive work; the ring is what makes it unmissable, and the
-     generous offset keeps it clear of the poster-scale type. */
-  outline: 2px solid var(--color-accent);
+  /* The colour shift and the underline below do the expressive work; the ring
+     is what makes the page's main call to action unmissable, and the generous
+     offset keeps it clear of the poster-scale type. */
   outline-offset: 8px;
   color: var(--color-accent-vivid);
 }

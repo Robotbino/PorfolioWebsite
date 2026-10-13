@@ -1,0 +1,233 @@
+/* Toolset orbit — a still black hole with ten logos circling it on two tilted
+   rings. See docs/adr/0012-toolset-orbit.md for the reasoning behind the
+   geometry; the comments here cover what the CSS has to get right. */
+
+:host {
+  display: block;
+}
+
+/* Every length inside is in cqi (1% of the stage's width), so the whole
+   composition scales as one picture instead of reflowing. 4:3 keeps the stage
+   inside the negative space beside the taller Technologies ledger on desktop,
+   so the section does not grow. overflow: clip also tells the compositor the
+   running animations can't paint outside this box, so they don't drag the
+   content after them onto extra layers. */
+.orbit-stage {
+  --tilt: 16deg;
+  --k: 0.62;
+  --disc: clamp(24px, 7.5cqi, 40px);
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 4 / 3;
+  overflow: clip;
+  pointer-events: none;
+}
+
+/* Stacked under Technologies the column is full width, and uncapped a 4:3
+   picture would dwarf the ledger above it. Cap it and keep it flush-left like
+   the ledgers. */
+@media (max-width: 968px) {
+  .orbit-stage {
+    max-inline-size: 30rem;
+  }
+}
+
+/* ---- The black hole ---- */
+/* A pocket of space rather than a picture in a box: the mask dissolves the
+   crop's edges into the page in both themes. Blending can't do this job — the
+   section sits in its own stacking context, so a blend mode would only ever see
+   a transparent backdrop, never the aurora.
+   The falloff differs per theme. On the light page a long fade from black
+   reads as a grey smudge, so it is short and eased; on the dark page the same
+   fade is invisible, so it runs wide and lets the disk's streaks trail off. */
+.orbit-pocket {
+  --pocket-mask: radial-gradient(
+    ellipse closest-side,
+    #000 40%,
+    rgb(0 0 0 / 0.7) 52%,
+    rgb(0 0 0 / 0.25) 66%,
+    rgb(0 0 0 / 0.06) 78%,
+    transparent 90%
+  );
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 64cqi;
+  height: 48cqi;
+  -webkit-mask-image: var(--pocket-mask);
+  mask-image: var(--pocket-mask);
+}
+
+:host-context(.dark-mode) .orbit-pocket {
+  --pocket-mask: radial-gradient(
+    ellipse closest-side,
+    #000 52%,
+    rgb(0 0 0 / 0.72) 66%,
+    rgb(0 0 0 / 0.3) 82%,
+    transparent
+  );
+}
+
+.pocket {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pocket-dark {
+  opacity: 0;
+  transition: opacity var(--transition-slow);
+}
+
+:host-context(.dark-mode) .pocket-dark {
+  opacity: 1;
+}
+
+/* ---- Rings ---- */
+/* The rings and the orbits share one plane: the same tilt and the same
+   squash, so each line traces exactly the path its logos travel. Ring lines
+   are sized, not scaled, so the 1px stroke stays 1px. The colour is a mid
+   tone so one value reads over the dark pocket and over the light page. */
+.ring-inner {
+  --rx: 29cqi;
+  --period: 52s;
+}
+
+.ring-outer {
+  --rx: 44cqi;
+  --period: 96s;
+}
+
+.orbit-ring {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: calc(var(--rx) * 2);
+  height: calc(var(--rx) * 2 * var(--k));
+  rotate: var(--tilt);
+  border-radius: 50%;
+  border: 1px solid light-dark(rgb(120 112 100 / 0.45), rgb(220 228 240 / 0.14));
+}
+
+@media (forced-colors: active) {
+  .orbit-rings {
+    display: none;
+  }
+}
+
+/* ---- Orbits ---- */
+/* Each logo hangs off four nested boxes, centred on the stage:
+
+     .orbit       the ring's plane: tilt + vertical squash (static)
+     .orbit-arm   turns the full lap (animated)
+     .orbit-spin  sits on the ring and turns back by the same angle (animated)
+     .orbit-disc  undoes the plane's squash and tilt (static)
+
+   The four rotations and two scales cancel exactly, so the logo travels a
+   tilted ellipse while staying upright and round. Two constraints keep that
+   true: the keyframes are plain transforms with no var() (the most reliably
+   composited form in every engine), and nothing is placed with `translate`,
+   which would be applied inside the squashed space and wobble the logo.
+
+   Each element's resting transform is its own animation's starting angle.
+   Reduced motion removes the animations, and the global reduced-motion rule
+   in styles.css cuts any it reaches short — either way an element falls back
+   to its resting style, which leaves every logo upright in its slot. */
+.orbit-tools {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.orbit {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--tilt)) scaleY(var(--k));
+}
+
+.orbit-arm {
+  position: absolute;
+  inset: 0;
+  transform: rotate(calc(var(--slot) * -360deg));
+  animation: orbit-ccw var(--period) linear calc(var(--slot) * var(--period) * -1) infinite;
+}
+
+.orbit-spin {
+  position: absolute;
+  left: calc(var(--rx) - var(--disc) / 2);
+  top: calc(var(--disc) / -2);
+  width: var(--disc);
+  height: var(--disc);
+  transform: rotate(calc(var(--slot) * 360deg));
+  animation: orbit-cw var(--period) linear calc(var(--slot) * var(--period) * -1) infinite;
+}
+
+/* The order matters: squash-undo first, then tilt-undo, reading right to left. */
+.orbit-disc {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transform: scaleY(calc(1 / var(--k))) rotate(calc(-1 * var(--tilt)));
+  /* A backing disc gives ten differently shaped logos one silhouette, keeps
+     knockouts (Git, Netlify, Postman) from showing the disk behind them, and
+     restores the edges that IntelliJ's black tile and PostgreSQL's black
+     outline lose on the dark page. Lit from above, a hairline edge so the light
+     ones still read on the white page. */
+  background: radial-gradient(
+    circle at 50% 30%,
+    light-dark(#ffffff, #34302c),
+    light-dark(#f1ebe3, #1b1917)
+  );
+  box-shadow:
+    0 0 0 1px light-dark(rgb(0 0 0 / 0.07), rgb(255 255 255 / 0.06)),
+    inset 0 1px 0 light-dark(transparent, rgb(255 255 255 / 0.07)),
+    0 3px 8px -2px light-dark(rgb(64 40 20 / 0.2), rgb(0 0 0 / 0.55));
+}
+
+.orbit-disc img {
+  width: calc(62% * var(--fit, 1));
+  height: calc(62% * var(--fit, 1));
+  object-fit: contain;
+}
+
+@keyframes orbit-ccw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes orbit-cw {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* One rule pauses both halves of every orbit in the same style pass, so an arm
+   and its counter-turn can never drift apart and tip the logo. */
+:host(.is-offscreen) :is(.orbit-arm, .orbit-spin) {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-arm,
+  .orbit-spin {
+    animation: none;
+  }
+
+  .pocket-dark {
+    transition: none;
+  }
+}

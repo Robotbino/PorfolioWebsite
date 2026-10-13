@@ -127,6 +127,19 @@
   position: relative;
   align-self: start;
   max-width: 100%;
+  /* The near plane of the hero parallax (HeroParallaxService): a few pixels
+     against the pointer while the constellation drifts with it. Only the name
+     moves; the statement and the controls under the cursor stay put. */
+  translate: calc(var(--parallax-x, 0) * -3px) calc(var(--parallax-y, 0) * -2px);
+}
+
+/* Where the parallax can run, the headline gets its own layer, so moving it is
+   a composite rather than a repaint of the 120px name, its halo and the scrim
+   behind it on every frame the pointer moves. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .hero-headline {
+    will-change: translate;
+  }
 }
 
 /* Soft background-coloured scrim: lifts the type off the busy constellation
@@ -155,9 +168,8 @@
   font-size: var(--font-size-display-sm);
   font-weight: var(--font-weight-light);
   letter-spacing: var(--tracking-tight);
-  line-height: 1;
-  color: var(--color-text-secondary);
   line-height: 1.1;
+  color: var(--color-text-secondary);
   /* Tightened so the eyebrow hugs the name — the three headline nodes read as
      one grouped cluster rather than three loosely stacked lines. */
   margin-bottom: clamp(0.15rem, 0.6vw, 0.5rem);
@@ -196,6 +208,10 @@
 .hero-name-first,
 .hero-name-last {
   display: block;
+  /* A star chart's label knock-out: a tight halo in the page colour, so where
+     the constellation's lines cross the name they break around the letters
+     instead of running through them. */
+  text-shadow: 0 0 0.16em rgba(var(--scrim-rgb, 255, 255, 255), 0.55);
 }
 
 .hero-name-first {
@@ -205,9 +221,9 @@
 
 .hero-name-last {
   font-weight: var(--font-weight-black);       /* 900 — the anchor */
-  /* Calculated tight tracking: heavy and intentional at 900, but legible — the
-     previous --tracking-tightest (-0.05em) crowded the glyphs into each other. */
-  letter-spacing: -0.03em;
+  /* Heavy and intentional at 900, but legible: -0.05em crowds the glyphs into
+     each other at this weight. */
+  letter-spacing: var(--tracking-display);
   /* Nests the surname up under "Bino" so the headline stacks as one block. */
   margin-top: -0.06em;
 }
@@ -268,7 +284,9 @@
 }
 
 .hero-role-index {
-  color: var(--color-text-muted);
+  /* Home's index is the first of the five destination numerals; 02-05 are all
+     accent, so this one is too. */
+  color: var(--color-accent-vivid);
   font-variant-numeric: tabular-nums;
 }
 
@@ -298,21 +316,39 @@
   border: 2px solid var(--color-accent-vivid);
   border-radius: var(--radius-full);
   padding: var(--space-md) var(--space-xl);
-  box-shadow: var(--shadow-md);
+  position: relative;
+  isolation: isolate;
+  box-shadow: var(--shadow-sm);
   transition: background-color var(--transition-base),
               border-color var(--transition-base),
-              transform var(--transition-base),
-              box-shadow var(--transition-base);
+              transform var(--transition-base);
+}
+
+/* The lifted state's shadow lives on its own layer and fades in by opacity, so
+   hovering never animates box-shadow (a repaint every frame). It is one soft,
+   accent-tinted cast below the pill: the pill rises off the page rather than
+   glowing. */
+.hero-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: 0 12px 28px -12px color-mix(in srgb, var(--color-accent-vivid) 45%, transparent);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  pointer-events: none;
 }
 
 .hero-cta:focus-visible {
   background-color: var(--color-accent-vivid-hover);
   border-color: var(--color-accent-vivid-hover);
   outline-offset: 4px;
-  box-shadow:
-    0 0 10px color-mix(in srgb, var(--color-accent-vivid) 55%, transparent),
-    0 0 28px color-mix(in srgb, var(--color-accent-vivid) 40%, transparent),
-    0 14px 44px color-mix(in srgb, var(--color-accent-vivid) 30%, transparent);
+  transform: translateY(-2px);
+}
+
+.hero-cta:focus-visible::before {
+  opacity: 1;
 }
 
 .hero-cta:active {
@@ -328,16 +364,11 @@
   .hero-cta:hover {
     background-color: var(--color-accent-vivid-hover);
     border-color: var(--color-accent-vivid-hover);
-    /* Lift + slight scale, with a layered star-glow (the contact icons'
-       halo-and-bloom language at CTA scale): a tight halo hugging the chip,
-       a wider omnidirectional bloom, then a soft downward cast for depth.
-       Accent-tinted via color-mix so it tracks the theme — brightens on
-       dark, deepens on light. */
-    transform: translateY(-2px) scale(1.04);
-    box-shadow:
-      0 0 10px color-mix(in srgb, var(--color-accent-vivid) 55%, transparent),
-      0 0 28px color-mix(in srgb, var(--color-accent-vivid) 40%, transparent),
-      0 14px 44px color-mix(in srgb, var(--color-accent-vivid) 30%, transparent);
+    transform: translateY(-2px);
+  }
+
+  .hero-cta:hover::before {
+    opacity: 1;
   }
 
   .hero-cta:hover .hero-cta-arrow,
@@ -399,32 +430,50 @@
   }
 }
 
-/* Fail-open: every piece RESTS in its final, fully readable state; the keyframe
-   only adds a one-shot rise. The `from` state is already legible (opacity 0.5,
-   faint blur), so if the animation never advances — the documented behaviour
-   under a busy WebGL main thread — the hero is still perfectly readable. Mirrors
-   the global routeEnter philosophy. Reduced-motion collapses it to an instant cut. */
+/* Entrance, sequenced by role. The eyebrow and name lead, the name with the
+   least travel of anything on the page — at 120px a large rise reads as the
+   poster sliding, not settling; the supporting copy follows out of a soft blur;
+   the controls settle last and arrive sharp; the meta only fades. No keyframe
+   has a `to`, so each piece ends on its own resting style.
+   Fail-open: every `from` is already legible (opacity >= 0.5), so if the
+   animation never advances — a busy WebGL main thread can stall it — the hero
+   is still fully readable, and the h1 is never hidden for LCP. It runs once at
+   mount; the Home clone runs it too, off screen, and is long settled by the
+   time the loop reaches it. */
+
+@keyframes heroNameRise {
+  from { opacity: 0.55; transform: translateY(0.06em); }
+}
 
 @keyframes heroRise {
-  from { opacity: 0.5; transform: translateY(0.85rem); filter: blur(6px); }
-  to   { opacity: 1;   transform: translateY(0);       filter: blur(0); }
+  from { opacity: 0.5; transform: translateY(0.6rem); filter: blur(4px); }
 }
 
-.hero-eyebrow,
-.hero-name-first,
-.hero-name-last,
-.hero-statement,
-.hero-meta,
-.hero-footer {
-  animation: heroRise 0.85s var(--ease-out-expo) both;
+@keyframes heroSettle {
+  from { opacity: 0.5; transform: translateY(0.4rem); }
 }
 
-.hero-eyebrow    { animation-delay: 0.04s; }
-.hero-name-first { animation-delay: 0.12s; }
-.hero-name-last  { animation-delay: 0.20s; }
-.hero-statement  { animation-delay: 0.26s; }
-.hero-meta       { animation-delay: 0.30s; }
-.hero-footer     { animation-delay: 0.38s; }
+@keyframes heroFade {
+  from { opacity: 0.5; }
+}
+
+.hero-eyebrow    { animation: heroRise 0.9s var(--ease-out-expo) both; }
+.hero-name-first { animation: heroNameRise 1s var(--ease-out-expo) 0.06s both; }
+.hero-name-last  { animation: heroNameRise 1s var(--ease-out-expo) 0.14s both; }
+.hero-statement  { animation: heroRise 0.9s var(--ease-out-expo) 0.26s both; }
+.hero-footer     { animation: heroSettle 0.8s var(--ease-out-expo) 0.36s both; }
+.hero-meta       { animation: heroFade 0.8s var(--ease-out-expo) 0.44s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-eyebrow,
+  .hero-name-first,
+  .hero-name-last,
+  .hero-statement,
+  .hero-footer,
+  .hero-meta {
+    animation: none;
+  }
+}
 
 /* Mobile poster hero: on narrow viewports the hero becomes a full-bleed editorial
    poster — meta pins to the top, headline centres, footer anchors to the bottom.
@@ -489,18 +538,6 @@
   .hero-socials {
     gap: var(--space-xl);
   }
-
-  @keyframes heroRise {
-    from { opacity: 0.35; transform: translateY(1.5rem); filter: blur(10px); }
-    to   { opacity: 1;    transform: translateY(0);       filter: blur(0); }
-  }
-
-  .hero-eyebrow    { animation-duration: 1s; }
-  .hero-name-first { animation-duration: 1s; animation-delay: 0.1s; }
-  .hero-name-last  { animation-duration: 1s; animation-delay: 0.22s; }
-  .hero-statement  { animation-duration: 1s; animation-delay: 0.30s; }
-  .hero-meta       { animation-duration: 1s; animation-delay: 0.34s; }
-  .hero-footer     { animation-duration: 1s; animation-delay: 0.42s; }
 }
 
 @media (max-width: 480px) {
@@ -521,5 +558,46 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-md);
+  }
+}
+
+/* Leaving Home, the poster recedes into the same 3D space as the project cards
+   (the drum's camera: 1600px perspective, -160px of depth) and dims. It is
+   scroll-linked rather than timed, so it costs no script, and it only starts
+   once the hero's foot reaches the bottom of the viewport — the real Home at
+   the top of the page and the clone on the wrap frame are both short of that,
+   so the seam stays pixel-identical. The named timeline matters: .hero and
+   .hero-wrapper are scroll containers themselves (overflow), and an anonymous
+   view() would bind to them and never advance. Browsers without scroll-driven
+   animations, and reduced motion, keep the static poster. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-wrapper {
+      view-timeline: --hero-exit block;
+    }
+
+    .hero {
+      perspective: 1600px;
+      perspective-origin: 30% 50%;
+    }
+
+    .hero-frame {
+      animation: heroRecede linear both;
+      animation-timeline: --hero-exit;
+      animation-range: exit 0% exit 70%;
+    }
+  }
+}
+
+@keyframes heroRecede {
+  to {
+    transform: translateZ(-160px);
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-headline {
+    translate: none;
   }
 }

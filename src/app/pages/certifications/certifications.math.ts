@@ -38,20 +38,33 @@ export interface Rect {
   readonly h: number;
 }
 
+/** A box described by its centre — how the cursor preview is positioned. */
+export interface CentredRect {
+  readonly cx: number;
+  readonly cy: number;
+  readonly w: number;
+  readonly h: number;
+}
+
 /**
  * FLIP transform for the spotlight open: the values that, applied to the
- * destination element (transform-origin top-left), make it occupy the source
- * rect — it then transitions back to identity, so the certificate appears to
- * grow out of the cursor preview. Degenerate rects fall back to identity
- * scale so a hidden source can never produce Infinity/NaN.
+ * destination element (transform-origin at its centre), make it occupy the
+ * source box — it then transitions back to identity, so the certificate
+ * appears to grow out of the cursor preview.
+ *
+ * Centre-based on purpose. The preview is turned in 3D while it moves, and its
+ * bounding box is the axis-aligned box AROUND that turned shape — larger, and
+ * off-centre. Starting from the preview's untransformed centre and size, with
+ * the same turn applied on top, makes the two coincide. Degenerate boxes fall
+ * back to identity scale so a hidden source can never produce Infinity/NaN.
  */
-export function flipTransform(
-  src: Rect,
+export function flipFromCentre(
+  src: CentredRect,
   dst: Rect,
 ): { tx: number; ty: number; sx: number; sy: number } {
   return {
-    tx: src.x - dst.x,
-    ty: src.y - dst.y,
+    tx: src.cx - (dst.x + dst.w / 2),
+    ty: src.cy - (dst.y + dst.h / 2),
     sx: dst.w > 0 && src.w > 0 ? src.w / dst.w : 1,
     sy: dst.h > 0 && src.h > 0 ? src.h / dst.h : 1,
   };

@@ -171,7 +171,7 @@
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  box-shadow: 0 32px 64px -24px light-dark(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.75));
+  box-shadow: var(--shadow-lg);
   opacity: calc(0.35 + 0.65 * max(var(--card-distance), var(--card-lift, 0)));
   transform: translateY(calc(var(--card-distance) * 14px));
   pointer-events: none;

@@ -19,6 +19,7 @@ import { IconName } from '../../shared/icon/icons';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ProjectScreenshotsComponent } from './project-screenshots/project-screenshots.component';
+import { ToolOrbitComponent } from './tool-orbit/tool-orbit.component';
 
 /**
  * The per-card custom properties the showcase CSS turns into the 3D pose:
@@ -54,7 +55,7 @@ interface ShowcaseCard {
   // second sheet still resolves against this host.
   styleUrls: ['./work.component.css', './work.showcase.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ScrollRevealDirective, IconComponent, ProjectScreenshotsComponent],
+  imports: [ScrollRevealDirective, IconComponent, ProjectScreenshotsComponent, ToolOrbitComponent],
 })
 export class WorkComponent implements AfterViewInit, OnDestroy {
   private pulse = inject(FramePulseService);

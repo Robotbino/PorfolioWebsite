@@ -63,6 +63,20 @@ export function activeIndexFor(position: number, cycleLength: number): number {
 }
 
 /**
+ * How far a continuous `position` (0..cycleLength) sits from Home, in
+ * destination units, measured the short way round the loop: 0 at Home and at
+ * the Loop clone, 0.5 halfway into the first morph in either direction.
+ * Symmetric around the seam, so anything faded by it reads the same on both
+ * sides of the wrap. Returns 0 before the shell has measured.
+ */
+export function distanceFromHome(position: number, cycleLength: number): number {
+  if (cycleLength <= 0) {
+    return 0;
+  }
+  return Math.max(0, Math.min(position, cycleLength - position));
+}
+
+/**
  * How close to the seam still counts as reaching it, in CSS pixels.
  *
  * `scrollY` is fractional on a non-integer device pixel ratio and under browser

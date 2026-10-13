@@ -15,6 +15,7 @@ import { MorphDriver } from './morph-driver';
 import { ScrollLoopService } from '../scroll-loop.service';
 import { FramePulseService } from '../core/frame-pulse.service';
 import { MotionSettingsService } from '../core/motion-settings.service';
+import { HeroParallaxService } from '../core/hero-parallax.service';
 
 @Component({
   selector: 'app-constellation',
@@ -26,6 +27,9 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
   private loop = inject(ScrollLoopService);
   private pulse = inject(FramePulseService);
   private motion = inject(MotionSettingsService);
+  private parallax = inject(HeroParallaxService);
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private releaseParallax: (() => void) | null = null;
 
   // The morph cycles through these in scroll order; figure data lives in
   // constellation.figures.ts so this file stays focused on driving the morph.
@@ -61,6 +65,8 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
 
     this.renderAt(performance.now());
     this.unsub = this.pulse.onTick((now) => this.renderAt(now));
+    // The far plane of the hero's parallax (see HeroParallaxService).
+    this.releaseParallax = this.parallax.attach(this.host.nativeElement);
   }
 
   private renderAt(now: number): void {
@@ -142,5 +148,6 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.unsub?.();
+    this.releaseParallax?.();
   }
 }

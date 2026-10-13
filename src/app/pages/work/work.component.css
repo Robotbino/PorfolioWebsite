@@ -13,42 +13,18 @@
    do the framing instead, so the star map breathes through the negative space.
    ============================================ */
 
-/* Poster header — per-component by necessity (view encapsulation). */
+/* Poster header — the shared kicker/title motion lives in styles.css
+   (SECTION HEADERS); only this header's spacing is local. */
 
 .experience-header {
   margin-bottom: var(--space-3xl);
-}
-
-.experience-kicker {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.experience-kicker-index {
-  font-variant-numeric: tabular-nums;
-  color: var(--color-accent-vivid);
-}
-
-.experience-kicker::after {
-  content: '';
-  align-self: center;
-  width: var(--space-2xl);
-  height: 1px;
-  background: var(--color-border-dark);
 }
 
 .experience-title {
   font-size: var(--font-size-6xl);
   font-weight: var(--font-weight-black);
   line-height: var(--line-height-none);
-  letter-spacing: var(--tracking-tightest);
+  letter-spacing: var(--tracking-display);
 }
 
 .role {
@@ -176,8 +152,10 @@
   }
 }
 
-/* The two ledgers' offset bottoms are deliberate negative space for the
-   constellation behind them. */
+/* Technologies on the left, the Toolset orbit dropped a step lower on the
+   right. Their offset bottoms leave negative space for the constellation behind
+   them; the orbit's 4:3 stage is sized to end inside that space, so it never
+   makes the section taller on desktop. */
 
 .experience-index {
   margin-top: var(--space-5xl);
@@ -191,7 +169,7 @@
   grid-column: 1 / 8;
 }
 
-.index-soft {
+.index-toolset {
   grid-column: 9 / 13;
   margin-top: var(--space-4xl);
 }
@@ -202,8 +180,11 @@
    scaleX; a border can't animate that way. */
 .index-label {
   position: relative;
+  /* A 13px uppercase label is utility type: the <h3> would otherwise inherit
+     the display face from the global heading rule. */
+  font-family: var(--font-family);
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-text-muted);
@@ -329,7 +310,7 @@
   transition-delay: 60ms;
 }
 
-.index-soft.scroll-reveal {
+.index-toolset.scroll-reveal {
   transition-delay: 160ms;
 }
 
@@ -363,8 +344,10 @@
   opacity: 1;
   transform: none;
   transition:
-    opacity 0.6s var(--ease-out-expo) calc(150ms + var(--row-i, 0) * 70ms),
-    transform 0.6s var(--ease-out-expo) calc(150ms + var(--row-i, 0) * 70ms);
+    opacity var(--duration-reveal) var(--ease-out-expo)
+      calc(var(--stagger-start) + var(--row-i, 0) * var(--stagger-step)),
+    transform var(--duration-reveal) var(--ease-out-expo)
+      calc(var(--stagger-start) + var(--row-i, 0) * var(--stagger-step));
 }
 
 /* background-color rides along un-delayed so the hover brighten (above)
@@ -372,13 +355,14 @@
 .index-block.scroll-reveal.revealed .index-row::before {
   transform: scaleX(1);
   transition:
-    transform 0.75s var(--ease-out-expo) calc(150ms + var(--row-i, 0) * 70ms),
+    transform var(--duration-rule) var(--ease-out-expo)
+      calc(var(--stagger-start) + var(--row-i, 0) * var(--stagger-step)),
     background-color var(--transition-base);
 }
 
 .index-block.scroll-reveal.revealed .index-label::after {
   transform: scaleX(1);
-  transition: transform 0.75s var(--ease-out-expo) 60ms;
+  transition: transform var(--duration-rule) var(--ease-out-expo) 60ms;
 }
 
 /* Mirror of the global .scroll-reveal reduced-motion reset: rows and rules
@@ -404,31 +388,11 @@
   margin-bottom: var(--space-2xl);
 }
 
-.projects-kicker {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.projects-kicker::after {
-  content: '';
-  align-self: center;
-  width: var(--space-2xl);
-  height: 1px;
-  background: var(--color-border-dark);
-}
-
 .projects-title {
   font-size: var(--font-size-6xl);
   font-weight: var(--font-weight-black);
   line-height: var(--line-height-none);
-  letter-spacing: var(--tracking-tightest);
+  letter-spacing: var(--tracking-display);
 }
 
 .projects-container {
@@ -582,8 +546,6 @@
 }
 
 .project-link:focus-visible {
-  outline: 2px solid var(--color-accent-vivid);
-  outline-offset: 3px;
   border-color: var(--color-accent-vivid);
 }
 
@@ -625,7 +587,7 @@
 /* Keyboard focus anywhere in a card rings the whole card, since the card is
    what the main link now reaches. The focused control keeps its own ring. */
 .project-card:has(:focus-visible) {
-  outline: 2px solid var(--color-accent-vivid);
+  outline: 2px solid var(--color-accent);
   outline-offset: 4px;
 }
 
@@ -673,11 +635,11 @@
   }
 
   .index-tech,
-  .index-soft {
+  .index-toolset {
     grid-column: auto;
   }
 
-  .index-soft {
+  .index-toolset {
     margin-top: 0;
   }
 }

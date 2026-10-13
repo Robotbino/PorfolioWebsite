@@ -145,6 +145,29 @@ No mask, tint or frame in either theme. It develops in (blur → sharp) after th
 its rule lights on the same centre crossing as the ledger numerals.
 _Avoid_: "avatar", "headshot card" (both imply a chip or a surface — this is a print on the page)
 
+**Toolset orbit**:
+The illustration in the Experience _Destination_'s second ledger slot: a still black-hole image
+(one crop per theme, its edges dissolved into the page by a mask) with ten tool logos circling it
+on two tilted rings, upright on small backing discs. Only the logos move, and only while it is on
+screen; under reduced motion it is a still picture. See
+[ADR-0012](adr/0012-toolset-orbit.md).
+_Avoid_: "skills table" (it replaced one), "video" (it isn't one)
+
+**Hero parallax**:
+Two planes near Home: the headline drifts a few pixels against the pointer while the
+constellation drifts with it. One writer feeds both copies of the hero, so the _Seam_ never
+shows; it fades out away from Home and is off for touch and reduced motion. See
+[ADR-0013](adr/0013-hero-depth-and-motion-system.md).
+
+**Hero exit**:
+Scrolling away from Home, the poster recedes into the drum's 3D space and dims. Scroll-linked,
+no script; it begins only after the hero's foot reaches the bottom of the viewport.
+
+**Drawn rule**:
+A ledger hairline that draws itself left to right as its block arrives — the Experience index's
+native beat, shared by the section kickers and the About, Certifications and Contact ledgers.
+_Avoid_: "divider animation"
+
 **Glass card** _(rejected — not in the codebase)_:
 A frosted content-card surface (warm tint + `backdrop-filter` blur, hairline + top highlight,
 depth shadow) proposed in [ADR-0006](adr/0006-glass-card-surface.md) but never implemented — the

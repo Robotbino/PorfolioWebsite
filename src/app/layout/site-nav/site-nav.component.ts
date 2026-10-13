@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { ThemeService } from '../../core/theme.service';
 import { ScrollLoopService } from '../../scroll-loop.service';
+import { distanceFromHome } from '../../scroll-loop.math';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
 import { NavTransitionService } from '../../core/nav-transition.service';
@@ -273,8 +274,7 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
     if (count <= 0) {
       return;
     }
-    const pos = this.loop.position();
-    const distance = Math.min(pos, count - pos);
+    const distance = distanceFromHome(this.loop.position(), count);
     const value = Math.min(1, distance / SiteNavComponent.FADE_RANGE);
 
     // A frame that moved the value by less than a thousandth would write a

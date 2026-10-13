@@ -17,7 +17,13 @@ import { ScrollLockService } from '../../core/scroll-lock.service';
 import { PageInertService } from '../../core/page-inert.service';
 import { smoothingK } from '../../motion.math';
 import { CERTIFICATIONS, Certification } from './certifications-data';
-import { easeOutCubic, flipTransform, maskScales, tiltFromVelocity } from './certifications.math';
+import {
+  CentredRect,
+  easeOutCubic,
+  flipFromCentre,
+  maskScales,
+  tiltFromVelocity,
+} from './certifications.math';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 
 /**
@@ -91,6 +97,10 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
   private x = 0;
   private y = 0;
   private vx = 0; // smoothed px/ms, drives the tilt
+  /** The pose last written to the preview, so the spotlight can open from it. */
+  private turn = 0;
+  private roll = 0;
+  private settle = 0.9;
   private targetOpen = 0;
   private progress = 0;
   private shown = false;
@@ -224,11 +234,26 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     }
     root.setAttribute('aria-label', cert.title);
 
-    // FLIP source: the cursor preview if it's up, else the row's touch chip.
+    // FLIP source: the cursor preview if it's up (its untransformed centre and
+    // size, plus the turn it is showing), else the row's touch chip, flat.
     const tiltEl = this.tiltRef?.nativeElement;
     const chip = this.lastTrigger?.querySelector<HTMLElement>('.certs-thumb');
-    const srcEl = this.shown && tiltEl ? tiltEl : chip && chip.offsetParent !== null ? chip : null;
-    const srcRect = srcEl?.getBoundingClientRect();
+    let src: CentredRect | null = null;
+    let turn = 0;
+    let roll = 0;
+    if (this.shown && tiltEl) {
+      src = {
+        cx: this.x,
+        cy: this.y,
+        w: tiltEl.offsetWidth * this.settle,
+        h: tiltEl.offsetHeight * this.settle,
+      };
+      turn = this.turn;
+      roll = this.roll;
+    } else if (chip && chip.offsetParent !== null) {
+      const r = chip.getBoundingClientRect();
+      src = { cx: r.x + r.width / 2, cy: r.y + r.height / 2, w: r.width, h: r.height };
+    }
 
     this.close();
 
@@ -251,14 +276,20 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     frame.style.transform = 'none';
     const dstRect = frame.getBoundingClientRect();
     const dst = { x: dstRect.x, y: dstRect.y, w: dstRect.width, h: dstRect.height };
-    const hasSource = !!srcRect && srcRect.width > 0 && srcRect.height > 0;
-    const from = hasSource
-      ? { x: srcRect!.x, y: srcRect!.y, w: srcRect!.width, h: srcRect!.height }
+    const hasSource = !!src && src.w > 0 && src.h > 0;
+    const from: CentredRect = hasSource
+      ? src!
       : // No visible source (e.g. keyboard before any preview): grow from centre.
-        { x: dst.x + dst.w * 0.03, y: dst.y + dst.h * 0.03, w: dst.w * 0.94, h: dst.h * 0.94 };
-    const f = flipTransform(from, dst);
-    frame.style.transformOrigin = '0 0';
-    frame.style.transform = `translate3d(${f.tx.toFixed(2)}px, ${f.ty.toFixed(2)}px, 0) scale(${f.sx.toFixed(4)}, ${f.sy.toFixed(4)})`;
+        { cx: dst.x + dst.w / 2, cy: dst.y + dst.h / 2, w: dst.w * 0.94, h: dst.h * 0.94 };
+    const f = flipFromCentre(from, dst);
+    // The start pose repeats the preview's own function list, and the resting
+    // frame has no transform, so the browser interpolates function by function
+    // (the turn unwinds as the frame grows) instead of decomposing a matrix.
+    frame.style.transformOrigin = '50% 50%';
+    frame.style.transform =
+      `translate3d(${f.tx.toFixed(2)}px, ${f.ty.toFixed(2)}px, 0) perspective(1600px) ` +
+      `rotateY(${turn.toFixed(2)}deg) rotateZ(${roll.toFixed(2)}deg) ` +
+      `scale(${f.sx.toFixed(4)}, ${f.sy.toFixed(4)})`;
     if (!hasSource) {
       frame.style.opacity = '0';
     }
@@ -413,12 +444,18 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
 
     const eased = easeOutCubic(this.progress);
     const { outer, inner } = maskScales(eased);
-    const rot = tiltFromVelocity(this.vx);
-    const settle = 0.9 + 0.1 * eased;
+    // The preview turns in the same 3D space as the project drum: the leading
+    // edge recedes up to 6deg (the drum's pointer response) with a third of
+    // that as roll, so a fling reads as a card swinging, not a sticker sliding.
+    this.turn = tiltFromVelocity(this.vx, 6, 6);
+    this.roll = this.turn / 3;
+    this.settle = 0.9 + 0.1 * eased;
 
     preview.style.transform = `translate3d(${this.x.toFixed(2)}px, ${this.y.toFixed(2)}px, 0)`;
     preview.style.opacity = Math.min(1, eased * 3).toFixed(3);
-    tilt.style.transform = `translate(-50%, -50%) rotate(${rot.toFixed(2)}deg) scale(${settle.toFixed(3)})`;
+    tilt.style.transform =
+      `translate(-50%, -50%) perspective(1600px) rotateY(${this.turn.toFixed(2)}deg) ` +
+      `rotateZ(${this.roll.toFixed(2)}deg) scale(${this.settle.toFixed(3)})`;
     mask.style.transform = `scaleY(${outer.toFixed(4)})`;
     unmask.style.transform = `scaleY(${inner.toFixed(4)})`;
 

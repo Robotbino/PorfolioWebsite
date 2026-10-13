@@ -24,8 +24,9 @@
    content hash on fonts; they are immutable, so a change needs a new filename.
 
    font-display:swap keeps the hero painting immediately; index.html preloads the
-   two weights the headline uses (200/900) so that first paint is already in the
-   real face rather than reflowing once swap resolves.
+   weights the headline paints with (ExtraLight on desktop, Thin on phones, Black
+   everywhere) so that first paint is already in the real face rather than
+   reflowing once swap resolves.
    ============================================ */
 @font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-Thin.woff2')       format('woff2'); font-weight: 100; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Nohemi'; src: url('/assets/fonts/Nohemi-ExtraLight.woff2') format('woff2'); font-weight: 200; font-style: normal; font-display: swap; }
@@ -146,8 +147,10 @@
 
   /* Tracking (letter-spacing) — explicit intent at every scale.
      Big type tightens; small caps-labels open up. */
-  --tracking-tightest: -0.05em;
   --tracking-tighter: -0.035em;
+  /* Black-weight display words (the section titles, the hero surname): tight
+     enough to read as one shape, loose enough that 900's counters stay open. */
+  --tracking-display: -0.03em;
   --tracking-tight: -0.02em;
   --tracking-normal: 0;
   --tracking-wide: 0.08em;
@@ -251,16 +254,35 @@
   --radius-lg: 1.5rem;
   --radius-full: 9999px;
 
-  /* Shadows — deeper on dark; only the alpha differs, via light-dark(). */
-  --shadow-md: 0 4px 12px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
-  --shadow-lg: 0 10px 30px light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.4));
-  --shadow-hover: 0 12px 35px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.5));
+  /* Elevation, three steps. Each pairs a tight contact shadow with a soft cast
+     that is pulled in by a negative spread, so a raised surface reads as lit
+     from above rather than haloed. Light mode shades with warm brown ink, not
+     black: grey shadows look dirty on the cream aurora. */
+  --shadow-sm:
+    0 1px 2px light-dark(rgb(64 40 20 / 0.1), rgb(0 0 0 / 0.4)),
+    0 4px 12px -4px light-dark(rgb(64 40 20 / 0.12), rgb(0 0 0 / 0.35));
+  --shadow-md:
+    0 2px 4px light-dark(rgb(64 40 20 / 0.1), rgb(0 0 0 / 0.45)),
+    0 14px 32px -12px light-dark(rgb(64 40 20 / 0.22), rgb(0 0 0 / 0.6));
+  --shadow-lg: 0 32px 64px -24px light-dark(rgb(64 40 20 / 0.28), rgb(0 0 0 / 0.75));
 
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
 
-  --transition-base: 250ms var(--ease-out-quart);
-  --transition-slow: 400ms var(--ease-out-expo);
+  /* One duration scale for the whole site. Hover feedback is base; anything
+     that changes what is on screen (a theme fade, a menu) is slow; entrances
+     are reveal, rules drawing across are rule, a whole destination is dest.
+     Staggered lists step by --stagger-step after --stagger-start. */
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+  --duration-reveal: 600ms;
+  --duration-rule: 750ms;
+  --duration-dest: 900ms;
+  --stagger-start: 150ms;
+  --stagger-step: 70ms;
+
+  --transition-base: var(--duration-base) var(--ease-out-quart);
+  --transition-slow: var(--duration-slow) var(--ease-out-expo);
 
   --max-width-content: 1400px;
   --max-width-text: 65ch;
@@ -409,9 +431,13 @@ button {
 
 textarea:not([rows]) { min-height: 10em; }
 
+/* One focus ring for the whole site, in the monochrome accent (black on light,
+   white on dark): about 12:1 even on the aurora's deepest amber, where the
+   orange accent manages under 3:1 in light mode. Components set only the
+   offset, never the colour. */
 :focus-visible {
   outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 ::selection {
@@ -494,11 +520,20 @@ textarea:not([rows]) { min-height: 10em; }
   }
 }
 
+/* Delays are zeroed too: a 0.01ms animation that still waits out its delay
+   holds its first keyframe for that long, so a staggered entrance would sit
+   half-faded and blurred before cutting in. Pseudo-elements are listed
+   explicitly because `*` doesn't match them, and several loops (the role
+   bullets' twinkle) live on ::before. */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
   }
 }
 
@@ -511,7 +546,9 @@ textarea:not([rows]) { min-height: 10em; }
 .scroll-reveal {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+  transition:
+    opacity var(--duration-reveal) var(--ease-out-expo),
+    transform var(--duration-reveal) var(--ease-out-expo);
 }
 
 .scroll-reveal.revealed {
@@ -524,6 +561,110 @@ textarea:not([rows]) { min-height: 10em; }
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+/* ============================================
+   SECTION HEADERS
+   Every destination opens the same way: index numeral and kicker on a short
+   hairline, then the poster title. Defined once here so the five headers can't
+   drift apart; components keep only their own layout (spacing, grid columns).
+   On arrival the header itself only fades — its hairline draws across and the
+   title settles a fifth of an em, so the movement is in the parts, not a slab.
+   Hidden states exist only while .scroll-reveal is present without .revealed,
+   so without JS the headers render complete.
+   ============================================ */
+.kicker {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.kicker-index {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-vivid);
+}
+
+.kicker::after {
+  content: '';
+  align-self: center;
+  width: var(--space-2xl);
+  height: 1px;
+  background: var(--color-border-dark);
+  transform-origin: left center;
+  transition: transform var(--duration-rule) var(--ease-out-expo) 60ms;
+}
+
+.section-header.scroll-reveal {
+  transform: none;
+}
+
+.section-header > h2 {
+  transition: transform var(--duration-reveal) var(--ease-out-expo) 120ms;
+}
+
+/* The hidden states are gated on motion being allowed rather than undone under
+   reduced motion: an undo would need to out-rank these :not(.revealed)
+   selectors, and with no hidden state there is nothing to undo. */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal:not(.revealed) .kicker::after {
+    transform: scaleX(0);
+  }
+
+  .section-header.scroll-reveal:not(.revealed) > h2 {
+    transform: translateY(0.2em);
+  }
+}
+
+/* ---- Drawn rules ----
+   A ledger hairline that draws itself across, left to right, as its block
+   arrives — the same beat the Experience index plays with its own rules. The
+   element keeps a transparent 1px border so the layout is identical with or
+   without the drawn line; the line sits exactly over that border. Colour and
+   delay are per-ledger (--rule-color, --rule-delay); the hidden state exists
+   only before .revealed, so without JS every rule is simply there. */
+.rule {
+  position: relative;
+  border-top: 1px solid transparent;
+}
+
+.rule::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1px;
+  background: var(--rule-color, var(--color-border-dark));
+  transform-origin: left center;
+  transition:
+    transform var(--duration-rule) var(--ease-out-expo) var(--rule-delay, 120ms),
+    background-color var(--transition-base);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal:not(.revealed) .rule::before,
+  .rule.scroll-reveal:not(.revealed)::before {
+    transform: scaleX(0);
+  }
+}
+
+/* Forced colours repaint borders but not a pseudo-element's background, so the
+   real border carries the line there. */
+@media (forced-colors: active) {
+  .rule {
+    border-top-color: CanvasText;
+  }
+
+  .rule::before {
+    display: none;
   }
 }
 

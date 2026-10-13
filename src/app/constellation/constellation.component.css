@@ -23,8 +23,12 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  /* The far plane of the hero parallax: it drifts with the pointer while the
+     name drifts against it. `translate` stacks on top of the centring
+     transform; the properties are only ever set near Home (0 elsewhere). */
+  translate: calc(var(--parallax-x, 0) * 8px) calc(var(--parallax-y, 0) * 5px);
   width: clamp(280px, 42vw, 520px);
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .constellation {
@@ -42,13 +46,13 @@
   stroke-linecap: round;
   stroke-dasharray: 1200;
   stroke-dashoffset: 1200;
-  animation: draw-line 2.2s ease forwards;
+  animation: draw-line 2.2s var(--ease-out-expo) forwards;
 }
 
 
 .star {
   opacity: 0;
-  animation: fade-in 1s ease forwards;
+  animation: fade-in 1s var(--ease-out-expo) forwards;
 }
 
 .core {

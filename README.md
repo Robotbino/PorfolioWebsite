@@ -177,7 +177,7 @@ src/app/
 ├── landingpage/               # Home / hero section + CV download
 ├── layout/site-nav/           # Navigation with loop-aware muting
 ├── pages/
-│   ├── work/                  # Experience timeline + horizontal showcase (work-data.ts)
+│   ├── work/                  # Experience timeline, Toolset orbit + horizontal showcase (work-data.ts)
 │   ├── about/
 │   ├── certifications/        # Spotlight overlay (certifications-data.ts, certifications.math.ts)
 │   └── contact/               # Marquee email, channels, colophon with live SAST clock
@@ -209,18 +209,21 @@ CONTEXT.md                     # Design-language glossary
 Every significant design decision is recorded as an ADR — including the ones that were tried and
 rejected, because the trail is the point.
 
-| ADR                                                         | Decision                                              | Status                       |
-| ----------------------------------------------------------- | ----------------------------------------------------- | ---------------------------- |
-| [0001](docs/adr/0001-full-multipage-immersion-first.md)     | Full multipage routing, immersion-first               | accepted, superseded by 0003 |
-| [0002](docs/adr/0002-star-map-wayfinding-concept.md)        | Star-map wayfinding as the unifying concept           | accepted, revised by 0003    |
-| [0003](docs/adr/0003-looping-scroll-real-constellations.md) | Looping-scroll immersion with real constellations     | accepted                     |
-| [0004](docs/adr/0004-seamless-loop-clone-wrap.md)           | Seamless one-direction loop via a cloned Home buffer  | accepted                     |
-| [0005](docs/adr/0005-loop-aware-nav-muting.md)              | Loop-aware (Home-anchored) navigation muting          | accepted                     |
-| [0006](docs/adr/0006-glass-card-surface.md)                 | Frosted-glass surface for content cards               | **rejected**                 |
-| [0007](docs/adr/0007-deepen-cycle-module.md)                | Deepen the Cycle into `ScrollLoopService`             | accepted                     |
-| [0008](docs/adr/0008-projects-showcase-legibility.md)       | Projects showcase — progress, focus, keyboard framing | accepted                     |
-| [0009](docs/adr/0009-inline-svg-icons.md)                   | Inline SVG icon set instead of an icon font           | accepted                     |
-| [0010](docs/adr/0010-standalone-angular-21.md)              | Standalone components on Angular 21                   | accepted                     |
+| ADR                                                         | Decision                                                      | Status                       |
+| ----------------------------------------------------------- | ------------------------------------------------------------- | ---------------------------- |
+| [0001](docs/adr/0001-full-multipage-immersion-first.md)     | Full multipage routing, immersion-first                       | accepted, superseded by 0003 |
+| [0002](docs/adr/0002-star-map-wayfinding-concept.md)        | Star-map wayfinding as the unifying concept                   | accepted, revised by 0003    |
+| [0003](docs/adr/0003-looping-scroll-real-constellations.md) | Looping-scroll immersion with real constellations             | accepted                     |
+| [0004](docs/adr/0004-seamless-loop-clone-wrap.md)           | Seamless one-direction loop via a cloned Home buffer          | accepted                     |
+| [0005](docs/adr/0005-loop-aware-nav-muting.md)              | Loop-aware (Home-anchored) navigation muting                  | accepted                     |
+| [0006](docs/adr/0006-glass-card-surface.md)                 | Frosted-glass surface for content cards                       | **rejected**                 |
+| [0007](docs/adr/0007-deepen-cycle-module.md)                | Deepen the Cycle into `ScrollLoopService`                     | accepted                     |
+| [0008](docs/adr/0008-projects-showcase-legibility.md)       | Projects showcase — progress, focus, keyboard framing         | accepted                     |
+| [0009](docs/adr/0009-inline-svg-icons.md)                   | Inline SVG icon set instead of an icon font                   | accepted                     |
+| [0010](docs/adr/0010-standalone-angular-21.md)              | Standalone components on Angular 21                           | accepted                     |
+| [0011](docs/adr/0011-projects-showcase-3d-cards.md)         | Projects showcase — cards in 3D space                         | accepted                     |
+| [0012](docs/adr/0012-toolset-orbit.md)                      | Toolset orbit — a still black hole with ten tools circling it | accepted                     |
+| [0013](docs/adr/0013-hero-depth-and-motion-system.md)       | Hero depth and one motion system                              | accepted                     |
 
 ---
 

@@ -39,15 +39,16 @@
    never runs (fail-open). Each destination resolves as it scrolls into view. */
 .dest > * {
   transition:
-    opacity 0.9s var(--ease-out-expo),
-    transform 0.9s var(--ease-out-expo),
-    filter 0.9s var(--ease-out-expo);
+    opacity var(--duration-dest) var(--ease-out-expo),
+    filter var(--duration-dest) var(--ease-out-expo);
 }
 
+/* Arrival is a focus pull, not a slide. The blocks inside already rise on
+   their own reveal, so a destination-level translate on top would stack into
+   one long lurch. Blur + opacity keeps the depth cue without the travel. */
 body.reveal-ready .dest:not(.is-visible) > * {
   opacity: 0.001;
-  transform: translateY(34px);
-  filter: blur(10px);
+  filter: blur(8px);
 }
 
 /* The seam buffer (a Home clone) reuses .dest styling; it just must never be

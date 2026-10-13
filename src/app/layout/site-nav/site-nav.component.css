@@ -177,8 +177,8 @@
   backdrop-filter: blur(0);
   -webkit-backdrop-filter: blur(0);
   visibility: hidden;
-  transition: background 0.35s ease, backdrop-filter 0.35s ease,
-              -webkit-backdrop-filter 0.35s ease, visibility 0.35s;
+  transition: background var(--transition-slow), backdrop-filter var(--transition-slow),
+              -webkit-backdrop-filter var(--transition-slow), visibility var(--duration-slow);
 }
 
 .mobile-overlay.open {
@@ -187,9 +187,9 @@
   -webkit-backdrop-filter: blur(24px);
   /* No `visibility` in this (open-state) transition list: it must flip
      instantly on open so focus can move into the menu the same frame. The
-     base rule keeps visibility 0.35s so closing still waits for the fade. */
-  transition: background 0.35s ease, backdrop-filter 0.35s ease,
-              -webkit-backdrop-filter 0.35s ease;
+     base rule keeps visibility timed so closing still waits for the fade. */
+  transition: background var(--transition-slow), backdrop-filter var(--transition-slow),
+              -webkit-backdrop-filter var(--transition-slow);
   visibility: visible;
   /* Defense in depth alongside the JS scroll lock (see component TS). */
   overscroll-behavior: contain;
@@ -215,7 +215,7 @@
   letter-spacing: -0.02em;
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity var(--transition-slow), transform var(--transition-slow);
 }
 
 .mobile-link:active {
@@ -290,7 +290,7 @@
     height: 2px;
     background-color: var(--color-text-primary);
     border-radius: 1px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform var(--transition-base), opacity var(--transition-base);
   }
 
   .menu-trigger.open .menu-bar:nth-child(1) {

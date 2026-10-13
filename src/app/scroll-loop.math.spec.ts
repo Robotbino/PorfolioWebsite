@@ -1,4 +1,4 @@
-import { activeIndexFor, positionFor, wrapOffset } from './scroll-loop.math';
+import { activeIndexFor, distanceFromHome, positionFor, wrapOffset } from './scroll-loop.math';
 
 describe('positionFor', () => {
   // Home, Work, About, Contact, Home-clone with even 1000px gaps. With vh 800
@@ -121,5 +121,26 @@ describe('wrapOffset', () => {
 
   it('never hands back a negative offset', () => {
     expect(wrapOffset(3999.5, 4000)).toBe(0);
+  });
+});
+
+describe('distanceFromHome', () => {
+  it('is zero at Home and at the Loop clone', () => {
+    expect(distanceFromHome(0, 5)).toBe(0);
+    expect(distanceFromHome(5, 5)).toBe(0);
+  });
+
+  it('is symmetric around the seam', () => {
+    expect(distanceFromHome(0.1, 5)).toBeCloseTo(distanceFromHome(4.9, 5), 10);
+    expect(distanceFromHome(0.4, 5)).toBeCloseTo(0.4, 10);
+  });
+
+  it('measures the short way round the loop', () => {
+    expect(distanceFromHome(2, 5)).toBe(2);
+    expect(distanceFromHome(3, 5)).toBe(2);
+  });
+
+  it('is zero before the shell has measured', () => {
+    expect(distanceFromHome(0.7, 0)).toBe(0);
   });
 });

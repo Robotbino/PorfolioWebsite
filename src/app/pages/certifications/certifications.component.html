@@ -2,9 +2,9 @@
   <div class="container">
     <!-- Editorial header — flush-left poster headline, mirroring Experience and
     About. The kicker index is the destination's position in the loop. -->
-    <header class="certs-header" appScrollReveal>
-      <p class="certs-kicker">
-        <span class="certs-kicker-index" aria-hidden="true">04</span>
+    <header class="section-header certs-header" appScrollReveal>
+      <p class="kicker">
+        <span class="kicker-index" aria-hidden="true">04</span>
         <span>A Record of My</span>
       </p>
       <h2 class="certs-title" id="certifications-title">Certifications</h2>
@@ -25,7 +25,7 @@
       (keydown.escape)="onListLeave()"
       >
       @for (cert of certifications; track cert; let i = $index) {
-        <li class="certs-row" appScrollReveal>
+        <li class="certs-row rule" appScrollReveal>
           <button
             type="button"
             class="certs-trigger"
