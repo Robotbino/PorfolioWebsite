@@ -21,8 +21,9 @@ import { ProjectImage } from '../work-data';
  *
  * The timer is the active button's progress bar: a CSS animation whose end
  * brings up the next screenshot. Keeping the timing in CSS means every pause
- * (hover, keyboard focus, card off screen) is one `animation-play-state` rule,
- * so the bar and the timer can never disagree, and nothing ticks in JavaScript.
+ * (pointer on the controls, keyboard focus, card off screen) is one
+ * `animation-play-state` rule, so the bar and the timer can never disagree, and
+ * nothing ticks in JavaScript.
  * It never runs under reduced motion and stops for good once the visitor picks
  * a screenshot themselves.
  */

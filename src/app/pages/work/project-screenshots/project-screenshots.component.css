@@ -105,7 +105,10 @@
   animation: shotsProgress 5s linear both;
 }
 
-:host(:hover) .shots-bar-fill,
+/* Hovering the card or its screenshot leaves the slideshow running: the card
+   turning toward the cursor is the hover response. Pointing at the controls
+   pauses it, since that's someone about to pick a screenshot. */
+.shots-controls:hover .shots-bar-fill,
 :host(:focus-within) .shots-bar-fill,
 :host(.is-offscreen) .shots-bar-fill {
   animation-play-state: paused;

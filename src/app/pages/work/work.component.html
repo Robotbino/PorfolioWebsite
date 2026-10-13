@@ -110,10 +110,11 @@
     </header>
 
     <!-- Horizontal showcase. #projectsViewport supplies the scroll distance, the
-    sticky #projectsStage frames the cards, and WorkComponent translates
-    #projectsTrack on scroll. Without the host's .showcase-on class (no-JS,
-    reduced motion, or narrow screens) these are plain blocks and the cards
-    fall back to the vertical stack. -->
+    sticky #projectsStage frames the cards in perspective, and WorkComponent
+    translates #projectsTrack on scroll and writes each card's pose inputs.
+    Without the host's .showcase-on class (no-JS, reduced motion, or narrow
+    screens) these are plain blocks and the cards fall back to the vertical
+    stack. -->
     <div class="projects-viewport" #projectsViewport>
       <div class="projects-stage" #projectsStage>
         <!-- role="list" gives assistive tech an explicit item count for the
@@ -145,13 +146,18 @@
                       </span>
                     }
                   </div>
+                  <!-- .card-link marks the card's main destination (the live demo
+                  where there is one, otherwise GitHub). Its ::after stretches over
+                  the whole card, so a click anywhere opens it without nesting the
+                  card's other controls inside an <a>. -->
                   <div class="project-links">
-                    <a [href]="project.href" class="project-link" target="_blank" rel="noopener noreferrer"
+                    <a [href]="project.href" class="project-link" [class.card-link]="!project.demoHref"
+                      target="_blank" rel="noopener noreferrer"
                       [attr.aria-label]="'View ' + project.title + ' on GitHub (opens in a new tab)'">
                       GitHub <span class="project-link-arrow" aria-hidden="true">&#8599;</span>
                     </a>
                     @if (project.demoHref) {
-                      <a [href]="project.demoHref" class="project-link" target="_blank"
+                      <a [href]="project.demoHref" class="project-link card-link" target="_blank"
                         rel="noopener noreferrer"
                         [attr.aria-label]="'Open the ' + project.title + ' live demo (opens in a new tab)'">
                         Live Demo <span class="project-link-arrow" aria-hidden="true">&#8599;</span>

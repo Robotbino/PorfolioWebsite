@@ -444,6 +444,7 @@
    a transparent card would fight its own copy. The frame is a hairline, not a
    shadow-blob — the Swiss rule idiom at card scale. */
 .project-card {
+  position: relative; /* the containing block for .card-link's cover */
   background-color: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -588,6 +589,44 @@
 
 .project-link:active {
   transform: scale(0.97);
+}
+
+/* The whole card is one link: the main link's ::after covers the card, so a
+   click anywhere opens it while the markup keeps the other link and the
+   slideshow buttons outside any <a>. Those sit above the cover; the slideshow
+   controls already do, being later in the DOM at the same z-index. */
+.card-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.project-link:not(.card-link) {
+  position: relative;
+  z-index: 2;
+}
+
+/* No transform on the main link: a transformed element becomes the containing
+   block for its own ::after, which would shrink the cover to the button
+   mid-hover and make it flicker. The colour change stays, so the button lights
+   up whenever the card is hovered and shows what a click will open. */
+@media (hover: hover) and (pointer: fine) {
+  .project-link.card-link:hover {
+    transform: none;
+  }
+}
+
+.project-link.card-link:active {
+  transform: none;
+}
+
+/* Keyboard focus anywhere in a card rings the whole card, since the card is
+   what the main link now reaches. The focused control keeps its own ring. */
+.project-card:has(:focus-visible) {
+  outline: 2px solid var(--color-accent-vivid);
+  outline-offset: 4px;
 }
 
 /* The box around a card's screenshots. The screenshots themselves, the hover

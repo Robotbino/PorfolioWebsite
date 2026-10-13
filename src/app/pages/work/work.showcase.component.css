@@ -34,9 +34,19 @@
   overflow: clip;
   -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
+  /* One shared camera for every card. The stage is a full-height sticky box
+     centred in the viewport, so the vanishing point is the middle of the
+     screen wherever the track is. */
+  perspective: 1600px;
 }
 
 :host(.showcase-on) .projects-container {
+  /* Capped at 960px so the tilted neighbours peek in at rest, the way cards
+     fan out on ramp.design. The stage stops growing at about 1340px (it sits
+     inside .container), so a fixed cap keeps that composition at every wide
+     size. 960px is also wide enough for the longest description to fit the
+     fixed card height without the text column's scrollbar. */
+  --showcase-card-width: min(78vw, 960px);
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
@@ -44,21 +54,38 @@
   max-width: none;
   gap: var(--space-2xl);
   margin: 0;
-  padding-inline: 11vw; /* lead-in / lead-out so the first and last card can sit in frame */
+  /* Lead-in / lead-out: exactly enough for the first and last card to rest
+     dead centre, where --card-offset reads 0 and the card is flat. % is of
+     the stage, which is narrower than the viewport (it sits inside
+     .container's padding). */
+  padding-inline: calc((100% - var(--showcase-card-width)) / 2);
   will-change: transform;
+  /* Lets the stage's perspective reach the cards through the track. Without it
+     the track would flatten each card's 3D pose into its own plane. */
+  transform-style: preserve-3d;
+  /* In a preserve-3d context the track's own box is a plane at z = 0, and any
+     part of a card that turns or sinks behind it would lose its clicks to the
+     track. The track is only a carrier; the cards take the pointer back. */
+  pointer-events: none;
 }
 
 :host(.showcase-on) .project-card {
-  flex: 0 0 78vw;
-  max-width: 1100px;
+  flex: 0 0 var(--showcase-card-width);
+  pointer-events: auto;
   height: min(72vh, 620px);
   height: min(72svh, 620px);
   margin: 0;
 }
 
+/* The card stops clipping (its shadow sits outside the box, see below), so
+   the content takes over the rounded clip; the screenshot's corners still
+   follow the card's. Positioned for the sheen and for .card-link's cover. */
 :host(.showcase-on) .project-content {
+  position: relative;
   height: 100%;
   min-height: 0;
+  overflow: hidden;
+  border-radius: calc(var(--radius-lg) - 1px);
 }
 
 /* The card height is fixed in showcase mode, so a longer description can push the
@@ -101,22 +128,76 @@
   pointer-events: none;
 }
 
-/* The hairline border darkens a step on the pinned stage and a shadow lifts
-   each opaque card off the star-map (not floating ambiguously on it), which is
-   also what lets the hover lift below actually pop. --card-focus (1 = centred)
-   is written per frame by WorkComponent; edge cards dim so the centred one is
-   unmistakably the subject. No transition on opacity — it already tracks the
-   eased transform, so it moves smoothly frame to frame. */
+/* ---- Cards in 3D space ----
+   WorkComponent writes four numbers per card, only when they change:
+   --card-offset (-1 left, 0 centred, 1 right, in card steps), --card-lift (0-1,
+   hover or keyboard focus) and --pointer-x / --pointer-y (-1 to 1, where the
+   mouse sits on the card). The rules below turn them into a pose using only
+   transform and opacity, so the motion composites and nothing re-lays out. */
+
 :host(.showcase-on) .project-card {
+  /* |offset|, written with max() for the widest browser support. */
+  --card-distance: max(var(--card-offset, 0), calc(var(--card-offset, 0) * -1));
+  /* The hairline darkens a step on the pinned stage so each opaque card reads
+     as an object over the star-map, not a patch of it. */
   border-color: var(--color-border-dark);
-  box-shadow: var(--shadow-md);
-  opacity: calc(0.5 + 0.5 * var(--card-focus, 1));
+  /* The drop shadow is the ::before below, outside the box, so the card can't
+     clip; .project-content does the rounded clipping instead. */
+  overflow: visible;
+  box-shadow: none;
+  /* Read right to left: a slight roll in the card's own plane, a turn toward
+     the pointer, the swing on the Y axis (outer edges recede, like cards round
+     a drum), then sinking back with distance and rising with lift. A centred
+     card at rest is flat at z = 0, so the copy being read is never skewed. */
+  transform:
+    translateZ(calc(var(--card-distance) * -160px + var(--card-lift, 0) * 36px))
+    rotateY(calc(var(--card-offset, 0) * 28deg + var(--pointer-x, 0) * 6deg))
+    rotateX(calc(var(--pointer-y, 0) * -4deg))
+    rotateZ(calc(var(--card-offset, 0) * 2deg));
+  /* Off-centre cards fade slightly so the framed one stays the subject. */
+  opacity: calc(1 - var(--card-distance) * 0.3);
+  /* No transform transition: the loop already eases every input, and a CSS
+     transition would restart each frame and trail behind the scroll. */
+  transition: border-color var(--transition-base);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  :host(.showcase-on) .project-card:hover {
-    box-shadow: var(--shadow-hover);
-  }
+/* Drop shadow. The blur is painted once; only its opacity and offset change,
+   so it deepens as the card turns or lifts without repainting a shadow every
+   frame. z-index -1 inside the card's stacking context keeps it behind the
+   face, and an outer shadow never paints inside its own box. */
+:host(.showcase-on) .project-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: 0 32px 64px -24px light-dark(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.75));
+  opacity: calc(0.35 + 0.65 * max(var(--card-distance), var(--card-lift, 0)));
+  transform: translateY(calc(var(--card-distance) * 14px));
+  pointer-events: none;
+}
+
+/* Sheen: a soft diagonal band of light that slides across the face as the
+   card turns, and drifts a little with the pointer. It is invisible on a
+   centred card at rest, so the card being read keeps its full contrast; it
+   only shows while a card is turned or hovered. The peak alphas are the most
+   the band can carry while the muted text under its brightest point still
+   clears 4.5:1 in both themes. 220% wide (inset -60% each side) so the band
+   can travel fully across. */
+:host(.showcase-on) .project-content::after {
+  content: '';
+  position: absolute;
+  inset: 0 -60%;
+  z-index: 2;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    light-dark(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.12)) 50%,
+    transparent 60%
+  );
+  transform: translateX(calc(var(--card-offset, 0) * -35% + var(--pointer-x, 0) * 6%));
+  opacity: max(var(--card-distance), calc(var(--card-lift, 0) * 0.4));
+  pointer-events: none;
 }
 
 /* Hidden by default so the vertical-stack fallback (no-JS / reduced motion /
@@ -211,10 +292,19 @@
   50%      { transform: translateX(4px); opacity: 1; }
 }
 
-/* Belt-and-braces: the HUD only shows in showcase mode (which is already off
-   under reduced motion), but never loop the arrow if motion is reduced. */
+/* Belt-and-braces: the showcase is already off under reduced motion, so these
+   only cover the moment between a preference flip and WorkComponent disarming:
+   no looping arrow, no tilt, no sheen. */
 @media (prefers-reduced-motion: reduce) {
   .showcase-hint-arrow {
     animation: none;
+  }
+
+  :host(.showcase-on) .project-card {
+    transform: none;
+  }
+
+  :host(.showcase-on) .project-content::after {
+    display: none;
   }
 }

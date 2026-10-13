@@ -6,17 +6,43 @@ import {
   NgZone,
   OnDestroy,
   ViewChild,
+  effect,
   inject,
+  untracked,
 } from '@angular/core';
 import { FramePulseService } from '../../core/frame-pulse.service';
 import { MotionSettingsService } from '../../core/motion-settings.service';
 import { NavTransitionService } from '../../core/nav-transition.service';
-import { smoothingK } from '../../motion.math';
+import { cardOffset, easeToward, smoothingK } from '../../motion.math';
 import { EXPERIENCE_GROUPS, ExperienceGroup, PROJECTS, Project, ROLE, Role } from './work-data';
 import { IconName } from '../../shared/icon/icons';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ProjectScreenshotsComponent } from './project-screenshots/project-screenshots.component';
+
+/**
+ * The per-card custom properties the showcase CSS turns into the 3D pose:
+ * distance from the stage centre (-1…1), hover/focus lift (0…1) and where the
+ * pointer sits on the card (-1…1 on each axis).
+ */
+type CardProperty = '--card-offset' | '--card-lift' | '--pointer-x' | '--pointer-y';
+const CARD_PROPERTIES: readonly CardProperty[] = [
+  '--card-offset',
+  '--card-lift',
+  '--pointer-x',
+  '--pointer-y',
+];
+
+/** A card's cached geometry plus the hover state the loop eases. */
+interface ShowcaseCard {
+  el: HTMLElement;
+  center: number;
+  lift: number;
+  pointerX: number;
+  pointerY: number;
+  /** Last value written per property, so a card at rest costs no style writes. */
+  written: Partial<Record<CardProperty, string>>;
+}
 
 @Component({
   selector: 'app-work',
@@ -70,12 +96,34 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   private stickRange = 0;
   private maxX = 0;
 
-  // Cached geometry for the per-frame focus pass, so the loop stays write-only
+  // Cached geometry for the per-frame card pass, so the loop stays write-only
   // (no getBoundingClientRect churn while a transform is being written).
   private stageWidth = 0;
-  private cards: { el: HTMLElement; center: number }[] = [];
+  private cards: ShowcaseCard[] = [];
+  // Distance between neighbouring card centres: one step of --card-offset.
+  private cardPitch = 0;
   private activeIndex = -1;
   private resizeRelease: (() => void) | null = null;
+  private trackListenersRelease: (() => void) | null = null;
+  private viewReady = false;
+
+  // Hover and keyboard focus only set targets; tick() eases each card toward
+  // them, so the loop stays the one thing that moves a card.
+  private hoveredCard: ShowcaseCard | null = null;
+  private hoverX = 0;
+  private hoverY = 0;
+  private focusedCard: ShowcaseCard | null = null;
+
+  constructor() {
+    // Arm or disarm the moment the reduced-motion preference flips, not at the
+    // next resize: the tilt and the pin must not outlive the setting.
+    effect(() => {
+      this.motion.reducedMotion();
+      if (this.viewReady) {
+        untracked(() => this.applyMode());
+      }
+    });
+  }
 
   // Brand marks where one exists, a representative solid glyph otherwise.
   // Unmapped labels fall back to a generic code glyph.
@@ -97,6 +145,7 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    this.viewReady = true;
     this.applyMode();
     // A nav teleport lands the viewport somewhere new in one frame; the
     // exponentially-smoothed track would otherwise chase the new target with a
@@ -121,6 +170,39 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     });
   }
 
+  /**
+   * Focus and pointer listeners for the armed showcase, outside the zone for
+   * the same reason as resize: pointermove fires on every mouse movement, and
+   * none of these handlers change anything a template binds to.
+   *
+   * Keyboard focus also drives the pin: tabbing to an off-frame card's link
+   * would otherwise land on a masked, invisible control, so focusin brings the
+   * focused card into frame.
+   */
+  private listenOnTrack(): void {
+    const track = this.trackRef?.nativeElement;
+    if (!track) {
+      return;
+    }
+    this.zone.runOutsideAngular(() => {
+      track.addEventListener('focusin', this.onFocusIn);
+      track.addEventListener('focusout', this.onFocusOut);
+      // pointerover as well as pointermove: when a scroll slides a card under a
+      // pointer that hasn't moved, the browser sends boundary events but no
+      // move, and the card arriving under the cursor should still turn.
+      track.addEventListener('pointerover', this.onPointer);
+      track.addEventListener('pointermove', this.onPointer);
+      track.addEventListener('pointerleave', this.onPointerLeave);
+    });
+    this.trackListenersRelease = () => {
+      track.removeEventListener('focusin', this.onFocusIn);
+      track.removeEventListener('focusout', this.onFocusOut);
+      track.removeEventListener('pointerover', this.onPointer);
+      track.removeEventListener('pointermove', this.onPointer);
+      track.removeEventListener('pointerleave', this.onPointerLeave);
+    };
+  }
+
   /** Idempotent: arm or disarm the horizontal showcase for the current viewport. */
   private applyMode(): void {
     const enable = !this.reduce && this.mqWide.matches;
@@ -135,22 +217,25 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     if (enable) {
       host.classList.add('showcase-on');
       this.measure();
-      // Keyboard focus drives the pin: tabbing to an off-frame card's GitHub
-      // link would otherwise land on a masked, invisible control. This brings
-      // the focused card into frame instead.
-      this.trackRef?.nativeElement.addEventListener('focusin', this.onFocusIn);
+      this.listenOnTrack();
       this.unsub = this.pulse.onTick(this.tick);
     } else {
       host.classList.remove('showcase-on');
       this.unsub?.();
       this.unsub = null;
-      this.trackRef?.nativeElement.removeEventListener('focusin', this.onFocusIn);
+      this.trackListenersRelease?.();
+      this.trackListenersRelease = null;
       this.rendered = 0;
       this.activeIndex = -1;
+      this.hoveredCard = null;
+      this.focusedCard = null;
       if (this.trackRef) {
         this.trackRef.nativeElement.style.transform = '';
       }
-      this.cards.forEach((c) => c.el.style.removeProperty('--card-focus'));
+      for (const card of this.cards) {
+        CARD_PROPERTIES.forEach((name) => card.el.style.removeProperty(name));
+      }
+      this.cards = [];
       this.stageRef?.nativeElement.style.removeProperty('--showcase-progress');
       if (this.viewportRef) {
         this.viewportRef.nativeElement.style.height = '';
@@ -173,11 +258,26 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     this.stageWidth = stage.clientWidth;
     // Cache each card's centre in track-content coords. offsetLeft resolves
     // against the sticky stage (the nearest positioned ancestor), matching the
-    // screen-centre math in tick().
-    this.cards = Array.from(track.querySelectorAll<HTMLElement>('.project-card')).map((el) => ({
-      el,
-      center: el.offsetLeft + el.offsetWidth / 2,
-    }));
+    // screen-centre math in tick(). Layout offsets ignore the card's own 3D
+    // transform, so the pose never feeds back into the geometry. A card that was
+    // already cached keeps its eased hover state, so a resize mid-hover doesn't
+    // snap it flat.
+    const cached = new Map(this.cards.map((card) => [card.el, card]));
+    this.cards = Array.from(track.querySelectorAll<HTMLElement>('.project-card')).map((el) => {
+      const center = el.offsetLeft + el.offsetWidth / 2;
+      const card = cached.get(el) ?? {
+        el,
+        center,
+        lift: 0,
+        pointerX: 0,
+        pointerY: 0,
+        written: {},
+      };
+      card.center = center;
+      return card;
+    });
+    this.cardPitch =
+      this.cards.length > 1 ? this.cards[1].center - this.cards[0].center : this.stageWidth / 2;
     if (this.maxX > 0) {
       this.stickRange = Math.round(this.maxX * WorkComponent.SCROLL_FACTOR);
       viewport.style.height = stage.offsetHeight + this.stickRange + 'px';
@@ -217,15 +317,15 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     // CSS downstream, so no per-frame change detection.
     stage.style.setProperty('--showcase-progress', p.toFixed(4));
 
-    // Focus emphasis: dim the cards peeking at the mask edges so the one nearest
-    // the stage centre reads as the subject. Screen centre in track coords is
-    // (stageWidth/2 − rendered); uses cached centres, so no layout reads here.
+    // Each card's pose inputs. CSS turns them into the tilt, depth, fade, shadow
+    // and sheen, so this pass only writes numbers. Screen centre in track coords
+    // is (stageWidth/2 − rendered); uses cached centres, so no layout reads here.
     const focusX = this.stageWidth / 2 - this.rendered;
-    const half = this.stageWidth / 2 || 1;
     for (const card of this.cards) {
-      const d = Math.abs(card.center - focusX) / half;
-      const focus = Math.max(0, Math.min(1, 1 - d));
-      card.el.style.setProperty('--card-focus', focus.toFixed(3));
+      this.writeCard(card, '--card-offset', cardOffset(card.center, focusX, this.cardPitch));
+      this.writeCard(card, '--card-lift', card.lift);
+      this.writeCard(card, '--pointer-x', card.pointerX);
+      this.writeCard(card, '--pointer-y', card.pointerY);
     }
 
     // Numeric readout; write only when the nearest card changes.
@@ -240,6 +340,18 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  /**
+   * Skips the write when the rounded value hasn't changed. Once the track and
+   * the hover ease have settled, a resting showcase writes nothing per frame.
+   */
+  private writeCard(card: ShowcaseCard, name: CardProperty, value: number): void {
+    const text = value.toFixed(3);
+    if (card.written[name] !== text) {
+      card.written[name] = text;
+      card.el.style.setProperty(name, text);
+    }
+  }
+
   private tick = (_now: number, dt: number): void => {
     const p = this.progress();
     if (p === null) {
@@ -250,8 +362,23 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     // "slippery" on high-refresh displays.
     const k = smoothingK(dt, 0.12);
     this.rendered += (-p * this.maxX - this.rendered) * k;
+    this.easeHover(smoothingK(dt, 0.15));
     this.paint(p);
   };
+
+  /**
+   * Eases every card toward its hover/focus targets. A card that loses the
+   * pointer settles back over the next few frames rather than snapping flat.
+   */
+  private easeHover(k: number): void {
+    for (const card of this.cards) {
+      const hovered = card === this.hoveredCard;
+      const lifted = hovered || card === this.focusedCard;
+      card.lift = easeToward(card.lift, lifted ? 1 : 0, k);
+      card.pointerX = easeToward(card.pointerX, hovered ? this.hoverX : 0, k);
+      card.pointerY = easeToward(card.pointerY, hovered ? this.hoverY : 0, k);
+    }
+  }
 
   /**
    * A nav teleport just relocated the viewport: kill the smoothing lag by
@@ -275,16 +402,52 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     if (!this.active || this.stickRange <= 0) {
       return;
     }
-    const card = (event.target as HTMLElement | null)?.closest(
-      '.project-card',
-    ) as HTMLElement | null;
-    if (!card) {
+    const target = event.target as HTMLElement | null;
+    const card = target?.closest('.project-card') as HTMLElement | null;
+    if (!target || !card) {
       return;
     }
     const index = this.cards.findIndex((c) => c.el === card);
     if (index >= 0) {
+      // A mouse click focuses the link it opens too. Only keyboard focus lifts
+      // the card, matching where the browser draws a focus ring.
+      this.focusedCard = target.matches(':focus-visible') ? this.cards[index] : null;
       this.scrollCardIntoFrame(index);
     }
+  };
+
+  private onFocusOut = (event: FocusEvent): void => {
+    const next = event.relatedTarget as Node | null;
+    // Tabbing between two links on the same card keeps it lifted.
+    if (this.focusedCard && !(next && this.focusedCard.el.contains(next))) {
+      this.focusedCard = null;
+    }
+  };
+
+  /**
+   * Records which card is under a mouse and where on it (−1…1 on each axis),
+   * for the hover turn. Touch is ignored: a tap has no hover to follow. The
+   * one rect read happens here in the event handler, never in the loop.
+   */
+  private onPointer = (event: PointerEvent): void => {
+    if (event.pointerType === 'touch' || !this.motion.finePointer()) {
+      return;
+    }
+    const el = (event.target as Element | null)?.closest('.project-card');
+    const card = el ? (this.cards.find((c) => c.el === el) ?? null) : null;
+    this.hoveredCard = card;
+    if (!card) {
+      return;
+    }
+    const rect = card.el.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      this.hoverX = Math.min(1, Math.max(-1, ((event.clientX - rect.left) / rect.width) * 2 - 1));
+      this.hoverY = Math.min(1, Math.max(-1, ((event.clientY - rect.top) / rect.height) * 2 - 1));
+    }
+  };
+
+  private onPointerLeave = (): void => {
+    this.hoveredCard = null;
   };
 
   /**
@@ -313,6 +476,6 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
     this.unsub?.();
     this.teleportRelease?.();
     this.resizeRelease?.();
-    this.trackRef?.nativeElement.removeEventListener('focusin', this.onFocusIn);
+    this.trackListenersRelease?.();
   }
 }

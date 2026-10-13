@@ -17,3 +17,28 @@ export function smoothingK(dt: number, base: number): number {
   }
   return 1 - Math.pow(1 - base, dt / (1000 / 60));
 }
+
+/**
+ * One smoothing step from `current` toward `target` (`k` from smoothingK), landing
+ * exactly on the target once within 0.001. Without the snap an exponential ease
+ * never arrives, and a caller that skips unchanged writes would keep writing
+ * ever-smaller differences forever.
+ */
+export function easeToward(current: number, target: number, k: number): number {
+  const next = current + (target - current) * k;
+  return Math.abs(target - next) < 0.001 ? target : next;
+}
+
+/**
+ * How far a showcase card sits from the middle of the stage, in card steps:
+ * 0 when centred, ±1 once it is a whole step (`pitch`, the distance between
+ * neighbouring card centres) to the right or left. Clamped, because a card two
+ * steps out is already behind the stage mask and should hold its end pose
+ * rather than keep turning.
+ */
+export function cardOffset(center: number, focusX: number, pitch: number): number {
+  if (pitch <= 0) {
+    return 0;
+  }
+  return Math.min(1, Math.max(-1, (center - focusX) / pitch));
+}
