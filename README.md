@@ -5,7 +5,7 @@ A portfolio built as one continuous scrolling journey — five destinations (Hom
 **→ [binohlongwana.netlify.app](https://binohlongwana.netlify.app/)**
 
 [![Live site](https://img.shields.io/badge/Live_Site-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://binohlongwana.netlify.app/)
-![Angular](https://img.shields.io/badge/Angular_19-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular_21-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![WebGL](https://img.shields.io/badge/WebGL-990000?style=for-the-badge&logo=webgl&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -50,8 +50,8 @@ Supporting references:
 
 ### Prerequisites
 
-- Node.js v18.19+
-- Angular CLI — `npm install -g @angular/cli`
+- Node.js `^20.19`, `^22.12` or `>=24` (what Angular 21 supports; CI runs on 24)
+- The Angular CLI comes with the project — `npm start` runs it
 
 ### Install and run
 
@@ -86,8 +86,10 @@ npm test
 ```
 
 The pure logic lives in unit-tested modules with colocated `.spec.ts` files — scroll math, the
-constellation morph and its driver, the frame pulse, theme decisions, certifications math,
-destinations, the aurora palette, in-viewport observation, scroll lock, motion math, and the
+constellation morph and its driver, star depths from real distances, the star map's camera,
+scene and renderer, the shared camera constant, the frame pulse, theme decisions, certifications
+math, destinations, the aurora and star-map palettes, the Toolset orbit's projection, section
+arrival anchoring, hero parallax, in-viewport observation, scroll lock, motion math, and the
 page-inert isolation behind both overlays. Anything that can be a pure function is one, precisely
 so it can be tested without a DOM.
 
@@ -123,7 +125,7 @@ Karma runs headless via [karma.conf.js](karma.conf.js), so this works in CI and 
 | Category   | Technologies                                                                                   |
 | ---------- | ---------------------------------------------------------------------------------------------- |
 | Framework  | Angular 21 (standalone components + signals)                                                   |
-| Language   | TypeScript 5.6                                                                                 |
+| Language   | TypeScript 5.9                                                                                 |
 | Graphics   | OGL (WebGL star map + aurora shader), SVG fallback, Web Animations                             |
 | Styling    | CSS3 (Custom Properties, Flexbox, Grid)                                                        |
 | Typography | Nohemi (display), Atkinson Hyperlegible (body/UI), Instrument Serif (accent) — all self-hosted |
@@ -153,7 +155,8 @@ Three rules keep that hot path honest:
 2. **One observer seam.** `InViewportService` owns viewport observation, so offscreen work pauses
    instead of burning frames.
 3. **Pure math, testable.** Anything that can be a function of numbers is one: `scroll-loop.math.ts`,
-   `motion.math.ts`, `certifications.math.ts`, `constellation-morph.ts`, `theme.decision.ts`.
+   `motion.math.ts`, `arrival.math.ts`, `certifications.math.ts`, `constellation-morph.ts`,
+   `constellation-depth.ts`, `star-map.math.ts`, `tool-orbit.math.ts`, `theme.decision.ts`.
 
 There is deliberately **no Angular Router** and no NgModule: the app bootstraps through
 `bootstrapApplication`, and the five destinations are defined once in
@@ -190,6 +193,7 @@ src/app/
 ├── scroll-loop.service.ts     # Scroll cycle state + seam wrap
 ├── scroll-loop.math.ts        # Pure scroll math (unit-tested)
 ├── motion.math.ts             # Frame-rate-independent smoothing (unit-tested)
+├── arrival.math.ts            # Where each section's arrival scale is anchored (unit-tested)
 └── scroll-reveal.directive.ts # Fade-in-on-scroll behavior
 src/
 ├── assets/                    # CV, portrait, project shots, certificate images, self-hosted fonts

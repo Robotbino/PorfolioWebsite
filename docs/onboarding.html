@@ -1154,15 +1154,16 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
    ├─ scroll-loop.service.ts<span class="a">  ← cycle position state + seam wrap</span>
    ├─ scroll-loop.math.ts   <span class="a">← pure scroll arithmetic (unit-tested)</span>
    ├─ motion.math.ts        <span class="a">← easing / interpolation helpers</span>
+   ├─ arrival.math.ts       <span class="a">← where each section's arrival scale is anchored (unit-tested)</span>
    ├─ scroll-reveal.directive.ts
    ├─ <span class="d">aurora/</span>               <span class="a">← WebGL aurora (OGL simplex shader) + CSS fallback</span>
    ├─ <span class="d">constellation/</span>        <span class="a">← star data (real distances) · morph driver · SVG fallback</span>
-   ├─ <span class="d">core/</span>                 <span class="a">← app-wide services (theme, frame pulse, viewport, motion…)</span>
+   ├─ <span class="d">core/</span>                 <span class="a">← app-wide services (theme, frame pulse, viewport, motion…) + the shared camera constant</span>
    ├─ landingpage/           <span class="a">← Home hero + CV download</span>
    ├─ layout/site-nav/       <span class="a">← persistent nav with loop-aware muting</span>
    ├─ <span class="d">pages/</span>                <span class="a">← work · about · certifications · contact</span>
    ├─ <span class="d">star-map/</span>             <span class="a">← WebGL star map (OGL): camera rig · renderer · shaders</span>
-   └─ shared/                <span class="a">← theme-toggle (each section writes its own editorial header now)</span>
+   └─ shared/                <span class="a">← icon (inline SVG set) · theme-toggle</span>
 <span class="d">docs/adr/</span>                   <span class="a">← Architecture Decision Records 0001–0015</span>
 CONTEXT.md                  <span class="a">← design-language glossary (the code's vocabulary)</span>
 netlify.toml                <span class="a">← prod build + SPA redirect</span></code></pre>
