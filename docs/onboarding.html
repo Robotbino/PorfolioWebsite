@@ -995,7 +995,7 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
     <p class="lead">These three files explain the decisions behind the code. Skim them first — they make everything else click:</p>
     <div class="cards">
       <div class="card"><h4>CONTEXT.md</h4><p>The glossary. The codebase uses its own vocabulary — <b>Cycle</b>, <b>Seam</b>, <b>Travel</b>, <b>Destination</b>, <b>Loop clone</b> — and this file defines each term.</p></div>
-      <div class="card"><h4>docs/adr/</h4><p>Eleven Architecture Decision Records. Every "why is it built this way?" is answered in one of these short documents.</p></div>
+      <div class="card"><h4>docs/adr/</h4><p>Fifteen Architecture Decision Records. Every "why is it built this way?" is answered in one of these short documents.</p></div>
       <div class="card"><h4>src/app/destinations.ts</h4><p>The single source of truth for the five sections. Start reading here — almost everything else in the project derives from this file.</p></div>
     </div>
   </section>
@@ -1088,7 +1088,7 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
 
   <section id="s-arch-hotpath">
     <h2><span class="n">02.4</span>Staying Smooth at 60 fps</h2>
-    <p>All animations share <b>one</b> <code>requestAnimationFrame</code> loop — <code>FramePulseService</code> — running outside Angular's zone. The constellation morph, the nav fade and the Projects showcase all write directly to the DOM from that loop. Two rules keep Angular's change detection out of the way:</p>
+    <p>All animations share <b>one</b> <code>requestAnimationFrame</code> loop — <code>FramePulseService</code> — running outside Angular's zone. The star map, the nav fade and the Projects showcase all draw or write straight from that loop. Two rules keep Angular's change detection out of the way:</p>
     <ul>
       <li><b><code>position</code> is the fast signal — never bind it in a template.</b> It's read ~60 times a second from animation callbacks. Binding it in a template would force Angular to re-check the whole component tree on every frame.</li>
       <li><b><code>activeDestination</code> is the template-safe signal.</b> It only changes when you cross from one section to the next (not on every pixel of scroll), so it's fine for the nav underline and <code>aria-current</code>.</li>
@@ -1123,6 +1123,10 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
       <tr><td><code>0009</code></td><td>Inline SVG icon set instead of an icon font</td></tr>
       <tr><td><code>0010</code></td><td>Standalone components on Angular 21</td></tr>
       <tr><td><code>0011</code></td><td>Projects showcase cards in 3D space — perspective tilt, depth, shadow and sheen driven by one <code>--card-offset</code> per card; the whole card is one link; no idle float</td></tr>
+      <tr><td><code>0012</code></td><td>Toolset orbit — a still black hole with ten tool logos circling it (revised by 0015)</td></tr>
+      <tr><td><code>0013</code></td><td>Hero depth and one motion system — the two-plane hero, the hero exit, shared duration tokens (revised by 0014)</td></tr>
+      <tr><td><code>0014</code></td><td>Star map in WebGL (OGL) on real sight lines, and one 1600px camera shared by the page's 3D (the Toolset orbit scales its own); the SVG drawing stays as the fallback</td></tr>
+      <tr><td><code>0015</code></td><td>Toolset orbit in perspective — logos on the orbit lines with no discs, generated Web Animations keyframes, always in front of the hole</td></tr>
     </table></div>
     <p>All live in <code>docs/adr/</code>. Each carries a <b>status</b> (accepted / rejected / superseded). If you're about to reverse a decision, read its ADR first — several list rejected alternatives and why.</p>
   </section>
@@ -1145,20 +1149,21 @@ status = 200          <span class="c-cmt"># SPA fallback — every path serves t
 ├─ main.ts                  <span class="a">← bootstrapApplication(AppComponent) — standalone, no NgModule</span>
 ├─ assets/                  <span class="a">← Nohemi + Atkinson Hyperlegible + Instrument Serif (.woff2), project screenshots + cert scans (.webp) — served at /assets/</span>
 └─ <span class="d">app/</span>
-   ├─ app.component.*       <span class="a">← the shell: aurora + constellation + nav + 5 sections + clone</span>
+   ├─ app.component.*       <span class="a">← the shell: aurora + star map + nav + 5 sections + clone</span>
    ├─ <span class="d">destinations.ts</span>       <span class="a">← ★ single source of truth for the five sections</span>
    ├─ scroll-loop.service.ts<span class="a">  ← cycle position state + seam wrap</span>
    ├─ scroll-loop.math.ts   <span class="a">← pure scroll arithmetic (unit-tested)</span>
    ├─ motion.math.ts        <span class="a">← easing / interpolation helpers</span>
    ├─ scroll-reveal.directive.ts
    ├─ <span class="d">aurora/</span>               <span class="a">← WebGL aurora (OGL simplex shader) + CSS fallback</span>
-   ├─ <span class="d">constellation/</span>        <span class="a">← SVG star-map: component · model · figures · morph driver</span>
+   ├─ <span class="d">constellation/</span>        <span class="a">← star data (real distances) · morph driver · SVG fallback</span>
    ├─ <span class="d">core/</span>                 <span class="a">← app-wide services (theme, frame pulse, viewport, motion…)</span>
    ├─ landingpage/           <span class="a">← Home hero + CV download</span>
    ├─ layout/site-nav/       <span class="a">← persistent nav with loop-aware muting</span>
    ├─ <span class="d">pages/</span>                <span class="a">← work · about · certifications · contact</span>
+   ├─ <span class="d">star-map/</span>             <span class="a">← WebGL star map (OGL): camera rig · renderer · shaders</span>
    └─ shared/                <span class="a">← theme-toggle (each section writes its own editorial header now)</span>
-<span class="d">docs/adr/</span>                   <span class="a">← Architecture Decision Records 0001–0008</span>
+<span class="d">docs/adr/</span>                   <span class="a">← Architecture Decision Records 0001–0015</span>
 CONTEXT.md                  <span class="a">← design-language glossary (the code's vocabulary)</span>
 netlify.toml                <span class="a">← prod build + SPA redirect</span></code></pre>
   </section>
@@ -1181,12 +1186,13 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
       <tr><th>Selector</th><th>Location</th><th>What it does</th></tr>
       <tr><td><code>app-root</code></td><td><code>app/</code></td><td>The shell. Measures section anchors, feeds <code>ScrollLoopService</code>, applies the seam wrap, arms scroll reveals.</td></tr>
       <tr><td><code>app-aurora</code></td><td><code>aurora/</code></td><td>Persistent WebGL backdrop (z-0). OGL + GLSL simplex noise; inputs <code>colorStops · blend · amplitude · speed · lift</code>; CSS fallback when WebGL is unavailable. Under <code>prefers-reduced-motion</code> it paints a single static frame (still theme-reactive) and never joins the frame pulse — the global reduced-motion CSS rule can't reach a canvas.</td></tr>
-      <tr><td><code>app-constellation</code></td><td><code>constellation/</code></td><td>Persistent SVG star-map (z-0). Reads <code>position()</code> each frame and interpolates between adjacent figures; lines cross-fade through the dim point.</td></tr>
+      <tr><td><code>app-star-map</code></td><td><code>star-map/</code></td><td>Persistent WebGL star map (z-0), drawn with OGL: a faint star field in depth, then the current constellation's links and stars. Each frame it advances the same morph as the SVG, places every star on its sight line at a depth taken from its real distance (log-scaled), and poses the camera (a swing aside between destinations, a gentle pointer orbit). It starts after first paint, and switches to <code>app-constellation</code> for the session when WebGL is missing or software-rendered, the context is lost, or the first frames run slow. Under reduced motion it draws only when the figure, the size or the theme changes. See ADR-0014.</td></tr>
+      <tr><td><code>app-constellation</code></td><td><code>constellation/</code></td><td>The SVG star map, rendered inside <code>app-star-map</code> as its fallback. Reads <code>position()</code> each frame and interpolates between adjacent figures; lines cross-fade through the dim point.</td></tr>
       <tr><td><code>app-site-nav</code></td><td><code>layout/site-nav/</code></td><td>Persistent nav (z-100). Renders links from <code>DESTINATIONS</code>; mutes via a single <code>--nav-mute</code> custom property on the shared tick; underlines <code>activeDestination()</code>.</td></tr>
       <tr><td><code>app-landingpage</code></td><td><code>landingpage/</code></td><td>Home hero + CV download. <b>Rendered twice</b> — real Home and the inert loop clone — so keep it side-effect safe. Both copies attach to <code>HeroParallaxService</code>, so their depth always matches across the seam.</td></tr>
       <tr><td><code>app-work</code></td><td><code>pages/work/</code></td><td>Experience groups, the Toolset orbit + sticky projects showcase. Pure renderer of <code>work-data.ts</code>. On wide screens (with motion allowed) the shared tick slides the card track and writes four numbers per card, only when they change: <code>--card-offset</code> (−1 to 1, distance from the stage centre), <code>--card-lift</code> (hover or keyboard focus) and <code>--pointer-x/-y</code>. CSS turns those into the perspective tilt, depth, fade, shadow and sheen, using only transform and opacity. Each card's main link (the live demo, or GitHub) stretches over the whole card.</td></tr>
       <tr><td><code>app-project-screenshots</code></td><td><code>pages/work/project-screenshots/</code></td><td>A project card's image. One screenshot renders as a plain image; several become a crossfading slideshow. Its timer is the progress bar's own CSS animation, paused off screen, while the pointer is on its controls and on focus, and never started under reduced motion. Hovering the card itself leaves it running.</td></tr>
-      <tr><td><code>app-tool-orbit</code></td><td><code>pages/work/tool-orbit/</code></td><td>The Toolset illustration in the Experience slot: a still black-hole image (one crop per theme, edges dissolved by a mask) with ten tool logos on two tilted rings. The orbit is pure CSS keyframes on <code>transform</code> (nested counter-rotations keep each logo upright); the component only pauses it off screen. Under reduced motion it is a still picture. See ADR-0012.</td></tr>
+      <tr><td><code>app-tool-orbit</code></td><td><code>pages/work/tool-orbit/</code></td><td>The Toolset illustration in the Experience slot: a still black-hole image (one crop per theme, edges dissolved by a mask) with ten tool logos travelling two rings in perspective, directly on the orbit lines. <code>tool-orbit.math.ts</code> projects both the SVG rings and each logo's Web Animations keyframes, so the logos sit on the lines by construction; the motion runs on the compositor. The component pauses the animations off screen and cancels them under reduced motion, leaving each logo at its bound resting pose. See ADR-0012 and ADR-0015.</td></tr>
       <tr><td><code>app-about</code></td><td><code>pages/about/</code></td><td>About copy, the portrait plate (the ledger's entry 00, positioned out of flow in the header's grid so it adds no height) + the glowing ledger glyphs. The plate and the numerals share one centre-crossing observer.</td></tr>
       <tr><td><code>app-certifications</code></td><td><code>pages/certifications/</code></td><td>Ledger of certs + full-screen spotlight (a true modal: <code>aria-modal</code>, a focus trap, and <code>body.certs-spotlight-open</code> makes the whole nav recede). The cursor-preview image stack is gated on a fine pointer, so touch never fetches it.</td></tr>
       <tr><td><code>app-contact</code></td><td><code>pages/contact/</code></td><td>Marquee email finale + colophon with a live SAST clock.</td></tr>
@@ -1202,10 +1208,10 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
       <tr><th>Service</th><th>What it does</th></tr>
       <tr><td><code>ScrollLoopService</code></td><td>Owns the Cycle: the fast <code>position</code> signal, the template-safe <code>activeDestination</code> computed, and <code>setAnchors / update / wrapOffset</code>. The spine of the site.</td></tr>
       <tr><td><code>FramePulseService</code></td><td>The one shared rAF, outside NgZone. <code>onTick(fn)</code> → unsubscribe fn. Handles hidden-tab pause + clock reset.</td></tr>
-      <tr><td><code>ThemeService</code></td><td>Signals-based theme state; OS detection + <code>localStorage</code>; exposes the memoized <code>auroraPalette()</code>. Pure decision logic lives in <code>theme.decision.ts</code>.</td></tr>
+      <tr><td><code>ThemeService</code></td><td>Signals-based theme state; OS detection + <code>localStorage</code>; exposes the memoized <code>auroraPalette()</code> and <code>starMapPalette()</code>. Pure decision logic lives in <code>theme.decision.ts</code>.</td></tr>
       <tr><td><code>MotionSettingsService</code></td><td>One answer for <code>prefers-reduced-motion</code> — check it before starting any animation.</td></tr>
       <tr><td><code>InViewportService</code></td><td>IntersectionObserver wrapper (section reveals, icon-at-centre glow, the <code>#projects</code> highlight, pausing a project slideshow off screen).</td></tr>
-      <tr><td><code>HeroParallaxService</code></td><td>Two-plane hero depth: eases the pointer into <code>--parallax-x/-y</code> on the shared tick and writes the same value to both hero copies and the constellation, faded out away from Home. Fine pointer and motion allowed only.</td></tr>
+      <tr><td><code>HeroParallaxService</code></td><td>The one pointer source for depth: eases the pointer into <code>--parallax-x/-y</code> on the shared tick and writes the same value to both hero copies (and the SVG constellation when it is the fallback), faded out away from Home. <code>pointer()</code> exposes the eased value and the Home weight to the star map's camera. Fine pointer and motion allowed only.</td></tr>
       <tr><td><code>ScrollLockService</code></td><td>Shared scroll lock, held by the mobile menu and the certificate spotlight.</td></tr>
       <tr><td><code>NavTransitionService</code></td><td>Long nav jumps: instant teleport wrapped in a View Transition; closes the cert spotlight on navigate; no-ops under reduced motion.</td></tr>
     </table></div>
@@ -1219,7 +1225,7 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
       <tr><td><code>app/destinations.ts</code></td><td>The five sections: nav links, section order, constellation order</td></tr>
       <tr><td><code>app/pages/work/work-data.ts</code></td><td><code>EXPERIENCE_GROUPS</code> (skills) + <code>PROJECTS</code> (the showcase)</td></tr>
       <tr><td><code>app/pages/certifications/certifications-data.ts</code></td><td><code>CERTIFICATIONS</code> — credentials, rendered verbatim</td></tr>
-      <tr><td><code>app/constellation/constellation.figures.ts</code></td><td>The five 8-star asterisms + shared drift traits</td></tr>
+      <tr><td><code>app/constellation/constellation.figures.ts</code></td><td>The five 8-star asterisms, each star's distance and spectral class, + shared drift traits</td></tr>
       <tr><td><code>app/core/aurora-palette.ts</code></td><td>Aurora colours/tuning per theme</td></tr>
     </table></div>
   </section>
@@ -1289,7 +1295,7 @@ netlify.toml                <span class="a">← prod build + SPA redirect</span>
     <h2><span class="n">04.3</span>Tweak the Constellation</h2>
     <p class="lead">All star data lives in <code>src/app/constellation/constellation.figures.ts</code>. The one rule: <b>every figure must have exactly 8 stars</b>, because the morph animation pairs them by index. Tests enforce this — run <code>npm test</code> after any edit.</p>
     <h3>Move or reshape a figure</h3>
-    <p>Each figure is a list of <code>[x, y]</code> coordinates in a <code>300 × 300</code> viewBox, plus its own line list:</p>
+    <p>Each figure is a list of <code>[x, y]</code> coordinates in a <code>300 × 300</code> viewBox, its own line list, and one <code>[light-years, spectral class]</code> fact per star:</p>
     <pre data-lang="typescript" data-copy><code><span class="c-cmt">// constellation.figures.ts — e.g. the Work figure (Orion)</span>
 work: figure(<span class="c-str">'Orion'</span>, [
   [<span class="c-num">96</span>, <span class="c-num">96</span>],    <span class="c-cmt">// star 0 — Betelgeuse   ← move a star by editing its [x, y]</span>
@@ -1298,7 +1304,10 @@ work: figure(<span class="c-str">'Orion'</span>, [
 ], [
   { a: <span class="c-num">2</span>, b: <span class="c-num">0</span> },  <span class="c-cmt">// a line between stars 2 and 0 (indices into the array above)</span>
   { a: <span class="c-num">3</span>, b: <span class="c-num">4</span> },  <span class="c-cmt">// link counts MAY differ per figure — lines cross-fade at the</span>
-]),                <span class="c-cmt">//   dim point of each morph, so they never need to match up</span></code></pre>
+], [                <span class="c-cmt">//   dim point of each morph, so they never need to match up</span>
+  [<span class="c-num">550</span>, <span class="c-str">'M'</span>],  <span class="c-cmt">// star 0 — Betelgeuse: distance in light-years, spectral class</span>
+  <span class="c-cmt">// … exactly 8 facts too, one per star, in the same order</span>
+]),</code></pre>
     <h3>Change star character (size &amp; drift)</h3>
     <p>Per-index traits are shared across <em>all</em> figures so star <em>i</em> keeps its identity through every morph:</p>
     <pre data-lang="typescript" data-copy><code><span class="c-cmt">// shared per-index traits — index i applies to star i of EVERY figure</span>
@@ -1310,6 +1319,12 @@ work: figure(<span class="c-str">'Orion'</span>, [
       <li><b>Bigger stars:</b> raise values in <code>R</code>. <b>Lazier/livelier drift:</b> adjust <code>AMP</code>; phases (<code>PHX</code>/<code>PHY</code>) just de-synchronise the wander.</li>
       <li><b>Morph behaviour</b> (timing, dim point, interpolation) lives in <code>constellation-morph.ts</code> / <code>morph-driver.ts</code> — both spec-covered.</li>
       <li><b>Reduced motion:</b> the drift and morph settle automatically via <code>MotionSettingsService</code>; you don't need to handle it per figure.</li>
+    </ul>
+    <h3>Distance and colour</h3>
+    <p>Every star also carries its real distance in light-years and its spectral class (O, B, A, F, G, K or M). The WebGL star map turns the distance into depth on one log scale centred on each figure's median star, so a real moving group like the Big Dipper reads shallow and Cygnus deep, and it places each star on its sight line so the figure is exact from the resting camera. The class tints the halo in dark mode. The SVG fallback ignores both.</p>
+    <ul>
+      <li><b>Camera feel</b> (swing, pointer orbit) lives in <code>star-map/star-map.math.ts</code> as plain constants, covered by <code>star-map.math.spec.ts</code>; the entrance timings live in <code>star-map/star-map.scene.ts</code>.</li>
+      <li><b>Colours</b> for both themes live in <code>core/star-map-palette.ts</code>; the resting star and line colours match the SVG's on purpose.</li>
     </ul>
   </section>
 
@@ -1350,7 +1365,7 @@ work: figure(<span class="c-str">'Orion'</span>, [
       <li><b>Only two Nohemi weights are preloaded</b> (ExtraLight and Black — what the hero paints first). The preload <code>href</code>s must match the <code>@font-face</code> <code>src</code> in <code>styles.css</code> <em>byte for byte</em>, or the browser fetches a second copy and warns the preload went unused. Both sides are root-absolute for that reason.</li>
     </ul>
     <h3>Hero clearance — the rule behind the sizes</h3>
-    <p>The constellation is <b>viewport-centred</b> (<code>top:50% left:50%</code>, a square <code>clamp(280px, 42vw, 520px)</code>), so it runs straight through the middle of the hero frame — roughly x&nbsp;460–980 on a 1440px viewport. It is the design, not a backdrop. The hero therefore holds three lines it must not cross:</p>
+    <p>The constellation is <b>viewport-centred</b> (<code>top:50% left:50%</code>, a square <code>clamp(280px, 42vw, 520px)</code>; the WebGL star map reads the same box from a hidden element in <code>star-map.component.css</code>), so it runs straight through the middle of the hero frame — roughly x&nbsp;460–980 on a 1440px viewport. It is the design, not a backdrop. The hero therefore holds three lines it must not cross:</p>
     <ul>
       <li>The headline stays <b>left-anchored and does not grow</b>. "Hlongwana" at Black 900 measures ~5.2em; at the 7.5rem cap that's ~624px from the gutter, which is tuned. At 10rem it would be ~832px and run through the figure.</li>
       <li>The statement keeps a <b>tight measure (42ch)</b> so the right-hand negative space stays open. It tightened from 46ch purely to offset Atkinson's wider <code>ch</code>.</li>
@@ -1392,7 +1407,7 @@ work: figure(<span class="c-str">'Orion'</span>, [
       <pre data-lang="typescript" data-copy><code><span class="c-key">export type</span> DestinationFigure = <span class="c-str">'home'</span> | <span class="c-str">'work'</span> | <span class="c-str">'about'</span> | <span class="c-str">'certifications'</span> | <span class="c-str">'contact'</span> | <span class="c-str">'lab'</span>;
 
 { id: <span class="c-str">'dest-lab'</span>, label: <span class="c-str">'Lab'</span>, figure: <span class="c-str">'lab'</span> },</code></pre></li>
-      <li><b><code>constellation.figures.ts</code></b> — add a <code>lab:</code> figure to <code>byRoute</code> with exactly 8 stars (the <code>destinations.spec.ts</code> guard fails the build-time tests if the key doesn't resolve).</li>
+      <li><b><code>constellation.figures.ts</code></b> — add a <code>lab:</code> figure to <code>byRoute</code> with exactly 8 stars, each with its distance in light-years and spectral class (the <code>destinations.spec.ts</code> guard fails the build-time tests if the key doesn't resolve).</li>
       <li><b><code>app.component.html</code></b> — add the section in scroll order, <em>before</em> the Home clone (the clone must stay last — it is the seam):
       <pre data-lang="html" data-copy><code>&lt;section #dest id="dest-lab" class="dest"&gt;&lt;app-lab&gt;&lt;/app-lab&gt;&lt;/section&gt;</code></pre></li>
       <li><b>Create the component</b> under <code>src/app/pages/lab/</code> as a standalone component, and add it to the <code>imports</code> array in <code>app.component.ts</code>. Write the section header inline in the editorial pattern every other section uses — a kicker (<code>aria-hidden</code> destination numeral + a short hairline rule) above a poster title in the Nohemi weight ladder; copy the markup from <code>about.component.html</code> and give it the next index (<code>06</code>). Put the section's copy in a <code>lab-data.ts</code>, matching the house pattern.</li>
@@ -1879,10 +1894,10 @@ work: figure(<span class="c-str">'Orion'</span>, [
     },
     con: {
       x: 310, y: 594, w: 220, h: 60,
-      t: 'ConstellationComponent',
-      s: 'SVG star-map morph',
-      file: 'src/app/constellation/constellation.component.ts',
-      d: 'The persistent SVG star map (mounts once, stays in the background). Each frame it reads scroll position and smoothly morphs each star between adjacent constellations. Lines cross-fade at the halfway point.',
+      t: 'StarMapComponent',
+      s: 'OGL 3D star map',
+      file: 'src/app/star-map/star-map.component.ts',
+      d: 'The persistent WebGL star map (mounts once, stays in the background). Each frame it reads scroll position, morphs each star between adjacent constellations at a depth taken from its real distance, and poses the camera. Lines cross-fade at the halfway point. The SVG ConstellationComponent takes over when WebGL is unavailable.',
       links: [
         ['03.3 Components', 'map:s-map-components'],
         ['04.3 Tweak the Constellation', 'mod:s-mod-constellation']
@@ -1935,7 +1950,7 @@ work: figure(<span class="c-str">'Orion'</span>, [
     hot: {
       n: ['pulse', 'sls', 'con', 'nav'],
       e: [6, 7, 8, 9],
-      hint: '<b>The animation pipeline:</b> a single requestAnimationFrame ticks the constellation and nav. Both read <code>position()</code> directly (not through templates), so Angular\'s change detection stays out of the loop. See §02.4.'
+      hint: '<b>The animation pipeline:</b> a single requestAnimationFrame ticks the star map and nav. Both read <code>position()</code> directly (not through templates), so Angular\'s change detection stays out of the loop. See §02.4.'
     },
     registry: {
       n: ['dest', 'tmpl', 'nav', 'fig'],

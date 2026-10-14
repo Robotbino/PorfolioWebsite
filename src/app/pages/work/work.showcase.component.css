@@ -4,8 +4,9 @@
    rules and was 2.7 kB over the anyComponentStyle budget. Same component, so
    :host(.showcase-on) still resolves against WorkComponent's host — this is a
    file boundary, not a scope boundary. Everything here belongs to the pinned
-   sticky-scroll gallery; the vertical-stack fallback that it enhances lives in
-   work.component.css.
+   sticky-scroll gallery, except the last block: the vertical-stack fallback's
+   scroll-linked tilt-in, kept here because work.component.css is at its style
+   budget. The rest of that fallback lives in work.component.css.
    ============================================ */
 
 /* Armed by WorkComponent (`.showcase-on` on the host) only on wide screens with
@@ -34,10 +35,11 @@
   overflow: clip;
   -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
   mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent);
-  /* One shared camera for every card. The stage is a full-height sticky box
-     centred in the viewport, so the vanishing point is the middle of the
-     screen wherever the track is. */
-  perspective: 1600px;
+  /* One shared camera for every card, the site's own lens (styles.css), so a
+     depth here reads the same as in the hero and the star map. The stage
+     is a full-height sticky box centred in the viewport, so the vanishing
+     point is the middle of the screen wherever the track is. */
+  perspective: var(--camera-perspective);
 }
 
 :host(.showcase-on) .projects-container {
@@ -148,14 +150,17 @@
   /* Read right to left: a slight roll in the card's own plane, a turn toward
      the pointer, the swing on the Y axis (outer edges recede, like cards round
      a drum), then sinking back with distance and rising with lift. A centred
-     card at rest is flat at z = 0, so the copy being read is never skewed. */
+     card at rest is flat at z = 0, so the copy being read is never skewed.
+     The swing brings a neighbour's inner edge forward of z = 0, but at one
+     card step that edge still projects about 140px clear of the centred
+     960px card, so the two never overlap. */
   transform:
-    translateZ(calc(var(--card-distance) * -160px + var(--card-lift, 0) * 36px))
-    rotateY(calc(var(--card-offset, 0) * 28deg + var(--pointer-x, 0) * 6deg))
-    rotateX(calc(var(--pointer-y, 0) * -4deg))
+    translateZ(calc(var(--card-distance) * -260px + var(--card-lift, 0) * 56px))
+    rotateY(calc(var(--card-offset, 0) * 36deg + var(--pointer-x, 0) * 9deg))
+    rotateX(calc(var(--pointer-y, 0) * -6deg))
     rotateZ(calc(var(--card-offset, 0) * 2deg));
-  /* Off-centre cards fade slightly so the framed one stays the subject. */
-  opacity: calc(1 - var(--card-distance) * 0.3);
+  /* Off-centre cards fade to 55% so the framed one stays the subject. */
+  opacity: calc(1 - var(--card-distance) * 0.45);
   /* No transform transition: the loop already eases every input, and a CSS
      transition would restart each frame and trail behind the scroll. */
   transition: border-color var(--transition-base);
@@ -172,8 +177,8 @@
   z-index: -1;
   border-radius: inherit;
   box-shadow: var(--shadow-lg);
-  opacity: calc(0.35 + 0.65 * max(var(--card-distance), var(--card-lift, 0)));
-  transform: translateY(calc(var(--card-distance) * 14px));
+  opacity: calc(0.4 + 0.6 * max(var(--card-distance), var(--card-lift, 0)));
+  transform: translateY(calc(var(--card-distance) * 26px));
   pointer-events: none;
 }
 
@@ -279,7 +284,7 @@
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   color: var(--color-text-muted);
-    opacity: clamp(0, calc(1 - var(--showcase-progress, 0) * 10), 1);
+  opacity: clamp(0, calc(1 - var(--showcase-progress, 0) * 10), 1);
   transition: opacity var(--transition-base);
 }
 
@@ -306,5 +311,35 @@
 
   :host(.showcase-on) .project-content::after {
     display: none;
+  }
+}
+
+/* ---- Card tilt-in (vertical-stack fallback) ----
+   Where the drum doesn't run (below 900px, or before WorkComponent arms the
+   showcase), each card tips up into place as it scrolls in, hinged on its
+   bottom edge and seen through the same lens as the drum. Scroll-linked, so
+   it costs no script and runs on the compositor. The fill mode stays at its
+   default (none): past 35% of the card's pass the animation lets go, and the
+   hover lift in work.component.css applies again. The anonymous view()
+   timeline binds to the viewport because no ancestor of a stacked card is a
+   scroll container (html and body clip rather than hide). Reduced motion and
+   browsers without scroll-driven animations get the flat stack. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :host(:not(.showcase-on)) .project-card {
+      transform-origin: 50% 100%;
+      animation: cardTiltIn linear;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+}
+
+/* No `to` keyframe: the card animates toward its own resting style, so the
+   end of the range never jumps. */
+@keyframes cardTiltIn {
+  from {
+    transform: perspective(var(--camera-perspective)) rotateX(12deg) translateY(28px);
+    opacity: 0.6;
   }
 }

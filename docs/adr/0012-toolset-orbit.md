@@ -1,7 +1,8 @@
 # Toolset orbit — a still black hole with ten tools circling it
 
-**Status:** accepted (2026-10-13). Replaces the Experience section's four-row "Non-Technical
-Skills" ledger with an illustration headed "Toolset".
+**Status:** accepted (2026-10-13), revised by [ADR-0015](0015-toolset-orbit-in-perspective.md)
+(perspective, no backing discs, generated keyframes). Replaces the Experience section's four-row
+"Non-Technical Skills" ledger with an illustration headed "Toolset".
 
 ## Context
 

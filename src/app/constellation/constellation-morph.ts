@@ -40,6 +40,8 @@ export function interpolateConstellation(
       phx: lerp(s.phx, d.phx, clamped),
       phy: lerp(s.phy, d.phy, clamped),
       amp: lerp(s.amp, d.amp, clamped),
+      depth: lerp(s.depth, d.depth, clamped),
+      temperature: lerp(s.temperature, d.temperature, clamped),
     };
   });
 

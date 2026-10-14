@@ -8,7 +8,8 @@ import { ScrollLoopService } from '../scroll-loop.service';
 /**
  * The parallax is a pointer → eased value → style write pipeline. These specs
  * drive the tick by hand and read the written properties, which is everything
- * the seam and the reduced-motion contract depend on.
+ * the seam and the reduced-motion contract depend on, and the unweighted
+ * reading the star map's camera takes instead of the properties.
  */
 describe('HeroParallaxService', () => {
   let finePointer: WritableSignal<boolean>;
@@ -133,6 +134,47 @@ describe('HeroParallaxService', () => {
 
     expect(ticks.length).toBe(0);
     expect(read(a)).toEqual(['', '']);
+  });
+
+  it('reports the eased pointer and the full Home weight at Home', () => {
+    pointAt(1, 0.5);
+    settle();
+
+    const reading = service.pointer();
+    expect(reading.x).toBeCloseTo(1, 3);
+    expect(reading.y).toBeCloseTo(0, 3);
+    expect(reading.homeWeight).toBe(1);
+  });
+
+  it('keeps the pointer unweighted away from Home while the weight fades out', () => {
+    const a = document.createElement('div');
+    service.attach(a);
+    pointAt(1, 0.5);
+    position = 0.6;
+    settle();
+
+    const reading = service.pointer();
+    expect(reading.homeWeight).toBe(0);
+    expect(reading.x).toBeCloseTo(1, 3);
+    // The CSS path still fades to rest; only the reading skips the weight.
+    expect(read(a)).toEqual(['0.000', '0.000']);
+  });
+
+  it('reads zeros while disabled', () => {
+    pointAt(1, 1);
+    settle();
+    reducedMotion.set(true);
+    TestBed.tick();
+
+    expect({ ...service.pointer() }).toEqual({ x: 0, y: 0, homeWeight: 0 });
+  });
+
+  it('returns the same object on every call', () => {
+    const first = service.pointer();
+    pointAt(0.25, 0.75);
+    settle();
+
+    expect(service.pointer()).toBe(first);
   });
 
   it('clears an element when it detaches', () => {

@@ -2,11 +2,25 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Injector,
   OnDestroy,
-  OnInit,
+  afterNextRender,
+  effect,
   inject,
+  untracked,
+  viewChild,
+  viewChildren,
 } from '@angular/core';
 import { InViewportService } from '../../../core/in-viewport.service';
+import { MotionSettingsService } from '../../../core/motion-settings.service';
+import {
+  RINGS,
+  RingName,
+  orbitKeyframes,
+  restStyle,
+  ringGradient,
+  ringPath,
+} from './tool-orbit.math';
 
 /** One orbiting tool: its logo, which ring it rides, and where on that ring it starts. */
 export interface OrbitTool {
@@ -15,7 +29,7 @@ export interface OrbitTool {
   /** Intrinsic size of the exported logo, so the browser knows its ratio before it loads. */
   readonly width: number;
   readonly height: number;
-  readonly ring: 'inner' | 'outer';
+  readonly ring: RingName;
   /** Starting position as a fraction of a lap (0…1), counted counter-clockwise. */
   readonly slot: number;
   /**
@@ -24,6 +38,12 @@ export interface OrbitTool {
    * same box size; these factors make all ten read as one size.
    */
   readonly fit: number;
+  /**
+   * A hairline light edge in dark mode, for a logo whose silhouette is black
+   * and would vanish into the dark page. MySQL's outline is a mid blue (about
+   * 50% luminance at its edge) and holds without one.
+   */
+  readonly rim?: boolean;
 }
 
 const ICON = '/assets/toolset/';
@@ -87,6 +107,7 @@ export const ORBIT_TOOLS: readonly OrbitTool[] = [
     ring: 'outer',
     slot: 1 / 6,
     fit: 0.92,
+    rim: true,
   },
   {
     name: 'Figma',
@@ -114,6 +135,7 @@ export const ORBIT_TOOLS: readonly OrbitTool[] = [
     ring: 'outer',
     slot: 4 / 6,
     fit: 0.88,
+    rim: true,
   },
   {
     name: 'Netlify',
@@ -126,12 +148,24 @@ export const ORBIT_TOOLS: readonly OrbitTool[] = [
   },
 ];
 
+const RING_NAMES: readonly RingName[] = ['inner', 'outer'];
+
+/** The ring lines never change, so every instance shares one set of paths. */
+const RING_LINES = RING_NAMES.map((name) => ({
+  name,
+  path: ringPath(RINGS[name].radius),
+  gradient: ringGradient(RINGS[name].radius),
+}));
+
+/** Gradient ids are document-wide; a second orbit must not paint with the first one's. */
+let orbitInstanceId = 0;
+
 /**
  * The Toolset illustration: a still black hole with ten tool logos orbiting it
- * on two tilted rings. All of the motion is CSS keyframes on `transform`, so it
- * runs on the compositor with no script per frame. The only script here pauses
- * those keyframes while the illustration is off screen.
- * See docs/adr/0012-toolset-orbit.md.
+ * on two rings seen in perspective. Each logo is one Web Animation generated
+ * from tool-orbit.math.ts, so the motion runs on the compositor with no script
+ * per frame. The script here only starts, pauses, regenerates and cancels those
+ * animations. See docs/adr/0015-toolset-orbit-in-perspective.md.
  */
 @Component({
   selector: 'app-tool-orbit',
@@ -139,24 +173,141 @@ export const ORBIT_TOOLS: readonly OrbitTool[] = [
   styleUrl: './tool-orbit.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ToolOrbitComponent implements OnInit, OnDestroy {
+export class ToolOrbitComponent implements OnDestroy {
+  private motion = inject(MotionSettingsService);
   private inView = inject(InViewportService);
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private injector = inject(Injector);
 
-  readonly tools = ORBIT_TOOLS;
+  private readonly stage = viewChild.required<ElementRef<HTMLElement>>('stage');
+  private readonly logos = viewChildren<ElementRef<HTMLElement>>('logo');
 
-  private release?: () => void;
+  /** Each tool with its resting pose: the first frame of its own animation. */
+  readonly orbits = ORBIT_TOOLS.map((tool) => ({
+    tool,
+    rest: restStyle(tool.slot, RINGS[tool.ring].radius),
+  }));
 
-  ngOnInit(): void {
-    // A class toggled straight on the host: a viewport crossing never needs
-    // change detection. Until the first callback the orbit simply runs.
-    const host = this.host.nativeElement;
-    this.release = this.inView.observe(host, { threshold: 0 }, (visible) =>
-      host.classList.toggle('is-offscreen', !visible),
-    );
+  private readonly instance = orbitInstanceId++;
+  readonly rings = RING_LINES.map((line) => ({
+    ...line,
+    gradientId: `orbit-ring-${line.name}-${this.instance}`,
+  }));
+
+  /** One per entry in `orbits`, in the same order; empty while still. */
+  private animations: Animation[] = [];
+  /** Stage pixels per stage unit (cqi), the scale the keyframes are generated at. */
+  private unitPx = 0;
+  /** The viewport watch reports within a frame of starting; until then the orbit runs. */
+  private onScreen = true;
+  private resizeObserver?: ResizeObserver;
+  private releaseViewport?: () => void;
+
+  constructor() {
+    // After the first render, because the keyframes are in pixels and need the
+    // stage's laid-out width. Until then, and whenever no animation runs, the
+    // inline rest poses already show the complete picture.
+    afterNextRender(() => {
+      const stage = this.stage().nativeElement;
+      this.unitPx = stage.clientWidth / 100;
+
+      this.resizeObserver = new ResizeObserver((entries) =>
+        this.resize(entries[entries.length - 1].contentRect.width),
+      );
+      this.resizeObserver.observe(stage);
+
+      this.releaseViewport = this.inView.observe(
+        this.host.nativeElement,
+        { threshold: 0 },
+        (visible) => {
+          this.onScreen = visible;
+          for (const animation of this.animations) {
+            if (visible) {
+              animation.play();
+            } else {
+              animation.pause();
+            }
+          }
+        },
+      );
+
+      // The global reduced-motion rule in styles.css only shortens CSS
+      // animations; it never reaches Web Animations, so the preference is
+      // honoured here, live, in both directions.
+      effect(
+        () => {
+          const still = this.motion.reducedMotion();
+          untracked(() => {
+            if (still) {
+              this.stop();
+            } else {
+              this.start();
+            }
+          });
+        },
+        { injector: this.injector },
+      );
+    });
   }
 
   ngOnDestroy(): void {
-    this.release?.();
+    this.stop();
+    this.resizeObserver?.disconnect();
+    this.releaseViewport?.();
+  }
+
+  private start(): void {
+    if (this.animations.length > 0) {
+      return;
+    }
+    const frames = this.keyframes();
+    const logos = this.logos();
+    this.animations = this.orbits.map(({ tool }, i) => {
+      const ring = RINGS[tool.ring];
+      // A negative delay starts the lap part-way through, at the logo's slot,
+      // which is exactly its inline rest pose: starting never makes it jump.
+      const animation = logos[i].nativeElement.animate(frames[tool.ring], {
+        duration: ring.periodMs,
+        delay: -tool.slot * ring.periodMs,
+        iterations: Infinity,
+        easing: 'linear',
+      });
+      if (!this.onScreen) {
+        animation.pause();
+      }
+      return animation;
+    });
+  }
+
+  /** Cancelling drops each logo back to its inline rest pose. */
+  private stop(): void {
+    for (const animation of this.animations) {
+      animation.cancel();
+    }
+    this.animations = [];
+  }
+
+  private resize(stageWidth: number): void {
+    const unitPx = stageWidth / 100;
+    if (unitPx === this.unitPx) {
+      return;
+    }
+    this.unitPx = unitPx;
+    if (this.animations.length === 0) {
+      return;
+    }
+    // setKeyframes keeps each animation's timing, so the logos carry on from
+    // where they were rather than restarting their laps.
+    const frames = this.keyframes();
+    this.animations.forEach((animation, i) =>
+      (animation.effect as KeyframeEffect).setKeyframes(frames[this.orbits[i].tool.ring]),
+    );
+  }
+
+  private keyframes(): Record<RingName, Keyframe[]> {
+    return {
+      inner: orbitKeyframes(RINGS.inner.radius, this.unitPx),
+      outer: orbitKeyframes(RINGS.outer.radius, this.unitPx),
+    };
   }
 }

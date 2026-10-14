@@ -1,6 +1,7 @@
 # Hero depth and one motion system
 
-**Status:** accepted (2026-10-13).
+**Status:** accepted (2026-10-13), revised by [ADR-0014](0014-star-map-in-webgl-and-one-camera.md)
+(a WebGL star map, one shared camera, and 3D beyond the four places named below).
 
 ## Context
 

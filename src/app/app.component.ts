@@ -12,9 +12,11 @@ import {
 import { ThemeService } from './core/theme.service';
 import { MotionSettingsService } from './core/motion-settings.service';
 import { InViewportService } from './core/in-viewport.service';
+import { NavTransitionService } from './core/nav-transition.service';
 import { ScrollLoopService } from './scroll-loop.service';
+import { arrivalOrigin } from './arrival.math';
 import { AuroraComponent } from './aurora/aurora.component';
-import { ConstellationComponent } from './constellation/constellation.component';
+import { StarMapComponent } from './star-map/star-map.component';
 import { SiteNavComponent } from './layout/site-nav/site-nav.component';
 import { LandingpageComponent } from './landingpage/landingpage.component';
 import { WorkComponent } from './pages/work/work.component';
@@ -28,7 +30,7 @@ import { ContactComponent } from './pages/contact/contact.component';
   styleUrl: './app.component.css',
   imports: [
     AuroraComponent,
-    ConstellationComponent,
+    StarMapComponent,
     SiteNavComponent,
     LandingpageComponent,
     WorkComponent,
@@ -47,18 +49,30 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   private loop = inject(ScrollLoopService);
   private motion = inject(MotionSettingsService);
   private inView = inject(InViewportService);
+  private navTransition = inject(NavTransitionService);
   private zone = inject(NgZone);
 
   @ViewChildren('dest') private dests!: QueryList<ElementRef<HTMLElement>>;
 
   private reduce = false;
   private ro?: ResizeObserver;
-  // innerHeight is a layout-flushing read and only changes on resize, but
-  // update() ran on every scroll event and read it each time.
+  // innerHeight is a layout-flushing read that only changes on resize, so it is
+  // cached here rather than read by update() on every scroll event.
   private viewportHeight = 0;
   private revealReleases: (() => void)[] = [];
+  /** The destinations the scroll reveal hides until they arrive. */
+  private arriving: HTMLElement[] = [];
   private teardown: (() => void)[] = [];
   private measureFrame = 0;
+
+  constructor() {
+    // A nav teleport reveals its landing section itself, ahead of the observer
+    // below, so the arrival anchors are refreshed in the same task. Registered
+    // at construction so this runs before any destination's own teleport
+    // listener: the Work showcase measures its pin in one, and has to see the
+    // section scaled about its fresh anchor rather than the last crossing's.
+    this.teardown.push(this.navTransition.onTeleport(() => this.anchorArrivals(this.arriving)));
+  }
 
   ngAfterViewInit(): void {
     this.reduce = this.motion.reducedMotion();
@@ -101,18 +115,52 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       this.dests.forEach((d) => {
         // Skip anything pre-revealed (real Home + its clone): both are loop
         // anchors that must always match, so a fast scroll can't catch them
-        // mid-reveal. Only Work/About/Contact get the scroll-reveal.
+        // mid-reveal. Only the four content destinations get the scroll-reveal.
         const el = d.nativeElement;
         if (!el.classList.contains('is-visible')) {
+          this.arriving.push(el);
           this.revealReleases.push(
-            this.inView.observe(el, { threshold: 0.15 }, (visible) =>
-              el.classList.toggle('is-visible', visible),
-            ),
+            // Measured against the viewport, not the section: a ratio threshold
+            // can never be met by a section taller than the viewport divided by
+            // it (Work is ~7 viewports, so it never shows 15% of itself), and
+            // that section would stay hidden. Trimming the viewport's foot by
+            // 15% reveals a section once it is properly in view, not when its
+            // first pixel enters.
+            this.inView.observe(el, { threshold: 0, rootMargin: '0px 0px -15% 0px' }, (visible) => {
+              // The first report arrives as soon as the section is observed;
+              // re-anchoring on a report that changes nothing would nudge a
+              // section that is still settling.
+              if (visible === el.classList.contains('is-visible')) {
+                return;
+              }
+              // Anchor the arrival scale on the edge crossing the viewport, so
+              // the edge seen first holds still. A tall section (Work is ~7
+              // viewports) then never lurches, and nothing at that edge travels
+              // to stack with the blocks' own rise, which is why ADR-0013
+              // rejected a destination-level translate. Exits are anchored the
+              // same way, so a section that reverses mid-fade keeps its anchor.
+              this.anchorArrivals([el]);
+              el.classList.toggle('is-visible', visible);
+            }),
           );
         }
       });
       document.body.classList.add('reveal-ready');
     }
+  }
+
+  /** Point each section's arrival scale at its part level with the top of the viewport. */
+  private anchorArrivals(sections: readonly HTMLElement[]): void {
+    // Every rect is read before any anchor is written. A custom property is
+    // inherited by the whole subtree, so each write re-styles its section
+    // (Work's reaches the drum and the orbit), and a rect read after it would
+    // force that recalculation on the spot, once per section, inside the view
+    // transition's update callback, which holds the page frozen until it ends.
+    const origins = sections.map((el) => {
+      const { top, height } = el.getBoundingClientRect();
+      return arrivalOrigin(top, height);
+    });
+    sections.forEach((el, i) => el.style.setProperty('--arrive-from', `${origins[i]}%`));
   }
 
   private onScroll(): void {

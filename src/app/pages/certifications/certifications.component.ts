@@ -15,6 +15,7 @@ import { InViewportService } from '../../core/in-viewport.service';
 import { NavTransitionService } from '../../core/nav-transition.service';
 import { ScrollLockService } from '../../core/scroll-lock.service';
 import { PageInertService } from '../../core/page-inert.service';
+import { CAMERA_PERSPECTIVE_PX } from '../../core/camera';
 import { smoothingK } from '../../motion.math';
 import { CERTIFICATIONS, Certification } from './certifications-data';
 import {
@@ -22,7 +23,7 @@ import {
   easeOutCubic,
   flipFromCentre,
   maskScales,
-  tiltFromVelocity,
+  previewPose,
 } from './certifications.math';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 
@@ -100,6 +101,8 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
   /** The pose last written to the preview, so the spotlight can open from it. */
   private turn = 0;
   private roll = 0;
+  /** The --turn last written to the tilt element, as written. */
+  private turnText = '';
   private settle = 0.9;
   private targetOpen = 0;
   private progress = 0;
@@ -221,6 +224,10 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
 
     img.src = cert.img;
     img.alt = cert.alt;
+    // The face inside the frame takes the certificate's own proportions; the
+    // frame keeps its 3:2 box whichever certificate opens, so the measure
+    // below, and the FLIP from the preview's identical box, are unaffected.
+    frame.style.setProperty('--cert-ratio', String(cert.width / cert.height));
     if (this.spotTitleRef) {
       this.spotTitleRef.nativeElement.textContent = cert.title;
     }
@@ -287,7 +294,8 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     // (the turn unwinds as the frame grows) instead of decomposing a matrix.
     frame.style.transformOrigin = '50% 50%';
     frame.style.transform =
-      `translate3d(${f.tx.toFixed(2)}px, ${f.ty.toFixed(2)}px, 0) perspective(1600px) ` +
+      `translate3d(${f.tx.toFixed(2)}px, ${f.ty.toFixed(2)}px, 0) ` +
+      `perspective(${CAMERA_PERSPECTIVE_PX}px) ` +
       `rotateY(${turn.toFixed(2)}deg) rotateZ(${roll.toFixed(2)}deg) ` +
       `scale(${f.sx.toFixed(4)}, ${f.sy.toFixed(4)})`;
     if (!hasSource) {
@@ -419,7 +427,7 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  /** Write-only: no layout reads, transform/opacity writes only. */
+  /** Write-only: no layout reads; transforms, opacity and --turn only. */
   private tick = (_now: number, dt: number): void => {
     const preview = this.previewRef?.nativeElement;
     const tilt = this.tiltRef?.nativeElement;
@@ -444,18 +452,28 @@ export class CertificationsComponent implements AfterViewInit, OnDestroy {
 
     const eased = easeOutCubic(this.progress);
     const { outer, inner } = maskScales(eased);
-    // The preview turns in the same 3D space as the project drum: the leading
-    // edge recedes up to 6deg (the drum's pointer response) with a third of
-    // that as roll, so a fling reads as a card swinging, not a sticker sliding.
-    this.turn = tiltFromVelocity(this.vx, 6, 6);
-    this.roll = this.turn / 3;
+    // The preview turns through the same lens as the project drum: a fling
+    // swings the leading edge back by up to 14deg, with a third of that as
+    // roll (see previewPose).
+    const pose = previewPose(this.vx);
+    this.turn = pose.turn;
+    this.roll = pose.roll;
     this.settle = 0.9 + 0.1 * eased;
 
     preview.style.transform = `translate3d(${this.x.toFixed(2)}px, ${this.y.toFixed(2)}px, 0)`;
     preview.style.opacity = Math.min(1, eased * 3).toFixed(3);
     tilt.style.transform =
-      `translate(-50%, -50%) perspective(1600px) rotateY(${this.turn.toFixed(2)}deg) ` +
-      `rotateZ(${this.roll.toFixed(2)}deg) scale(${this.settle.toFixed(3)})`;
+      `translate(-50%, -50%) perspective(${CAMERA_PERSPECTIVE_PX}px) ` +
+      `rotateY(${this.turn.toFixed(2)}deg) rotateZ(${this.roll.toFixed(2)}deg) ` +
+      `scale(${this.settle.toFixed(3)})`;
+    // The sheen and the shadow follow the turn through --turn. Every face and
+    // shadow inherits it, so a write restyles the whole stack: write only when
+    // the rounded value moves, and a preview held still costs nothing here.
+    const turnText = pose.turnRatio.toFixed(3);
+    if (turnText !== this.turnText) {
+      this.turnText = turnText;
+      tilt.style.setProperty('--turn', turnText);
+    }
     mask.style.transform = `scaleY(${outer.toFixed(4)})`;
     unmask.style.transform = `scaleY(${inner.toFixed(4)})`;
 

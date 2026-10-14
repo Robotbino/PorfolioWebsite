@@ -290,8 +290,10 @@
    CURSOR-TETHERED PREVIEW
    Fixed element positioned purely by transform (top/left never animate).
    Layers: .certs-preview = tether translate + opacity, -tilt = velocity rotate
-   + settle scale, -mask/-unmask = counter-scaled shutter. will-change is gated
-   behind .is-on so the idle (closed) preview holds no GPU layer.
+   + settle scale, -mask/-unmask = counter-scaled shutter, with -clip doing the
+   cropping between them. The tilt also carries --turn, the turn as -1 to 1,
+   which the sheen and the shadow read. will-change is gated behind .is-on so
+   the idle (closed) preview holds no GPU layer.
    ============================================ */
 
 .certs-preview {
@@ -315,13 +317,36 @@
   will-change: transform;
 }
 
+/* The sheen and the shadow move on every frame of a fling. On their own
+   layers that is a composite, not a repaint of the certificate or a fresh
+   blur of the shadow. Only the showing certificate's pair is promoted. */
+.certs-preview.is-on .certs-preview-face.is-active::after,
+.certs-preview.is-on .certs-preview-shadow.is-active::before {
+  will-change: translate, opacity;
+}
+
+/* A size container, so each face can be fitted against both the box's width
+   and its height (cqw / cqh) with no script. */
 .certs-preview-tilt {
   width: min(30rem, 36vw);
   aspect-ratio: 3 / 2;
+  container-type: size;
   transform: translate(-50%, -50%);
 }
 
+/* The shutter's scale. It doesn't crop (.certs-preview-clip does), so the
+   shadows that sit in it are squashed along with the reveal, staying the
+   shadow of the strip that shows, but never cut off. Inside the crop, a
+   certificate that fills the box's height would lose the whole shadow it
+   casts below. */
 .certs-preview-mask {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.certs-preview-clip {
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -330,22 +355,82 @@
 .certs-preview-unmask {
   position: absolute;
   inset: 0;
+  display: grid;
+  place-items: center;
 }
 
-.certs-preview-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+/* A certificate's own rectangle, fitted inside the 3:2 box the way
+   object-fit: contain would place it. The scans run from a square badge to a
+   page twice as wide as it is tall, and they are opaque, so the light and the
+   shadow belong on this box and not on the empty letterbox around it. The
+   spotlight frame is the same 3:2 container, so a face in the preview lands
+   exactly on the face in the spotlight when the FLIP maps one box onto the
+   other. The faces of one stack share a grid cell, for the crossfade. */
+.certs-preview-face,
+.certs-preview-shadow,
+.certs-spotlight-face {
+  grid-area: 1 / 1;
+  width: min(100cqw, 100cqh * var(--cert-ratio, 1.5));
+  aspect-ratio: var(--cert-ratio, 1.5);
+}
+
+.certs-preview-face,
+.certs-preview-shadow {
+  position: relative;
   opacity: 0;
   /* Short crossfade: the row-switch beat is carried by the shutter blink, not
      the fade, so the swap lands inside the blink's reopen. */
   transition: opacity 150ms var(--ease-out-quart);
 }
 
-.certs-preview-img.is-active {
+.certs-preview-face.is-active,
+.certs-preview-shadow.is-active {
   opacity: 1;
+}
+
+/* Clips the sheen to the paper. */
+.certs-preview-face {
+  overflow: hidden;
+}
+
+.certs-preview-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sheen: the project drum's diagonal band of light, sliding across the paper
+   as it turns and fading out as it comes back square, so a still preview
+   shows the certificate untouched. 220% wide (inset -60% each side) so the
+   band can travel clear across. The turn-driven values live here and not on
+   the face, whose opacity transition would otherwise restart every frame and
+   trail behind the turn. */
+.certs-preview-face::after {
+  content: '';
+  position: absolute;
+  inset: 0 -60%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    light-dark(rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.1)) 50%,
+    transparent 60%
+  );
+  translate: calc(var(--turn, 0) * -40%) 0;
+  opacity: calc(max(var(--turn, 0), -1 * var(--turn, 0)) * 0.9);
+  pointer-events: none;
+}
+
+/* Drop shadow: painted once, then only moved and faded, so it slips away
+   from the turn and deepens as the certificate swings. It is an outer
+   shadow, so it never paints inside its own box, which is what lets this
+   layer sit under the paper. */
+.certs-preview-shadow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: var(--shadow-lg);
+  translate: calc(var(--turn, 0) * -10px) 0;
+  opacity: calc(0.5 + 0.5 * max(var(--turn, 0), -1 * var(--turn, 0)));
 }
 
 /* ============================================
@@ -401,12 +486,16 @@
 }
 
 /* Fixed 3/2 stage (like the preview) so the FLIP destination is measurable
-   before the image loads; the certificate letterboxes inside invisibly. The
-   height term keeps tall viewports from pushing the caption off-screen. */
+   before the image loads; the certificate's face is fitted inside it (see
+   .certs-preview-face). The height term keeps tall viewports from pushing
+   the caption off-screen. */
 .certs-spotlight-frame {
   position: relative;
   width: min(56rem, 90vw, calc((100svh - 16rem) * 1.5));
   aspect-ratio: 3 / 2;
+  container-type: size;
+  display: grid;
+  place-items: center;
   transition: transform 480ms var(--ease-out-expo), opacity 320ms var(--ease-out-quart);
 }
 
@@ -414,9 +503,19 @@
   will-change: transform, opacity;
 }
 
+/* The spotlight holds still, so its elevation is static: the same shadow the
+   preview casts, without the sheen. The tint stands in for the paper until
+   the scan has loaded, so the shadow never frames an empty box. */
+.certs-spotlight-face {
+  background-color: var(--color-tag-bg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* contain, although the face already has the scan's proportions: when a
+   different certificate opens, the previous scan can still be showing for a
+   moment, and it letterboxes rather than stretching to the new shape. */
 .certs-spotlight-img {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;

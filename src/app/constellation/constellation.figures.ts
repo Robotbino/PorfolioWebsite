@@ -1,5 +1,6 @@
 import { DESTINATIONS } from '../destinations';
-import { Constellation, Link, Star } from './constellation.model';
+import { Constellation, Link, SpectralClass, Star } from './constellation.model';
+import { SPECTRAL_TEMPERATURE, depthUnits } from './constellation-depth';
 
 /**
  * The fixed star/link data for the five route constellations and the per-index
@@ -21,12 +22,26 @@ export const AMP = [6, 5, 5, 6, 6, 6, 7, 7];
 export const PHX = [0.0, 0.8, 1.6, 2.4, 3.2, 4.0, 4.8, 5.6];
 export const PHY = [1.0, 2.2, 0.4, 1.7, 2.6, 0.9, 1.5, 3.0];
 
-/** Build a constellation from index-ordered coordinates + its own real links. */
+/** A star's distance in light-years and its spectral class. */
+export type StarFact = readonly [ly: number, cls: SpectralClass];
+
+/**
+ * Build a constellation from index-ordered coordinates + its own real links,
+ * and each star's real distance and class (same index order) for its depth
+ * and tint in the WebGL star map.
+ */
 export function figure(
   name: string,
   coords: readonly (readonly [number, number])[],
   links: Link[],
+  facts: readonly StarFact[],
 ): Constellation {
+  if (facts.length !== coords.length) {
+    throw new Error(
+      `Constellation "${name}" has ${coords.length} stars but ${facts.length} star facts.`,
+    );
+  }
+  const depths = depthUnits(facts.map(([ly]) => ly));
   const stars: Star[] = coords.map(([x, y], i) => ({
     name: `${name} ${i + 1}`,
     x,
@@ -35,12 +50,18 @@ export function figure(
     phx: PHX[i],
     phy: PHY[i],
     amp: AMP[i],
+    depth: depths[i],
+    temperature: SPECTRAL_TEMPERATURE[facts[i][1]],
   }));
   return { name, stars, links };
 }
 
 // Five real constellations (8 stars each), in a 300×300 viewBox. Stars are
-// listed in index order; links are each figure's real connect-the-dots shape.
+// listed in index order; links are each figure's real connect-the-dots shape;
+// facts are distance (ly) and spectral class. The supergiant distances (Deneb,
+// Sadr, Alnilam, Eta Leonis) are uncertain by hundreds of light-years; on the
+// log depth scale that is a modest shift, and Deneb and Sadr sit at the clamp
+// either way.
 export const byRoute = {
   // Ursa Major / the Big Dipper — the navigator's constellation (Home).
   home: figure(
@@ -63,6 +84,16 @@ export const byRoute = {
       { a: 3, b: 4 },
       { a: 4, b: 5 },
       { a: 5, b: 6 },
+    ],
+    [
+      [123, 'K'], // Dubhe
+      [80, 'A'], // Merak
+      [84, 'A'], // Phecda
+      [81, 'A'], // Megrez
+      [83, 'A'], // Alioth
+      [78, 'A'], // Mizar
+      [104, 'B'], // Alkaid
+      [82, 'A'], // Alcor
     ],
   ),
   // Orion — the hunter (Work).
@@ -88,6 +119,16 @@ export const byRoute = {
       { a: 3, b: 6 },
       { a: 5, b: 7 },
     ],
+    [
+      [550, 'M'], // Betelgeuse
+      [250, 'B'], // Bellatrix
+      [1100, 'O'], // Meissa
+      [1260, 'O'], // Alnitak
+      [2000, 'B'], // Alnilam
+      [1200, 'O'], // Mintaka
+      [650, 'B'], // Saiph
+      [860, 'B'], // Rigel
+    ],
   ),
   // Leo — the lion (About).
   about: figure(
@@ -111,6 +152,16 @@ export const byRoute = {
       { a: 0, b: 6 },
       { a: 6, b: 7 },
       { a: 7, b: 0 },
+    ],
+    [
+      [79, 'B'], // Regulus
+      [1270, 'A'], // Eta
+      [130, 'K'], // Algieba
+      [274, 'F'], // Zeta
+      [133, 'K'], // Mu
+      [247, 'G'], // Epsilon
+      [58, 'A'], // Zosma
+      [36, 'A'], // Denebola
     ],
   ),
   // Corona Borealis / the Northern Crown — the laurel of achievement
@@ -136,6 +187,16 @@ export const byRoute = {
       { a: 5, b: 6 },
       { a: 6, b: 7 },
     ],
+    [
+      [75, 'A'], // Alphecca
+      [114, 'F'], // Nusakan
+      [380, 'B'], // Theta
+      [230, 'G'], // Pi
+      [145, 'A'], // Gamma
+      [165, 'G'], // Delta
+      [230, 'K'], // Epsilon
+      [310, 'A'], // Iota
+    ],
   ),
   // Cygnus / the Northern Cross — the swan in flight (Contact).
   contact: figure(
@@ -146,9 +207,9 @@ export const byRoute = {
       [150, 255], // Albireo (beak)
       [150, 196], // Eta
       [90, 150], // Gienah
-      [45, 160], // left wing tip
+      [45, 160], // Zeta (left wing tip)
       [215, 124], // Delta
-      [258, 114], // right wing tip
+      [258, 114], // Kappa (right wing tip)
     ],
     [
       { a: 0, b: 1 },
@@ -158,6 +219,16 @@ export const byRoute = {
       { a: 4, b: 1 },
       { a: 1, b: 6 },
       { a: 6, b: 7 },
+    ],
+    [
+      [2600, 'A'], // Deneb
+      [1800, 'F'], // Sadr
+      [430, 'K'], // Albireo
+      [140, 'K'], // Eta
+      [72, 'K'], // Gienah
+      [143, 'G'], // Zeta
+      [165, 'B'], // Delta
+      [125, 'K'], // Kappa
     ],
   ),
 };

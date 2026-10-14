@@ -5,6 +5,14 @@ import { ScrollLoopService } from '../scroll-loop.service';
 import { distanceFromHome } from '../scroll-loop.math';
 import { easeToward, smoothingK } from '../motion.math';
 
+/** The eased pointer (-1…1 across the window) and how close the reader is to Home. */
+export interface HeroPointer {
+  x: number;
+  y: number;
+  /** 1 at Home, fading to 0 at FADE_RANGE destinations away. */
+  homeWeight: number;
+}
+
 /**
  * Two-plane depth for the hero: where the pointer sits over the window, eased,
  * written as `--parallax-x` / `--parallax-y` (-1…1) onto every element that
@@ -20,6 +28,11 @@ import { easeToward, smoothingK } from '../motion.math';
  * Runs only for a fine pointer with motion allowed. When that changes mid
  * session the listeners and the tick are dropped and the properties removed,
  * so CSS falls back to its zero defaults. A settled pointer writes nothing.
+ *
+ * The WebGL star map reads the same pointer through `pointer()` instead of the
+ * properties: it orbits its camera at a reduced strength away from Home rather
+ * than stopping, so it needs the value before the Home fade, and the fade
+ * itself, as two numbers.
  */
 @Injectable({ providedIn: 'root' })
 export class HeroParallaxService {
@@ -41,12 +54,23 @@ export class HeroParallaxService {
   private x = 0;
   private y = 0;
   private written: [string, string] | null = null;
+  private readonly reading: HeroPointer = { x: 0, y: 0, homeWeight: 0 };
 
   constructor() {
     effect(() => {
       const allowed = this.motion.finePointer() && !this.motion.reducedMotion();
       untracked(() => (allowed ? this.enable() : this.disable()));
     });
+  }
+
+  /**
+   * The eased pointer without the Home fade, plus the fade. All zeros while the
+   * parallax is off (reduced motion, or no fine pointer). The same object is
+   * returned on every call and updated in place each frame, so a per-frame
+   * reader allocates nothing; read its fields rather than keeping it.
+   */
+  pointer(): Readonly<HeroPointer> {
+    return this.reading;
   }
 
   /** Start receiving the parallax properties on `el`. Returns release. */
@@ -85,6 +109,7 @@ export class HeroParallaxService {
     this.stopTick?.();
     this.stopTick = null;
     this.targetX = this.targetY = this.x = this.y = 0;
+    this.reading.x = this.reading.y = this.reading.homeWeight = 0;
     this.written = null;
     this.targets.forEach((el) => this.clear(el));
   }
@@ -112,6 +137,10 @@ export class HeroParallaxService {
     const k = smoothingK(dt, HeroParallaxService.EASE);
     this.x = easeToward(this.x, this.targetX * weight, k);
     this.y = easeToward(this.y, this.targetY * weight, k);
+    const reading = this.reading;
+    reading.x = easeToward(reading.x, this.targetX, k);
+    reading.y = easeToward(reading.y, this.targetY, k);
+    reading.homeWeight = weight;
 
     const sx = this.x.toFixed(3);
     const sy = this.y.toFixed(3);

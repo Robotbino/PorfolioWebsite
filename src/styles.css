@@ -284,6 +284,13 @@
   --transition-base: var(--duration-base) var(--ease-out-quart);
   --transition-slow: var(--duration-slow) var(--ease-out-expo);
 
+  /* The site's one lens. The hero's exit, the project drum, the certificate
+     preview and the WebGL star map all project through this distance, so a
+     depth of -160px reads the same in each of them. The star map derives its
+     field of view from the same number through CAMERA_PERSPECTIVE_PX in
+     src/app/core/camera.ts; camera.spec.ts fails if the two drift apart. */
+  --camera-perspective: 1600px;
+
   --max-width-content: 1400px;
   --max-width-text: 65ch;
   /* Deliberately NOT a bare var(--space-5xl) any more. `.section` is used by all

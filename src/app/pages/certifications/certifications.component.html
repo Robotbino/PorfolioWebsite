@@ -70,10 +70,13 @@
   <!-- Cursor-tethered preview. Fixed, pointer-events:none, aria-hidden: purely
   decorative (the rows hold the real content). Transform-only shutter:
   .certs-preview translates with the cursor, -tilt rotates with velocity,
-  mask/unmask counter-scale for the reveal. The img stack mounts once the
-  section is armed, warming the cache before the first hover.
+  -mask scales and -clip crops for the reveal while -unmask counter-scales
+  so the certificate never stretches. Each certificate is a face sized to
+  its own proportions; its shadow is a separate layer outside the crop (see
+  .certs-preview-shadow). The stacks mount once the section is armed,
+  warming the cache before the first hover.
 
-  `enabled` gates the stack as well as `armed()`: the CSS hides this whole
+  `enabled` gates the stacks as well as `armed()`: the CSS hides this whole
   subtree on touch and under reduced motion, but display:none does not stop
   the fetch, so without this gate a phone downloaded all five certificates
   for a preview it can never show. Tapping a row still opens the spotlight,
@@ -81,18 +84,29 @@
   <div class="certs-preview" #preview aria-hidden="true">
     <div class="certs-preview-tilt" #tilt>
       <div class="certs-preview-mask" #mask>
-        <div class="certs-preview-unmask" #unmask>
-          @if (armed() && enabled) {
-            @for (cert of certifications; track cert; let i = $index) {
-              <img
-                class="certs-preview-img"
-                [class.is-active]="i === activeIndex()"
-                [src]="cert.img"
-                alt=""
-                decoding="async"
-                />
-            }
+        @if (armed() && enabled) {
+          @for (cert of certifications; track cert; let i = $index) {
+            <span
+              class="certs-preview-shadow"
+              [class.is-active]="i === activeIndex()"
+              [style.--cert-ratio]="cert.width / cert.height"
+              ></span>
           }
+        }
+        <div class="certs-preview-clip">
+          <div class="certs-preview-unmask" #unmask>
+            @if (armed() && enabled) {
+              @for (cert of certifications; track cert; let i = $index) {
+                <div
+                  class="certs-preview-face"
+                  [class.is-active]="i === activeIndex()"
+                  [style.--cert-ratio]="cert.width / cert.height"
+                  >
+                  <img class="certs-preview-img" [src]="cert.img" alt="" decoding="async" />
+                </div>
+              }
+            }
+          </div>
         </div>
       </div>
     </div>
@@ -113,7 +127,9 @@
     <div class="certs-spotlight-scrim" (click)="closeSpotlight()"></div>
     <figure class="certs-spotlight-panel">
       <div class="certs-spotlight-frame" #spotFrame>
-        <img class="certs-spotlight-img" #spotImg alt="" />
+        <div class="certs-spotlight-face">
+          <img class="certs-spotlight-img" #spotImg alt="" />
+        </div>
       </div>
       <figcaption class="certs-spotlight-caption">
         <span class="certs-spotlight-title" #spotTitle></span>

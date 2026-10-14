@@ -36,19 +36,55 @@
 }
 
 /* Scroll reveal — armed by JS (`reveal-ready`) so content is visible if JS
-   never runs (fail-open). Each destination resolves as it scrolls into view. */
+   never runs (fail-open). Each destination resolves as it scrolls into view.
+   --arrive-from is written by AppComponent each time a section crosses the
+   viewport edge or a nav jump lands; see the hidden state below. */
 .dest > * {
+  transform-origin: 50% var(--arrive-from, 0%);
   transition:
     opacity var(--duration-dest) var(--ease-out-expo),
-    filter var(--duration-dest) var(--ease-out-expo);
+    filter var(--duration-dest) var(--ease-out-expo),
+    scale var(--duration-dest) var(--ease-out-expo);
 }
 
-/* Arrival is a focus pull, not a slide. The blocks inside already rise on
-   their own reveal, so a destination-level translate on top would stack into
-   one long lurch. Blur + opacity keeps the depth cue without the travel. */
-body.reveal-ready .dest:not(.is-visible) > * {
-  opacity: 0.001;
-  filter: blur(8px);
+/* Arrival is a focus pull from depth, not a slide. The blocks inside already
+   rise on their own reveal, so a destination-level translate on top would
+   stack into one long lurch (ADR-0013). Blur, opacity and a 2.5% scale-up
+   keep the depth cue without the travel, and the scale is anchored on the
+   part of the section seen first, so the edge coming into view holds still
+   and a section several viewports tall (Work is ~7) never swings into place.
+
+   Transitions only: never put a scroll-driven animation on these. While a
+   scale or filter is in effect the destination is the containing block for
+   anything position: fixed inside it. A transition holds that only while an
+   arrival runs (--duration-dest); a scroll-driven animation would hold it
+   for as long as the section stayed on screen. For the same reason the
+   resting state is the initial `scale: none`, never `scale: 1`: any value
+   but none keeps that containing block after arrival. Certifications, whose
+   cursor preview and spotlight are fixed, opts out of both below.
+
+   :host-context rather than a body selector: emulated encapsulation scopes
+   every compound of a selector, and <body> never carries this component's
+   attribute, so `body.reveal-ready …` would never match. Screen only, so a
+   printout never catches a section still waiting to arrive, and gated on
+   motion being allowed, like the reveal states in styles.css, so turning
+   reduced motion on mid-visit drops the hidden state instead of needing an
+   undo to outrank it. */
+@media screen and (prefers-reduced-motion: no-preference) {
+  :host-context(.reveal-ready) .dest:not(.is-visible) > * {
+    opacity: 0.001;
+    filter: blur(8px);
+    scale: 0.975;
+  }
+
+  /* Certifications holds the cursor preview and the spotlight, both
+     position: fixed. A filter or scale on the section would make it their
+     containing block for the length of the arrival, which is exactly when a
+     reader first reaches the rows, so it arrives by opacity alone. */
+  :host-context(.reveal-ready) #dest-certifications:not(.is-visible) > * {
+    filter: none;
+    scale: none;
+  }
 }
 
 /* The seam buffer (a Home clone) reuses .dest styling; it just must never be
@@ -71,6 +107,7 @@ body.reveal-ready .dest:not(.is-visible) > * {
   .dest > * {
     opacity: 1;
     transform: none;
+    scale: none;
     transition: none;
   }
 }

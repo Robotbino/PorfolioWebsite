@@ -1,4 +1,4 @@
-<div class="orbit-stage">
+<div class="orbit-stage" #stage>
   <!-- Two stacked crops of the same composition, one per theme. Light sits
   underneath at full opacity and only the dark one fades over it, so a theme
   switch never shows the page through a half-faded pair. Neither is ever
@@ -15,26 +15,34 @@
       decoding="async">
   </div>
 
-  <div class="orbit-rings" aria-hidden="true">
-    <span class="orbit-ring ring-inner"></span>
-    <span class="orbit-ring ring-outer"></span>
-  </div>
+  <!-- The ring lines come from the same projection as the logos' keyframes, in
+  the stage's own 100 × 75 units, so each logo stays on its line. The stops are
+  coloured in the stylesheet so they follow the theme. -->
+  <svg class="orbit-rings" viewBox="0 0 100 75" aria-hidden="true" focusable="false">
+    <defs>
+      @for (ring of rings; track ring.name) {
+        <linearGradient [attr.id]="ring.gradientId" gradientUnits="userSpaceOnUse"
+          [attr.x1]="ring.gradient.x1" [attr.y1]="ring.gradient.y1" [attr.x2]="ring.gradient.x2"
+          [attr.y2]="ring.gradient.y2">
+          <stop class="ring-far" offset="0" />
+          <stop class="ring-near" offset="1" />
+        </linearGradient>
+      }
+    </defs>
+    @for (ring of rings; track ring.name) {
+      <path class="orbit-ring" [attr.d]="ring.path" [attr.stroke]="'url(#' + ring.gradientId + ')'" />
+    }
+  </svg>
 
-  <!-- The logos are the content: each <img> carries the tool's name. The three
-  wrappers around it are the orbit mechanics (see the stylesheet). -->
+  <!-- The logos are the content: each <img> carries the tool's name. The inline
+  style is the logo's resting pose, so the picture is complete before any
+  animation starts and after one is cancelled. -->
   <ul class="orbit-tools" role="list">
-    @for (tool of tools; track tool.name) {
-      <li class="orbit" [class.ring-inner]="tool.ring === 'inner'"
-        [class.ring-outer]="tool.ring === 'outer'" [style.--slot]="tool.slot"
-        [style.--fit]="tool.fit">
-        <div class="orbit-arm">
-          <div class="orbit-spin">
-            <div class="orbit-disc">
-              <img [src]="tool.src" [alt]="tool.name" [attr.width]="tool.width"
-                [attr.height]="tool.height" loading="lazy" decoding="async">
-            </div>
-          </div>
-        </div>
+    @for (orbit of orbits; track orbit.tool.name) {
+      <li #logo class="orbit" [class.rim]="orbit.tool.rim" [style.--fit]="orbit.tool.fit"
+        [style.transform]="orbit.rest.transform" [style.opacity]="orbit.rest.opacity">
+        <img [src]="orbit.tool.src" [alt]="orbit.tool.name" [attr.width]="orbit.tool.width"
+          [attr.height]="orbit.tool.height" loading="lazy" decoding="async">
       </li>
     }
   </ul>

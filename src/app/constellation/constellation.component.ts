@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  Input,
   OnDestroy,
   QueryList,
   ViewChildren,
@@ -22,6 +23,7 @@ import { HeroParallaxService } from '../core/hero-parallax.service';
   templateUrl: './constellation.component.html',
   styleUrl: './constellation.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.resume]': 'resume' },
 })
 export class ConstellationComponent implements AfterViewInit, OnDestroy {
   private loop = inject(ScrollLoopService);
@@ -30,6 +32,13 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
   private parallax = inject(HeroParallaxService);
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
   private releaseParallax: (() => void) | null = null;
+
+  /**
+   * Taking over from the WebGL star map mid-visit: start on the reader's
+   * figure, already drawn, instead of morphing in from Home and replaying
+   * the entrance.
+   */
+  @Input() resume = false;
 
   // The morph cycles through these in scroll order; figure data lives in
   // constellation.figures.ts so this file stays focused on driving the morph.
@@ -63,6 +72,10 @@ export class ConstellationComponent implements AfterViewInit, OnDestroy {
     this.fromSegs = this.lineFromEls.map((el) => el.nativeElement);
     this.toSegs = this.lineToEls.map((el) => el.nativeElement);
 
+    if (this.resume) {
+      // The driver's reduced-motion path snaps straight to the target.
+      this.driver.advance(this.loop.position(), this.loop.cycleLength || this.order.length, true);
+    }
     this.renderAt(performance.now());
     this.unsub = this.pulse.onTick((now) => this.renderAt(now));
     // The far plane of the hero's parallax (see HeroParallaxService).

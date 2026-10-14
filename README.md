@@ -104,7 +104,7 @@ Karma runs headless via [karma.conf.js](karma.conf.js), so this works in CI and 
 ## ✨ Features
 
 - **Looping Scroll** — The page scrolls through all five sections and wraps invisibly back to the top via a cloned seam, so the journey never ends
-- **Morphing Star Map** — An SVG constellation interpolates between figures as you scroll, acting as wayfinding for where you are in the loop
+- **3D Star Map** — A WebGL scene (via [OGL](https://github.com/oframe/ogl)) morphs between five real constellations as you scroll, each star set at a depth taken from its real distance (log-scaled), so the figure is exact at rest and comes apart in depth as the camera steps aside between destinations; an SVG drawing takes over without WebGL
 - **WebGL Aurora** — A GLSL simplex-noise shader (via [OGL](https://github.com/oframe/ogl)) renders a living aurora behind every section; coarse-pointer devices get an animated CSS-gradient fallback instead of a shader
 - **Single Frame Loop** — One shared `requestAnimationFrame` pulse runs outside Angular's zone and drives every animation, keeping change detection off the hot path
 - **Horizontal Projects Showcase** — The Experience section pins and scrolls its project cards sideways on the same rAF pulse, with keyboard framing and a progress indicator
@@ -124,7 +124,7 @@ Karma runs headless via [karma.conf.js](karma.conf.js), so this works in CI and 
 | ---------- | ---------------------------------------------------------------------------------------------- |
 | Framework  | Angular 21 (standalone components + signals)                                                   |
 | Language   | TypeScript 5.6                                                                                 |
-| Graphics   | OGL (WebGL2 shader), SVG morphing                                                              |
+| Graphics   | OGL (WebGL star map + aurora shader), SVG fallback, Web Animations                             |
 | Styling    | CSS3 (Custom Properties, Flexbox, Grid)                                                        |
 | Typography | Nohemi (display), Atkinson Hyperlegible (body/UI), Instrument Serif (accent) — all self-hosted |
 | Icons      | Inline SVG (`shared/icon`)                                                                     |
@@ -171,16 +171,18 @@ the animation, a default-strategy component would be re-checked on every event i
 ```
 src/app/
 ├── aurora/                    # WebGL aurora background (OGL + GLSL shader, coarse-pointer CSS fallback)
-├── constellation/             # Morphing star map (figures, morph driver, interpolation)
+├── constellation/             # Star data (real distances), morph driver, interpolation, SVG fallback
 ├── core/                      # Services: frame pulse (shared rAF), theme, motion settings,
-│                              #   in-viewport, scroll lock, nav transitions, aurora palette
+│                              #   in-viewport, scroll lock, nav transitions, aurora + star-map
+│                              #   palettes, the shared camera constant
 ├── landingpage/               # Home / hero section + CV download
 ├── layout/site-nav/           # Navigation with loop-aware muting
 ├── pages/
-│   ├── work/                  # Experience timeline, Toolset orbit + horizontal showcase (work-data.ts)
+│   ├── work/                  # Experience timeline, Toolset orbit in perspective + horizontal showcase
 │   ├── about/
 │   ├── certifications/        # Spotlight overlay (certifications-data.ts, certifications.math.ts)
 │   └── contact/               # Marquee email, channels, colophon with live SAST clock
+├── star-map/                  # WebGL star map (OGL): camera rig, scene, renderer, shaders
 ├── shared/
 │   ├── icon/                  # Inline SVG icon set (path data + <app-icon>)
 │   └── theme-toggle/
@@ -222,8 +224,10 @@ rejected, because the trail is the point.
 | [0009](docs/adr/0009-inline-svg-icons.md)                   | Inline SVG icon set instead of an icon font                   | accepted                     |
 | [0010](docs/adr/0010-standalone-angular-21.md)              | Standalone components on Angular 21                           | accepted                     |
 | [0011](docs/adr/0011-projects-showcase-3d-cards.md)         | Projects showcase — cards in 3D space                         | accepted                     |
-| [0012](docs/adr/0012-toolset-orbit.md)                      | Toolset orbit — a still black hole with ten tools circling it | accepted                     |
-| [0013](docs/adr/0013-hero-depth-and-motion-system.md)       | Hero depth and one motion system                              | accepted                     |
+| [0012](docs/adr/0012-toolset-orbit.md)                      | Toolset orbit — a still black hole with ten tools circling it | accepted, revised by 0015    |
+| [0013](docs/adr/0013-hero-depth-and-motion-system.md)       | Hero depth and one motion system                              | accepted, revised by 0014    |
+| [0014](docs/adr/0014-star-map-in-webgl-and-one-camera.md)   | Star map in WebGL, and one shared camera                      | accepted                     |
+| [0015](docs/adr/0015-toolset-orbit-in-perspective.md)       | Toolset orbit in perspective                                  | accepted                     |
 
 ---
 

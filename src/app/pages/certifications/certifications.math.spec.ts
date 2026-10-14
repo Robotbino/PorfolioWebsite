@@ -1,4 +1,11 @@
-import { easeOutCubic, flipFromCentre, maskScales, tiltFromVelocity } from './certifications.math';
+import {
+  PREVIEW_MAX_TURN,
+  easeOutCubic,
+  flipFromCentre,
+  maskScales,
+  previewPose,
+  tiltFromVelocity,
+} from './certifications.math';
 
 describe('certifications.math', () => {
   describe('tiltFromVelocity', () => {
@@ -58,10 +65,39 @@ describe('certifications.math', () => {
     });
   });
 
-  describe('tiltFromVelocity as the preview turn', () => {
-    it("clamps at the drum cards' pointer response of 6deg", () => {
-      expect(tiltFromVelocity(100, 6, 6)).toBe(6);
-      expect(tiltFromVelocity(-100, 6, 6)).toBe(-6);
+  describe('previewPose', () => {
+    it('is flat at rest', () => {
+      expect(previewPose(0)).toEqual({ turn: 0, roll: 0, turnRatio: 0 });
+    });
+
+    it('caps the turn at 14deg in both directions', () => {
+      expect(PREVIEW_MAX_TURN).toBe(14);
+      expect(previewPose(100).turn).toBe(14);
+      expect(previewPose(-100).turn).toBe(-14);
+      expect(tiltFromVelocity(100, 14, 9)).toBe(14);
+    });
+
+    it('turns 9deg per px/ms below the cap', () => {
+      expect(previewPose(0.5).turn).toBeCloseTo(4.5, 10);
+      expect(previewPose(-1).turn).toBeCloseTo(-9, 10);
+    });
+
+    it('rolls a third of the turn', () => {
+      for (const vx of [0.2, -0.7, 1.2, 100, -100]) {
+        const { turn, roll } = previewPose(vx);
+        expect(roll).toBeCloseTo(turn / 3, 10);
+      }
+      expect(previewPose(100).roll).toBeCloseTo(14 / 3, 10);
+    });
+
+    it('reports the turn as -1..1 for the stylesheet, reaching the ends at the cap', () => {
+      expect(previewPose(100).turnRatio).toBe(1);
+      expect(previewPose(-100).turnRatio).toBe(-1);
+      expect(previewPose(0.5).turnRatio).toBeCloseTo(4.5 / 14, 10);
+      for (const vx of [-50, -1, -0.1, 0.1, 1, 50]) {
+        const { turnRatio } = previewPose(vx);
+        expect(Math.abs(turnRatio)).toBeLessThanOrEqual(1);
+      }
     });
   });
 

@@ -78,13 +78,26 @@ export class NavTransitionService {
    *
    * Derived, not hardcoded: anything sitting at the very start of the scrollable
    * content has nothing above it but that in-flow bar, so it resolves to 0. The
-   * 1px tolerance absorbs sub-pixel rect rounding.
+   * 1px tolerance absorbs sub-pixel rounding.
+   *
+   * Measured in layout offsets, not from the element's rect: a destination
+   * still waiting to arrive is scaled down (app.component.css), and a rect read
+   * through that scale would land the jump up to ~120px off its target in Work,
+   * which is several viewports tall.
    */
   private landingOffset(el: HTMLElement): number {
-    const top = window.scrollY + el.getBoundingClientRect().top;
     const content = el.closest('main');
-    const contentTop = content ? window.scrollY + content.getBoundingClientRect().top : 0;
-    return top - contentTop <= 1 ? 0 : top;
+    let offset = 0;
+    let node: HTMLElement | null = el;
+    while (node && node !== content) {
+      offset += node.offsetTop;
+      node = node.offsetParent as HTMLElement | null;
+    }
+    if (!content || node !== content) {
+      // Not laid out under <main>: the rect is the only measure there is.
+      return window.scrollY + el.getBoundingClientRect().top;
+    }
+    return offset <= 1 ? 0 : window.scrollY + content.getBoundingClientRect().top + offset;
   }
 
   /**

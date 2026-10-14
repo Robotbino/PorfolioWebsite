@@ -13,6 +13,31 @@ export function tiltFromVelocity(vx: number, maxDeg = 8, degPerPxMs = 6): number
   return Math.max(-maxDeg, Math.min(maxDeg, deg));
 }
 
+/** The furthest the cursor preview turns, in degrees. */
+export const PREVIEW_MAX_TURN = 14;
+
+/** How the cursor preview leans for a given tether velocity. */
+export interface PreviewPose {
+  /** Turn about the vertical axis, in degrees (rotateY). */
+  readonly turn: number;
+  /** Roll in the certificate's own plane, in degrees (rotateZ). */
+  readonly roll: number;
+  /** The turn as a share of its maximum, -1 to 1: the --turn the sheen and
+   *  shadow read in CSS, so the stylesheet never needs the degree cap. */
+  readonly turnRatio: number;
+}
+
+/**
+ * The preview's pose for a smoothed horizontal velocity (px/ms). 9deg per
+ * px/ms reaches the 14deg cap at about 1.6 px/ms, so ordinary pointing leans
+ * the certificate and only a fling pins it. The roll is a third of the turn:
+ * enough that a swing reads as a card on a pivot, not a sticker sliding.
+ */
+export function previewPose(vx: number): PreviewPose {
+  const turn = tiltFromVelocity(vx, PREVIEW_MAX_TURN, 9);
+  return { turn, roll: turn / 3, turnRatio: turn / PREVIEW_MAX_TURN };
+}
+
 /**
  * Shutter-mask scale pair for reveal progress p (0 closed → 1 open): the
  * overflow-hidden mask scales to `outer` while its child counter-scales to

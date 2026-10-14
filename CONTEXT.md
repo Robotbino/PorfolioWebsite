@@ -63,8 +63,10 @@ _Avoid_: "route" / "page" (that was the superseded multipage framing)
 
 **Travel**:
 Moving across the starfield from one _Destination_'s constellation to the next. Now scroll-driven:
-the morph tracks scroll position continuously rather than firing on a navigation event. Must have a
-reduced-motion / text-nav fallback.
+the morph tracks scroll position continuously rather than firing on a navigation event. While the
+stars re-form, the camera steps up to 15° aside and pulls back, then settles face-on at the next
+_Destination_, so the figure reads exactly as the real one there. Must have a reduced-motion /
+text-nav fallback. See [ADR-0014](adr/0014-star-map-in-webgl-and-one-camera.md).
 _Avoid_: "page transition" (there is no routing); "background stars" (they are the map now, not a
 backdrop)
 
@@ -73,8 +75,24 @@ A **real** astronomical figure, one per _Destination_ — Ursa Major (Home), Ori
 (About), Corona Borealis (Certifications), Cygnus (Contact). All share the **same star count**
 (`STAR_COUNT = 8`) so any two morph 1:1, but each keeps its **own real asterism lines**, which
 cross-fade through the dim point of each transition. Authored in the `Star`/`Link` data format in
-`constellation.figures.ts`. (Bespoke, meaning-evoking figures were the original plan; ADR-0003
-replaced them with real ones — see [ADR-0003](adr/0003-looping-scroll-real-constellations.md).)
+`constellation.figures.ts`, with each star's real distance and spectral class: drawn in WebGL, every
+star sits on its sight line at a depth taken from its real distance (log-scaled and clamped), so the figure is exact from the resting
+camera and comes apart in depth when the camera moves. The SVG drawing is the fallback.
+(Bespoke, meaning-evoking figures were the original plan; ADR-0003 replaced them with real ones —
+see [ADR-0003](adr/0003-looping-scroll-real-constellations.md) and
+[ADR-0014](adr/0014-star-map-in-webgl-and-one-camera.md).)
+
+**Star field**:
+The faint background stars of the WebGL star map, spread in depth behind the constellations. They
+never twinkle; they only move when the camera does (pointer, or _Travel_).
+_Avoid_: "particles" (they are a place, not an effect)
+
+**Camera**:
+The one perspective the page's 3D shares — the hero exit, the project drum, the certificate
+preview and the star map: `--camera-perspective` (1600px), mirrored as
+`CAMERA_PERSPECTIVE_PX` and used as the star map's focal length, so a depth in CSS and a depth in
+the star field mean the same thing. The _Toolset orbit_ is an illustration with its own stage and
+scales its own camera to it.
 
 **Wayfinding** (how nav reveals):
 **Progressive.** A conventional labeled nav is the baseline and always operable (keyboard,
@@ -147,21 +165,26 @@ _Avoid_: "avatar", "headshot card" (both imply a chip or a surface — this is a
 
 **Toolset orbit**:
 The illustration in the Experience _Destination_'s second ledger slot: a still black-hole image
-(one crop per theme, its edges dissolved into the page by a mask) with ten tool logos circling it
-on two tilted rings, upright on small backing discs. Only the logos move, and only while it is on
-screen; under reduced motion it is a still picture. See
-[ADR-0012](adr/0012-toolset-orbit.md).
+(one crop per theme, its edges dissolved into the page by a mask) with ten tool logos travelling
+two rings in perspective, directly on the orbit lines: larger and brighter on the near side, below
+the hole, and always in front of it. Only the logos move, and only while it is on screen; under
+reduced motion it is a still picture. See [ADR-0012](adr/0012-toolset-orbit.md) and
+[ADR-0015](adr/0015-toolset-orbit-in-perspective.md).
 _Avoid_: "skills table" (it replaced one), "video" (it isn't one)
 
 **Hero parallax**:
-Two planes near Home: the headline drifts a few pixels against the pointer while the
-constellation drifts with it. One writer feeds both copies of the hero, so the _Seam_ never
-shows; it fades out away from Home and is off for touch and reduced motion. See
-[ADR-0013](adr/0013-hero-depth-and-motion-system.md).
+Depth near Home: the headline drifts a few pixels against the pointer while the star map's
+camera orbits a point just in front of the constellation, so the figure drifts with the pointer and
+the _Star field_ behind it moves further. One writer feeds both copies of the hero, so the _Seam_
+never shows; the headline's part fades out away from Home (the camera keeps a gentle 30%) and all
+of it is off for touch and reduced motion. See
+[ADR-0013](adr/0013-hero-depth-and-motion-system.md) and
+[ADR-0014](adr/0014-star-map-in-webgl-and-one-camera.md).
 
 **Hero exit**:
-Scrolling away from Home, the poster recedes into the drum's 3D space and dims. Scroll-linked,
-no script; it begins only after the hero's foot reaches the bottom of the viewport.
+Scrolling away from Home, the poster recedes into the _Camera_'s space, tips back from its foot
+and dims. Scroll-linked, no script; it begins only after the hero's foot reaches the bottom of the
+viewport.
 
 **Drawn rule**:
 A ledger hairline that draws itself left to right as its block arrives — the Experience index's

@@ -127,10 +127,12 @@
   position: relative;
   align-self: start;
   max-width: 100%;
-  /* The near plane of the hero parallax (HeroParallaxService): a few pixels
-     against the pointer while the constellation drifts with it. Only the name
-     moves; the statement and the controls under the cursor stay put. */
-  translate: calc(var(--parallax-x, 0) * -3px) calc(var(--parallax-y, 0) * -2px);
+  /* The near plane of the hero parallax (HeroParallaxService): up to 7px
+     sideways and 4px vertically against the pointer while the constellation
+     drifts with it. A translate, not growth, so the clearance note at the top
+     of this file still holds. Only the name moves; the statement and the
+     controls under the cursor stay put. */
+  translate: calc(var(--parallax-x, 0) * -7px) calc(var(--parallax-y, 0) * -4px);
 }
 
 /* Where the parallax can run, the headline gets its own layer, so moving it is
@@ -561,15 +563,19 @@
   }
 }
 
-/* Leaving Home, the poster recedes into the same 3D space as the project cards
-   (the drum's camera: 1600px perspective, -160px of depth) and dims. It is
-   scroll-linked rather than timed, so it costs no script, and it only starts
-   once the hero's foot reaches the bottom of the viewport — the real Home at
-   the top of the page and the clone on the wrap frame are both short of that,
-   so the seam stays pixel-identical. The named timeline matters: .hero and
-   .hero-wrapper are scroll containers themselves (overflow), and an anonymous
-   view() would bind to them and never advance. Browsers without scroll-driven
-   animations, and reduced motion, keep the static poster. */
+/* Leaving Home, the poster recedes 320px, tips back 6° and dims, seen through
+   the camera the project drum and the star map share (--camera-perspective;
+   see docs/adr/0014-star-map-in-webgl-and-one-camera.md). It tips from its
+   bottom edge because by then only its foot is still on screen: about the
+   centre, the same tilt would swing that band toward the viewer and cancel
+   part of the recession. It is scroll-linked rather than timed, so it costs no
+   script, and it only starts once the hero's foot reaches the bottom of the
+   viewport — the real Home at the top of the page and the clone on the wrap
+   frame are both short of that, so the seam stays pixel-identical. The named
+   timeline matters: .hero and .hero-wrapper are scroll containers themselves
+   (overflow), and an anonymous view() would bind to them and never advance.
+   Browsers without scroll-driven animations, and reduced motion, keep the
+   static poster. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .hero-wrapper {
@@ -577,11 +583,12 @@
     }
 
     .hero {
-      perspective: 1600px;
+      perspective: var(--camera-perspective);
       perspective-origin: 30% 50%;
     }
 
     .hero-frame {
+      transform-origin: 50% 100%;
       animation: heroRecede linear both;
       animation-timeline: --hero-exit;
       animation-range: exit 0% exit 70%;
@@ -591,8 +598,8 @@
 
 @keyframes heroRecede {
   to {
-    transform: translateZ(-160px);
-    opacity: 0.7;
+    transform: translateZ(-320px) rotateX(6deg);
+    opacity: 0.5;
   }
 }
 

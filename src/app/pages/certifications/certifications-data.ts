@@ -24,6 +24,14 @@ export interface Certification {
   readonly href: string;
   readonly img: string;
   readonly alt: string;
+  /**
+   * The scan's intrinsic size in pixels, measured from the webp. The preview
+   * and the spotlight fit the certificate's own rectangle inside their 3:2 box
+   * from these, before the image has loaded, so its shadow and sheen sit on the
+   * paper rather than on the letterbox around it. Update them with the image.
+   */
+  readonly width: number;
+  readonly height: number;
 }
 
 export const CERTIFICATIONS: readonly Certification[] = [
@@ -34,6 +42,8 @@ export const CERTIFICATIONS: readonly Certification[] = [
     href: 'https://www.credly.com/badges/68d7322a-1584-4605-951d-e84b73cef357/public_url',
     img: '/assets/certs/ibm-ai-fundamentals.webp',
     alt: 'Artificial Intelligence Fundamentals certificate from IBM',
+    width: 515,
+    height: 512,
   },
   {
     title: 'JavaScript',
@@ -42,6 +52,8 @@ export const CERTIFICATIONS: readonly Certification[] = [
     href: 'https://scrimba.com/u42ef1c4:certs;cert24zAwPPowS2rZVEfEZ2kSBedSKFrfvEXo19z4',
     img: '/assets/certs/scrimba-javascript.webp',
     alt: 'Learn JavaScript certificate from Scrimba',
+    width: 1648,
+    height: 831,
   },
   {
     title: 'HTML and CSS Fundamentals',
@@ -50,6 +62,8 @@ export const CERTIFICATIONS: readonly Certification[] = [
     href: 'https://scrimba.com/u42ef1c4:certs;cert24zAwPPowS2rZVEfEZ2kSBd99ByKWBUFmmm1J',
     img: '/assets/certs/scrimba-html-css.webp',
     alt: 'Learn HTML and CSS certificate from Scrimba',
+    width: 1654,
+    height: 847,
   },
   {
     title: 'Claude 101',
@@ -58,6 +72,8 @@ export const CERTIFICATIONS: readonly Certification[] = [
     href: 'https://verify.skilljar.com/c/2qgjschtf8e8',
     img: '/assets/certs/anthropic-claude-101.webp',
     alt: 'Claude 101 certificate of completion from Anthropic',
+    width: 1012,
+    height: 783,
   },
   {
     title: 'Claude Code 101',
@@ -66,5 +82,7 @@ export const CERTIFICATIONS: readonly Certification[] = [
     href: 'https://verify.skilljar.com/c/5zfaiayuzaeq',
     img: '/assets/certs/anthropic-claude-code-101.webp',
     alt: 'Claude Code 101 certificate of completion from Anthropic',
+    width: 983,
+    height: 755,
   },
 ] as const;

@@ -1,0 +1,9 @@
+<!-- The framing box is never painted: it carries the constellation's box rules
+so the camera can frame the figure where the SVG would have drawn it. The
+renderer's canvas is mounted into the stage from code. Without WebGL, the SVG
+constellation renders in its place. -->
+<div class="framing" #framing aria-hidden="true"></div>
+<div class="stage" #stage aria-hidden="true"></div>
+@if (mode() === 'svg') {
+  <app-constellation [resume]="resumed()"></app-constellation>
+}

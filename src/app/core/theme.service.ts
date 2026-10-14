@@ -1,6 +1,7 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { resolveTheme } from './theme.decision';
 import { auroraPalette as auroraPaletteFor } from './aurora-palette';
+import { starMapPalette as starMapPaletteFor } from './star-map-palette';
 
 const STORAGE_KEY = 'theme';
 
@@ -29,6 +30,9 @@ export class ThemeService {
    * this is what lets the raw hex + GLSL tuning leave the shell template.
    */
   readonly auroraPalette = computed(() => auroraPaletteFor(this.isDark()));
+
+  /** The WebGL star map's colours for the current theme, memoized the same way. */
+  readonly starMapPalette = computed(() => starMapPaletteFor(this.isDark()));
 
   constructor() {
     const saved = localStorage.getItem(STORAGE_KEY);

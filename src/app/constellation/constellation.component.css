@@ -18,6 +18,10 @@
 }
 
 
+/* The WebGL star map frames its figure from .framing in
+   star-map/star-map.component.css, which repeats these box rules (and the
+   ≤900px and ≤600px ones below) without the parallax translate. Change the
+   two together, or the fallback and the WebGL figure land in different places. */
 .cluster {
   position: absolute;
   top: 50%;
@@ -95,6 +99,17 @@
     width: clamp(150px, 48vw, 220px);
     opacity: 0.55;
   }
+}
+
+/* Taking over mid-visit from the WebGL star map: already drawn. */
+:host(.resume) .links line {
+  stroke-dashoffset: 0;
+  animation: none;
+}
+
+:host(.resume) .star {
+  opacity: 1;
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
