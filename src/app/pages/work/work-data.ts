@@ -49,24 +49,32 @@ export interface Project {
   readonly screenshots: readonly [ProjectImage, ...ProjectImage[]];
 }
 
+/** One job title and the dates it was held. */
+export interface Position {
+  readonly title: string;
+  readonly period: string;
+}
+
 /**
  * The one role, as data rather than markup.
  *
- * `title` and `period` stay nullable: the template renders each only when it is
- * filled in, so an unknown fact is omitted rather than guessed at.
+ * `positions` runs newest first. An empty list renders no title line, so an
+ * unknown fact is omitted rather than guessed at.
  */
 export interface Role {
   readonly org: string;
   readonly descriptor: string;
-  readonly title: string | null;
-  readonly period: string | null;
+  readonly positions: readonly Position[];
 }
 
 export const ROLE: Role = {
   org: 'SITA',
   descriptor: 'Java EE case management & workflow platform',
-  title: 'Full-Stack Developer',
-  period: 'June 2023 — present',
+  positions: [
+    { title: 'Junior Full-Stack Developer', period: 'June 2026 — present' },
+    { title: 'Experiential Trainee (Java Developer)', period: 'June 2025 — May 2026' },
+    { title: 'Software Development Intern', period: 'June 2024 — May 2025' },
+  ],
 };
 
 export const EXPERIENCE_GROUPS: readonly ExperienceGroup[] = [
@@ -78,7 +86,7 @@ export const EXPERIENCE_GROUPS: readonly ExperienceGroup[] = [
   },
   {
     label: 'Database Management',
-    description: 'SQL, Oracle, MySQL',
+    description: 'SQL, Microsoft SQL Server, MySQL',
   },
   {
     label: 'Software Development & Web Applications',

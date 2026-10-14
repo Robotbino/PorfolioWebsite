@@ -16,20 +16,18 @@
         <span class="role-title-org">{{ role.org }} </span>
         <span class="role-title-desc">&mdash; {{ role.descriptor }}</span>
       </h3>
-      <!-- Job title and dates render only once they exist in work-data.ts, so
-      the heading never carries an empty dash or a placeholder. -->
-      @if (role.title || role.period) {
-        <p class="role-meta">
-          @if (role.title) {
-            <span class="role-meta-title">{{ role.title }}</span>
+      <!-- One line per title held, newest first. An empty list in work-data.ts
+      renders nothing, so the heading never carries a placeholder. -->
+      @if (role.positions.length) {
+        <div class="role-meta">
+          @for (position of role.positions; track position.title) {
+            <p class="role-meta-line">
+              <span class="role-meta-title">{{ position.title }}</span>
+              <span class="role-meta-sep" aria-hidden="true">&middot;</span>
+              <span class="role-meta-period">{{ position.period }}</span>
+            </p>
           }
-          @if (role.title && role.period) {
-            <span class="role-meta-sep" aria-hidden="true">&middot;</span>
-          }
-          @if (role.period) {
-            <span class="role-meta-period">{{ role.period }}</span>
-          }
-        </p>
+        </div>
       }
       <ul class="role-points" role="list">
         <li>
