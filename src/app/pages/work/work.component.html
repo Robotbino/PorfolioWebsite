@@ -14,7 +14,7 @@
       accessible name into "SITA—Java EE…". -->
       <h3 class="role-title">
         <span class="role-title-org">{{ role.org }} </span>
-        <span class="role-title-desc">&mdash; {{ role.descriptor }}</span>
+        <span class="role-title-desc"> {{ role.descriptor }}</span>
       </h3>
       <!-- One line per title held, newest first. An empty list in work-data.ts
       renders nothing, so the heading never carries a placeholder. -->
@@ -32,12 +32,12 @@
       <ul class="role-points" role="list">
         <li>
           Consolidated attachment-handling logic that had been copied across several
-          role-specific beans into one shared structure &mdash; cutting duplication by
+          role-specific beans into one shared structure, cutting duplication by
           around 60% and making the subsystem far easier to extend.
         </li>
         <li>
           Tracked down and fixed a recurring class of silent form-submission failures in
-          multi-step JSF workflows &mdash; the kind where a user hits save and nothing
+          multi-step JSF workflows, the kind where a user hits save and nothing
           happens. It had been a top source of QA-reported defects.
         </li>
         <li>
