@@ -6,6 +6,7 @@ import {
   NgZone,
   OnDestroy,
   ViewChild,
+  computed,
   effect,
   inject,
   signal,
@@ -85,6 +86,10 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
 
   /** The position line under a mouse, as listed; the role figure lifts its plate. */
   readonly picked = signal<number | null>(null);
+  /** The line whose plate the role figure's own lap is lifting, as listed. */
+  readonly touring = signal<number | null>(null);
+  /** The line that reads as lit: a hover's, or else the lap's. */
+  readonly lit = computed(() => this.picked() ?? this.touring());
 
   // Only enabled on wide screens with motion allowed. Below that (or no-JS) the
   // host stays without `.showcase-on` and the cards render as a vertical stack —

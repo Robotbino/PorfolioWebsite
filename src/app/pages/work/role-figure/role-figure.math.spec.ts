@@ -1,5 +1,6 @@
 import { ROLE } from '../work-data';
 import {
+  BREATH,
   DROP,
   FALL,
   FigureGeometry,
@@ -41,7 +42,7 @@ describe('role-figure.math', () => {
 
   /** Every path of the drawing, each plate moved by the lift it is given. */
   function drawing(g: FigureGeometry, lift: (i: number) => number): Point[] {
-    const still = [g.ledge.sil, g.ledge.crease, g.groove, g.years, g.quarters, g.now].flatMap(
+    const still = [g.ledge.sil, g.ledge.crease, g.groove, g.years, ...g.quarters, g.now].flatMap(
       points,
     );
     const plates = g.plates.flatMap((p, i) =>
@@ -118,9 +119,15 @@ describe('role-figure.math', () => {
 
     it('rules a year mark at every June, and quarters only up to now', () => {
       expect(subpaths(g.years)).toBe(4); // June 2024, 2025, 2026, 2027
-      expect(subpaths(g.quarters)).toBe(7); // months 3, 6, 9, 15, 18, 21, 27
+      expect(g.quarters.length).toBe(7); // months 3, 6, 9, 15, 18, 21, 27
+      expect(g.quarters.every((d) => subpaths(d) === 1)).toBeTrue();
       const later = figureGeometry(ROLE.positions, '2027-04');
-      expect(subpaths(later.quarters)).toBe(9); // and 30, 33
+      expect(later.quarters.length).toBe(9); // and 30, 33
+    });
+
+    it('lists the quarters in month order, so they engrave left to right', () => {
+      const xs = g.quarters.map(centreX);
+      expect(xs).toEqual([...xs].sort((a, b) => a - b));
     });
 
     it('moves the now mark with the month', () => {
@@ -154,7 +161,11 @@ describe('role-figure.math', () => {
           drawing(g, (i) => liftFor(picked, i, n)),
         );
       }
-      // The entrance holds each plate DROP above its rest.
+      // The float at rest, and the entrance, which holds each plate DROP above its rest.
+      expectInside(
+        g,
+        drawing(g, (i) => liftFor(null, i, n) + BREATH),
+      );
       expectInside(
         g,
         drawing(g, (i) => liftFor(null, i, n) + DROP),

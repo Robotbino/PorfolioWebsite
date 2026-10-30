@@ -107,8 +107,8 @@
   transition: color var(--transition-base);
 }
 
-/* The line whose plate the figure is lifting. */
-.role-meta-line.is-picked {
+/* The line whose plate the figure is lifting, for a hover or its own lap. */
+.role-meta-line.is-lit {
   color: var(--color-text-primary);
 }
 

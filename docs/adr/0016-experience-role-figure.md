@@ -26,9 +26,10 @@ engraved only up to now, and the ledge runs on empty to where Plate 04 would sta
 - **The port is the kernel's static geometry plus CSS.** `role-figure.iso.ts` vendors the camera,
   rounded solids and path functions the figure calls, typed and with Hairline's MIT notice.
   `role-figure.math.ts` builds the figure from them with the source's constants under the same
-  names. Every runtime move is a straight lift, and under a parallel projection that is a plain
-  `translateY` of the seated drawing. So every path is computed once, a lift is a CSS transition
-  on a plate's transform, and the stagger is that transition's delay. Nothing runs per frame.
+  names. Everything that moves moves straight up or down, and under a parallel projection that
+  is a plain `translateY` of the drawing at rest. So every path is computed once, a lift is a
+  CSS transition on a plate's transform, and the stagger is that transition's delay. No script
+  runs per frame: the only timer steps the lap, every 1.6 seconds at most.
 - **Hairline's motion rules carry over.**
   - A pick or a release rides 700ms on `cubic-bezier(.32,.72,0,1)`.
   - It spreads outwards from the plate picked, or the one let go, 45ms per plate.
@@ -40,10 +41,24 @@ engraved only up to now, and the ledge runs on empty to where Plate 04 would sta
   `WorkComponent.picked`. The figure lifts that plate, and the line steps from muted to primary
   text. The figure itself takes no pointer input and is `aria-hidden`; the lines stay plain text.
 - **It enters once.** When a third of the figure is on screen, a one-shot `InViewportService`
-  watch drops the starting pose. The drawing wipes in from the left over `--duration-rule`, like
-  the site's drawn rules, and the plates drop into the groove one after another. Under reduced
-  motion there is no starting pose: the first paint is the rest pose, and hover changes land at
-  once through the global rule.
+  watch drops the starting pose, and the entrance takes about 2.3 seconds:
+  - the drawing wipes in from the left over `--duration-rule`, like the site's drawn rules;
+  - the quarters engrave in month order up to now;
+  - the now mark drops onto the lip;
+  - the plates land in the groove, oldest first.
+- **It plays its own lap.** The owner found the first version, which moved only for a hover, too
+  static. While any of the figure is on screen and nobody is hovering a position, it plays
+  Hairline's tour on its own:
+  - It lifts each plate in turn, oldest first, holding each for 1.6 seconds.
+  - It lights the matching position line through a `touring` output to `WorkComponent`.
+  - It rests for 3.2 seconds, then goes round again: one lap every 8 seconds.
+  - A hover takes over at once, and the lap resumes 1.6 seconds after the pointer leaves.
+  - The first lap waits for the entrance to finish.
+- **The newest plate floats at rest.** Half lifted, it rises a few pixels and back on a 2.6-second
+  keyframe, so the present reads as being measured, not parked. It holds still off screen.
+- **Reduced motion keeps the picture and the answer, and drops the rest.** There is no starting
+  pose: the first paint is the rest pose. The lap never starts, the global rule ends the float,
+  and a hover still lifts its plate, landing at once.
 - **The grid makes the room.** `.role` gains a third, flexible row, and the bullets span rows 2
   and 3. The figure fills row 3 with `contain: size`, so the bullets, the positions and the
   section's height are unchanged at every two-column width. The drawing is anchored bottom-left,
@@ -74,8 +89,12 @@ engraved only up to now, and the ledge runs on empty to where Plate 04 would sta
 
 ## Consequences
 
-- No CSP change, and no new runtime dependency. The initial bundle grows by about 11kB raw
-  (about 3.5kB over the wire).
+- The lap is motion that starts by itself, lasts more than five seconds and runs beside other
+  content, which WCAG 2.2.2 asks to be pausable. As with the Toolset orbit (ADR-0012), the owner
+  chose no control. Instead the lap stops for any hover, off screen and under reduced motion,
+  and what it shows (lines lit in turn) is decoration over text that never changes.
+- No CSP change, and no new runtime dependency. The initial bundle grows by about 14kB raw
+  (about 4kB over the wire).
 - `role-figure.math.ts` is the single source of the drawing. To change the figure, change
   `docs/hairline/plates/plates.js` with the skill, then carry the constants across. They keep the
   source's names.

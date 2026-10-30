@@ -26,9 +26,10 @@ import {
  *
  * It is a port of docs/hairline/plates/plates.js, built with the same kernel
  * functions and the same constants under the same names, so a change made with
- * Hairline carries straight across. Only the plates ever move, and only
- * straight up: under a parallel projection that is a plain translateY of the
- * seated drawing, so every path here is computed once and CSS does the motion.
+ * Hairline carries straight across. Everything that moves moves straight up
+ * or down (a plate lifting, floating or landing, the now mark dropping onto
+ * the lip): under a parallel projection that is a plain translateY of the
+ * drawing at rest, so every path here is computed once and CSS does the motion.
  */
 
 // The camera: off the 2:1 diagonal, so the ledge reads as a wide band.
@@ -69,6 +70,12 @@ export const REST_LIFT = LIFT / 2;
 /** How far each plate falls into the groove as the figure enters. */
 export const DROP = 14;
 
+/** How far the now mark falls onto the lip as the figure enters, after the quarters are engraved. */
+export const NOW_DROP = 6;
+
+/** How far the half-lifted newest plate floats while it rests: being measured, not parked. */
+export const BREATH = 2.5;
+
 /** Lift by distance from the picked plate: a floor, so the reach is clamped. */
 export const FALL: readonly number[] = [1, 0.31, 0.09];
 
@@ -96,7 +103,8 @@ export interface FigureGeometry {
   readonly ledge: { readonly sil: string; readonly crease: string };
   readonly groove: string;
   readonly years: string;
-  readonly quarters: string;
+  /** One path per quarter engraved so far, in month order, so the entrance can engrave them in turn. */
+  readonly quarters: readonly string[];
   /** The one mark that runs off the top and down over the lip. */
   readonly now: string;
   /** Seated, oldest first: the order they are painted in, back to front. */
@@ -232,12 +240,12 @@ export function figureGeometry(
 
   const yF = D - B;
   let years = '';
-  let quarters = '';
+  const quarters: string[] = [];
   for (let m = 0; m <= lastMonth; m += 3) {
     if (m % 12 === 0) {
       years += seg(P(mx(m), yF, LH), P(mx(m), yF - 7, LH));
     } else if (m < nowMonth) {
-      quarters += seg(P(mx(m), yF, LH), P(mx(m), yF - 3.5, LH));
+      quarters.push(seg(P(mx(m), yF, LH), P(mx(m), yF - 3.5, LH)));
     }
   }
   const nowMark = open([
@@ -250,8 +258,10 @@ export function figureGeometry(
   const liftPx = P(0, 0, 1)[1] - P(0, 0, 0)[1];
 
   // Cropped to the drawing at its tallest: the ledge, and every plate at the
-  // highest it ever reaches, a pick or the entrance's drop onto its rest.
-  const reach = (i: number) => Math.max(LIFT, liftFor(null, i, months.length) + DROP);
+  // highest it ever reaches, a pick, its float at rest, or the entrance's drop
+  // onto its rest.
+  const reach = (i: number) =>
+    Math.max(LIFT, liftFor(null, i, months.length) + Math.max(DROP, BREATH));
   const extent: ScreenPoint[] = [
     ...[0, LH].flatMap((z) => ring.map((q) => P(q.u, q.v, z))),
     P(mx(nowMonth), D, 2.5),

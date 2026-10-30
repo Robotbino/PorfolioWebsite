@@ -18,12 +18,13 @@
       </h3>
       <!-- One line per title held, newest first. An empty list in work-data.ts
       renders nothing, so the heading never carries a placeholder. A line under
-      a mouse lifts its plate in the figure below; the lines stay plain text,
-      and the figure is decoration, so nothing here is a control. -->
+      a mouse lifts its plate in the figure below, and while nobody is hovering
+      the figure plays a lap that lights each line in turn. The lines stay plain
+      text and the figure is decoration, so nothing here is a control. -->
       @if (role.positions.length) {
         <div class="role-meta">
           @for (position of role.positions; track position.title) {
-            <p class="role-meta-line" [class.is-picked]="picked() === $index"
+            <p class="role-meta-line" [class.is-lit]="lit() === $index"
               (pointerenter)="pickPosition($index)" (pointerleave)="pickPosition(null)">
               <span class="role-meta-title">{{ position.title }}</span>
               <span class="role-meta-sep" aria-hidden="true">&middot;</span>
@@ -31,7 +32,8 @@
             </p>
           }
         </div>
-        <app-role-figure class="role-figure" [positions]="role.positions" [picked]="picked()" />
+        <app-role-figure class="role-figure" [positions]="role.positions" [picked]="picked()"
+          (touring)="touring.set($event)" />
       }
       <ul class="role-points" role="list">
         <li>

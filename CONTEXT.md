@@ -177,8 +177,10 @@ The line drawing under the SITA positions in the Experience _Destination_: three
 photographic plates in the groove of a ruled ledge, one standing on each month a position began.
 The same field is on every plate, and one mark has crept between exposures. The scale is engraved
 up to the current month in Pretoria, and the ledge runs on to the next June. At rest the newest
-plate stands half lifted with the one bright edge. Hovering a position line lifts its plate, and
-the neighbours rise less. It draws in once on arrival and is hidden when the role stacks. It was
+plate stands half lifted with the one bright edge, floating a little. Hovering a position line
+lifts its plate, and the neighbours rise less. Left alone on screen, it plays a lap: each plate in
+turn, oldest first, lighting its line, every 8 seconds. It engraves itself in once on arrival,
+holds still off screen and under reduced motion, and is hidden when the role stacks. It was
 designed with Hairline (source in `docs/hairline/plates/`) and ships as static SVG moved by CSS.
 See [ADR-0016](adr/0016-experience-role-figure.md).
 _Avoid_: "timeline" (it is a picture of one, not a chart), "Plate 00 series" in copy (the

@@ -90,9 +90,10 @@ path {
 }
 
 /* ---- Motion ---- */
-/* A lift is the plate's inline transform; the delay spreads a change outwards
-   from the plate picked. Under reduced motion the global rule lands both at
-   once, and the figure still answers. */
+/* A lift is the plate's inline transform, set by a hover or by the lap; the
+   delay spreads a change outwards from the plate picked. Under reduced motion
+   the global rule lands every transition at once, and the figure still
+   answers a hover. */
 .plate {
   transition: transform 700ms var(--ease-lift) var(--lift-delay, 0ms);
 }
@@ -103,13 +104,51 @@ path {
     opacity 400ms var(--ease-out-quart) var(--enter-delay, 0ms);
 }
 
+.tick {
+  transition: opacity 180ms var(--ease-out-quart) var(--tick-delay, 0ms);
+}
+
+.now {
+  transition:
+    transform 450ms var(--ease-lift) var(--now-delay, 0ms),
+    opacity 240ms var(--ease-out-quart) var(--now-delay, 0ms);
+}
+
+/* The newest plate at rest is being measured, not parked: it floats a little
+   and back. It holds wherever it is while the figure is off screen, and the
+   global reduced-motion rule ends it. */
+.is-breathing .float {
+  animation: plate-breathe 2.6s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+
+:host(.on-screen) .is-breathing .float {
+  animation-play-state: running;
+}
+
+@keyframes plate-breathe {
+  to {
+    transform: translateY(var(--breath));
+  }
+}
+
 /* The entrance, once, when the figure comes on screen: the drawing wipes in
-   from the left like the site's drawn rules, and the plates drop into the
+   from the left like the site's drawn rules, the quarters engrave in month
+   order up to now, the now mark drops onto the lip, and the plates land in the
    groove one after another. Gated on the preference as well as on the class,
    so a reduced-motion visitor never sees the starting pose. */
 @media (prefers-reduced-motion: no-preference) {
   :host(.awaiting) .stage {
     clip-path: inset(0 100% 0 0);
+  }
+
+  :host(.awaiting) .tick {
+    opacity: 0;
+  }
+
+  :host(.awaiting) .now {
+    opacity: 0;
+    transform: translateY(var(--now-drop));
   }
 
   :host(.awaiting) .seat {

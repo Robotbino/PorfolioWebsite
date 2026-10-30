@@ -1,26 +1,32 @@
 <!-- Painted back to front, the order role-figure.math.ts gives: the ledge and its
 scale, then the plates from the oldest, furthest away, to the newest. Each plate
-is two groups: the outer one carries its lift, the inner one the entrance drop,
-so the two transitions never fight over one transform. The class names are
-Hairline's, so this reads against docs/hairline/plates/plates.js. -->
+is three nested groups, one per motion, so no two transitions or animations ever
+fight over one transform: the outer one carries its lift, the next the entrance
+drop, the inner one the float at rest. The class names are Hairline's, so this
+reads against docs/hairline/plates/plates.js. -->
 <svg class="stage" [attr.viewBox]="geometry().viewBox" preserveAspectRatio="xMinYMax meet"
-  aria-hidden="true" focusable="false">
+  aria-hidden="true" focusable="false" [style.--drop]="moves().drop"
+  [style.--now-drop]="moves().nowDrop" [style.--breath]="moves().breath">
   <g class="ledge">
     <path class="sil" [attr.d]="geometry().ledge.sil" />
     <path class="nf lo" [attr.d]="geometry().ledge.crease" />
     <path class="nf lo" [attr.d]="geometry().groove" />
     <path class="nf" [attr.d]="geometry().years" />
-    <path class="nf lo" [attr.d]="geometry().quarters" />
-    <path class="nf sil" [attr.d]="geometry().now" />
+    @for (tick of ticks(); track $index) {
+      <path class="nf lo tick" [attr.d]="tick.d" [style.--tick-delay]="tick.delay" />
+    }
+    <path class="nf sil now" [attr.d]="geometry().now" [style.--now-delay]="nowDelay" />
   </g>
   @for (plate of plates(); track $index) {
-    <g class="plate" [class.is-bright]="plate.bright" [style.transform]="plate.transform"
-      [style.--lift-delay]="plate.delay">
-      <g class="seat" [style.--enter-delay]="plate.enter" [style.--drop]="dropPx()">
-        <path class="lo" [attr.d]="plate.paths.back" />
-        <path class="sil face" [attr.d]="plate.paths.face" />
-        <path class="nf lo" [attr.d]="plate.paths.field" />
-        <path class="nf" [attr.d]="plate.paths.target" />
+    <g class="plate" [class.is-bright]="plate.bright" [class.is-breathing]="plate.breathing"
+      [style.transform]="plate.transform" [style.--lift-delay]="plate.delay">
+      <g class="seat" [style.--enter-delay]="plate.enter">
+        <g class="float">
+          <path class="lo" [attr.d]="plate.paths.back" />
+          <path class="sil face" [attr.d]="plate.paths.face" />
+          <path class="nf lo" [attr.d]="plate.paths.field" />
+          <path class="nf" [attr.d]="plate.paths.target" />
+        </g>
       </g>
     </g>
   }
