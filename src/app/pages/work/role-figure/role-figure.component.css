@@ -8,16 +8,6 @@
    row it fills, so the grid sizes that row from the bullets alone and the
    figure takes whatever is left. */
 :host {
-  /* Hairline's five tones, under Hairline's names, in the site's palette: the
-     warm greys of the borders in light mode, neutral greys in dark. */
-  --hairline-plate: light-dark(#fbf8f3, #131313);
-  --hairline-hi: var(--color-text-primary);
-  --hairline-edge: light-dark(#9a9080, #6b6b6b);
-  --hairline-mid: light-dark(#b8afa1, #4a4a4a);
-  --hairline-lo: light-dark(#dad3c8, #333333);
-  /* Hairline's lift curve: every discrete change rides it, for 700ms. */
-  --ease-lift: cubic-bezier(0.32, 0.72, 0, 1);
-
   display: block;
   position: relative;
   isolation: isolate;
@@ -58,33 +48,8 @@
   transition: clip-path var(--duration-rule) var(--ease-out-expo);
 }
 
-/* ---- The palette, as Hairline's kernel writes it ---- */
-/* Every solid is filled with the plate tone and painted back to front, so a
-   nearer one hides what is behind it. One stroke weight; the tone says which
-   line matters. */
-path {
-  fill: var(--hairline-plate);
-  stroke: var(--hairline-mid);
-  stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-  transition: stroke 260ms cubic-bezier(0.5, 0, 0.1, 1);
-}
-
-.nf {
-  fill: none;
-}
-
-.sil {
-  stroke: var(--hairline-edge);
-}
-
-.lo {
-  stroke: var(--hairline-lo);
-}
-
-/* The figure's one highlight: the newest plate at rest, the picked one after. */
+/* The palette is the shared one (shared/hairline/hairline.css). The figure's
+   one highlight: the newest plate at rest, the picked one after. */
 .is-bright .face {
   stroke: var(--hairline-hi);
 }
@@ -160,14 +125,6 @@ path {
 /* Stacked, the role has no spare row beside the bullets: the figure would
    only add height to a phone's scroll. */
 @media (max-width: 968px) {
-  :host {
-    display: none;
-  }
-}
-
-/* The drawing is all tone, which forced colours flatten; the orbit's rings go
-   the same way. */
-@media (forced-colors: active) {
   :host {
     display: none;
   }

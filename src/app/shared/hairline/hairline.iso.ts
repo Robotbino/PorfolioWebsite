@@ -1,10 +1,11 @@
 /**
  * The static geometry of Hairline's kernel, typed: the camera, the rounded
- * solids and the path strings, and nothing else. The figure was designed with
- * Hairline (docs/hairline/plates/), and these are the functions its source
- * calls to draw. The loop, the springs, the pointer and the styles stay behind:
- * the role figure only ever translates, so CSS does its motion. See
- * docs/adr/0016-experience-role-figure.md.
+ * solids and the path strings, and nothing else. The site's two Hairline
+ * figures were designed with the hairline-create skill (docs/hairline/), and
+ * these are the functions their sources call to draw. The kernel's loop,
+ * pointer and styles stay behind: each figure moves on the site's own clock.
+ * See docs/adr/0016-experience-role-figure.md and
+ * docs/adr/0017-contact-listening-dish.md.
  *
  * Vendored from @lucasmarkes/hairline 0.5.1, packages/hairline/src/core/iso.ts,
  * unchanged apart from the types.
@@ -135,6 +136,18 @@ export function rrect(
         sa = Math.sin(a);
       out.push({ u: cu + r * ca, v: cv + r * sa, nu: ca, nv: sa });
     }
+  }
+  return out;
+}
+
+/** A circle of radius R, as a ring of n samples. */
+export function circ(R: number, n = 96): RingSample[] {
+  const out: RingSample[] = [];
+  for (let k = 0; k < n; k++) {
+    const a = (k / n) * Math.PI * 2,
+      ca = Math.cos(a),
+      sa = Math.sin(a);
+    out.push({ u: R * ca, v: R * sa, nu: ca, nv: sa });
   }
   return out;
 }

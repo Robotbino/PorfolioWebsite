@@ -23,7 +23,8 @@ engraved only up to now, and the ledge runs on empty to where Plate 04 would sta
   `hairline-create`, passed its validator and its eight-shot look, and was approved on the bench
   page. Its source, page and look sheet are kept in `docs/hairline/plates/` with the prompt and
   the kernel hash, so it can be regenerated or changed with the same tool.
-- **The port is the kernel's static geometry plus CSS.** `role-figure.iso.ts` vendors the camera,
+- **The port is the kernel's static geometry plus CSS.** `shared/hairline/hairline.iso.ts`
+  (first `role-figure.iso.ts`; shared since ADR-0017) vendors the camera,
   rounded solids and path functions the figure calls, typed and with Hairline's MIT notice.
   `role-figure.math.ts` builds the figure from them with the source's constants under the same
   names. Everything that moves moves straight up or down, and under a parallel projection that

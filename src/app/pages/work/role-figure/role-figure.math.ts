@@ -14,7 +14,7 @@ import {
   rad,
   rings,
   seg,
-} from './role-figure.iso';
+} from '../../../shared/hairline/hairline.iso';
 
 /**
  * Plates 01–03: the figure under the SITA positions, as pure geometry. Three

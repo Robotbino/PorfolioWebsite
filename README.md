@@ -89,7 +89,7 @@ The pure logic lives in unit-tested modules with colocated `.spec.ts` files — 
 constellation morph and its driver, star depths from real distances, the star map's camera,
 scene and renderer, the shared camera constant, the frame pulse, theme decisions, certifications
 math, destinations, the aurora and star-map palettes, the Toolset orbit's projection, the role
-figure's calendar and frame, section arrival anchoring, hero parallax, in-viewport observation, scroll lock, motion math, and the
+figure's calendar and frame, the Contact dish's aim and reach, section arrival anchoring, hero parallax, in-viewport observation, scroll lock, motion math, and the
 page-inert isolation behind both overlays. Anything that can be a pure function is one, precisely
 so it can be tested without a DOM.
 
@@ -110,6 +110,7 @@ Karma runs headless via [karma.conf.js](karma.conf.js), so this works in CI and 
 - **WebGL Aurora** — A GLSL simplex-noise shader (via [OGL](https://github.com/oframe/ogl)) renders a living aurora behind every section; coarse-pointer devices get an animated CSS-gradient fallback instead of a shader
 - **Single Frame Loop** — One shared `requestAnimationFrame` pulse runs outside Angular's zone and drives every animation, keeping change detection off the hot path
 - **Role Figure** — Under the SITA positions, three photographic plates stand on a ledge ruled up to the current month, one plate per position. Left alone it plays a lap, lifting each plate in turn and lighting its line; hovering a position lifts that plate instead. Designed with [Hairline](https://hairline.lucasmarkes.com), drawn as static SVG and moved by CSS alone
+- **Listening Dish** — A radio dish stands on the Contact colophon's rule in the bottom corner. It swings up from its stow on arrival, turns to listen wherever your mouse is, and surveys the sky over the page when left alone. Adapted from Hairline's Dish, drawn on the shared frame pulse only while it turns
 - **Horizontal Projects Showcase** — The Experience section pins and scrolls its project cards sideways on the same rAF pulse, with keyboard framing and a progress indicator
 - **Certification Spotlight** — Each certification opens full-size in a focus-trapped overlay with a verify link; on fine pointers a floating preview tethers to the cursor
 - **Marquee Email** — The Contact finale features a large marquee email with one-click copy-to-clipboard, plus a colophon with a live SAST clock
@@ -158,7 +159,7 @@ Three rules keep that hot path honest:
 3. **Pure math, testable.** Anything that can be a function of numbers is one: `scroll-loop.math.ts`,
    `motion.math.ts`, `arrival.math.ts`, `certifications.math.ts`, `constellation-morph.ts`,
    `constellation-depth.ts`, `star-map.math.ts`, `tool-orbit.math.ts`, `role-figure.math.ts`,
-   `theme.decision.ts`.
+   `contact-dish.math.ts`, `theme.decision.ts`.
 
 There is deliberately **no Angular Router** and no NgModule: the app bootstraps through
 `bootstrapApplication`, and the five destinations are defined once in
@@ -186,9 +187,10 @@ src/app/
 │   ├── work/                  # Experience timeline, role figure, Toolset orbit in perspective + horizontal showcase
 │   ├── about/
 │   ├── certifications/        # Spotlight overlay (certifications-data.ts, certifications.math.ts)
-│   └── contact/               # Marquee email, channels, colophon with live SAST clock
+│   └── contact/               # Marquee email, channels, colophon, the listening dish
 ├── star-map/                  # WebGL star map (OGL): camera rig, scene, renderer, shaders
 ├── shared/
+│   ├── hairline/              # Hairline's vendored geometry, spring and palette (both figures)
 │   ├── icon/                  # Inline SVG icon set (path data + <app-icon>)
 │   └── theme-toggle/
 ├── destinations.ts            # Single source of truth for the five destinations
@@ -235,6 +237,7 @@ rejected, because the trail is the point.
 | [0014](docs/adr/0014-star-map-in-webgl-and-one-camera.md)   | Star map in WebGL, and one shared camera                      | accepted                     |
 | [0015](docs/adr/0015-toolset-orbit-in-perspective.md)       | Toolset orbit in perspective                                  | accepted                     |
 | [0016](docs/adr/0016-experience-role-figure.md)             | A Hairline figure under the SITA positions                    | accepted                     |
+| [0017](docs/adr/0017-contact-listening-dish.md)             | A listening dish in the Contact corner                        | accepted                     |
 
 ---
 

@@ -186,6 +186,15 @@ See [ADR-0016](adr/0016-experience-role-figure.md).
 _Avoid_: "timeline" (it is a picture of one, not a chart), "Plate 00 series" in copy (the
 portrait's name is internal)
 
+**Listening dish**:
+The radio dish standing on the Contact _Destination_'s colophon rule, in the bottom-right corner,
+adapted from Hairline's Dish. It arrives stowed and swings up to rest, listening at the sky over
+the page. While a mouse moves anywhere on screen it turns to listen there; left alone it surveys
+the sky a stop at a time. It holds still off screen and under reduced motion, and is hidden below
+1240px, where the corner closes. Source in `docs/hairline/listening/`. See
+[ADR-0017](adr/0017-contact-listening-dish.md).
+_Avoid_: "satellite" (it receives; nothing orbits), "radar" (it doesn't sweep for targets)
+
 **Hero parallax**:
 Depth near Home: the headline drifts a few pixels against the pointer while the star map's
 camera orbits a point just in front of the constellation, so the figure drifts with the pointer and

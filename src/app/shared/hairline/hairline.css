@@ -1,0 +1,69 @@
+/* Hairline's palette, as its kernel writes it, for every Hairline figure on the
+   site. A figure lists this sheet first in its styleUrls, so it is scoped to
+   that component like the rest of its styles. See
+   docs/adr/0016-experience-role-figure.md.
+
+   Five tones, under Hairline's names, in the site's palette: the warm greys of
+   the borders in light mode, neutral greys in dark. */
+:host {
+  --hairline-plate: light-dark(#fbf8f3, #131313);
+  --hairline-hi: var(--color-text-primary);
+  --hairline-edge: light-dark(#9a9080, #6b6b6b);
+  --hairline-mid: light-dark(#b8afa1, #4a4a4a);
+  --hairline-lo: light-dark(#dad3c8, #333333);
+  /* Hairline's lift curve: every discrete change rides it, for 700ms. */
+  --ease-lift: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Every solid is filled with the plate tone and painted back to front, so a
+   nearer one hides what is behind it. One stroke weight; the tone says which
+   line matters. */
+path,
+ellipse {
+  fill: var(--hairline-plate);
+  stroke: var(--hairline-mid);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: stroke 260ms cubic-bezier(0.5, 0, 0.1, 1);
+}
+
+.nf {
+  fill: none;
+}
+
+.sil {
+  stroke: var(--hairline-edge);
+}
+
+.lo {
+  stroke: var(--hairline-lo);
+}
+
+/* The one bright stroke a figure has. */
+.hi {
+  stroke: var(--hairline-hi);
+}
+
+/* Dots: filled, never stroked, in three tones. */
+.dot {
+  stroke: none;
+  fill: var(--hairline-hi);
+}
+
+.dot.m {
+  fill: var(--hairline-edge);
+}
+
+.dot.off {
+  fill: var(--hairline-lo);
+}
+
+/* A drawing that is all tone: forced colours would flatten it, so it goes,
+   like the orbit's rings. */
+@media (forced-colors: active) {
+  :host {
+    display: none !important;
+  }
+}

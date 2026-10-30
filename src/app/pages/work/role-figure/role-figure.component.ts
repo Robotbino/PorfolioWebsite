@@ -18,7 +18,7 @@ import {
 import { InViewportService } from '../../../core/in-viewport.service';
 import { MotionSettingsService } from '../../../core/motion-settings.service';
 import { Position } from '../work-data';
-import { r2 } from './role-figure.iso';
+import { r2 } from '../../../shared/hairline/hairline.iso';
 import {
   BREATH,
   DROP,
@@ -70,7 +70,7 @@ export const LAP_RESUME_MS = 1600;
 @Component({
   selector: 'app-role-figure',
   templateUrl: './role-figure.component.html',
-  styleUrl: './role-figure.component.css',
+  styleUrls: ['../../../shared/hairline/hairline.css', './role-figure.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'aria-hidden': 'true',

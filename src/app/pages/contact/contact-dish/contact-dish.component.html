@@ -1,0 +1,47 @@
+<!-- Painted back to front, as the bench page paints it: the base and its scale,
+the turntable and its index dot, the yoke's beam, the arms that sit behind the
+dish, the dish, then the arms in front of it. An arm changes sides as the dish
+turns, so each is drawn twice, behind and in front, and only the copy on the
+right side shows. Every path here is the first pose; after that the component
+writes the moving ones itself, a frame at a time, only while the dish turns.
+The class names are Hairline's, so this reads against
+docs/hairline/listening/listening.js. -->
+<svg class="stage" [attr.viewBox]="geometry.viewBox" preserveAspectRatio="xMaxYMax meet"
+  aria-hidden="true" focusable="false">
+  <path class="sil" [attr.d]="geometry.base.sil" />
+  <path class="nf lo" [attr.d]="geometry.base.crease" />
+  @for (dot of geometry.scale; track $index) {
+    <ellipse class="dot off" [attr.cx]="dot.cx" [attr.cy]="dot.cy" [attr.rx]="dot.rx" [attr.ry]="dot.ry" />
+  }
+  <path class="sil" [attr.d]="geometry.turntable.sil" />
+  <path class="nf lo" [attr.d]="geometry.turntable.crease" />
+  <ellipse class="dot m" data-part="index" [attr.cx]="first.index[0]" [attr.cy]="first.index[1]"
+    [attr.rx]="geometry.indexR[0]" [attr.ry]="geometry.indexR[1]" />
+  <path class="sil" data-part="beam-sil" [attr.d]="first.beam.sil" />
+  <path class="nf lo" data-part="beam-crease" [attr.d]="first.beam.crease" />
+  @for (side of first.sides; track $index) {
+    <g data-part="behind" [attr.display]="side.near ? 'none' : null">
+      <path class="nf" data-part="ring" [attr.d]="side.ring" />
+      <path class="sil" data-part="arm-sil" [attr.d]="side.arm.sil" />
+      <path class="nf lo" data-part="arm-crease" [attr.d]="side.arm.crease" />
+      <path class="sil" data-part="trunnion" [attr.d]="side.trunnion" />
+    </g>
+  }
+  <g class="dish">
+    <path class="sil" data-part="outline" [attr.d]="first.outline" />
+    <path class="nf lo" data-part="seam" [attr.d]="first.seam" />
+    <path class="nf lo" data-part="hub" [attr.d]="first.hub" />
+    <path class="nf hi" data-part="rim" [attr.d]="first.rim" />
+    <path class="nf" data-part="struts" [attr.d]="first.struts" />
+    <path class="sil" data-part="feed-sil" [attr.d]="first.feed.sil" />
+    <path class="nf lo" data-part="feed-crease" [attr.d]="first.feed.crease" />
+  </g>
+  @for (side of first.sides; track $index) {
+    <g data-part="in-front" [attr.display]="side.near ? null : 'none'">
+      <path class="sil" data-part="trunnion" [attr.d]="side.trunnion" />
+      <path class="sil" data-part="arm-sil" [attr.d]="side.arm.sil" />
+      <path class="nf lo" data-part="arm-crease" [attr.d]="side.arm.crease" />
+      <path class="nf" data-part="ring" [attr.d]="side.ring" />
+    </g>
+  }
+</svg>

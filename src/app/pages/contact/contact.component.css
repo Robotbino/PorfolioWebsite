@@ -512,6 +512,8 @@
 /* The coords deliberately bookend the hero's "Pretoria · South Africa"; the
    live clock stays up there and is not repeated here. */
 .contact-colophon {
+  /* The radio dish stands on this rule (contact-dish.component.css). */
+  position: relative;
   display: flex;
   align-items: baseline;
   justify-content: space-between;

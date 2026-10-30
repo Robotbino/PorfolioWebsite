@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, signal } from '@angular/core';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { ContactDishComponent } from './contact-dish/contact-dish.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-contact',
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.css',
-  imports: [ScrollRevealDirective, IconComponent],
+  imports: [ScrollRevealDirective, IconComponent, ContactDishComponent],
 })
 export class ContactComponent implements OnDestroy {
   /** The colophon's copyright year, read from the clock rather than hard-coded. */
