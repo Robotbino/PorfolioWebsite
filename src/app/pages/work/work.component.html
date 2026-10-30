@@ -17,17 +17,21 @@
         <span class="role-title-desc"> {{ role.descriptor }}</span>
       </h3>
       <!-- One line per title held, newest first. An empty list in work-data.ts
-      renders nothing, so the heading never carries a placeholder. -->
+      renders nothing, so the heading never carries a placeholder. A line under
+      a mouse lifts its plate in the figure below; the lines stay plain text,
+      and the figure is decoration, so nothing here is a control. -->
       @if (role.positions.length) {
         <div class="role-meta">
           @for (position of role.positions; track position.title) {
-            <p class="role-meta-line">
+            <p class="role-meta-line" [class.is-picked]="picked() === $index"
+              (pointerenter)="pickPosition($index)" (pointerleave)="pickPosition(null)">
               <span class="role-meta-title">{{ position.title }}</span>
               <span class="role-meta-sep" aria-hidden="true">&middot;</span>
               <span class="role-meta-period">{{ position.period }}</span>
             </p>
           }
         </div>
+        <app-role-figure class="role-figure" [positions]="role.positions" [picked]="picked()" />
       }
       <ul class="role-points" role="list">
         <li>

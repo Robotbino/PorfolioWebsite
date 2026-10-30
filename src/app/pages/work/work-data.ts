@@ -53,6 +53,12 @@ export interface Project {
 export interface Position {
   readonly title: string;
   readonly period: string;
+  /**
+   * The month it began, as 'YYYY-MM': the same fact as the start of `period`,
+   * in a form the role figure can place on its scale. `period` stays the words
+   * the page shows.
+   */
+  readonly start: string;
 }
 
 /**
@@ -71,9 +77,13 @@ export const ROLE: Role = {
   org: 'SITA',
   descriptor: 'Java EE case management & workflow platform',
   positions: [
-    { title: 'Junior Full-Stack Developer', period: 'June 2026 — present' },
-    { title: 'Experiential Trainee (Java Developer)', period: 'June 2025 — May 2026' },
-    { title: 'Software Development Intern', period: 'June 2024 — May 2025' },
+    { title: 'Junior Full-Stack Developer', period: 'June 2026 — present', start: '2026-06' },
+    {
+      title: 'Experiential Trainee (Java Developer)',
+      period: 'June 2025 — May 2026',
+      start: '2025-06',
+    },
+    { title: 'Software Development Intern', period: 'June 2024 — May 2025', start: '2024-06' },
   ],
 };
 

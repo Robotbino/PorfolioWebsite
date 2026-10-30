@@ -8,6 +8,7 @@ import {
   ViewChild,
   effect,
   inject,
+  signal,
   untracked,
 } from '@angular/core';
 import { FramePulseService } from '../../core/frame-pulse.service';
@@ -19,6 +20,7 @@ import { IconName } from '../../shared/icon/icons';
 import { ScrollRevealDirective } from '../../scroll-reveal.directive';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ProjectScreenshotsComponent } from './project-screenshots/project-screenshots.component';
+import { RoleFigureComponent } from './role-figure/role-figure.component';
 import { ToolOrbitComponent } from './tool-orbit/tool-orbit.component';
 
 /**
@@ -55,7 +57,13 @@ interface ShowcaseCard {
   // second sheet still resolves against this host.
   styleUrls: ['./work.component.css', './work.showcase.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ScrollRevealDirective, IconComponent, ProjectScreenshotsComponent, ToolOrbitComponent],
+  imports: [
+    ScrollRevealDirective,
+    IconComponent,
+    ProjectScreenshotsComponent,
+    RoleFigureComponent,
+    ToolOrbitComponent,
+  ],
 })
 export class WorkComponent implements AfterViewInit, OnDestroy {
   private pulse = inject(FramePulseService);
@@ -74,6 +82,9 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
   readonly role: Role = ROLE;
   readonly experienceGroups: readonly ExperienceGroup[] = EXPERIENCE_GROUPS;
   readonly projects: readonly Project[] = PROJECTS;
+
+  /** The position line under a mouse, as listed; the role figure lifts its plate. */
+  readonly picked = signal<number | null>(null);
 
   // Only enabled on wide screens with motion allowed. Below that (or no-JS) the
   // host stays without `.showcase-on` and the cards render as a vertical stack —
@@ -143,6 +154,17 @@ export class WorkComponent implements AfterViewInit, OnDestroy {
 
   techIcon(name: string): IconName {
     return WorkComponent.TECH_ICONS[name] ?? 'code';
+  }
+
+  /**
+   * Hover only: a tap has no hover to follow, so a touch screen leaves the
+   * figure at rest. Letting go always returns it, whatever the pointer.
+   */
+  pickPosition(index: number | null): void {
+    if (index !== null && !this.motion.finePointer()) {
+      return;
+    }
+    this.picked.set(index);
   }
 
   ngAfterViewInit(): void {

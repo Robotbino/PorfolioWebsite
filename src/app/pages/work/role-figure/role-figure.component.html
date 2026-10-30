@@ -1,0 +1,27 @@
+<!-- Painted back to front, the order role-figure.math.ts gives: the ledge and its
+scale, then the plates from the oldest, furthest away, to the newest. Each plate
+is two groups: the outer one carries its lift, the inner one the entrance drop,
+so the two transitions never fight over one transform. The class names are
+Hairline's, so this reads against docs/hairline/plates/plates.js. -->
+<svg class="stage" [attr.viewBox]="geometry().viewBox" preserveAspectRatio="xMinYMax meet"
+  aria-hidden="true" focusable="false">
+  <g class="ledge">
+    <path class="sil" [attr.d]="geometry().ledge.sil" />
+    <path class="nf lo" [attr.d]="geometry().ledge.crease" />
+    <path class="nf lo" [attr.d]="geometry().groove" />
+    <path class="nf" [attr.d]="geometry().years" />
+    <path class="nf lo" [attr.d]="geometry().quarters" />
+    <path class="nf sil" [attr.d]="geometry().now" />
+  </g>
+  @for (plate of plates(); track $index) {
+    <g class="plate" [class.is-bright]="plate.bright" [style.transform]="plate.transform"
+      [style.--lift-delay]="plate.delay">
+      <g class="seat" [style.--enter-delay]="plate.enter" [style.--drop]="dropPx()">
+        <path class="lo" [attr.d]="plate.paths.back" />
+        <path class="sil face" [attr.d]="plate.paths.face" />
+        <path class="nf lo" [attr.d]="plate.paths.field" />
+        <path class="nf" [attr.d]="plate.paths.target" />
+      </g>
+    </g>
+  }
+</svg>

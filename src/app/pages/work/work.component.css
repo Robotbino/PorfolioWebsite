@@ -33,6 +33,10 @@
   border-top: 1px solid var(--color-border-dark);
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
+  /* Title, positions, then the flexible row the role figure fills: the
+     bullets span the last two, so the space they leave under the positions
+     goes to the figure and nothing above it moves. */
+  grid-template-rows: auto auto 1fr;
   gap: var(--space-xl);
   align-items: start;
 }
@@ -100,10 +104,17 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--space-sm);
+  transition: color var(--transition-base);
+}
+
+/* The line whose plate the figure is lifting. */
+.role-meta-line.is-picked {
+  color: var(--color-text-primary);
 }
 
 .role-points {
   grid-column: 7 / 13;
+  grid-row: 2 / span 2;
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
@@ -628,12 +639,20 @@
      dropped baselines no longer apply. */
   .role {
     grid-template-columns: 1fr;
+    grid-template-rows: none;
     gap: var(--space-lg);
   }
 
+  /* .role-meta too: left at 1 / 6 it made four empty implicit columns, and
+     their gaps took 96px from the title and the bullets. */
   .role-title,
+  .role-meta,
   .role-points {
     grid-column: auto;
+  }
+
+  .role-points {
+    grid-row: auto;
   }
 
   .experience-index {

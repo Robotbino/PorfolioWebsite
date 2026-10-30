@@ -88,8 +88,8 @@ npm test
 The pure logic lives in unit-tested modules with colocated `.spec.ts` files — scroll math, the
 constellation morph and its driver, star depths from real distances, the star map's camera,
 scene and renderer, the shared camera constant, the frame pulse, theme decisions, certifications
-math, destinations, the aurora and star-map palettes, the Toolset orbit's projection, section
-arrival anchoring, hero parallax, in-viewport observation, scroll lock, motion math, and the
+math, destinations, the aurora and star-map palettes, the Toolset orbit's projection, the role
+figure's calendar and frame, section arrival anchoring, hero parallax, in-viewport observation, scroll lock, motion math, and the
 page-inert isolation behind both overlays. Anything that can be a pure function is one, precisely
 so it can be tested without a DOM.
 
@@ -109,6 +109,7 @@ Karma runs headless via [karma.conf.js](karma.conf.js), so this works in CI and 
 - **3D Star Map** — A WebGL scene (via [OGL](https://github.com/oframe/ogl)) morphs between five real constellations as you scroll, each star set at a depth taken from its real distance (log-scaled), so the figure is exact at rest and comes apart in depth as the camera steps aside between destinations; an SVG drawing takes over without WebGL
 - **WebGL Aurora** — A GLSL simplex-noise shader (via [OGL](https://github.com/oframe/ogl)) renders a living aurora behind every section; coarse-pointer devices get an animated CSS-gradient fallback instead of a shader
 - **Single Frame Loop** — One shared `requestAnimationFrame` pulse runs outside Angular's zone and drives every animation, keeping change detection off the hot path
+- **Role Figure** — Under the SITA positions, three photographic plates stand on a ledge ruled up to the current month, one plate per position; hovering a position lifts its plate. Designed with [Hairline](https://hairline.lucasmarkes.com), drawn as static SVG and moved by CSS alone
 - **Horizontal Projects Showcase** — The Experience section pins and scrolls its project cards sideways on the same rAF pulse, with keyboard framing and a progress indicator
 - **Certification Spotlight** — Each certification opens full-size in a focus-trapped overlay with a verify link; on fine pointers a floating preview tethers to the cursor
 - **Marquee Email** — The Contact finale features a large marquee email with one-click copy-to-clipboard, plus a colophon with a live SAST clock
@@ -156,7 +157,8 @@ Three rules keep that hot path honest:
    instead of burning frames.
 3. **Pure math, testable.** Anything that can be a function of numbers is one: `scroll-loop.math.ts`,
    `motion.math.ts`, `arrival.math.ts`, `certifications.math.ts`, `constellation-morph.ts`,
-   `constellation-depth.ts`, `star-map.math.ts`, `tool-orbit.math.ts`, `theme.decision.ts`.
+   `constellation-depth.ts`, `star-map.math.ts`, `tool-orbit.math.ts`, `role-figure.math.ts`,
+   `theme.decision.ts`.
 
 There is deliberately **no Angular Router** and no NgModule: the app bootstraps through
 `bootstrapApplication`, and the five destinations are defined once in
@@ -181,7 +183,7 @@ src/app/
 ├── landingpage/               # Home / hero section + CV download
 ├── layout/site-nav/           # Navigation with loop-aware muting
 ├── pages/
-│   ├── work/                  # Experience timeline, Toolset orbit in perspective + horizontal showcase
+│   ├── work/                  # Experience timeline, role figure, Toolset orbit in perspective + horizontal showcase
 │   ├── about/
 │   ├── certifications/        # Spotlight overlay (certifications-data.ts, certifications.math.ts)
 │   └── contact/               # Marquee email, channels, colophon with live SAST clock
@@ -232,6 +234,7 @@ rejected, because the trail is the point.
 | [0013](docs/adr/0013-hero-depth-and-motion-system.md)       | Hero depth and one motion system                              | accepted, revised by 0014    |
 | [0014](docs/adr/0014-star-map-in-webgl-and-one-camera.md)   | Star map in WebGL, and one shared camera                      | accepted                     |
 | [0015](docs/adr/0015-toolset-orbit-in-perspective.md)       | Toolset orbit in perspective                                  | accepted                     |
+| [0016](docs/adr/0016-experience-role-figure.md)             | A Hairline figure under the SITA positions                    | accepted                     |
 
 ---
 

@@ -172,6 +172,18 @@ reduced motion it is a still picture. See [ADR-0012](adr/0012-toolset-orbit.md) 
 [ADR-0015](adr/0015-toolset-orbit-in-perspective.md).
 _Avoid_: "skills table" (it replaced one), "video" (it isn't one)
 
+**Role figure** (Plates 01–03):
+The line drawing under the SITA positions in the Experience _Destination_: three glass
+photographic plates in the groove of a ruled ledge, one standing on each month a position began.
+The same field is on every plate, and one mark has crept between exposures. The scale is engraved
+up to the current month in Pretoria, and the ledge runs on to the next June. At rest the newest
+plate stands half lifted with the one bright edge. Hovering a position line lifts its plate, and
+the neighbours rise less. It draws in once on arrival and is hidden when the role stacks. It was
+designed with Hairline (source in `docs/hairline/plates/`) and ships as static SVG moved by CSS.
+See [ADR-0016](adr/0016-experience-role-figure.md).
+_Avoid_: "timeline" (it is a picture of one, not a chart), "Plate 00 series" in copy (the
+portrait's name is internal)
+
 **Hero parallax**:
 Depth near Home: the headline drifts a few pixels against the pointer while the star map's
 camera orbits a point just in front of the constellation, so the figure drifts with the pointer and

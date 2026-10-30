@@ -1,0 +1,135 @@
+/* Plates 01–03 — three photographic plates on a ruled ledge, under the SITA
+   positions. See docs/adr/0016-experience-role-figure.md.
+
+   The host is the third row of WorkComponent's .role grid: the flexible track
+   under the position lines that the taller bullets opposite open up. Its
+   placement lives here rather than in work.component.css, which sits at its
+   anyComponentStyle budget. contain: size keeps the figure from adding to the
+   row it fills, so the grid sizes that row from the bullets alone and the
+   figure takes whatever is left. */
+:host {
+  /* Hairline's five tones, under Hairline's names, in the site's palette: the
+     warm greys of the borders in light mode, neutral greys in dark. */
+  --hairline-plate: light-dark(#fbf8f3, #131313);
+  --hairline-hi: var(--color-text-primary);
+  --hairline-edge: light-dark(#9a9080, #6b6b6b);
+  --hairline-mid: light-dark(#b8afa1, #4a4a4a);
+  --hairline-lo: light-dark(#dad3c8, #333333);
+  /* Hairline's lift curve: every discrete change rides it, for 700ms. */
+  --ease-lift: cubic-bezier(0.32, 0.72, 0, 1);
+
+  display: block;
+  position: relative;
+  isolation: isolate;
+  grid-column: 1 / 6;
+  grid-row: 3;
+  align-self: stretch;
+  min-block-size: 0;
+  contain: size;
+  pointer-events: none;
+}
+
+/* Its own scrim, under the drawing. The .role scrim is centred over the
+   bullets and barely reaches this corner, so the ledge would otherwise sit
+   straight on the star map. */
+:host::before {
+  content: '';
+  position: absolute;
+  inset: -12% -8%;
+  background: radial-gradient(
+    closest-side at 36% 62%,
+    rgba(var(--scrim-rgb), 0.5) 0%,
+    rgba(var(--scrim-rgb), 0.2) 60%,
+    transparent 100%
+  );
+  z-index: -1;
+}
+
+/* Anchored bottom-left by preserveAspectRatio, so the ledge sits under the
+   last position line and its foot is level with the last bullet. The clip is
+   the entrance's wipe; at rest it clips nothing. */
+.stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path var(--duration-rule) var(--ease-out-expo);
+}
+
+/* ---- The palette, as Hairline's kernel writes it ---- */
+/* Every solid is filled with the plate tone and painted back to front, so a
+   nearer one hides what is behind it. One stroke weight; the tone says which
+   line matters. */
+path {
+  fill: var(--hairline-plate);
+  stroke: var(--hairline-mid);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transition: stroke 260ms cubic-bezier(0.5, 0, 0.1, 1);
+}
+
+.nf {
+  fill: none;
+}
+
+.sil {
+  stroke: var(--hairline-edge);
+}
+
+.lo {
+  stroke: var(--hairline-lo);
+}
+
+/* The figure's one highlight: the newest plate at rest, the picked one after. */
+.is-bright .face {
+  stroke: var(--hairline-hi);
+}
+
+/* ---- Motion ---- */
+/* A lift is the plate's inline transform; the delay spreads a change outwards
+   from the plate picked. Under reduced motion the global rule lands both at
+   once, and the figure still answers. */
+.plate {
+  transition: transform 700ms var(--ease-lift) var(--lift-delay, 0ms);
+}
+
+.seat {
+  transition:
+    transform 700ms var(--ease-lift) var(--enter-delay, 0ms),
+    opacity 400ms var(--ease-out-quart) var(--enter-delay, 0ms);
+}
+
+/* The entrance, once, when the figure comes on screen: the drawing wipes in
+   from the left like the site's drawn rules, and the plates drop into the
+   groove one after another. Gated on the preference as well as on the class,
+   so a reduced-motion visitor never sees the starting pose. */
+@media (prefers-reduced-motion: no-preference) {
+  :host(.awaiting) .stage {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  :host(.awaiting) .seat {
+    opacity: 0;
+    transform: translateY(var(--drop));
+  }
+}
+
+/* Stacked, the role has no spare row beside the bullets: the figure would
+   only add height to a phone's scroll. */
+@media (max-width: 968px) {
+  :host {
+    display: none;
+  }
+}
+
+/* The drawing is all tone, which forced colours flatten; the orbit's rings go
+   the same way. */
+@media (forced-colors: active) {
+  :host {
+    display: none;
+  }
+}
